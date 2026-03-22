@@ -16,6 +16,16 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => {
+    const savedYear = localStorage.getItem('fon_saved_year')
+    const savedProgram = localStorage.getItem('fon_saved_program')
+    const savedLast = localStorage.getItem('fon_saved_lastName')
+
+    if (savedYear) setYear(Number(savedYear))
+    if (savedProgram) setProgram(savedProgram)
+    if (savedLast) setLastName(savedLast)
+  }, [])
+
   // Učitaj JSON kad se odabere godina
   useEffect(() => {
     if (!year) return
@@ -61,14 +71,17 @@ export default function OnboardingPage() {
     sessionStorage.setItem('fon_semester', data.semester)
     if (program) sessionStorage.setItem('fon_program', program)
 
+    localStorage.setItem('fon_saved_year', String(year))
+    localStorage.setItem('fon_saved_program', program)
+    localStorage.setItem('fon_saved_lastName', lastName.trim())
     router.push('/izborni')
   }
 
   const canSubmit =
-  year !== null &&
-  lastName.trim().length > 1 &&
-  program !== '' &&
-  !loading
+    year !== null &&
+    lastName.trim().length > 1 &&
+    program !== '' &&
+    !loading
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">

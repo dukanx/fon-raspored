@@ -65,8 +65,11 @@ export function getProgramsForYear(data: SemesterData): string[] {
   const programs = new Set<string>()
   for (const group of Object.values(data.groups)) {
     if (group.program) {
-      // Za prvu godinu program može biti "ISiT Prezime" - uzmi samo prvu reč
-      const base = group.program.split(' ')[0]
+      // Za prvu godinu program može biti višerečan ali je zapravo jedna reč (ISiT/MiO)
+      // Za ostale godine program je pun naziv
+      // Razlikujemo po tome da li range sadrži " - " (normalan format)
+      const isFirstYear = !group.range.includes(' - ') && group.range !== 'Svi'
+      const base = isFirstYear ? group.program.split(' ')[0] : group.program
       programs.add(base)
     }
   }
