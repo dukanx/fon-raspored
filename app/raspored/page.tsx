@@ -47,10 +47,11 @@ export default function RasporedPage() {
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [showIcsHelp, setShowIcsHelp] = useState(false)
 
-useEffect(() => {
-  if (window.innerWidth < 640) setView('list')
-}, [])
+  useEffect(() => {
+    if (window.innerWidth < 640) setView('list')
+  }, [])
   const [meta, setMeta] = useState({ group: '', lastName: '', semester: '', program: '' })
 
   useEffect(() => {
@@ -210,6 +211,65 @@ useEffect(() => {
     link.click()
   }
 
+  function downloadICS() {
+    const lines: string[] = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//FON Raspored//SR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+    ]
+
+    // Datum prvog ponedeljka tekuće sedmice
+    const today = new Date()
+    const monday = new Date(today)
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+
+    const DAY_OFFSET: Record<DayOfWeek, number> = {
+      Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
+    }
+
+    entries.forEach(e => {
+      const offset = DAY_OFFSET[e.day]
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + offset)
+
+      const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '')
+
+      const [startH, startM] = e.start.split(':')
+      const [endH, endM] = e.end.split(':')
+
+      const dtstart = `${dateStr}T${startH}${startM}00`
+      const dtend = `${dateStr}T${endH}${endM}00`
+
+      const uid = `${dateStr}-${e.subject.replace(/\s/g, '')}-${e.type_short}@fonraspored`
+
+      lines.push('BEGIN:VEVENT')
+      lines.push(`UID:${uid}`)
+      lines.push(`DTSTART;TZID=Europe/Belgrade:${dtstart}`)
+      lines.push(`DTEND;TZID=Europe/Belgrade:${dtend}`)
+      lines.push(`SUMMARY:${e.subject} [${e.type_short}]`)
+      lines.push(`LOCATION:Sala ${e.room}`)
+      lines.push(`DESCRIPTION:Grupa ${meta.group}`)
+      const now = new Date()
+const isLetnji = now.getMonth() >= 1 && now.getMonth() <= 7
+const endDate = isLetnji
+  ? `${now.getFullYear()}0630T235959Z`
+  : `${now.getFullYear()}0131T235959Z`
+
+lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
+      lines.push('END:VEVENT')
+    })
+
+    lines.push('END:VCALENDAR')
+
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const link = document.createElement('a')
+    link.download = `raspored-${meta.group}.ics`
+    link.href = URL.createObjectURL(blob)
+    link.click()
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -225,14 +285,13 @@ useEffect(() => {
           </div>
 
           {/* Dugmad gore desno */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-
+          <div className="flex flex-wrap justify-end items-center gap-2 flex-shrink-0 max-w-[200px] sm:max-w-none">
             {/* View toggle */}
             <div className="flex border border-gray-200 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView('grid')}
                 className={`hidden sm:block px-3 py-1.5 text-xs font-medium transition-colors
-                  ${view === 'grid'
+        ${view === 'grid'
                     ? 'bg-gray-900 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'}`}
               >
@@ -241,7 +300,7 @@ useEffect(() => {
               <button
                 onClick={() => setView('list')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors
-                  ${view === 'list'
+        ${view === 'list'
                     ? 'bg-gray-900 text-white'
                     : 'bg-white text-gray-600 hover:bg-gray-50'}`}
               >
@@ -249,24 +308,29 @@ useEffect(() => {
               </button>
             </div>
 
-            {/* Download */}
             <button
               onClick={downloadPNG}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-                         rounded-lg bg-white hover:bg-gray-50 transition-colors"
+               rounded-lg bg-white hover:bg-gray-50 transition-colors"
             >
-              ↓ Preuzmi
+              ↓ Slika
             </button>
 
-            {/* Nazad */}
+            <button
+              onClick={() => { downloadICS(); setShowIcsHelp(true) }}
+              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+             rounded-lg bg-white hover:bg-gray-50 transition-colors"
+            >
+              Izvezi u Google kalendar
+            </button>
+
             <button
               onClick={() => router.push('/')}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-                         rounded-lg bg-white hover:bg-gray-50 transition-colors"
+               rounded-lg bg-white hover:bg-gray-50 transition-colors"
             >
               ← Nazad
             </button>
-
           </div>
         </div>
 
@@ -377,6 +441,54 @@ useEffect(() => {
         )}
 
       </div>
+      {/* ICS tutorial modal */}
+      {showIcsHelp && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-end sm:items-center
+               justify-center z-50 px-4 pb-4 sm:pb-0"
+          onClick={() => setShowIcsHelp(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 w-full max-w-sm"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-base font-semibold text-gray-900 mb-4">
+              Kako dodati u kalendar
+            </h2>
+
+            <div className="space-y-4 text-sm text-gray-600">
+              <div className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                           flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                <p>Fajl <strong className="text-gray-900">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                           flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                <p>Otvori <strong className="text-gray-900">Google Calendar</strong> na računaru ili telefonu.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                           flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                <p>Na računaru: klikni <strong className="text-gray-900">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                           flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                <p>Na telefonu: pronađi fajl u Downloads i klikni na njega — kalendar će se otvoriti automatski.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowIcsHelp(false)}
+              className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium
+                   bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+            >
+              Razumeo
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
