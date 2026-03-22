@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
-
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -45,34 +44,38 @@ function useSubjectColors(entries: ScheduleEntry[]) {
 export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [view, setView] = useState<'grid' | 'list'>(() => (
+    typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : 'grid'
+  ))
   const [showIcsHelp, setShowIcsHelp] = useState(false)
+  const isHydrated = useSyncExternalStore(
+    () => () => { },
+    () => true,
+    () => false
+  )
+  const meta = isHydrated
+    ? {
+      group: sessionStorage.getItem('fon_group') ?? '',
+      year: sessionStorage.getItem('fon_year') ?? '',
+      lastName: sessionStorage.getItem('fon_lastName') ?? '',
+      semester: sessionStorage.getItem('fon_semester') ?? '',
+      program: sessionStorage.getItem('fon_program') ?? '',
+    }
+    : { group: '', year: '', lastName: '', semester: '', program: '' }
 
   useEffect(() => {
-    if (window.innerWidth < 640) setView('list')
-  }, [])
-  const [meta, setMeta] = useState({ group: '', lastName: '', semester: '', program: '' })
+    if (!isHydrated) return
 
-  useEffect(() => {
-    const group = sessionStorage.getItem('fon_group')
-    const year = sessionStorage.getItem('fon_year')
-    const lastName = sessionStorage.getItem('fon_lastName') ?? ''
-    const semester = sessionStorage.getItem('fon_semester') ?? ''
-    const program = sessionStorage.getItem('fon_program') ?? ''
-
-    if (!group || !year) {
+    if (!meta.group || !meta.year) {
       router.replace('/')
       return
     }
 
-    setMeta({ group, lastName, semester, program })
-
-    fetch(`/data/${year}god.json`)
+    fetch(`/data/${meta.year}god.json`)
       .then(r => r.json())
       .then((data: SemesterData) => {
-        const all = getScheduleForGroup(data, group)
-        const saved = localStorage.getItem(`fon_subjects_${group}`)
+        const all = getScheduleForGroup(data, meta.group)
+        const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
         if (saved) {
           const checked: Record<string, boolean> = JSON.parse(saved)
           setEntries(all.filter(e => checked[e.subject] !== false))
@@ -80,8 +83,14 @@ export default function RasporedPage() {
           setEntries(all)
         }
       })
-      .finally(() => setLoading(false))
-  }, [router])
+  }, [isHydrated, meta.group, meta.year, router])
+
+  function toggleTheme() {
+    const root = document.documentElement
+    const willBeDark = !root.classList.contains('dark')
+    root.classList.toggle('dark', willBeDark)
+    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+  }
 
   const colorMap = useSubjectColors(entries)
   function downloadPNG() {
@@ -252,12 +261,12 @@ export default function RasporedPage() {
       lines.push(`LOCATION:Sala ${e.room}`)
       lines.push(`DESCRIPTION:Grupa ${meta.group}`)
       const now = new Date()
-const isLetnji = now.getMonth() >= 1 && now.getMonth() <= 7
-const endDate = isLetnji
-  ? `${now.getFullYear()}0630T235959Z`
-  : `${now.getFullYear()}0131T235959Z`
+      const isLetnji = now.getMonth() >= 1 && now.getMonth() <= 7
+      const endDate = isLetnji
+        ? `${now.getFullYear()}0630T235959Z`
+        : `${now.getFullYear()}0131T235959Z`
 
-lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
+      lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
       lines.push('END:VEVENT')
     })
 
@@ -271,14 +280,14 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">{meta.lastName}</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{meta.lastName}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               {meta.program && `${meta.program} · `}
               Grupa {meta.group} · {meta.semester}
             </p>
@@ -287,13 +296,13 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
           {/* Dugmad gore desno */}
           <div className="flex flex-wrap justify-end items-center gap-2 flex-shrink-0 max-w-[200px] sm:max-w-none">
             {/* View toggle */}
-            <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+            <div className="flex border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => setView('grid')}
                 className={`hidden sm:block px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'grid'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
               >
                 Sedmica
               </button>
@@ -301,8 +310,8 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
                 onClick={() => setView('list')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'list'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
               >
                 Lista
               </button>
@@ -311,7 +320,8 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
             <button
               onClick={downloadPNG}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-               rounded-lg bg-white hover:bg-gray-50 transition-colors"
+               rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               ↓ Slika
             </button>
@@ -319,15 +329,26 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
             <button
               onClick={() => { downloadICS(); setShowIcsHelp(true) }}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-             rounded-lg bg-white hover:bg-gray-50 transition-colors"
+             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Izvezi u Google kalendar
             </button>
 
             <button
+              onClick={toggleTheme}
+              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              <span className="dark:hidden">🌙</span>
+              <span className="hidden dark:inline">🔅</span>
+            </button>
+            <button
               onClick={() => router.push('/')}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-               rounded-lg bg-white hover:bg-gray-50 transition-colors"
+               rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               ← Nazad
             </button>
@@ -344,7 +365,7 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
                 <div className="grid gap-1 mb-1" style={{ gridTemplateColumns: '56px repeat(5, 1fr)' }}>
                   <div />
                   {DAYS.map(d => (
-                    <div key={d} className="text-center text-xs font-medium text-gray-500 py-1">
+                    <div key={d} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-1">
                       {DAY_SHORT[d]}
                     </div>
                   ))}
@@ -357,13 +378,13 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
                     className="grid gap-1 mb-1"
                     style={{ gridTemplateColumns: '56px repeat(5, 1fr)' }}
                   >
-                    <div className="text-right pr-2 pt-1.5 text-xs text-gray-400 leading-tight">
+                    <div className="text-right pr-2 pt-1.5 text-xs text-gray-400 dark:text-gray-500 leading-tight">
                       {slot}
                     </div>
                     {DAYS.map(day => {
                       const cell = entries.filter(e => e.day === day && e.start === slot)
                       if (!cell.length) {
-                        return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 border-0 outline-none" />
+                        return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border-0 outline-none" />
                       }
                       return (
                         <div key={day} className="flex flex-col gap-1">
@@ -403,8 +424,8 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
 
               return (
                 <div key={day}>
-                  <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider
-                                 mb-2 pb-2 border-b border-gray-200">
+                  <h2 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider
+                                 mb-2 pb-2 border-b border-gray-200 dark:border-gray-800">
                     {day}
                   </h2>
                   <div className="space-y-1">
@@ -413,17 +434,17 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
                       return (
                         <div
                           key={i}
-                          className="flex items-center gap-3 py-2.5 border-b border-gray-100"
+                          className="flex items-center gap-3 py-2.5 border-b border-gray-100 dark:border-gray-800"
                         >
-                          <span className="text-xs text-gray-400 w-24 flex-shrink-0">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 w-24 flex-shrink-0">
                             {SLOT_LABEL[e.start]}
                           </span>
                           <div className={`w-1 self-stretch rounded-full`} style={{ background: c.bar }} />
                           <div className="flex-1 min-w-0">
-                            <span className="text-sm text-gray-900 block truncate">
+                            <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">
                               {e.subject}
                             </span>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-gray-400 dark:text-gray-500">
                               {e.room}
                             </span>
                           </div>
@@ -449,31 +470,31 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
           onClick={() => setShowIcsHelp(false)}
         >
           <div
-            className="bg-white rounded-2xl p-6 w-full max-w-sm"
+            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 w-full max-w-sm"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-base font-semibold text-gray-900 mb-4">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Kako dodati u kalendar
             </h2>
 
-            <div className="space-y-4 text-sm text-gray-600">
+            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
                            flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
-                <p>Fajl <strong className="text-gray-900">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
+                <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
               </div>
               <div className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
                            flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                <p>Otvori <strong className="text-gray-900">Google Calendar</strong> na računaru ili telefonu.</p>
+                <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
               </div>
               <div className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
                            flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
-                <p>Na računaru: klikni <strong className="text-gray-900">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
+                <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
               </div>
               <div className="flex gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-900 text-white text-xs
+                <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
                            flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
                 <p>Na telefonu: pronađi fajl u Downloads i klikni na njega — kalendar će se otvoriti automatski.</p>
               </div>
@@ -482,7 +503,8 @@ lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
             <button
               onClick={() => setShowIcsHelp(false)}
               className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium
-                   bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+                   bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900
+                   dark:hover:bg-gray-200 transition-colors"
             >
               Razumeo
             </button>

@@ -7,17 +7,17 @@ import { getScheduleForGroup } from '@/lib/schedule'
 
 export default function IzbornoPage() {
   const router = useRouter()
+  const [group] = useState(() => (typeof window === 'undefined'
+    ? ''
+    : sessionStorage.getItem('fon_group') ?? ''))
+  const [year] = useState(() => (typeof window === 'undefined'
+    ? ''
+    : sessionStorage.getItem('fon_year') ?? ''))
   const [subjects, setSubjects] = useState<string[]>([])
   const [checked, setChecked] = useState<Record<string, boolean>>({})
-  const [meta, setMeta] = useState({ group: '', year: '' })
 
   useEffect(() => {
-    const group = sessionStorage.getItem('fon_group')
-    const year  = sessionStorage.getItem('fon_year')
-
     if (!group || !year) { router.replace('/'); return }
-
-    setMeta({ group, year })
 
     fetch(`/data/${year}god.json`)
       .then(r => r.json())
@@ -36,26 +36,26 @@ export default function IzbornoPage() {
           setChecked(all)
         }
       })
-  }, [router])
+  }, [group, router, year])
 
   function toggle(subject: string) {
     setChecked(prev => ({ ...prev, [subject]: !prev[subject] }))
   }
 
   function handleConfirm() {
-    localStorage.setItem(`fon_subjects_${meta.group}`, JSON.stringify(checked))
+    localStorage.setItem(`fon_subjects_${group}`, JSON.stringify(checked))
     router.push('/raspored')
   }
 
   const checkedCount = Object.values(checked).filter(Boolean).length
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
 
         <div className="mb-6">
-          <h1 className="text-xl font-semibold text-gray-900">Tvoji predmeti</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Odčekiraj predmete koje ne slušaš
           </p>
         </div>
@@ -65,15 +65,15 @@ export default function IzbornoPage() {
             <label
               key={subject}
               className="flex items-center gap-3 py-2.5 px-2 rounded-lg
-                         hover:bg-gray-50 cursor-pointer transition-colors"
+                         hover:bg-gray-50 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
             >
               <input
                 type="checkbox"
                 checked={checked[subject] ?? true}
                 onChange={() => toggle(subject)}
-                className="w-4 h-4 rounded accent-gray-900 flex-shrink-0"
+                className="w-4 h-4 rounded accent-gray-900 dark:accent-gray-200 flex-shrink-0"
               />
-              <span className={`text-sm ${checked[subject] ? 'text-gray-900' : 'text-gray-400 line-through'}`}>
+              <span className={`text-sm ${checked[subject] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
                 {subject}
               </span>
             </label>
@@ -81,7 +81,7 @@ export default function IzbornoPage() {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 dark:text-gray-500">
             {checkedCount} od {subjects.length} predmeta
           </span>
           <button
@@ -89,8 +89,8 @@ export default function IzbornoPage() {
             disabled={checkedCount === 0}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${checkedCount > 0
-                ? 'bg-gray-900 text-white hover:bg-gray-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                ? 'bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
           >
             Prikaži raspored →
           </button>
