@@ -1,0 +1,1838 @@
+{
+  "semester": "Letnji 2025/26",
+  "year": 4,
+  "groups": {
+    "D1": {
+      "program": "Informacioni sistemi",
+      "range": "Svi"
+    },
+    "D2": {
+      "program": "Informacione tehnologije",
+      "range": "Svi"
+    },
+    "D3": {
+      "program": "Softversko inženjerstvo",
+      "range": "Svi"
+    },
+    "D4": {
+      "program": "Tehnologije elektronskog poslovanja",
+      "range": "Svi"
+    },
+    "D5": {
+      "program": "Poslovna analitika",
+      "range": "Svi"
+    },
+    "D6": {
+      "program": "Informaciono inženjerstvo",
+      "range": "Svi"
+    },
+    "D11": {
+      "program": "Finansijski menadžment",
+      "range": "Svi"
+    },
+    "D13": {
+      "program": "Lin organizacija poslovanja",
+      "range": "Svi"
+    },
+    "D15": {
+      "program": "Menadžment kvaliteta i standardizacija",
+      "range": "Svi"
+    },
+    "D17": {
+      "program": "Marketing menadžment i komunikacije",
+      "range": "Svi"
+    },
+    "D19": {
+      "program": "Operacioni menadžment",
+      "range": "Svi"
+    },
+    "D21": {
+      "program": "Projektni menadžment",
+      "range": "Svi"
+    }
+  },
+  "entries": [
+    {
+      "day": "Ponedeljak",
+      "subject": "Zaštita računarskih sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C2",
+        "C3",
+        "D6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Preduzetničko upravljanje malim i srednjim preduzećima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "12"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje repozitorijuma podataka",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "61"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Organizacija specijalnih događaja",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Poslovni informacioni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D5",
+        "D15"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Trening i razvoj",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17",
+        "C18",
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "16"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Zaštita računarskih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2",
+        "C3",
+        "D6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje repozitorijuma podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "61"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Poslovni informacioni sistemi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "D1",
+        "D5",
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "30"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Organizacija specijalnih događaja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Ocena kvaliteta poslovnog sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Preduzetničko upravljanje malim i srednjim preduzećima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Trening i razvoj",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C17",
+        "C18",
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "16"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "14"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje lancima snabdevanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Softverski alati",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Mašinsko učenje",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D6"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "60"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Ocena kvaliteta poslovnog sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment proizvodnje i pružanja usluga",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15",
+        "D19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Mašinsko učenje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6",
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "60"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Softverski alati",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje inovacijama",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje lancima snabdevanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Kvalitet u IT",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D2"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "17"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Akreditacija i sertifikacija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Kvalitet u IT",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "17"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Simulacija u poslovnom odlučivanju",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D5",
+        "D6",
+        "D11",
+        "D13",
+        "D17",
+        "D21"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Akreditacija i sertifikacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Međunarodni marketing",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "12"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Engleski jezik u menadžmentu 2",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11",
+        "D15"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Engleski jezik u menadžmentu 2",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Metodologija izrade IT projekta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D2"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "07"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Međunarodni marketing",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Mikroservisna arhitektura IS",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljanje održavanjem",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Analitika performansi - osnovni koncepti",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D3",
+        "D5",
+        "D11",
+        "D19",
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Investiciono bankarstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Multimediji",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Metodologija izrade IT projekta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljanje održavanjem",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Multimediji",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "40"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Mikroservisna arhitektura IS",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Analitika performansi - osnovni koncepti",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D3",
+        "D5",
+        "D11",
+        "D19",
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Funkcionalni jezici",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13",
+        "D17",
+        "D19",
+        "D21"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Analiza podataka",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3",
+        "D5",
+        "D6",
+        "D13"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "18"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Razvoj mobilnih aplikacija i servisa - projekat",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Funkcionalni jezici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Poslovna inteligencija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13",
+        "D17",
+        "D19",
+        "D21"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Analiza podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3",
+        "D5",
+        "D6",
+        "D13"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Analiza podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3",
+        "D5",
+        "D6",
+        "D13"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Razvoj mobilnih aplikacija i servisa - projekat",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Neuronske mreže",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D2",
+        "D6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "21"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekološki menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13",
+        "D15",
+        "D21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Virtuelna realnost i računarska simulacija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "11"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Interpersonalne veštine u organizaciji",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Virtuelna realnost i računarska simulacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekološki menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Utvrđivanje normativa rada i učinka",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "20"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Neuronske mreže",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2",
+        "D6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "61"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Interpersonalne veštine u organizaciji",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekološki menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Modeli i indikatori poboljšavanja kvaliteta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Modeli i indikatori poboljšavanja kvaliteta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "08"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Poslovno pregovaranje i veštine komunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Utvrđivanje normativa rada i učinka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "12"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Duboko učenje i neuronske mreže",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Dizajn korisničkog interfejsa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Modeli i indikatori poboljšavanja kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Poslovno pregovaranje i veštine komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Engleski jezik za akademske namene",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "19"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Modeli i indikatori poboljšavanja kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13",
+        "B14",
+        "D2",
+        "D4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje inovacijama",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "C19",
+        "D17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Duboko učenje i neuronske mreže",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Dizajn korisničkog interfejsa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "07"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Engleski jezik za akademske namene",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "19"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Odabrana poglavlja iz IS",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Napredne .NET tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Medijske komunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "20"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Medijske komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Odabrana poglavlja iz IS",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D6"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B17",
+        "D1",
+        "D3",
+        "D5",
+        "D6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "21"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Analiza pouzdanosti i rizika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D5",
+        "D15",
+        "D19"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija igara",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17",
+        "D21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Uvod u menadžment elektronskog poslovanja",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Napredne .NET tehnologije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Investiciono bankarstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Rukovođenje i liderstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "20"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija igara",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17",
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Analiza pouzdanosti i rizika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5",
+        "D15",
+        "D19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Uvod u menadžment elektronskog poslovanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnovi kvaliteta softvera",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "40"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Simulacija u poslovnom odlučivanju",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5",
+        "D6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "60"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Mobilno računarstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Simulacioni modeli u finansijama",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11",
+        "D13",
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment proizvodnje i pružanja usluga",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C17",
+        "C18",
+        "D15",
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnovi kvaliteta softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Rukovođenje i liderstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Simulacioni modeli u finansijama",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D13",
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Mobilno računarstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "50"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Simulacija u poslovnom odlučivanju",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D13",
+        "D17",
+        "D21"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Preduzetništvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "D5",
+        "D6",
+        "D21"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Mobilno računarstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "50"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Simulacija u poslovnom odlučivanju",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D13",
+        "D17",
+        "D21"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Ekonometrijski modeli i predviđanje",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D5",
+        "D6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "19"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Ekonometrijski modeli i predviđanje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5",
+        "D6"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "19"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Preduzetništvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13",
+        "D5",
+        "D6",
+        "D21"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet inteligentnih uređaja",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "11"
+    },
+    {
+      "day": "Petak",
+      "subject": "Poslovna analitika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D6",
+        "D13",
+        "D15",
+        "D17",
+        "D21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove računarske inteligencije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D5",
+        "D6",
+        "D11",
+        "D17"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet inteligentnih uređaja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove računarske inteligencije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5",
+        "D6",
+        "D11",
+        "D17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "40"
+    },
+    {
+      "day": "Petak",
+      "subject": "Poslovna analitika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6",
+        "D13",
+        "D15",
+        "D17",
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija igara",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Petak",
+      "subject": "Marketing logistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C17",
+        "C18",
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "16"
+    },
+    {
+      "day": "Petak",
+      "subject": "Vrednovanje preduzeća",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Petak",
+      "subject": "Strateški menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Ekološki menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13",
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "15"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija igara",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Petak",
+      "subject": "Vrednovanje preduzeća",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "18"
+    },
+    {
+      "day": "Petak",
+      "subject": "Pravne osnove informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Petak",
+      "subject": "Strateški menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Poslovno pravo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C17",
+        "C18",
+        "D11",
+        "D21"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "06"
+    },
+    {
+      "day": "Petak",
+      "subject": "Marketing logistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17",
+        "C18",
+        "D19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Petak",
+      "subject": "Pravne osnove informacionih sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "20"
+    },
+    {
+      "day": "Petak",
+      "subject": "Poslovno pravo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17",
+        "C18",
+        "D11",
+        "D21"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "06"
+    },
+    {
+      "day": "Petak",
+      "subject": "Eko-marketing",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "16"
+    },
+    {
+      "day": "Petak",
+      "subject": "Eko-marketing",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "16"
+    }
+  ]
+}

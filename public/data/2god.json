@@ -1,0 +1,1688 @@
+{
+  "semester": "Letnji 2025/26",
+  "year": 2,
+  "groups": {
+    "B1": {
+      "program": "Informacioni sistemi",
+      "range": "Svi"
+    },
+    "B2": {
+      "program": "Informacione tehnologije",
+      "range": "A- - Lekić"
+    },
+    "B3": {
+      "program": "Informacione tehnologije",
+      "range": "Lojković - Š-"
+    },
+    "B4": {
+      "program": "Softversko inženjerstvo",
+      "range": "A- - Miloradović"
+    },
+    "B5": {
+      "program": "Softversko inženjerstvo",
+      "range": "Milosavljević - Š-"
+    },
+    "B6": {
+      "program": "Tehnologije elektronskog poslovanja",
+      "range": "Svi"
+    },
+    "B8": {
+      "program": "Poslovna analitika",
+      "range": "Svi"
+    },
+    "B9": {
+      "program": "Informaciono inženjerstvo",
+      "range": "Svi"
+    },
+    "B11": {
+      "program": "MiO",
+      "range": "A- - Galić"
+    },
+    "B12": {
+      "program": "MiO",
+      "range": "Gvozdenović - Ivanov"
+    },
+    "B13": {
+      "program": "MiO",
+      "range": "Ivanović - Laban"
+    },
+    "B14": {
+      "program": "MiO",
+      "range": "Lazarević - Miljković"
+    },
+    "B15": {
+      "program": "MiO",
+      "range": "Mirković - Pešić"
+    },
+    "B16": {
+      "program": "MiO",
+      "range": "Piplović - Starčević"
+    },
+    "B17": {
+      "program": "MiO",
+      "range": "Stevanović - Š-"
+    }
+  },
+  "entries": [
+    {
+      "day": "Ponedeljak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4",
+        "B5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4",
+        "B5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "21"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5",
+        "B6",
+        "B9"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Baze podataka",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Baze podataka",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5",
+        "B6",
+        "B9"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5",
+        "B6",
+        "B9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Statistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Statistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5",
+        "B6",
+        "B9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "50"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "40"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "50"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Standardizacija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Standardizacija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Statistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Statistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "50"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "60"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "40"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "14"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B8",
+        "B9"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5",
+        "B6",
+        "B9"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13",
+        "B14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1",
+        "B4",
+        "B5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B15"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "18"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B8",
+        "B9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Finansijski menadžment i računovodstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13",
+        "B14",
+        "D2",
+        "D4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B12"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "13"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B12"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B8"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "08"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "18"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "14"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B8"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B15",
+        "B16",
+        "B17"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "18"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "08"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "17"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B15"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B17",
+        "D1",
+        "D3",
+        "D5",
+        "D6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "21"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "61"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B16"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B16"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "15"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Inženjering procesa (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B16"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B12"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "14"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Ekonomika poslovanja i planiranje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11",
+        "B12",
+        "B15",
+        "B16"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Klijentske veb tehnologije i skriptni jezici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "61"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B11",
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Petak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Klijentske veb tehnologije i skriptni jezici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "60"
+    },
+    {
+      "day": "Petak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Uvod u poslovnu analitiku",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B8"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "14"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Strukture podataka i algoritmi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Interakcija čovek-računar",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B2",
+        "B3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programiranje 2 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "19"
+    },
+    {
+      "day": "Petak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11",
+        "B12"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programiranje 2 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "07"
+    },
+    {
+      "day": "Petak",
+      "subject": "Klijentske veb tehnologije i skriptni jezici",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "17"
+    },
+    {
+      "day": "Petak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Petak",
+      "subject": "Interakcija čovek-računar",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2",
+        "B3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Baze podataka",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B12"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programiranje 2 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "14"
+    },
+    {
+      "day": "Petak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "60"
+    },
+    {
+      "day": "Petak",
+      "subject": "Standardizacija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programiranje 2 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "19"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programiranje 2 (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B4",
+        "B5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programski jezici za analitiku",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Statistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B16",
+        "B17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Petak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programski jezici za analitiku",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Cloud infrastruktura i servisi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Jezici i okruženja za razvoj IS",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Programski jezici za analitiku",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Jezici i okruženja za razvoj IS",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "62"
+    }
+  ]
+}
