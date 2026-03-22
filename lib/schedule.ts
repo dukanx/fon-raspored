@@ -29,7 +29,7 @@ function nameInRange(lastName: string, range: string): boolean {
 
   // "A-" znači od početka azbuke, "Š-" znači do kraja
   const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
-  const beforeTo  = to   === 'Š-' ? true : compareNames(lastName, to)   <= 0
+  const beforeTo = to === 'Š-' ? true : compareNames(lastName, to) <= 0
 
   return afterFrom && beforeTo
 }
@@ -39,14 +39,33 @@ function nameInRange(lastName: string, range: string): boolean {
 export function findGroup(
   data: SemesterData,
   lastName: string,
-  program: string | null  // null za 1. godinu
+  program: string | null
 ): string | null {
   for (const [groupId, groupInfo] of Object.entries(data.groups)) {
-    // Za 1. godinu ne filtriramo po programu
-    const programMatches =
-      program === null || groupInfo.program === program
+    let programMatches = false
+    let rangeMatches = false
 
-    if (programMatches && nameInRange(lastName, groupInfo.range)) {
+    // Detektuj specijalni format prve godine:
+    // program = "ISiT A-", range = "Vidanović"
+    const programParts = groupInfo.program.split(' ')
+    const baseProgram = programParts[0]
+    const hasFromInProgram = programParts.length > 1
+
+    if (hasFromInProgram) {
+      // Prva godina — "od" je u program polju, "do" je u range polju
+      programMatches = program === null || baseProgram === program
+      const from = programParts.slice(1).join(' ')
+      const to = groupInfo.range
+      const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
+      const beforeTo = to === 'Š-' ? true : compareNames(lastName, to) <= 0
+      rangeMatches = afterFrom && beforeTo
+    } else {
+      // Normalan format
+      programMatches = program === null || groupInfo.program === program
+      rangeMatches = nameInRange(lastName, groupInfo.range)
+    }
+
+    if (programMatches && rangeMatches) {
       return groupId
     }
   }
@@ -66,7 +85,11 @@ export function getScheduleForGroup(
 export function getProgramsForYear(data: SemesterData): string[] {
   const programs = new Set<string>()
   for (const group of Object.values(data.groups)) {
-    if (group.program) programs.add(group.program)
+    if (group.program) {
+      // Za prvu godinu program može biti "ISiT Prezime" - uzmi samo prvu reč
+      const base = group.program.split(' ')[0]
+      programs.add(base)
+    }
   }
   return Array.from(programs).sort()
 }

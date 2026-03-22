@@ -8,13 +8,13 @@ import { findGroup, getProgramsForYear } from '@/lib/schedule'
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const [year, setYear]         = useState<number | null>(null)
-  const [program, setProgram]   = useState<string>('')
+  const [year, setYear] = useState<number | null>(null)
+  const [program, setProgram] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
-  const [data, setData]         = useState<SemesterData | null>(null)
+  const [data, setData] = useState<SemesterData | null>(null)
   const [programs, setPrograms] = useState<string[]>([])
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Učitaj JSON kad se odabere godina
   useEffect(() => {
@@ -24,7 +24,8 @@ export default function OnboardingPage() {
       .then(r => r.json())
       .then((d: SemesterData) => {
         setData(d)
-        setPrograms(year === 1 ? [] : getProgramsForYear(d))
+        setPrograms(getProgramsForYear(d))
+
       })
       .catch(() => setError('Greška pri učitavanju podataka.'))
       .finally(() => setLoading(false))
@@ -45,7 +46,7 @@ export default function OnboardingPage() {
     const groupId = findGroup(
       data,
       lastName.trim(),
-      year === 1 ? null : program || null
+      program || null
     )
 
     if (!groupId) {
@@ -54,8 +55,8 @@ export default function OnboardingPage() {
     }
 
     // Sačuvaj u sessionStorage pa redirectuj
-    sessionStorage.setItem('fon_group',    groupId)
-    sessionStorage.setItem('fon_year',     String(year))
+    sessionStorage.setItem('fon_group', groupId)
+    sessionStorage.setItem('fon_year', String(year))
     sessionStorage.setItem('fon_lastName', lastName.trim())
     sessionStorage.setItem('fon_semester', data.semester)
     if (program) sessionStorage.setItem('fon_program', program)
@@ -64,10 +65,10 @@ export default function OnboardingPage() {
   }
 
   const canSubmit =
-    year !== null &&
-    lastName.trim().length > 1 &&
-    (year === 1 || program !== '') &&
-    !loading
+  year !== null &&
+  lastName.trim().length > 1 &&
+  program !== '' &&
+  !loading
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -103,7 +104,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Smer - samo za 2., 3., 4. godinu */}
-        {year && year > 1 && (
+        {year && (
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Studijski program
