@@ -1,22 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 
 export default function IzbornoPage() {
   const router = useRouter()
-  const [group] = useState(() => (typeof window === 'undefined'
-    ? ''
-    : sessionStorage.getItem('fon_group') ?? ''))
-  const [year] = useState(() => (typeof window === 'undefined'
-    ? ''
-    : sessionStorage.getItem('fon_year') ?? ''))
+  const isHydrated = useSyncExternalStore(
+    () => () => { },
+    () => true,
+    () => false
+  )
+  const group = isHydrated ? (sessionStorage.getItem('fon_group') ?? '') : ''
+  const year = isHydrated ? (sessionStorage.getItem('fon_year') ?? '') : ''
   const [subjects, setSubjects] = useState<string[]>([])
   const [checked, setChecked] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
+    if (!isHydrated) return
     if (!group || !year) { router.replace('/'); return }
 
     fetch(`/data/${year}god.json`)
@@ -36,7 +38,7 @@ export default function IzbornoPage() {
           setChecked(all)
         }
       })
-  }, [group, router, year])
+  }, [group, isHydrated, router, year])
 
   function toggle(subject: string) {
     setChecked(prev => ({ ...prev, [subject]: !prev[subject] }))

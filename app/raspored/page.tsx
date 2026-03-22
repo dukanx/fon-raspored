@@ -10,6 +10,7 @@ const DAY_SHORT: Record<DayOfWeek, string> = {
   Ponedeljak: 'Pon', Utorak: 'Uto', Sreda: 'Sre', Četvrtak: 'Čet', Petak: 'Pet'
 }
 
+
 const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15–10:00',
@@ -44,15 +45,23 @@ function useSubjectColors(entries: ScheduleEntry[]) {
 export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
-  const [view, setView] = useState<'grid' | 'list'>(() => (
-    typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : 'grid'
-  ))
+  const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
+  const isMobile = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') return () => { }
+      window.addEventListener('resize', onStoreChange)
+      return () => window.removeEventListener('resize', onStoreChange)
+    },
+    () => window.innerWidth < 640,
+    () => false
+  )
   const isHydrated = useSyncExternalStore(
     () => () => { },
     () => true,
     () => false
   )
+  const view: 'grid' | 'list' = manualView ?? (isMobile ? 'list' : 'grid')
   const meta = isHydrated
     ? {
       group: sessionStorage.getItem('fon_group') ?? '',
@@ -284,7 +293,7 @@ export default function RasporedPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-6 gap-4">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{meta.lastName}</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -293,13 +302,74 @@ export default function RasporedPage() {
             </p>
           </div>
 
-          {/* Dugmad gore desno */}
-          <div className="flex flex-wrap justify-end items-center gap-2 flex-shrink-0 max-w-[200px] sm:max-w-none">
-            {/* View toggle */}
-            <div className="flex border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          {/* Mobile controls */}
+          <div className="grid w-full grid-cols-2 gap-2 sm:hidden">
+            <button
+              onClick={() => setManualView('list')}
+              className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-medium transition-colors
+              ${view === 'list'
+                  ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+            >
+              Lista
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Promeni temu"
+            >
+              <span className="dark:hidden">🌙</span>
+              <span className="hidden dark:inline">🔅</span>
+            </button>
+
+            <button
+              onClick={downloadPNG}
+              className="col-span-2 inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              ↓ Slika
+            </button>
+
+            <button
+              onClick={() => { downloadICS(); setShowIcsHelp(true) }}
+              className="col-span-2 inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Izvezi u kalendar ↗
+            </button>
+
+            <button
+              onClick={() => router.push('/')}
+              className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              ← Nazad
+            </button>
+
+            <a
+              href="https://oas.fon.bg.ac.rs/raspored-nastave/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-lg border border-blue-200 dark:border-blue-900 px-3 py-2 text-xs font-medium
+              text-blue-700 dark:text-blue-300 bg-blue-50/70 dark:bg-blue-950/40
+              hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            >
+              FON →
+            </a>
+          </div>
+
+          {/* Desktop controls */}
+          <div className="hidden sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end sm:gap-2">
+            <div className="flex overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <button
-                onClick={() => setView('grid')}
-                className={`hidden sm:block px-3 py-1.5 text-xs font-medium transition-colors
+                onClick={() => setManualView('grid')}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'grid'
                     ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
@@ -307,7 +377,7 @@ export default function RasporedPage() {
                 Sedmica
               </button>
               <button
-                onClick={() => setView('list')}
+                onClick={() => setManualView('list')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'list'
                     ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
@@ -319,7 +389,7 @@ export default function RasporedPage() {
 
             <button
               onClick={downloadPNG}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -328,25 +398,39 @@ export default function RasporedPage() {
 
             <button
               onClick={() => { downloadICS(); setShowIcsHelp(true) }}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izvezi u Google kalendar
+              Izvezi u kalendar
             </button>
 
             <button
               onClick={toggleTheme}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Promeni temu"
             >
               <span className="dark:hidden">🌙</span>
               <span className="hidden dark:inline">🔅</span>
             </button>
+
+            <a
+              href="https://oas.fon.bg.ac.rs/raspored-nastave/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
+             text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900
+             rounded-lg bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50
+             transition-colors"
+            >
+              FON →
+            </a>
+
             <button
               onClick={() => router.push('/')}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -412,7 +496,7 @@ export default function RasporedPage() {
           </div>
         )}
 
-        {/* Lista - uvek dostupna, default na mobilnom */}
+         {/* Lista - uvek dostupna, default na mobilnom */}
         {view === 'list' && (
           <div className="space-y-6">
             {DAYS.map(day => {

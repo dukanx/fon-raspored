@@ -2,20 +2,45 @@
 
 import type { SemesterData, ScheduleEntry } from './types'
 
-// Normalizuje prezime za poređenje: "Šarić" → "saric"
-function normalizeName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/š/g, 'sh').replace(/č/g, 'ch').replace(/ć/g, 'cy')
-    .replace(/ž/g, 'zh').replace(/đ/g, 'dj').replace(/dž/g, 'dz')
-    .replace(/lj/g, 'ly').replace(/nj/g, 'ny')
+const SR_MAP: Record<string, string> = {
+  'a':'01', 'b':'02', 'v':'03', 'g':'04', 'd':'05',
+  'đ':'06', 'e':'07', 'ž':'08', 'z':'09', 'i':'10',
+  'j':'11', 'k':'12', 'l':'13', 'lj':'14','m':'15',
+  'n':'16', 'nj':'17','o':'18', 'p':'19', 'r':'20',
+  's':'21', 't':'22', 'ć':'23', 'u':'24', 'f':'25',
+  'h':'26', 'c':'27', 'č':'28', 'dž':'29','š':'30',
 }
 
+function normalizeName(name: string): string {
+  let result = ''
+  let i = 0
+  const s = name.toLowerCase()
+  while (i < s.length) {
+    // Provjeri dvoslovne kombinacije prvo
+    const two = s.slice(i, i + 2)
+    if (SR_MAP[two]) {
+      result += SR_MAP[two]
+      i += 2
+    } else {
+      const one = s[i]
+      result += SR_MAP[one] ?? one
+      i++
+    }
+  }
+  return result
+}
 // Poredi dva prezimena po srpskoj latinici
 // Vraća negativan broj ako je a < b, pozitivan ako je a > b
+
 function compareNames(a: string, b: string): number {
-  return normalizeName(a).localeCompare(normalizeName(b), 'sr-Latn')
+  const na = normalizeName(a)
+  const nb = normalizeName(b)
+  if (na < nb) return -1
+  if (na > nb) return 1
+  return 0
 }
+
+
 
 // Proverava da li prezime pada u opseg "od - do"
 // range primeri: "Svi", "A- - Lekić", "Lojković - Š-"
@@ -27,9 +52,10 @@ function nameInRange(lastName: string, range: string): boolean {
 
   const [from, to] = parts
 
-  // "A-" znači od početka azbuke, "Š-" znači do kraja
   const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
-  const beforeTo = to === 'Š-' ? true : compareNames(lastName, to) <= 0
+  const beforeTo  = to   === 'Š-' ? true : compareNames(lastName, to)   <= 0
+
+  console.log(`nameInRange(${lastName}, ${range}): afterFrom=${afterFrom} beforeTo=${beforeTo} compare=${compareNames(lastName, to)}`)
 
   return afterFrom && beforeTo
 }
@@ -40,14 +66,30 @@ export function findGroup(
   lastName: string,
   program: string | null
 ): string | null {
-  for (const [groupId, groupInfo] of Object.entries(data.groups)) {
-    const programMatches =
-      program === null || groupInfo.program === program
+  console.log('compare Đurđević vs Đurđević:', compareNames('Đurđević', 'Đurđević'))
+console.log('normalized Đurđević:', normalizeName('Đurđević'))
+  const candidates = Object.entries(data.groups).filter(([, g]) => {
+    return program === null || g.program === program
+  })
 
-    if (programMatches && nameInRange(lastName, groupInfo.range)) {
-      return groupId
+  const sorted = candidates.sort(([, a], [, b]) => {
+    const getFrom = (range: string) => {
+      if (range === 'Svi') return ''
+      const parts = range.split(' - ')
+      return parts[0] === 'A-' ? '' : parts[0]
     }
+    return compareNames(getFrom(b.range), getFrom(a.range))
+  })
+
+  console.log('Sorted groups:')
+  sorted.forEach(([id, g]) => console.log(`  ${id}: ${g.range}`))
+
+  for (const [groupId, groupInfo] of sorted) {
+    const matches = nameInRange(lastName, groupInfo.range)
+    console.log(`  ${groupId} ${groupInfo.range} -> ${matches}`)
+    if (matches) return groupId
   }
+
   return null
 }
 

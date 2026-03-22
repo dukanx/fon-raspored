@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
@@ -8,29 +8,37 @@ import { findGroup, getProgramsForYear } from '@/lib/schedule'
 export default function OnboardingPage() {
   const router = useRouter()
 
-  const [year, setYear] = useState<number | null>(() => {
-    if (typeof window === 'undefined') return null
-    const savedYear = localStorage.getItem('fon_saved_year')
-    return savedYear ? Number(savedYear) : null
-  })
-  const [program, setProgram] = useState<string>(() => {
-    if (typeof window === 'undefined') return ''
-    return localStorage.getItem('fon_saved_program') ?? ''
-  })
-  const [lastName, setLastName] = useState<string>(() => {
-    if (typeof window === 'undefined') return ''
-    return localStorage.getItem('fon_saved_lastName') ?? ''
-  })
+  const [year, setYear] = useState<number | null>(null)
+  const [program, setProgram] = useState<string | null>(null)
+  const [lastName, setLastName] = useState<string | null>(null)
   const [data, setData] = useState<SemesterData | null>(null)
   const [programs, setPrograms] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const isHydrated = useSyncExternalStore(
+    () => () => { },
+    () => true,
+    () => false
+  )
+
+  const storedYear = isHydrated
+    ? (() => {
+      const raw = localStorage.getItem('fon_saved_year')
+      if (!raw) return null
+      const parsed = Number(raw)
+      return Number.isFinite(parsed) ? parsed : null
+    })()
+    : null
+
+  const selectedYear = year ?? storedYear
+  const selectedProgram = program ?? (isHydrated ? (localStorage.getItem('fon_saved_program') ?? '') : '')
+  const enteredLastName = lastName ?? (isHydrated ? (localStorage.getItem('fon_saved_lastName') ?? '') : '')
 
   // Učitaj JSON kad se odabere godina
   useEffect(() => {
-    if (!year) return
+    if (!selectedYear) return
 
-    fetch(`/data/${year}god.json`)
+    fetch(`/data/${selectedYear}god.json`)
       .then(r => r.json())
       .then((d: SemesterData) => {
         setData(d)
@@ -39,7 +47,7 @@ export default function OnboardingPage() {
       })
       .catch(() => setError('Greška pri učitavanju podataka.'))
       .finally(() => setLoading(false))
-  }, [year])
+  }, [selectedYear])
 
   function handleYearSelect(selectedYear: number) {
     setYear(selectedYear)
@@ -50,13 +58,13 @@ export default function OnboardingPage() {
   }
 
   function handleSubmit() {
-    if (!data || !lastName.trim()) return
+    if (!data || !enteredLastName.trim() || selectedYear === null) return
     setError(null)
 
     const groupId = findGroup(
       data,
-      lastName.trim(),
-      program || null
+      enteredLastName.trim(),
+      selectedProgram || null
     )
 
     if (!groupId) {
@@ -66,21 +74,21 @@ export default function OnboardingPage() {
 
     // Sačuvaj u sessionStorage pa redirectuj
     sessionStorage.setItem('fon_group', groupId)
-    sessionStorage.setItem('fon_year', String(year))
-    sessionStorage.setItem('fon_lastName', lastName.trim())
+    sessionStorage.setItem('fon_year', String(selectedYear))
+    sessionStorage.setItem('fon_lastName', enteredLastName.trim())
     sessionStorage.setItem('fon_semester', data.semester)
-    if (program) sessionStorage.setItem('fon_program', program)
+    if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
 
-    localStorage.setItem('fon_saved_year', String(year))
-    localStorage.setItem('fon_saved_program', program)
-    localStorage.setItem('fon_saved_lastName', lastName.trim())
+    localStorage.setItem('fon_saved_year', String(selectedYear))
+    localStorage.setItem('fon_saved_program', selectedProgram)
+    localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
     router.push('/izborni')
   }
 
   const canSubmit =
-    year !== null &&
-    lastName.trim().length > 1 &&
-    program !== '' &&
+    selectedYear !== null &&
+    enteredLastName.trim().length > 1 &&
+    selectedProgram !== '' &&
     !loading
 
   return (
@@ -105,7 +113,7 @@ export default function OnboardingPage() {
                 key={y}
                 onClick={() => handleYearSelect(y)}
                 className={`py-2 rounded-lg text-sm font-medium border transition-colors
-                  ${year === y
+                  ${selectedYear === y
                     ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100'
                     : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
                   }`}
@@ -117,7 +125,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Smer - samo za 2., 3., 4. godinu */}
-        {year && (
+        {selectedYear && (
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Studijski program
@@ -126,7 +134,7 @@ export default function OnboardingPage() {
               <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
             ) : (
               <select
-                value={program}
+                value={selectedProgram}
                 onChange={e => setProgram(e.target.value)}
                 className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm
                            text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
@@ -143,14 +151,14 @@ export default function OnboardingPage() {
         )}
 
         {/* Prezime */}
-        {year && (
+        {selectedYear && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Prezime
             </label>
             <input
               type="text"
-              value={lastName}
+              value={enteredLastName}
               onChange={e => setLastName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && canSubmit && handleSubmit()}
               placeholder="npr. Petrović"
@@ -182,6 +190,39 @@ export default function OnboardingPage() {
         >
           Prikaži raspored
         </button>
+
+        {/* Fallback - ručni odabir grupe */}
+        {/* {year && data && (
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <p className="text-xs text-gray-400 text-center mb-3">
+              Znaš svoju grupu? Odaberi direktno
+            </p>
+            <select
+              onChange={e => {
+                if (!e.target.value) return
+                const groupId = e.target.value
+                sessionStorage.setItem('fon_group', groupId)
+                sessionStorage.setItem('fon_year', String(year))
+                sessionStorage.setItem('fon_lastName', lastName.trim() || groupId)
+                sessionStorage.setItem('fon_semester', data.semester)
+                if (program) sessionStorage.setItem('fon_program', program)
+                router.push('/izborni')
+              }}
+              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm
+                 text-gray-900 bg-white focus:outline-none focus:ring-2
+                 focus:ring-gray-900 focus:border-transparent"
+            >
+              <option value="">Odaberi grupu...</option>
+              {Object.entries(data.groups)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([id, g]) => (
+                  <option key={id} value={id}>
+                    {id} — {g.program} ({g.range})
+                  </option>
+                ))}
+            </select>
+          </div>
+        )} */}
 
       </div>
     </main>
