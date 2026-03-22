@@ -46,18 +46,19 @@ export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState<'grid' | 'list'>(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 640) return 'list'
-    return 'grid'
-  })
+  const [view, setView] = useState<'grid' | 'list'>('grid')
+
+useEffect(() => {
+  if (window.innerWidth < 640) setView('list')
+}, [])
   const [meta, setMeta] = useState({ group: '', lastName: '', semester: '', program: '' })
 
   useEffect(() => {
-    const group    = sessionStorage.getItem('fon_group')
-    const year     = sessionStorage.getItem('fon_year')
+    const group = sessionStorage.getItem('fon_group')
+    const year = sessionStorage.getItem('fon_year')
     const lastName = sessionStorage.getItem('fon_lastName') ?? ''
     const semester = sessionStorage.getItem('fon_semester') ?? ''
-    const program  = sessionStorage.getItem('fon_program')  ?? ''
+    const program = sessionStorage.getItem('fon_program') ?? ''
 
     if (!group || !year) {
       router.replace('/')
@@ -66,148 +67,148 @@ export default function RasporedPage() {
 
     setMeta({ group, lastName, semester, program })
 
-fetch(`/data/${year}god.json`)
-  .then(r => r.json())
-  .then((data: SemesterData) => {
-    const all = getScheduleForGroup(data, group)
-    const saved = localStorage.getItem(`fon_subjects_${group}`)
-    if (saved) {
-      const checked: Record<string, boolean> = JSON.parse(saved)
-      setEntries(all.filter(e => checked[e.subject] !== false))
-    } else {
-      setEntries(all)
-    }
-  })
-  .finally(() => setLoading(false))
+    fetch(`/data/${year}god.json`)
+      .then(r => r.json())
+      .then((data: SemesterData) => {
+        const all = getScheduleForGroup(data, group)
+        const saved = localStorage.getItem(`fon_subjects_${group}`)
+        if (saved) {
+          const checked: Record<string, boolean> = JSON.parse(saved)
+          setEntries(all.filter(e => checked[e.subject] !== false))
+        } else {
+          setEntries(all)
+        }
+      })
+      .finally(() => setLoading(false))
   }, [router])
 
   const colorMap = useSubjectColors(entries)
-function downloadPNG() {
-  const canvas = document.createElement('canvas')
-  const dpr = 2
-  const colW = 160
-  const rowH = 80
-  const headerH = 32
-  const timeW = 56
-  const padding = 16
+  function downloadPNG() {
+    const canvas = document.createElement('canvas')
+    const dpr = 2
+    const colW = 160
+    const rowH = 80
+    const headerH = 32
+    const timeW = 56
+    const padding = 16
 
-  canvas.width  = (timeW + colW * 5 + padding * 2) * dpr
-  canvas.height = (headerH + rowH * SLOTS.length + padding * 2) * dpr
+    canvas.width = (timeW + colW * 5 + padding * 2) * dpr
+    canvas.height = (headerH + rowH * SLOTS.length + padding * 2) * dpr
 
-  const ctx = canvas.getContext('2d')!
-  ctx.scale(dpr, dpr)
+    const ctx = canvas.getContext('2d')!
+    ctx.scale(dpr, dpr)
 
-  // Pozadina
-  ctx.fillStyle = '#f9fafb'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // Pozadina
+    ctx.fillStyle = '#f9fafb'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  // Grid area bela
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(padding + timeW, padding, colW * 5, headerH + rowH * SLOTS.length)
+    // Grid area bela
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(padding + timeW, padding, colW * 5, headerH + rowH * SLOTS.length)
 
-  // Dan headeri
-  const dayNames = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet']
-  dayNames.forEach((d, i) => {
-    ctx.fillStyle = '#6b7280'
-    ctx.font = '500 11px system-ui, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(d, padding + timeW + colW * i + colW / 2, padding + 20)
-  })
+    // Dan headeri
+    const dayNames = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet']
+    dayNames.forEach((d, i) => {
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '500 11px system-ui, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(d, padding + timeW + colW * i + colW / 2, padding + 20)
+    })
 
-  // Grid linije
-  ctx.strokeStyle = '#f3f4f6'
-  ctx.lineWidth = 1
+    // Grid linije
+    ctx.strokeStyle = '#f3f4f6'
+    ctx.lineWidth = 1
 
-  SLOTS.forEach((_, si) => {
-    const y = padding + headerH + rowH * si
-    ctx.beginPath()
-    ctx.moveTo(padding + timeW, y)
-    ctx.lineTo(padding + timeW + colW * 5, y)
-    ctx.stroke()
-  })
+    SLOTS.forEach((_, si) => {
+      const y = padding + headerH + rowH * si
+      ctx.beginPath()
+      ctx.moveTo(padding + timeW, y)
+      ctx.lineTo(padding + timeW + colW * 5, y)
+      ctx.stroke()
+    })
 
-  dayNames.forEach((_, di) => {
-    const x = padding + timeW + colW * di
-    ctx.beginPath()
-    ctx.moveTo(x, padding + headerH)
-    ctx.lineTo(x, padding + headerH + rowH * SLOTS.length)
-    ctx.stroke()
-  })
-
-  // Vreme i blokovi
-  SLOTS.forEach((slot, si) => {
-    const y = padding + headerH + rowH * si
-
-    // Vreme label
-    ctx.fillStyle = '#9ca3af'
-    ctx.font = '11px system-ui, sans-serif'
-    ctx.textAlign = 'right'
-    ctx.fillText(slot, padding + timeW - 6, y + 16)
-
-    DAYS.forEach((day, di) => {
+    dayNames.forEach((_, di) => {
       const x = padding + timeW + colW * di
-      const cell = entries.filter(e => e.day === day && e.start === slot)
+      ctx.beginPath()
+      ctx.moveTo(x, padding + headerH)
+      ctx.lineTo(x, padding + headerH + rowH * SLOTS.length)
+      ctx.stroke()
+    })
 
-      if (!cell.length) return
+    // Vreme i blokovi
+    SLOTS.forEach((slot, si) => {
+      const y = padding + headerH + rowH * si
 
-      const blockH = (rowH - 8) / cell.length
+      // Vreme label
+      ctx.fillStyle = '#9ca3af'
+      ctx.font = '11px system-ui, sans-serif'
+      ctx.textAlign = 'right'
+      ctx.fillText(slot, padding + timeW - 6, y + 16)
 
-      cell.forEach((e, bi) => {
-        const c = COLORS[colorMap[e.subject]]
-        const bx = x + 3
-        const by = y + 4 + blockH * bi
-        const bw = colW - 6
-        const bh = blockH - 3
+      DAYS.forEach((day, di) => {
+        const x = padding + timeW + colW * di
+        const cell = entries.filter(e => e.day === day && e.start === slot)
 
-        // Blok pozadina
-        ctx.fillStyle = c.bg
-        ctx.beginPath()
-        ctx.roundRect(bx, by, bw, bh, 6)
-        ctx.fill()
+        if (!cell.length) return
 
-        // Naziv predmeta
-        ctx.fillStyle = c.text
-        ctx.font = '500 10px system-ui, sans-serif'
-        ctx.textAlign = 'left'
+        const blockH = (rowH - 8) / cell.length
 
-        // Wrap tekst
-        const words = e.subject.split(' ')
-        let line = ''
-        let lineY = by + 13
-        for (const word of words) {
-          const test = line + word + ' '
-          if (ctx.measureText(test).width > bw - 8 && line) {
-            ctx.fillText(line.trim(), bx + 5, lineY)
-            line = word + ' '
-            lineY += 12
-            if (lineY > by + bh - 8) break
-          } else {
-            line = test
+        cell.forEach((e, bi) => {
+          const c = COLORS[colorMap[e.subject]]
+          const bx = x + 3
+          const by = y + 4 + blockH * bi
+          const bw = colW - 6
+          const bh = blockH - 3
+
+          // Blok pozadina
+          ctx.fillStyle = c.bg
+          ctx.beginPath()
+          ctx.roundRect(bx, by, bw, bh, 6)
+          ctx.fill()
+
+          // Naziv predmeta
+          ctx.fillStyle = c.text
+          ctx.font = '500 10px system-ui, sans-serif'
+          ctx.textAlign = 'left'
+
+          // Wrap tekst
+          const words = e.subject.split(' ')
+          let line = ''
+          let lineY = by + 13
+          for (const word of words) {
+            const test = line + word + ' '
+            if (ctx.measureText(test).width > bw - 8 && line) {
+              ctx.fillText(line.trim(), bx + 5, lineY)
+              line = word + ' '
+              lineY += 12
+              if (lineY > by + bh - 8) break
+            } else {
+              line = test
+            }
           }
-        }
-        if (line) ctx.fillText(line.trim(), bx + 5, lineY)
+          if (line) ctx.fillText(line.trim(), bx + 5, lineY)
 
-        // Tip i sala
-        ctx.fillStyle = c.text
-        ctx.globalAlpha = 0.7
-        ctx.font = '10px system-ui, sans-serif'
-        ctx.fillText(`${e.type_short} · ${e.room}`, bx + 5, by + bh - 5)
-        ctx.globalAlpha = 1
+          // Tip i sala
+          ctx.fillStyle = c.text
+          ctx.globalAlpha = 0.7
+          ctx.font = '10px system-ui, sans-serif'
+          ctx.fillText(`${e.type_short} · ${e.room}`, bx + 5, by + bh - 5)
+          ctx.globalAlpha = 1
+        })
       })
     })
-  })
 
-  // Header info
-  ctx.fillStyle = '#111827'
-  ctx.font = '500 13px system-ui, sans-serif'
-  ctx.textAlign = 'left'
-  ctx.fillText(`${meta.lastName} · Grupa ${meta.group} · ${meta.semester}`, padding + timeW, padding - 4)
+    // Header info
+    ctx.fillStyle = '#111827'
+    ctx.font = '500 13px system-ui, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(`${meta.lastName} · Grupa ${meta.group} · ${meta.semester}`, padding + timeW, padding - 4)
 
-  const link = document.createElement('a')
-  link.download = `raspored-${meta.group}.png`
-  link.href = canvas.toDataURL('image/png')
-  link.click()
-}
+    const link = document.createElement('a')
+    link.download = `raspored-${meta.group}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  }
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -305,14 +306,14 @@ function downloadPNG() {
                           {cell.map((e, i) => {
                             const c = COLORS[colorMap[e.subject]]
                             return (
-                             <div key={i} style={{ background: c.bg }} className="flex-1 rounded-lg p-2 min-h-[64px]">
-  <p style={{ color: c.text }} className="text-xs font-medium leading-snug line-clamp-2">
-    {e.subject}
-  </p>
-  <p style={{ color: c.text }} className="text-xs mt-1 opacity-70">
-    {e.type_short} · {e.room}
-  </p>
-</div>
+                              <div key={i} style={{ background: c.bg }} className="flex-1 rounded-lg p-2 min-h-[64px]">
+                                <p style={{ color: c.text }} className="text-xs font-medium leading-snug line-clamp-2">
+                                  {e.subject}
+                                </p>
+                                <p style={{ color: c.text }} className="text-xs mt-1 opacity-70">
+                                  {e.type_short} · {e.room}
+                                </p>
+                              </div>
                             )
                           })}
                         </div>
@@ -353,15 +354,17 @@ function downloadPNG() {
                           <span className="text-xs text-gray-400 w-24 flex-shrink-0">
                             {SLOT_LABEL[e.start]}
                           </span>
-                          <div style={{ background: c.bar }} className="w-1 self-stretch rounded-full" />
-<span style={{ background: c.bg, color: c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
-                            {e.subject}
-                          </span>
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0 ${c.bg} ${c.text}`}>
+                          <div className={`w-1 self-stretch rounded-full`} style={{ background: c.bar }} />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm text-gray-900 block truncate">
+                              {e.subject}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {e.room}
+                            </span>
+                          </div>
+                          <span style={{ background: c.bg, color: c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
                             {e.type_short}
-                          </span>
-                          <span className="text-xs text-gray-400 w-20 text-right flex-shrink-0">
-                            Sala {e.room}
                           </span>
                         </div>
                       )
