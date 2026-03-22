@@ -34,38 +34,17 @@ function nameInRange(lastName: string, range: string): boolean {
   return afterFrom && beforeTo
 }
 
-// Pronalazi grupu za korisnika
-// Vraća ID grupe (npr. "D3") ili null ako nije pronađena
+
 export function findGroup(
   data: SemesterData,
   lastName: string,
   program: string | null
 ): string | null {
   for (const [groupId, groupInfo] of Object.entries(data.groups)) {
-    let programMatches = false
-    let rangeMatches = false
+    const programMatches =
+      program === null || groupInfo.program === program
 
-    // Detektuj specijalni format prve godine:
-    // program = "ISiT A-", range = "Vidanović"
-    const programParts = groupInfo.program.split(' ')
-    const baseProgram = programParts[0]
-    const hasFromInProgram = programParts.length > 1
-
-    if (hasFromInProgram) {
-      // Prva godina — "od" je u program polju, "do" je u range polju
-      programMatches = program === null || baseProgram === program
-      const from = programParts.slice(1).join(' ')
-      const to = groupInfo.range
-      const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
-      const beforeTo = to === 'Š-' ? true : compareNames(lastName, to) <= 0
-      rangeMatches = afterFrom && beforeTo
-    } else {
-      // Normalan format
-      programMatches = program === null || groupInfo.program === program
-      rangeMatches = nameInRange(lastName, groupInfo.range)
-    }
-
-    if (programMatches && rangeMatches) {
+    if (programMatches && nameInRange(lastName, groupInfo.range)) {
       return groupId
     }
   }

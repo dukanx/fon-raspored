@@ -3,76 +3,76 @@
   "year": 1,
   "groups": {
     "A1": {
-      "program": "ISiT A-",
-      "range": "Vidanović"
+      "program": "ISiT",
+      "range": "A- - Vidanović"
     },
     "A2": {
-      "program": "ISiT Vidović",
-      "range": "Dimitrijević"
+      "program": "ISiT",
+      "range": "Vidović - Dimitrijević"
     },
     "A3": {
-      "program": "ISiT Dimović",
-      "range": "Ignjović"
+      "program": "ISiT",
+      "range": "Dimović - Ignjović"
     },
     "A4": {
-      "program": "ISiT Ikonić",
-      "range": "Kikanović"
+      "program": "ISiT",
+      "range": "Ikonić - Kikanović"
     },
     "A5": {
-      "program": "ISiT Klimenta",
-      "range": "Marić"
+      "program": "ISiT",
+      "range": "Klimenta - Marić"
     },
     "A6": {
-      "program": "ISiT Marjanović",
-      "range": "Minić"
+      "program": "ISiT",
+      "range": "Marjanović - Minić"
     },
     "A7": {
-      "program": "ISiT Mirić",
-      "range": "Pantić"
+      "program": "ISiT",
+      "range": "Mirić - Pantić"
     },
     "A8": {
-      "program": "ISiT Pašić",
-      "range": "Ristanović"
+      "program": "ISiT",
+      "range": "Pašić - Ristanović"
     },
     "A9": {
-      "program": "ISiT Ristić",
-      "range": "Stojadinović"
+      "program": "ISiT",
+      "range": "Ristić - Stojadinović"
     },
     "A10": {
-      "program": "ISiT Stojanović",
-      "range": "Š-"
+      "program": "ISiT",
+      "range": "Stojanović - Š-"
     },
     "A11": {
-      "program": "MiO A-",
-      "range": "Vojčić"
+      "program": "MiO",
+      "range": "A- - Vojčić"
     },
     "A12": {
-      "program": "MiO Vujasinović",
-      "range": "Đurđević"
+      "program": "MiO",
+      "range": "Vujasinović - Đurđević"
     },
     "A13": {
-      "program": "MiO Đurić",
-      "range": "Joksimović"
+      "program": "MiO",
+      "range": "Đurić - Joksimović"
     },
     "A14": {
-      "program": "MiO Joksić",
-      "range": "Marković"
+      "program": "MiO",
+      "range": "Joksić - Marković"
     },
     "A15": {
-      "program": "MiO Marlog",
-      "range": "Opačić"
+      "program": "MiO",
+      "range": "Marlog - Opačić"
     },
     "A16": {
-      "program": "MiO Ostojić",
-      "range": "Radić"
+      "program": "MiO",
+      "range": "Ostojić - Radić"
     },
     "A17": {
-      "program": "MiO Radičević",
-      "range": "Stepanović"
+      "program": "MiO",
+      "range": "Radičević - Stepanović"
     },
     "A18": {
-      "program": "MiO Stefanović",
-      "range": "Š-"
+      "program": "MiO",
+      "range": "Stefanović - Š-"
     }
   },
   "entries": [
