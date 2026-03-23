@@ -454,7 +454,8 @@ export default function RasporedPage() {
             <button
               onClick={() => router.push('/preneseni')}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-             rounded-lg bg-white hover:bg-gray-50 transition-colors"
+             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               + Preneseni predmeti
             </button>

@@ -9,7 +9,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
     const applyTheme = () => {
       const savedTheme = localStorage.getItem('fon_theme')
-      const isDark = savedTheme ? savedTheme === 'dark' : media.matches
+      const isDark = savedTheme === 'dark'
       root.classList.toggle('dark', isDark)
     }
 
