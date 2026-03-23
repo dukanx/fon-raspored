@@ -55,8 +55,6 @@ function nameInRange(lastName: string, range: string): boolean {
   const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
   const beforeTo  = to   === 'Š-' ? true : compareNames(lastName, to)   <= 0
 
-  console.log(`nameInRange(${lastName}, ${range}): afterFrom=${afterFrom} beforeTo=${beforeTo} compare=${compareNames(lastName, to)}`)
-
   return afterFrom && beforeTo
 }
 
@@ -66,8 +64,6 @@ export function findGroup(
   lastName: string,
   program: string | null
 ): string | null {
-  console.log('compare Đurđević vs Đurđević:', compareNames('Đurđević', 'Đurđević'))
-console.log('normalized Đurđević:', normalizeName('Đurđević'))
   const candidates = Object.entries(data.groups).filter(([, g]) => {
     return program === null || g.program === program
   })
@@ -81,12 +77,8 @@ console.log('normalized Đurđević:', normalizeName('Đurđević'))
     return compareNames(getFrom(b.range), getFrom(a.range))
   })
 
-  console.log('Sorted groups:')
-  sorted.forEach(([id, g]) => console.log(`  ${id}: ${g.range}`))
-
   for (const [groupId, groupInfo] of sorted) {
     const matches = nameInRange(lastName, groupInfo.range)
-    console.log(`  ${groupId} ${groupInfo.range} -> ${matches}`)
     if (matches) return groupId
   }
 

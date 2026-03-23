@@ -192,29 +192,34 @@ export default function OnboardingPage() {
         </button>
 
         {/* Fallback - ručni odabir grupe */}
-        {/* {year && data && (
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-xs text-gray-400 text-center mb-3">
+        {selectedYear && data && (
+          <div className="mt-6 pt-6 border-t border-gray-300 dark:border-gray-800">
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
               Znaš svoju grupu? Odaberi direktno
             </p>
             <select
               onChange={e => {
-                if (!e.target.value) return
+                if (!e.target.value || selectedYear === null) return
                 const groupId = e.target.value
                 sessionStorage.setItem('fon_group', groupId)
-                sessionStorage.setItem('fon_year', String(year))
-                sessionStorage.setItem('fon_lastName', lastName.trim() || groupId)
+                sessionStorage.setItem('fon_year', String(selectedYear))
+                sessionStorage.setItem('fon_lastName', enteredLastName.trim() || groupId)
                 sessionStorage.setItem('fon_semester', data.semester)
-                if (program) sessionStorage.setItem('fon_program', program)
+                if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
+
+                localStorage.setItem('fon_saved_year', String(selectedYear))
+                localStorage.setItem('fon_saved_program', selectedProgram)
+                localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
                 router.push('/izborni')
               }}
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm
-                 text-gray-900 bg-white focus:outline-none focus:ring-2
-                 focus:ring-gray-900 focus:border-transparent"
+              className="w-full h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700
+                 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
+                 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-200
+                 focus:border-transparent"
             >
               <option value="">Odaberi grupu...</option>
               {Object.entries(data.groups)
-                .sort(([a], [b]) => a.localeCompare(b))
+                .sort(([a], [b]) => a.localeCompare(b, 'sr', { numeric: true, sensitivity: 'base' }))
                 .map(([id, g]) => (
                   <option key={id} value={id}>
                     {id} — {g.program} ({g.range})
@@ -222,7 +227,7 @@ export default function OnboardingPage() {
                 ))}
             </select>
           </div>
-        )} */}
+        )}
 
       </div>
     </main>
