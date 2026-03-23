@@ -85,12 +85,25 @@ export default function RasporedPage() {
       .then((data: SemesterData) => {
         const all = getScheduleForGroup(data, meta.group)
         const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
-        if (saved) {
-          const checked: Record<string, boolean> = JSON.parse(saved)
-          setEntries(all.filter(e => checked[e.subject] !== false))
-        } else {
-          setEntries(all)
+        const checked: Record<string, boolean> = saved ? JSON.parse(saved) : {}
+        const base = saved ? all.filter(e => checked[e.subject] !== false) : all
+
+        const extraRaw = localStorage.getItem(`fon_extra_${meta.group}`)
+        const extra: ScheduleEntry[] = extraRaw ? JSON.parse(extraRaw) : []
+
+        const merged = [...base]
+        for (const item of extra) {
+          const exists = merged.some(e =>
+            e.subject === item.subject &&
+            e.day === item.day &&
+            e.start === item.start &&
+            e.type_short === item.type_short &&
+            e.room === item.room
+          )
+          if (!exists) merged.push(item)
         }
+
+        setEntries(merged)
       })
   }, [isHydrated, meta.group, meta.year, router])
 
@@ -331,7 +344,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              ↓ Slika
+              Slika      ↓ 
             </button>
 
             <button
@@ -340,7 +353,16 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izvezi u kalendar ↗
+              Izvezi u kalendar      ↗
+            </button>
+
+            <button
+              onClick={() => router.push('/preneseni')}
+              className="col-span-2 inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Preneseni predmeti        +
             </button>
 
             <button
@@ -388,6 +410,17 @@ export default function RasporedPage() {
             </div>
 
             <button
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Promeni temu"
+            >
+              <span className="dark:hidden">🌙</span>
+              <span className="hidden dark:inline">🔅</span>
+            </button>
+            
+            <button
               onClick={downloadPNG}
               className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
@@ -402,19 +435,10 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izvezi u kalendar
+              Izvezi u kalendar ↗
             </button>
 
-            <button
-              onClick={toggleTheme}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Promeni temu"
-            >
-              <span className="dark:hidden">🌙</span>
-              <span className="hidden dark:inline">🔅</span>
-            </button>
+            
 
             <a
               href="https://oas.fon.bg.ac.rs/raspored-nastave/"
@@ -427,7 +451,13 @@ export default function RasporedPage() {
             >
               FON →
             </a>
-
+            <button
+              onClick={() => router.push('/preneseni')}
+              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+             rounded-lg bg-white hover:bg-gray-50 transition-colors"
+            >
+              + Preneseni predmeti
+            </button>
             <button
               onClick={() => router.push('/')}
               className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
@@ -496,7 +526,7 @@ export default function RasporedPage() {
           </div>
         )}
 
-         {/* Lista - uvek dostupna, default na mobilnom */}
+        {/* Lista - uvek dostupna, default na mobilnom */}
         {view === 'list' && (
           <div className="space-y-6">
             {DAYS.map(day => {
