@@ -115,6 +115,18 @@ export default function PreneseniPage() {
     setDostupniTermini(termini)
   }
 
+  function getPreklapanja(
+    termini: ScheduleEntry[],
+    raspored: ScheduleEntry[]
+  ): { termin: ScheduleEntry; preklapaSa: ScheduleEntry }[] {
+    return termini
+      .filter(termin => raspored.some(r => r.day === termin.day && r.start === termin.start))
+      .map(termin => ({
+        termin,
+        preklapaSa: raspored.find(r => r.day === termin.day && r.start === termin.start)!
+      }))
+  }
+
   async function getPreporuka() {
     if (!odabraniPredmet || !dostupniTermini.length) return
     setLoading(true)
@@ -368,7 +380,42 @@ export default function PreneseniPage() {
               )}
             </div>
           )}
+          {/* Termini koji se preklapaju */}
+          {(() => {
+            const preklapanjaPredavanja = getPreklapanja(
+              dostupniTermini.filter(e => e.type_short === 'P'),
+              trenutniRaspored
+            )
+            const preklaplanjaVezbi = getPreklapanja(
+              dostupniTermini.filter(e => e.type_short === 'V'),
+              trenutniRaspored
+            )
+            const sva = [...preklapanjaPredavanja, ...preklaplanjaVezbi]
+            if (!sva.length) return null
 
+            return (
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Termini koji se preklapaju
+                </label>
+                <div className="space-y-1">
+                  {sva.map((p, i) => (
+                    <div key={i} className="flex items-start gap-2 py-2 px-3
+                                   bg-red-50 rounded-lg border border-red-100">
+                      <span className="text-red-400 flex-shrink-0 mt-0.5">✕</span>
+                      <div className="text-xs text-red-700">
+                        <span className="font-medium">
+                          {p.termin.day} {p.termin.start}–{p.termin.end} [{p.termin.type_short}]
+                        </span>
+                        <span className="text-red-400"> · preklapa se sa </span>
+                        <span className="font-medium">{p.preklapaSa.subject} [{p.preklapaSa.type_short}]</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
           {/* AI preporuka dugme */}
           {dostupniTermini.length > 0 && (
             <button
