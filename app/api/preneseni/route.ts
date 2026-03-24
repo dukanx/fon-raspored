@@ -8,11 +8,11 @@ ${trenutniRaspored}
 
 Prenosi predmet "${predmet}".
 
-Dostupna predavanja (P) - BIRATI SAMO IZ OVE LISTE:
-${dostupnaPredavanja || 'Nema dostupnih predavanja'}
+Dostupna predavanja (P) - svi termini su već provereni i NE PREKLAPAJU se sa rasporedom:
+${dostupnaPredavanja || 'Nema slobodnih termina'}
 
-Dostupne vežbe (V) - BIRATI SAMO IZ OVE LISTE:
-${dostupneVezbe || 'Nema dostupnih vežbi'}
+Dostupne vežbe (V) - svi termini su već provereni i NE PREKLAPAJU se sa rasporedom:
+${dostupneVezbe || 'Nema slobodnih termina'}
 
 PRAVILA:
 1. Smeš da biraš SAMO termine koji su navedeni u listama iznad, ništa drugo

@@ -64,6 +64,17 @@ export default function PreneseniPage() {
     localStorage.setItem(`fon_extra_${group}`, JSON.stringify(novi))
   }
 
+  function filterPreklapanja(
+    termini: ScheduleEntry[],
+    raspored: ScheduleEntry[]
+  ): ScheduleEntry[] {
+    return termini.filter(termin =>
+      !raspored.some(r =>
+        r.day === termin.day && r.start === termin.start
+      )
+    )
+  }
+
   function handleGodinaSelect(g: number) {
     setGodina(g)
     setOdabraniPredmet('')
@@ -113,15 +124,21 @@ export default function PreneseniPage() {
       .map(e => `${e.day} ${e.start}-${e.end}: ${e.subject} [${e.type_short}]`)
       .join('\n')
 
+    const slobodnaPredavanja = filterPreklapanja(
+      dostupniTermini.filter(e => e.type_short === 'P'),
+      trenutniRaspored
+    )
 
+    const slobodneVezbe = filterPreklapanja(
+      dostupniTermini.filter(e => e.type_short === 'V'),
+      trenutniRaspored
+    )
 
-    const predavanjaStr = dostupniTermini
-      .filter(e => e.type_short === 'P')
+    const predavanjaStr = slobodnaPredavanja
       .map(e => `${e.day} ${e.start}-${e.end} Sala ${e.room} (Grupe: ${e.groups.join(', ')})`)
       .join('\n')
 
-    const vezbeStr = dostupniTermini
-      .filter(e => e.type_short === 'V')
+    const vezbeStr = slobodneVezbe
       .map(e => `${e.day} ${e.start}-${e.end} Sala ${e.room} (Grupe: ${e.groups.join(', ')})`)
       .join('\n')
 
@@ -145,8 +162,16 @@ export default function PreneseniPage() {
     }
   }
 
-  const terminiPredavanja = dostupniTermini.filter(e => e.type_short === 'P')
-  const terminiVezbi = dostupniTermini.filter(e => e.type_short === 'V')
+  // const terminiPredavanja = dostupniTermini.filter(e => e.type_short === 'P')
+  // const terminiVezbi = dostupniTermini.filter(e => e.type_short === 'V')
+  const terminiPredavanja = filterPreklapanja(
+    dostupniTermini.filter(e => e.type_short === 'P'),
+    trenutniRaspored
+  )
+  const terminiVezbi = filterPreklapanja(
+    dostupniTermini.filter(e => e.type_short === 'V'),
+    trenutniRaspored
+  )
   const trebaPredavanje = terminiPredavanja.length > 0
   const trebaVezbe = terminiVezbi.length > 0
   const canAdd = odabranoPredavanje !== null || odabraneVezbe !== null
