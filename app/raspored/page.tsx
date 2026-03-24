@@ -22,12 +22,12 @@ const SLOT_LABEL: Record<string, string> = {
 }
 
 const COLORS = [
-  { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d264a7', darkBg: '#3d1a30', darkText: '#e8a8d0' },
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
-  { bg: '#fff4d6', text: '#7a5a00', bar: '#ffcd67', darkBg: '#3d3200', darkText: '#ffd97a' },
   { bg: '#cce0f0', text: '#012f4e', bar: '#024c7d', darkBg: '#051e30', darkText: '#7ab5d8' },
-  { bg: '#fde6e5', text: '#892d2a', bar: '#f48580', darkBg: '#3d1512', darkText: '#f4a09c' },
+  { bg: '#fff4d6', text: '#7a5a00', bar: '#ffcd67', darkBg: '#3d3200', darkText: '#ffd97a' },
   { bg: '#e8e7f5', text: '#44408a', bar: '#9a95c9', darkBg: '#1e1b3d', darkText: '#b8b4e0' },
+  { bg: '#fde6e5', text: '#892d2a', bar: '#f48580', darkBg: '#3d1512', darkText: '#f4a09c' },
+  { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d264a7', darkBg: '#3d1a30', darkText: '#e8a8d0' },
 ]
 
 function useSubjectColors(entries: ScheduleEntry[]) {
@@ -319,7 +319,7 @@ export default function RasporedPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2 text-xs">
-              <span className="font-medium text-gray-400">1. Godina</span>
+              <span className="font-medium text-gray-400">1. Podaci</span>
               <span className="text-gray-300 dark:text-gray-700">→</span>
               <span className="font-medium text-gray-400">2. Predmeti</span>
               <span className="text-gray-300 dark:text-gray-700">→</span>
@@ -337,8 +337,8 @@ export default function RasporedPage() {
               onClick={() => setManualView('list')}
               className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-medium transition-colors
               ${view === 'list'
-                    ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                  ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
             >
               Lista
             </button>
@@ -360,7 +360,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Slika      ↓ 
+              Slika      ↓
             </button>
 
             <button
@@ -435,7 +435,9 @@ export default function RasporedPage() {
               <span className="dark:hidden">🌙</span>
               <span className="hidden dark:inline">🔅</span>
             </button>
-            
+
+            <div className="w-px h-5 bg-gray-300 dark:bg-gray-700" />
+
             <button
               onClick={downloadPNG}
               className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
@@ -451,22 +453,11 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izvezi u kalendar ↗
+              ↗ Izvezi u kalendar
             </button>
 
-            
+            <div className="w-px h-5 bg-gray-300 dark:bg-gray-700" />
 
-            <a
-              href="https://oas.fon.bg.ac.rs/raspored-nastave/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
-             text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900
-             rounded-lg bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50
-             transition-colors"
-            >
-              FON →
-            </a>
             <button
               onClick={() => router.push('/preneseni')}
               className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
@@ -475,14 +466,29 @@ export default function RasporedPage() {
             >
               + Preneseni predmeti
             </button>
-            <button
-              onClick={() => router.push('/')}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-               rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              ← Nazad
-            </button>
+            {/* FON i Nazad — novi red */}
+            <div className="w-full flex justify-end gap-2">
+              <button
+                onClick={() => router.push('/')}
+                className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+                 rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+                 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                ← Nazad
+              </button>
+              <a
+                href="https://oas.fon.bg.ac.rs/raspored-nastave/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
+               text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900
+               rounded-lg bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50
+               transition-colors"
+              >
+                FON →
+              </a>
+
+            </div>
           </div>
         </div>
 

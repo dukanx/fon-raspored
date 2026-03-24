@@ -4,11 +4,12 @@ import type { SemesterData, ScheduleEntry } from './types'
 
 const SR_MAP: Record<string, string> = {
   'a':'01', 'b':'02', 'v':'03', 'g':'04', 'd':'05',
-  'đ':'06', 'e':'07', 'ž':'08', 'z':'09', 'i':'10',
-  'j':'11', 'k':'12', 'l':'13', 'lj':'14','m':'15',
-  'n':'16', 'nj':'17','o':'18', 'p':'19', 'r':'20',
-  's':'21', 't':'22', 'ć':'23', 'u':'24', 'f':'25',
-  'h':'26', 'c':'27', 'č':'28', 'dž':'29','š':'30',
+  'đ':'06', 'dj':'06',
+  'e':'07', 'ž':'08', 'zh':'08', 'z':'09', 'i':'10',
+  'j':'11', 'k':'12', 'l':'13', 'lj':'14', 'm':'15',
+  'n':'16', 'nj':'17', 'o':'18', 'p':'19', 'r':'20',
+  's':'21', 't':'22', 'ć':'23', 'cy':'23', 'cj':'23', 'u':'24', 'f':'25',
+  'h':'26', 'c':'27', 'č':'28', 'ch':'28', 'dž':'29', 'dz':'29', 'š':'30', 'sh':'30',
 }
 
 function normalizeName(name: string): string {
@@ -77,10 +78,20 @@ export function findGroup(
     return compareNames(getFrom(b.range), getFrom(a.range))
   })
 
-  for (const [groupId, groupInfo] of sorted) {
-    const matches = nameInRange(lastName, groupInfo.range)
-    if (matches) return groupId
+  const search = (name: string) => {
+    for (const [groupId, groupInfo] of sorted) {
+      if (nameInRange(name, groupInfo.range)) return groupId
+    }
+    return null
   }
+
+  // Prvo pokušaj sa originalnim imenom
+  const result = search(lastName)
+  if (result) return result
+
+  // Fallback: zameni c → ć na kraju (npr. Markovic → Marković)
+  const withC = lastName.replace(/c$/i, 'ć').replace(/dj/gi, 'đ')
+  if (withC !== lastName) return search(withC)
 
   return null
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
+import BlurText from '@/components/BlurText'
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -103,7 +104,14 @@ export default function OnboardingPage() {
             <span className="text-gray-300 dark:text-gray-700">→</span>
             <span className="font-medium text-gray-400">3. Raspored</span>
           </div>
-          <h1 className="text-2xl font-semibold bg-gradient-to-r from-[#024c7d] to-[#60c3ad] bg-clip-text text-transparent">FON Raspored</h1>
+          <BlurText
+            text="FON Raspored"
+            animateBy="letters"
+            direction="top"
+            delay={60}
+            stepDuration={0.3}
+            className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+          />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Unesi svoje podatke i dobij lični raspored
           </p>

@@ -57,7 +57,7 @@ export default function IzbornoPage() {
 
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4 text-xs">
-            <span className="font-medium text-gray-400">1. Godina</span>
+            <span className="font-medium text-gray-400">1. Podaci</span>
             <span className="text-gray-300 dark:text-gray-700">→</span>
             <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">2. Predmeti</span>
             <span className="text-gray-300 dark:text-gray-700">→</span>

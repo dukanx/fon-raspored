@@ -42,6 +42,17 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Providers>
           {children}
+          <footer className="py-4 text-center text-xs text-gray-400 dark:text-gray-600">
+            Made by{' '}
+            <a
+              href="https://github.com/dukanx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#024c7d] dark:text-[#60c3ad] hover:underline font-medium"
+            >
+              dukanx
+            </a>
+          </footer>
         </Providers>
       </body>
     </html>
