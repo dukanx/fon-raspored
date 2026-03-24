@@ -16,8 +16,9 @@ ${dostupneVezbe || 'Nema dostupnih termina'}
 
 PRAVILA:
 1. Smeš da biraš SAMO termine koji su navedeni u listama iznad, ništa drugo.
-2. PRIORITET: Uvek prvo pokušaj da nađeš termine koji imaju oznaku (SLOBODNO).
-3. Ako nema slobodnih termina, odaberi termin sa oznakom (PREKLAPANJE), ali pazi da žrtvuješ predavanja umesto vežbi ako je moguće, ili biraj logično.
+2. PRIORITET: Uvek prvo pokušaj da nađeš termine koji imaju oznaku (SLOBODNO). Nakon toga, rangiraj tako da nema pauza između časova ako je moguće.
+3. Nakon rangiranja slobodnih termina tako da nema pauza izmedju, rangiraj ih po vremenu: 10:15-12:00 je bolje od 08:15-10:00, a 12:15-14:00 je bolje od 14:15-16:00. i tako dalje, ali ovo je sekundarno u odnosu na izbegavanje pauza.
+4. Ako nema slobodnih termina, odaberi termin sa oznakom (PREKLAPANJE), ali pazi da žrtvuješ predavanja umesto vežbi ako je moguće, ili biraj logično.
 
 Odgovori TAČNO u ovom formatu, bez ikakvih dodatnih reči ili objašnjenja u prvim dvema linijama:
 Predavanje: [kopiraj termin tačno iz liste iznad]

@@ -400,7 +400,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Preneseni predmeti        +
+              Izmeni / Dodaj termine        +
             </button>
 
             <button
@@ -486,7 +486,7 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              + Preneseni predmeti
+              + Izmeni / Dodaj termine
             </button>
             {/* FON i Nazad — novi red */}
             <div className="w-full flex justify-end gap-2">

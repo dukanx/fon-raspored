@@ -164,16 +164,18 @@ export default function PreneseniPage() {
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Preneseni predmeti</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              AI će predložiti koji termin se najbolje uklapa
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Izmena rasporeda
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+              Ovde možeš da ubaciš <strong>prenesene predmete</strong>, ili da odabereš predmet koji trenutno slušaš kako bi mu <strong>promenio termin</strong>.
             </p>
           </div>
           <button
             onClick={() => router.push('/raspored')}
             className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
                        rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-                       hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                       hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
           >
             ← Nazad
           </button>
@@ -232,7 +234,7 @@ export default function PreneseniPage() {
           {/* Godina prenesenog predmeta */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Godina prenesenog predmeta
+              Godina slušanja predmeta
             </label>
             <div className="grid grid-cols-4 gap-2">
               {[1, 2, 3, 4].map(g => (
