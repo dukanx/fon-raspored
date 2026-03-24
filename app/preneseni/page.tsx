@@ -234,7 +234,7 @@ export default function PreneseniPage() {
                   onClick={() => handleGodinaSelect(g)}
                   className={`py-2 rounded-lg text-sm font-medium border transition-colors
                     ${godina === g
-                      ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100'
+                      ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
                       : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
                     }`}
                 >
@@ -258,7 +258,7 @@ export default function PreneseniPage() {
                   onChange={e => handlePredmetSelect(e.target.value)}
                   className="w-full h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-sm
                              text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
-                             focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-200
+                             focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
                              focus:border-transparent"
                 >
                   <option value="">Odaberi predmet...</option>
@@ -285,7 +285,7 @@ export default function PreneseniPage() {
                         className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
                       transition-colors border
                       ${odabranoPredavanje === e
-                            ? 'bg-gray-900 border-gray-900 dark:bg-gray-100 dark:border-gray-100'
+                            ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
                             : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
                       >
                         <input
@@ -297,7 +297,7 @@ export default function PreneseniPage() {
                           }}
                           className="flex-shrink-0"
                         />
-                        <span className={`text-xs flex-1 ${odabranoPredavanje === e ? 'text-white dark:text-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>
+                        <span className={`text-xs flex-1 ${odabranoPredavanje === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
                           <span className="font-medium">{e.day}</span>
                           {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
                         </span>
@@ -319,7 +319,7 @@ export default function PreneseniPage() {
                         className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
                       transition-colors border
                       ${odabraneVezbe === e
-                            ? 'bg-gray-900 border-gray-900 dark:bg-gray-100 dark:border-gray-100'
+                            ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
                             : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
                       >
                         <input
@@ -332,7 +332,7 @@ export default function PreneseniPage() {
                           }}
                           className="flex-shrink-0"
                         />
-                        <span className={`text-xs flex-1 ${odabraneVezbe === e ? 'text-white dark:text-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>
+                        <span className={`text-xs flex-1 ${odabraneVezbe === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
                           <span className="font-medium">{e.day}</span>
                           {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
                         </span>
@@ -352,7 +352,7 @@ export default function PreneseniPage() {
               className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors
                 ${loading
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
-                  : 'bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200'}`}
+                  : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
             >
               {loading ? 'Analiziram...' : '✨ Predloži najbolje termine (P + V)'}
             </button>
@@ -403,7 +403,7 @@ export default function PreneseniPage() {
       ${dodato
                   ? 'bg-green-100 text-green-800 cursor-default dark:bg-green-950/50 dark:text-green-300'
                   : canAdd
-                    ? 'bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200'
+                    ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
             >
               {dodato ? '✓ Dodato u raspored' : 'Dodaj odabrane termine u raspored'}

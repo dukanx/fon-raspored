@@ -56,6 +56,13 @@ export default function IzbornoPage() {
       <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
 
         <div className="mb-6">
+          <div className="flex items-center gap-2 mb-4 text-xs">
+            <span className="font-medium text-gray-400">1. Godina</span>
+            <span className="text-gray-300 dark:text-gray-700">→</span>
+            <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">2. Predmeti</span>
+            <span className="text-gray-300 dark:text-gray-700">→</span>
+            <span className="font-medium text-gray-400">3. Raspored</span>
+          </div>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Odčekiraj predmete koje ne slušaš
@@ -73,7 +80,7 @@ export default function IzbornoPage() {
                 type="checkbox"
                 checked={checked[subject] ?? true}
                 onChange={() => toggle(subject)}
-                className="w-4 h-4 rounded accent-gray-900 dark:accent-gray-200 flex-shrink-0"
+                className="w-4 h-4 rounded accent-[#024c7d] dark:accent-[#60c3ad] flex-shrink-0"
               />
               <span className={`text-sm ${checked[subject] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
                 {subject}
@@ -89,9 +96,9 @@ export default function IzbornoPage() {
           <button
             onClick={handleConfirm}
             disabled={checkedCount === 0}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
               ${checkedCount > 0
-                ? 'bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200'
+                ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
           >
             Prikaži raspored →

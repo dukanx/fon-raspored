@@ -22,12 +22,12 @@ const SLOT_LABEL: Record<string, string> = {
 }
 
 const COLORS = [
-  { bg: '#ede9fe', text: '#5b21b6', bar: '#a78bfa' },
-  { bg: '#ccfbf1', text: '#065f46', bar: '#2dd4bf' },
-  { bg: '#dbeafe', text: '#1e40af', bar: '#60a5fa' },
-  { bg: '#dcfce7', text: '#166534', bar: '#4ade80' },
-  { bg: '#fef9c3', text: '#854d0e', bar: '#facc15' },
-  { bg: '#ffe4e6', text: '#9f1239', bar: '#fb7185' },
+  { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d264a7', darkBg: '#3d1a30', darkText: '#e8a8d0' },
+  { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
+  { bg: '#fff4d6', text: '#7a5a00', bar: '#ffcd67', darkBg: '#3d3200', darkText: '#ffd97a' },
+  { bg: '#cce0f0', text: '#012f4e', bar: '#024c7d', darkBg: '#051e30', darkText: '#7ab5d8' },
+  { bg: '#fde6e5', text: '#892d2a', bar: '#f48580', darkBg: '#3d1512', darkText: '#f4a09c' },
+  { bg: '#e8e7f5', text: '#44408a', bar: '#9a95c9', darkBg: '#1e1b3d', darkText: '#b8b4e0' },
 ]
 
 function useSubjectColors(entries: ScheduleEntry[]) {
@@ -54,6 +54,16 @@ export default function RasporedPage() {
       return () => window.removeEventListener('resize', onStoreChange)
     },
     () => window.innerWidth < 640,
+    () => false
+  )
+  const isDark = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') return () => { }
+      const observer = new MutationObserver(onStoreChange)
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+      return () => observer.disconnect()
+    },
+    () => document.documentElement.classList.contains('dark'),
     () => false
   )
   const isHydrated = useSyncExternalStore(
@@ -308,10 +318,16 @@ export default function RasporedPage() {
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{meta.lastName}</h1>
+            <div className="flex items-center gap-2 mb-2 text-xs">
+              <span className="font-medium text-gray-400">1. Godina</span>
+              <span className="text-gray-300 dark:text-gray-700">→</span>
+              <span className="font-medium text-gray-400">2. Predmeti</span>
+              <span className="text-gray-300 dark:text-gray-700">→</span>
+              <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">3. Raspored</span>
+            </div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Grupa {meta.group}</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              {meta.program && `${meta.program} · `}
-              Grupa {meta.group} · {meta.semester}
+              {meta.program && `${meta.program} · `}{meta.semester}
             </p>
           </div>
 
@@ -321,8 +337,8 @@ export default function RasporedPage() {
               onClick={() => setManualView('list')}
               className={`inline-flex items-center justify-center rounded-lg px-3 py-2 text-xs font-medium transition-colors
               ${view === 'list'
-                  ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
+                    ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800'}`}
             >
               Lista
             </button>
@@ -393,7 +409,7 @@ export default function RasporedPage() {
                 onClick={() => setManualView('grid')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'grid'
-                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
               >
                 Sedmica
@@ -402,7 +418,7 @@ export default function RasporedPage() {
                 onClick={() => setManualView('list')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors
         ${view === 'list'
-                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
               >
                 Lista
@@ -506,11 +522,11 @@ export default function RasporedPage() {
                           {cell.map((e, i) => {
                             const c = COLORS[colorMap[e.subject]]
                             return (
-                              <div key={i} style={{ background: c.bg }} className="flex-1 rounded-lg p-2 min-h-[64px]">
-                                <p style={{ color: c.text }} className="text-xs font-medium leading-snug line-clamp-2">
+                              <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="flex-1 rounded-lg p-2 min-h-[64px]">
+                                <p style={{ color: isDark ? c.darkText : c.text }} className="text-xs font-medium leading-snug line-clamp-2">
                                   {e.subject}
                                 </p>
-                                <p style={{ color: c.text }} className="text-xs mt-1 opacity-70">
+                                <p style={{ color: isDark ? c.darkText : c.text }} className="text-xs mt-1 opacity-70">
                                   {e.type_short} · {e.room}
                                 </p>
                               </div>
@@ -563,7 +579,7 @@ export default function RasporedPage() {
                               {e.room}
                             </span>
                           </div>
-                          <span style={{ background: c.bg, color: c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
+                          <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
                             {e.type_short}
                           </span>
                         </div>
@@ -617,9 +633,9 @@ export default function RasporedPage() {
 
             <button
               onClick={() => setShowIcsHelp(false)}
-              className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium
-                   bg-gray-900 text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900
-                   dark:hover:bg-gray-200 transition-colors"
+              className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
+                   bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                   dark:hover:bg-[#4db3a0] transition-colors"
             >
               Razumeo
             </button>
