@@ -44,14 +44,20 @@ export default function PreneseniPage() {
           })
           : all
 
-        const extra = localStorage.getItem(`fon_extra_${group}`)
+       const extra = localStorage.getItem(`fon_extra_${group}`)
         if (extra) {
           const extraEntries: ScheduleEntry[] = JSON.parse(extra)
-          // Automatsko gaženje: sakrij redovne predmete koji se poklapaju sa dodatim prenesenim
-          baseFiltered = baseFiltered.filter(b => !extraEntries.some(ex => ex.day === b.day && ex.start === b.start))
+          
+          // Automatsko gaženje: sakrij redovne predmete po VREMENU i po PREDMETU
+          baseFiltered = baseFiltered.filter(b => {
+            const gaziGaVreme = extraEntries.some(ex => ex.day === b.day && ex.start === b.start)
+            const gaziGaPredmet = extraEntries.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
+            return !gaziGaVreme && !gaziGaPredmet
+          })
+          
           baseFiltered = [...baseFiltered, ...extraEntries]
+          
         }
-
         setTrenutniRaspored(baseFiltered)
       })
 

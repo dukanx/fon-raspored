@@ -105,9 +105,14 @@ export default function RasporedPage() {
         const extraRaw = localStorage.getItem(`fon_extra_${meta.group}`)
         const extra: ScheduleEntry[] = extraRaw ? JSON.parse(extraRaw) : []
 
-        // MAGIJA: Filtriramo iz base sve termine koje preneseni predmeti direktno gaze (isti dan, isto vreme početka)
-        base = base.filter(b => !extra.some(ex => ex.day === b.day && ex.start === b.start))
-
+        // MAGIJA: Filtriramo iz base:
+        // 1. Termine koje preneseni predmeti gaze po vremenu (isti dan i vreme)
+        // 2. Originalne termine istog predmeta i tipa (P/V) ako smo mu dodali novi termin
+        base = base.filter(b => {
+          const gaziGaVreme = extra.some(ex => ex.day === b.day && ex.start === b.start)
+          const gaziGaPredmet = extra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
+          return !gaziGaVreme && !gaziGaPredmet
+        })
         const merged = [...base]
         for (const item of extra) {
           const exists = merged.some(e =>
