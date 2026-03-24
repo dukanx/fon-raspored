@@ -427,7 +427,7 @@ export default function RasporedPage() {
 
             <button
               onClick={toggleTheme}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               aria-label="Promeni temu"
@@ -440,7 +440,7 @@ export default function RasporedPage() {
 
             <button
               onClick={downloadPNG}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -449,7 +449,7 @@ export default function RasporedPage() {
 
             <button
               onClick={() => { downloadICS(); setShowIcsHelp(true) }}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -460,7 +460,7 @@ export default function RasporedPage() {
 
             <button
               onClick={() => router.push('/preneseni')}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-300
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -470,7 +470,7 @@ export default function RasporedPage() {
             <div className="w-full flex justify-end gap-2">
               <button
                 onClick={() => router.push('/')}
-                className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-200
+                className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
                  rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                  hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
@@ -521,7 +521,7 @@ export default function RasporedPage() {
                     {DAYS.map(day => {
                       const cell = entries.filter(e => e.day === day && e.start === slot)
                       if (!cell.length) {
-                        return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border-0 outline-none" />
+                        return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200 dark:border-0 outline-none" />
                       }
                       return (
                         <div key={day} className="flex flex-col gap-1">

@@ -94,11 +94,11 @@ export default function OnboardingPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
 
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4 text-xs">
-            <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">1. Godina</span>
+            <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">1. Podaci</span>
             <span className="text-gray-300 dark:text-gray-700">→</span>
             <span className="font-medium text-gray-400">2. Predmeti</span>
             <span className="text-gray-300 dark:text-gray-700">→</span>

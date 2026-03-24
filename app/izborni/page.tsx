@@ -53,7 +53,7 @@ export default function IzbornoPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
 
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4 text-xs">

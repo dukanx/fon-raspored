@@ -8,25 +8,21 @@ ${trenutniRaspored}
 
 Prenosi predmet "${predmet}".
 
-Dostupna predavanja (P):
-${dostupnaPredavanja || 'Nema dostupnih predavanja.'}
+Dostupna predavanja (P) - BIRATI SAMO IZ OVE LISTE:
+${dostupnaPredavanja || 'Nema dostupnih predavanja'}
 
-Dostupne vežbe (V):
-${dostupneVezbe || 'Nema dostupnih vežbi.'}
+Dostupne vežbe (V) - BIRATI SAMO IZ OVE LISTE:
+${dostupneVezbe || 'Nema dostupnih vežbi'}
 
-Predloži najbolje termine bez preklapanja sa postojećim rasporedom.
-Ako postoje i P i V, preporuči po jedan termin za oba tipa.
-Ako postoji samo jedan tip, preporuči samo taj tip.
+PRAVILA:
+1. Smeš da biraš SAMO termine koji su navedeni u listama iznad, ništa drugo
+2. Termin se preklapa ako je isti dan i isto vreme kao bilo koji termin u rasporedu
+3. Biraj termine koji se NE PREKLAPAJU
 
-PRAVILO: Termin se PREKLAPA ako je isti dan i isto vreme kao bilo koji termin u rasporedu iznad.
-Odaberi termine koji se NE PREKLAPAJU sa rasporedom.
-
-Ako nema dostupnih termina, odgovori sa terminima koji se preklapaju, ali objasni zašto su najbolji mogući izbor.
-
-Odgovori TAČNO u ovom formatu, bez dodatnog teksta:
-Predavanje: [dan] [vreme] Sala [sala] (Grupe: [grupe])
-Vežbe: [dan] [vreme] Sala [sala] (Grupe: [grupe])
-Razlog: [ukratko objašnjenje zašto]`
+Odgovori TAČNO u ovom formatu, bez ikakvih dodatnih reči ili objašnjenja u prvim dvema linijama:
+Predavanje: [kopiraj tačno iz liste iznad]
+Vežbe: [kopiraj tačno iz liste iznad]
+Razlog: [jedna rečenica]`
 
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -35,7 +31,7 @@ Razlog: [ukratko objašnjenje zašto]`
       'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'llama-3.1-8b-instant',
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 300,
       messages: [{ role: 'user', content: prompt }],
     }),
