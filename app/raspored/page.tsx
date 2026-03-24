@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
+import Link from 'next/link'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -47,6 +48,8 @@ export default function RasporedPage() {
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
+  const [showDownloadToast, setShowDownloadToast] = useState(false)
+
   const isMobile = useSyncExternalStore(
     (onStoreChange) => {
       if (typeof window === 'undefined') return () => { }
@@ -71,6 +74,7 @@ export default function RasporedPage() {
     () => true,
     () => false
   )
+  
   const view: 'grid' | 'list' = manualView ?? (isMobile ? 'list' : 'grid')
   const meta = isHydrated
     ? {
@@ -96,10 +100,13 @@ export default function RasporedPage() {
         const all = getScheduleForGroup(data, meta.group)
         const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
         const checked: Record<string, boolean> = saved ? JSON.parse(saved) : {}
-        const base = saved ? all.filter(e => checked[e.subject] !== false) : all
+        let base = saved ? all.filter(e => checked[e.subject] !== false) : all
 
         const extraRaw = localStorage.getItem(`fon_extra_${meta.group}`)
         const extra: ScheduleEntry[] = extraRaw ? JSON.parse(extraRaw) : []
+
+        // MAGIJA: Filtriramo iz base sve termine koje preneseni predmeti direktno gaze (isti dan, isto vreme početka)
+        base = base.filter(b => !extra.some(ex => ex.day === b.day && ex.start === b.start))
 
         const merged = [...base]
         for (const item of extra) {
@@ -116,7 +123,6 @@ export default function RasporedPage() {
         setEntries(merged)
       })
   }, [isHydrated, meta.group, meta.year, router])
-
   function toggleTheme() {
     const root = document.documentElement
     const willBeDark = !root.classList.contains('dark')
@@ -250,6 +256,8 @@ export default function RasporedPage() {
     link.download = `raspored-${meta.group}.png`
     link.href = canvas.toDataURL('image/png')
     link.click()
+    setShowDownloadToast(true)
+    setTimeout(() => setShowDownloadToast(false), 3000)
   }
 
   function downloadICS() {
@@ -309,6 +317,8 @@ export default function RasporedPage() {
     link.download = `raspored-${meta.group}.ics`
     link.href = URL.createObjectURL(blob)
     link.click()
+   
+    
   }
 
   return (
@@ -319,11 +329,23 @@ export default function RasporedPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2 text-xs">
-              <span className="font-medium text-gray-400">1. Podaci</span>
+              <Link 
+                href="/" 
+                className="font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                1. Podaci
+              </Link>
               <span className="text-gray-300 dark:text-gray-700">→</span>
-              <span className="font-medium text-gray-400">2. Predmeti</span>
+              <Link 
+                href="/izborni" 
+                className="font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                2. Predmeti
+              </Link>
               <span className="text-gray-300 dark:text-gray-700">→</span>
-              <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">3. Raspored</span>
+              <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">
+                3. Raspored
+              </span>
             </div>
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Grupa {meta.group}</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -645,6 +667,17 @@ export default function RasporedPage() {
             >
               Razumeo
             </button>
+          </div>
+        </div>
+      )}
+
+      {showDownloadToast && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100] animate-bounce">
+          <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
+            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:bg-green-500/20 dark:text-green-600 flex items-center justify-center flex-shrink-0">
+              ✓
+            </span>
+            Slika rasporeda je uspešno preuzeta!
           </div>
         </div>
       )}

@@ -8,21 +8,21 @@ ${trenutniRaspored}
 
 Prenosi predmet "${predmet}".
 
-Dostupna predavanja (P) - svi termini su već provereni i NE PREKLAPAJU se sa rasporedom:
-${dostupnaPredavanja || 'Nema slobodnih termina'}
+Dostupna predavanja (P) sa naznakom da li su slobodna ili menjaju postojeći predmet:
+${dostupnaPredavanja || 'Nema dostupnih termina'}
 
-Dostupne vežbe (V) - svi termini su već provereni i NE PREKLAPAJU se sa rasporedom:
-${dostupneVezbe || 'Nema slobodnih termina'}
+Dostupne vežbe (V) sa naznakom da li su slobodne ili menjaju postojeći predmet:
+${dostupneVezbe || 'Nema dostupnih termina'}
 
 PRAVILA:
-1. Smeš da biraš SAMO termine koji su navedeni u listama iznad, ništa drugo
-2. Termin se preklapa ako je isti dan i isto vreme kao bilo koji termin u rasporedu
-3. Biraj termine koji se NE PREKLAPAJU
+1. Smeš da biraš SAMO termine koji su navedeni u listama iznad, ništa drugo.
+2. PRIORITET: Uvek prvo pokušaj da nađeš termine koji imaju oznaku (SLOBODNO).
+3. Ako nema slobodnih termina, odaberi termin sa oznakom (PREKLAPANJE), ali pazi da žrtvuješ predavanja umesto vežbi ako je moguće, ili biraj logično.
 
 Odgovori TAČNO u ovom formatu, bez ikakvih dodatnih reči ili objašnjenja u prvim dvema linijama:
-Predavanje: [kopiraj tačno iz liste iznad]
-Vežbe: [kopiraj tačno iz liste iznad]
-Razlog: [jedna rečenica]`
+Predavanje: [kopiraj termin tačno iz liste iznad]
+Vežbe: [kopiraj termin tačno iz liste iznad]
+Razlog: [jedna rečenica objašnjenja zašto je to najbolji izbor i, ako postoji preklapanje, jasno navedi koji predmet se menja]`
 
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',

@@ -37,7 +37,7 @@ export default function PreneseniPage() {
       .then((data: SemesterData) => {
         const all = getScheduleForGroup(data, group)
         const saved = localStorage.getItem(`fon_subjects_${group}`)
-        let filtered = saved
+        let baseFiltered = saved
           ? all.filter(e => {
             const checked: Record<string, boolean> = JSON.parse(saved)
             return checked[e.subject] !== false
@@ -47,10 +47,12 @@ export default function PreneseniPage() {
         const extra = localStorage.getItem(`fon_extra_${group}`)
         if (extra) {
           const extraEntries: ScheduleEntry[] = JSON.parse(extra)
-          filtered = [...filtered, ...extraEntries]
+          // Automatsko gaženje: sakrij redovne predmete koji se poklapaju sa dodatim prenesenim
+          baseFiltered = baseFiltered.filter(b => !extraEntries.some(ex => ex.day === b.day && ex.start === b.start))
+          baseFiltered = [...baseFiltered, ...extraEntries]
         }
 
-        setTrenutniRaspored(filtered)
+        setTrenutniRaspored(baseFiltered)
       })
 
     const extra = localStorage.getItem(`fon_extra_${group}`)
@@ -62,17 +64,8 @@ export default function PreneseniPage() {
     const novi = extraTermini.filter((_, i) => i !== index)
     setExtraTermini(novi)
     localStorage.setItem(`fon_extra_${group}`, JSON.stringify(novi))
-  }
-
-  function filterPreklapanja(
-    termini: ScheduleEntry[],
-    raspored: ScheduleEntry[]
-  ): ScheduleEntry[] {
-    return termini.filter(termin =>
-      !raspored.some(r =>
-        r.day === termin.day && r.start === termin.start
-      )
-    )
+    // Opciono: refetch da bi se odmah vratio "pregaženi" predmet, ili reload strane
+    window.location.reload()
   }
 
   function handleGodinaSelect(g: number) {
@@ -115,18 +108,6 @@ export default function PreneseniPage() {
     setDostupniTermini(termini)
   }
 
-  function getPreklapanja(
-    termini: ScheduleEntry[],
-    raspored: ScheduleEntry[]
-  ): { termin: ScheduleEntry; preklapaSa: ScheduleEntry }[] {
-    return termini
-      .filter(termin => raspored.some(r => r.day === termin.day && r.start === termin.start))
-      .map(termin => ({
-        termin,
-        preklapaSa: raspored.find(r => r.day === termin.day && r.start === termin.start)!
-      }))
-  }
-
   async function getPreporuka() {
     if (!odabraniPredmet || !dostupniTermini.length) return
     setLoading(true)
@@ -136,23 +117,18 @@ export default function PreneseniPage() {
       .map(e => `${e.day} ${e.start}-${e.end}: ${e.subject} [${e.type_short}]`)
       .join('\n')
 
-    const slobodnaPredavanja = filterPreklapanja(
-      dostupniTermini.filter(e => e.type_short === 'P'),
-      trenutniRaspored
-    )
+    // AI sad dobija sve termine, sa naznakom da li menjaju postojeći predmet
+    const predavanjaStr = dostupniTermini.filter(e => e.type_short === 'P')
+      .map(e => {
+        const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+        return `${e.day} ${e.start}-${e.end} Sala ${e.room} ${preklapanje ? `(PREKLAPANJE: Mora da zameni ${preklapanje.subject})` : '(SLOBODNO)'}`
+      }).join('\n')
 
-    const slobodneVezbe = filterPreklapanja(
-      dostupniTermini.filter(e => e.type_short === 'V'),
-      trenutniRaspored
-    )
-
-    const predavanjaStr = slobodnaPredavanja
-      .map(e => `${e.day} ${e.start}-${e.end} Sala ${e.room} (Grupe: ${e.groups.join(', ')})`)
-      .join('\n')
-
-    const vezbeStr = slobodneVezbe
-      .map(e => `${e.day} ${e.start}-${e.end} Sala ${e.room} (Grupe: ${e.groups.join(', ')})`)
-      .join('\n')
+    const vezbeStr = dostupniTermini.filter(e => e.type_short === 'V')
+      .map(e => {
+        const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+        return `${e.day} ${e.start}-${e.end} Sala ${e.room} ${preklapanje ? `(PREKLAPANJE: Mora da zameni ${preklapanje.subject})` : '(SLOBODNO)'}`
+      }).join('\n')
 
     try {
       const res = await fetch('/api/preneseni', {
@@ -174,16 +150,9 @@ export default function PreneseniPage() {
     }
   }
 
-  // const terminiPredavanja = dostupniTermini.filter(e => e.type_short === 'P')
-  // const terminiVezbi = dostupniTermini.filter(e => e.type_short === 'V')
-  const terminiPredavanja = filterPreklapanja(
-    dostupniTermini.filter(e => e.type_short === 'P'),
-    trenutniRaspored
-  )
-  const terminiVezbi = filterPreklapanja(
-    dostupniTermini.filter(e => e.type_short === 'V'),
-    trenutniRaspored
-  )
+  // Više ne filtriramo izlaz, već nudimo SVE
+  const terminiPredavanja = dostupniTermini.filter(e => e.type_short === 'P')
+  const terminiVezbi = dostupniTermini.filter(e => e.type_short === 'V')
   const trebaPredavanje = terminiPredavanja.length > 0
   const trebaVezbe = terminiVezbi.length > 0
   const canAdd = odabranoPredavanje !== null || odabraneVezbe !== null
@@ -250,6 +219,7 @@ export default function PreneseniPage() {
                     const group = sessionStorage.getItem('fon_group')
                     setExtraTermini([])
                     localStorage.removeItem(`fon_extra_${group}`)
+                    window.location.reload()
                   }}
                   className="text-xs text-red-400 hover:text-red-600 transition-colors"
                 >
@@ -316,30 +286,41 @@ export default function PreneseniPage() {
                     Predavanja (P)
                   </label>
                   <div className="space-y-1 max-h-48 overflow-y-auto">
-                    {terminiPredavanja.map((e, i) => (
-                      <label
-                        key={`p-${i}`}
-                        className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
-                      transition-colors border
-                      ${odabranoPredavanje === e
-                            ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
-                            : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={odabranoPredavanje === e}
-                          onChange={() => {
-                            setOdabranoPredavanje(prev => prev === e ? null : e)
-                            setDodato(false)
-                          }}
-                          className="flex-shrink-0"
-                        />
-                        <span className={`text-xs flex-1 ${odabranoPredavanje === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
-                          <span className="font-medium">{e.day}</span>
-                          {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
-                        </span>
-                      </label>
-                    ))}
+                    {terminiPredavanja.map((e, i) => {
+                      const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+                      return (
+                        <label
+                          key={`p-${i}`}
+                          className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
+                        transition-colors border
+                        ${odabranoPredavanje === e
+                              ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
+                              : preklapanje 
+                                ? 'bg-orange-50/50 dark:bg-orange-900/10 border-transparent hover:bg-orange-50 dark:hover:bg-orange-900/20' 
+                                : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={odabranoPredavanje === e}
+                            onChange={() => {
+                              setOdabranoPredavanje(prev => prev === e ? null : e)
+                              setDodato(false)
+                            }}
+                            className="flex-shrink-0"
+                          />
+                          <span className={`text-xs flex-1 ${odabranoPredavanje === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
+                            <span className="font-medium">{e.day}</span>
+                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
+                            {preklapanje && (
+                              <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium leading-none 
+                                ${odabranoPredavanje === e ? 'bg-white/20 text-white dark:bg-[#024c7d]/20 dark:text-[#024c7d]' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
+                                Menja: {preklapanje.subject} [{preklapanje.type_short}]
+                              </span>
+                            )}
+                          </span>
+                        </label>
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -350,72 +331,47 @@ export default function PreneseniPage() {
                     Vežbe (V)
                   </label>
                   <div className="space-y-1 max-h-48 overflow-y-auto">
-                    {terminiVezbi.map((e, i) => (
-                      <label
-                        key={`v-${i}`}
-                        className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
-                      transition-colors border
-                      ${odabraneVezbe === e
-                            ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
-                            : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
-                      >
-                        <input
-                          type="checkbox"
-
-                          checked={odabraneVezbe === e}
-                          onChange={() => {
-                            setOdabraneVezbe(prev => prev === e ? null : e)
-                            setDodato(false)
-                          }}
-                          className="flex-shrink-0"
-                        />
-                        <span className={`text-xs flex-1 ${odabraneVezbe === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
-                          <span className="font-medium">{e.day}</span>
-                          {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
-                        </span>
-                      </label>
-                    ))}
+                    {terminiVezbi.map((e, i) => {
+                      const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+                      return (
+                        <label
+                          key={`v-${i}`}
+                          className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
+                        transition-colors border
+                        ${odabraneVezbe === e
+                              ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
+                              : preklapanje 
+                                ? 'bg-orange-50/50 dark:bg-orange-900/10 border-transparent hover:bg-orange-50 dark:hover:bg-orange-900/20' 
+                                : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={odabraneVezbe === e}
+                            onChange={() => {
+                              setOdabraneVezbe(prev => prev === e ? null : e)
+                              setDodato(false)
+                            }}
+                            className="flex-shrink-0"
+                          />
+                          <span className={`text-xs flex-1 ${odabraneVezbe === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
+                            <span className="font-medium">{e.day}</span>
+                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
+                            {preklapanje && (
+                              <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium leading-none 
+                                ${odabraneVezbe === e ? 'bg-white/20 text-white dark:bg-[#024c7d]/20 dark:text-[#024c7d]' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
+                                Menja: {preklapanje.subject} [{preklapanje.type_short}]
+                              </span>
+                            )}
+                          </span>
+                        </label>
+                      )
+                    })}
                   </div>
                 </div>
               )}
             </div>
           )}
-          {/* Termini koji se preklapaju */}
-          {(() => {
-            const preklapanjaPredavanja = getPreklapanja(
-              dostupniTermini.filter(e => e.type_short === 'P'),
-              trenutniRaspored
-            )
-            const preklaplanjaVezbi = getPreklapanja(
-              dostupniTermini.filter(e => e.type_short === 'V'),
-              trenutniRaspored
-            )
-            const sva = [...preklapanjaPredavanja, ...preklaplanjaVezbi]
-            if (!sva.length) return null
 
-            return (
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Termini koji se preklapaju
-                </label>
-                <div className="space-y-1">
-                  {sva.map((p, i) => (
-                    <div key={i} className="flex items-start gap-2 py-2 px-3
-                                   bg-red-50 rounded-lg border border-red-100">
-                      <span className="text-red-400 flex-shrink-0 mt-0.5">✕</span>
-                      <div className="text-xs text-red-700">
-                        <span className="font-medium">
-                          {p.termin.day} {p.termin.start}–{p.termin.end} [{p.termin.type_short}]
-                        </span>
-                        <span className="text-red-400"> · preklapa se sa </span>
-                        <span className="font-medium">{p.preklapaSa.subject} [{p.preklapaSa.type_short}]</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })()}
           {/* AI preporuka dugme */}
           {dostupniTermini.length > 0 && (
             <button
@@ -443,6 +399,7 @@ export default function PreneseniPage() {
               </div>
             </div>
           )}
+
           {/* Dodaj u raspored */}
           {(trebaPredavanje || trebaVezbe) && (
             <button
@@ -469,6 +426,8 @@ export default function PreneseniPage() {
                   JSON.stringify(extra)
                 )
                 setDodato(true)
+                // Reload da bi se osvežio trenutni raspored i prikazala promena odmah
+                window.location.reload()
               }}
               disabled={!canAdd}
               className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors

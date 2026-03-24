@@ -89,20 +89,35 @@ export default function IzbornoPage() {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          
+          {/* Brojač predmeta */}
+          <span className="text-xs text-gray-400 dark:text-gray-500 w-full sm:w-auto text-center sm:text-left">
             {checkedCount} od {subjects.length} predmeta
           </span>
-          <button
-            onClick={handleConfirm}
-            disabled={checkedCount === 0}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
-              ${checkedCount > 0
-                ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
-          >
-            Prikaži raspored →
-          </button>
+
+          {/* Dugmići */}
+          <div className="flex w-full sm:w-auto items-stretch gap-2">
+            <button
+              onClick={() => router.push('/')}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              ← Nazad
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={checkedCount === 0}
+              className={`flex-[2] sm:flex-none flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
+                ${checkedCount > 0
+                  ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
+            >
+              Prikaži raspored →
+            </button>
+          </div>
+          
         </div>
 
       </div>
