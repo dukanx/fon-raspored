@@ -9,6 +9,10 @@
   --fon-blue-hover: #013d6a;
   --fon-teal: #60c3ad;
   --fon-teal-hover: #4db3a0;
+  --wallpaper-overlay: linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.68));
+  --wallpaper-accent-1: radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.07) 0px, transparent 55%);
+  --wallpaper-accent-2: radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.05) 0px, transparent 50%);
+  --wallpaper-accent-3: radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.04) 0px, transparent 50%);
 }
 
 @theme inline {
@@ -21,24 +25,39 @@
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --wallpaper-overlay: linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.94));
+  --wallpaper-accent-1: radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.20) 0px, transparent 55%);
+  --wallpaper-accent-2: radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.12) 0px, transparent 50%);
+  --wallpaper-accent-3: radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.10) 0px, transparent 50%);
 }
 
 body {
   background: var(--background);
-  background-image:
-    radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.07) 0px, transparent 55%),
-    radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.05) 0px, transparent 50%),
-    radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.04) 0px, transparent 50%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   color-scheme: light;
+  position: relative;
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    var(--wallpaper-overlay),
+    var(--wallpaper-accent-1),
+    var(--wallpaper-accent-2),
+    var(--wallpaper-accent-3),
+    url("/FONWallpaper.png");
+  background-position: center, 15% 20%, 85% 8%, 65% 88%, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, auto, cover;
 }
 
 .dark body {
-  background-image:
-    radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.20) 0px, transparent 55%),
-    radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.12) 0px, transparent 50%),
-    radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.10) 0px, transparent 50%);
   color-scheme: dark;
 }
 

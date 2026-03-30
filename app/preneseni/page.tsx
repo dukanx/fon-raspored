@@ -165,7 +165,7 @@ export default function PreneseniPage() {
 
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <main className="min-h-screen">
       <div className="max-w-lg mx-auto px-4 py-8">
 
         <div className="flex items-center justify-between mb-6">
