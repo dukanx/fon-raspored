@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: "Lični raspored nastave za studente FON-a",
   icons: {
     icon: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
   openGraph: {
     title: 'FON Raspored',
