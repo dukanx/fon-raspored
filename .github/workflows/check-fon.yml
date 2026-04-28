@@ -1,0 +1,31 @@
+name: Check FON for new PDFs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Svaki dan u ponoć
+  workflow_dispatch:       # Možeš da pokreneš ručno
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pdfplumber requests beautifulsoup4
+
+      - name: Check and parse new PDFs
+        run: python scripts/check_fon.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "FON Bot"
+          git config user.email "bot@fonraspored.rs"
+          git add public/data/rokovi.json scripts/known_pdfs.json
+          git diff --staged --quiet || git commit -m "auto: novi raspored sa FON sajta"
+          git push

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useSyncExternalStore } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { RokData, RokEntry } from '@/lib/types'
 
@@ -41,7 +40,6 @@ function buildColorMap(entries: RokEntry[]) {
 type Tab = 'kolokvijumi' | 'ispiti'
 
 export default function RokoviPage() {
-  const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
   const [tab, setTab] = useState<Tab>('ispiti')
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
