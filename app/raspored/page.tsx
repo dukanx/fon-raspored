@@ -377,8 +377,8 @@ export default function RasporedPage() {
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               aria-label="Promeni temu"
             >
-              <span className="dark:hidden">🌙</span>
-              <span className="hidden dark:inline">🔅</span>
+              <img src="/moon.png" alt="Tamna tema" className="w-4 h-4 dark:hidden" />
+              <img src="/sun.png" alt="Svetla tema" className="w-4 h-4 hidden dark:block" />
             </button>
 
             <button
@@ -406,6 +406,15 @@ export default function RasporedPage() {
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Izmeni / Dodaj termine        +
+            </button>
+
+            <button
+              onClick={() => router.push('/rokovi')}
+              className="col-span-2 inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
+              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Ispiti i kolokvijumi     
             </button>
 
             <button
@@ -459,8 +468,8 @@ export default function RasporedPage() {
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               aria-label="Promeni temu"
             >
-              <span className="dark:hidden">🌙</span>
-              <span className="hidden dark:inline">🔅</span>
+              <img src="/moon.png" alt="Tamna tema" className="w-4 h-4 dark:hidden" />
+              <img src="/sun.png" alt="Svetla tema" className="w-4 h-4 hidden dark:block" />
             </button>
 
             <div className="w-px h-5 bg-gray-300 dark:bg-gray-700" />
@@ -492,6 +501,15 @@ export default function RasporedPage() {
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               + Izmeni / Dodaj termine
+            </button>
+
+            <button
+              onClick={() => router.push('/rokovi')}
+              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-300
+             rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
+             hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Ispiti i kolokvijumi
             </button>
             {/* FON i Nazad — novi red */}
             <div className="w-full flex justify-end gap-2">

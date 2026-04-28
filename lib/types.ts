@@ -27,3 +27,19 @@ export interface SemesterData {
   groups: Record<string, GroupInfo>
   entries: ScheduleEntry[]
 }
+
+export interface RokEntry {
+  subject: string
+  type?: string    // "P" (pismeni) | "U" (usmeni) — samo kod ispita
+  date: string     // ISO: "2026-03-03"
+  start: string    // "15:00"
+  end: string      // "16:40"
+  rooms: string[]
+  note: string
+}
+
+export interface RokData {
+  rok: string                    // "Februarski 2025/26"
+  tip: 'ispit' | 'kolokvijum'
+  entries: RokEntry[]
+}
