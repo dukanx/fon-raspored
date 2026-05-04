@@ -12,7 +12,7 @@ PAGES = {
 
 KNOWN_FILE  = Path('scripts/known_pdfs.json')
 ROKOVI_FILE = Path('public/data/rokovi.json')
-PARSER      = Path('scripts/parse_exams.py')
+PARSER      = Path('scripts/fon_exam_parser.py')
 
 
 def guess_rok(url: str) -> str:
