@@ -110,10 +110,14 @@ export default function RokoviPage() {
     return entries.filter(e => userSubjects.has(e.subject))
   }
 
-  // Rokovi za aktivni tab
-  const activeRokovi = allRokovi.filter(r =>
-    tab === 'ispiti' ? r.tip === 'ispit' : r.tip === 'kolokvijum'
-  )
+  const todayStr = new Date().toISOString().split('T')[0]
+
+  // Rokovi za aktivni tab — samo buduci i tekuci (bar jedan unos >= danas)
+  const activeRokovi = allRokovi.filter(r => {
+    if (tab === 'ispiti' ? r.tip !== 'ispit' : r.tip !== 'kolokvijum') return false
+    if (r.entries.length === 0) return false
+    return r.entries.some(e => e.date >= todayStr)
+  })
 
   // Svi filtrirani unosi (za color map i kalendar)
   const allFilteredEntries = activeRokovi.flatMap(r => filterEntries(r.entries))
@@ -211,8 +215,6 @@ export default function RokoviPage() {
     const weeks: (number | null)[][] = []
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7))
 
-    const today = new Date()
-
     if (isEmpty) return <EmptyState />
 
     return (
@@ -253,7 +255,7 @@ export default function RokoviPage() {
               if (!day) return <div key={di} />
               const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
               const dayEntries = byDate[isoDate] ?? []
-              const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day
+              const isToday = isoDate === todayStr
               const hasEvents = dayEntries.length > 0
 
               return (
@@ -396,6 +398,19 @@ export default function RokoviPage() {
                     : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
               >Lista</button>
             </div>
+            <a
+              href={tab === 'kolokvijumi'
+                ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
+                : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
+                text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900
+                rounded-lg bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50
+                transition-colors"
+            >
+              FON →
+            </a>
             <button
               onClick={toggleTheme}
               className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
@@ -420,6 +435,18 @@ export default function RokoviPage() {
                 ${view === 'calendar' ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
                   : 'bg-white text-gray-600 border border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700'}`}
             >Kalendar</button>
+            <a
+              href={tab === 'kolokvijumi'
+                ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
+                : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-900 text-xs font-medium
+                text-blue-700 dark:text-blue-300 bg-blue-50/70 dark:bg-blue-950/40
+                hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+            >
+              FON →
+            </a>
             <button onClick={toggleTheme}
               className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500
                 bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700"
