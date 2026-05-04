@@ -21,11 +21,17 @@ const SR_MONTHS_SHORT = [
   'jan', 'feb', 'mar', 'apr', 'maj', 'jun',
   'jul', 'avg', 'sep', 'okt', 'nov', 'dec',
 ]
-const SR_DAYS_SHORT = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
+const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
+
+const SR_DAYS_FULL = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
 
 function formatDateSr(isoDate: string) {
   const d = new Date(isoDate + 'T00:00:00')
   return `${d.getDate()}. ${SR_MONTHS_SHORT[d.getMonth()]}`
+}
+
+function getDaySr(isoDate: string) {
+  return SR_DAYS_FULL[new Date(isoDate + 'T00:00:00').getDay()]
 }
 
 function buildColorMap(entries: RokEntry[]) {
@@ -162,36 +168,47 @@ export default function RokoviPage() {
               </h2>
               <div className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
             </div>
-            <div className="space-y-1">
-              {g.entries.map((e, i) => {
-                const c = COLORS[colorMap[e.subject]]
-                return (
-                  <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 dark:border-gray-800">
-                    <div className="flex-shrink-0 text-right w-20">
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 block">
-                        {formatDateSr(e.date)}
-                      </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{e.start}</span>
-                    </div>
-                    <div className="w-1 self-stretch rounded-full flex-shrink-0" style={{ background: c.bar }} />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {e.rooms.join(', ')}
-                        {e.note ? ` · ${e.note}` : ''}
-                      </span>
-                    </div>
-                    {e.type && (
-                      <span
-                        style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
-                        className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0"
-                      >
-                        {e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}
-                      </span>
-                    )}
+            <div className="space-y-3">
+              {Object.entries(
+                g.entries.reduce((acc, e) => {
+                  if (!acc[e.date]) acc[e.date] = []
+                  acc[e.date].push(e)
+                  return acc
+                }, {} as Record<string, typeof g.entries>)
+              ).map(([date, dateEntries]) => (
+                <div key={date}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      {getDaySr(date)}, {formatDateSr(date)}
+                    </span>
+                    <div className="h-px flex-1 bg-gray-100 dark:bg-gray-800" />
                   </div>
-                )
-              })}
+                  {dateEntries.map((e, i) => {
+                    const c = COLORS[colorMap[e.subject]]
+                    return (
+                      <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 w-10 text-right shrink-0">{e.start}</span>
+                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: c.bar }} />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                            {e.rooms.join(', ')}
+                            {e.note ? ` · ${e.note}` : ''}
+                          </span>
+                        </div>
+                        {e.type && (
+                          <span
+                            style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
+                            className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
+                          >
+                            {e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
             </div>
           </div>
         ))}
@@ -274,12 +291,23 @@ export default function RokoviPage() {
                     {day}
                   </span>
                   {hasEvents && (
-                    <div className="flex flex-col gap-0.5">
-                      {dayEntries.slice(0, 2).map((e, i) => (
-                        <div key={i} className="w-full h-1 rounded-full" style={{ background: COLORS[colorMap[e.subject]].bar }} />
+                    <div className="flex flex-col gap-px mt-0.5">
+                      {dayEntries.slice(0, 3).map((e, i) => (
+                        <div
+                          key={i}
+                          className="rounded-sm px-0.5 overflow-hidden"
+                          style={{ background: isDark ? COLORS[colorMap[e.subject]].darkBg : COLORS[colorMap[e.subject]].bg }}
+                        >
+                          <span
+                            className="text-[9px] leading-tight truncate block font-medium"
+                            style={{ color: isDark ? COLORS[colorMap[e.subject]].darkText : COLORS[colorMap[e.subject]].text }}
+                          >
+                            {e.subject}
+                          </span>
+                        </div>
                       ))}
-                      {dayEntries.length > 2 && (
-                        <span className="text-[9px] text-gray-400 dark:text-gray-500">+{dayEntries.length - 2}</span>
+                      {dayEntries.length > 3 && (
+                        <span className="text-[9px] text-gray-400 dark:text-gray-500 px-0.5">+{dayEntries.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -293,7 +321,7 @@ export default function RokoviPage() {
           <div className="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {formatDateSr(tooltip.date)}
+                {getDaySr(tooltip.date)}, {formatDateSr(tooltip.date)}
               </h4>
               <button onClick={() => setTooltip(null)} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
             </div>
@@ -302,7 +330,7 @@ export default function RokoviPage() {
                 const c = COLORS[colorMap[e.subject]]
                 return (
                   <div key={i} className="flex items-start gap-3">
-                    <div className="w-1 h-8 rounded-full flex-shrink-0 mt-0.5" style={{ background: c.bar }} />
+                    <div className="w-1 h-8 rounded-full shrink-0 mt-0.5" style={{ background: c.bar }} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-900 dark:text-gray-100">{e.subject}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">
@@ -323,7 +351,7 @@ export default function RokoviPage() {
             <h4 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Predmeti</h4>
             {Object.entries(colorMap).map(([subject, idx]) => (
               <div key={subject} className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: COLORS[idx].bar }} />
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: COLORS[idx].bar }} />
                 <span className="text-xs text-gray-600 dark:text-gray-400 truncate">{subject}</span>
               </div>
             ))}
