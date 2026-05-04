@@ -72,6 +72,19 @@ python scripts/fon_exam_parser.py --pdf kol.pdf --tip kolokvijum --rok "Prvi zim
 python scripts/fon_exam_parser.py --pdf januar.pdf --tip ispit --rok "Januarski" --output out.json
 ```
 
+## Verzije
+
+### v1.0 — Raspored nastave
+Onboarding, nedeljni raspored filtriran po grupi, dark/light mode, export u iCal.
+
+### v2.0 — Ispiti i kolokvijumi
+Nova stranica `/rokovi` sa listom i kalendarskim prikazom ispita i kolokvijuma, filtriranim po odabranim predmetima. PDF parser (`fon_exam_parser.py`) za konverziju FON rasporeda u JSON.
+
+### v2.1 — Automatizacija
+GitHub Actions workflow koji svake noći proverava FON sajt, detektuje nove PDF-ove, parsira ih i automatski ažurira `rokovi.json`.
+
+---
+
 ## Tech stack
 
 - [Next.js](https://nextjs.org) (App Router)
