@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useSyncExternalStore } from 'react'
+import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import type { RokData, RokEntry } from '@/lib/types'
 
@@ -99,15 +99,21 @@ export default function RokoviPage() {
       .catch(() => setAllRokovi([]))
   }, [isHydrated])
 
-  // Skup predmeta koje student sluša
+  // Skup predmeta koje student sluša (regularni + preneseni iz prošlih godina)
   const userSubjects: Set<string> | null = isHydrated && meta.group
     ? (() => {
         const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
         if (!saved) return null
         const checked: Record<string, boolean> = JSON.parse(saved)
-        return new Set(
+        const subjects = new Set(
           Object.entries(checked).filter(([, v]) => v !== false).map(([k]) => k)
         )
+        const extra = localStorage.getItem(`fon_extra_${meta.group}`)
+        if (extra) {
+          const extraEntries: { subject: string }[] = JSON.parse(extra)
+          for (const e of extraEntries) subjects.add(e.subject)
+        }
+        return subjects
       })()
     : null
 
@@ -116,26 +122,30 @@ export default function RokoviPage() {
     return entries.filter(e => userSubjects.has(e.subject))
   }
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
 
-  // Rokovi za aktivni tab — samo buduci i tekuci (bar jedan unos >= danas)
-  const activeRokovi = allRokovi.filter(r => {
+  const activeRokovi = useMemo(() => allRokovi.filter(r => {
     if (tab === 'ispiti' ? r.tip !== 'ispit' : r.tip !== 'kolokvijum') return false
     if (r.entries.length === 0) return false
     return r.entries.some(e => e.date >= todayStr)
-  })
+  }), [allRokovi, tab, todayStr])
 
-  // Svi filtrirani unosi (za color map i kalendar)
-  const allFilteredEntries = activeRokovi.flatMap(r => filterEntries(r.entries))
-  const colorMap = buildColorMap(allFilteredEntries)
+  const allFilteredEntries = useMemo(
+    () => activeRokovi.flatMap(r => filterEntries(r.entries)),
+    [activeRokovi, userSubjects] // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
-  // Po datumu za kalendar
-  const byDate: Record<string, RokEntry[]> = {}
-  for (const e of allFilteredEntries) {
-    if (!e.date) continue
-    if (!byDate[e.date]) byDate[e.date] = []
-    byDate[e.date].push(e)
-  }
+  const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
+
+  const byDate = useMemo(() => {
+    const map: Record<string, RokEntry[]> = {}
+    for (const e of allFilteredEntries) {
+      if (!e.date) continue
+      if (!map[e.date]) map[e.date] = []
+      map[e.date].push(e)
+    }
+    return map
+  }, [allFilteredEntries])
 
   function toggleTheme() {
     const root = document.documentElement
@@ -144,7 +154,6 @@ export default function RokoviPage() {
     localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
   }
 
-  // --- Prazno stanje ---
   const isEmpty = activeRokovi.length === 0
 
   // --- Lista view ---
@@ -501,7 +510,7 @@ export default function RokoviPage() {
           ))}
         </div>
 
-        {!isHydrated || allRokovi.length === 0 && !isHydrated ? (
+        {!isHydrated ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">Učitavanje...</div>
         ) : view === 'list' ? (
           <ListView />
