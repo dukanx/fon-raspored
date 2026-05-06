@@ -387,7 +387,8 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Slika      ↓
+              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Slika
             </button>
 
             <button
@@ -396,7 +397,8 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izvezi u kalendar      ↗
+              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Izvezi u kalendar
             </button>
 
             <button
@@ -405,7 +407,8 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              Izmeni / Dodaj termine        +
+              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Izmena termina
             </button>
 
             <button
@@ -480,7 +483,8 @@ export default function RasporedPage() {
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              ↓ Slika
+              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Slika
             </button>
 
             <button
@@ -489,18 +493,20 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              ↗ Izvezi u kalendar
+              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Izvezi u kalendar
             </button>
 
             <div className="w-px h-5 bg-gray-300 dark:bg-gray-700" />
 
             <button
               onClick={() => router.push('/preneseni')}
-              className="px-3 py-1.5 text-xs text-gray-500 border border-gray-300
+              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              + Izmeni / Dodaj termine
+              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              Izmena termina
             </button>
 
             <button
