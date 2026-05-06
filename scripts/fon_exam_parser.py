@@ -38,6 +38,11 @@ def words_in_range(row, x_min, x_max):
 ROOMS_NOISE = {"СЕМЕСТРУ", "SEMESTR", "SEMESTER", "ЛЕТЊИ", "ЗИМСКИ", "ЛЕТЊЕМ",
                "2025/26", "2024/25", "2026/27"}
 
+
+def to_iso(datum_str):
+    m = re.match(r"(\d{2})[/-](\d{2})[/-](\d{4})", datum_str)
+    return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else ""
+
 def parse_rooms(words):
     """
     Spaja sale u čitljive nazive.
@@ -113,11 +118,7 @@ def parse_ispit(pdf_path):
                     note_words = words_in_range(row, 740, 9999)
                     note = " ".join(note_words)
 
-                    # Konvertuj datum u ISO format
-                    date_iso = ""
-                    m = re.match(r"(\d{2})[/-](\d{2})[/-](\d{4})", datum_str)
-                    if m:
-                        date_iso = f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+                    date_iso = to_iso(datum_str)
 
                     if subject and date_iso:
                         entries.append({
@@ -188,10 +189,7 @@ def parse_kolokvijum(pdf_path):
                     note_words = words_in_range(row, 715, 9999)
                     note = " ".join(note_words)
 
-                    date_iso = ""
-                    m = re.match(r"(\d{2})[/-](\d{2})[/-](\d{4})", datum_str)
-                    if m:
-                        date_iso = f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+                    date_iso = to_iso(datum_str)
 
                     if subject and date_iso:
                         entries.append({

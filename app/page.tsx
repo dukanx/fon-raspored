@@ -35,6 +35,12 @@ export default function OnboardingPage() {
   const selectedProgram = program ?? (isHydrated ? (localStorage.getItem('fon_saved_program') ?? '') : '')
   const enteredLastName = lastName ?? (isHydrated ? (localStorage.getItem('fon_saved_lastName') ?? '') : '')
 
+  // Ako je korisnik već prošao onboarding, idi direktno na raspored
+  useEffect(() => {
+    if (!isHydrated) return
+    if (sessionStorage.getItem('fon_group')) router.replace('/raspored')
+  }, [isHydrated, router])
+
   // Učitaj JSON kad se odabere godina
   useEffect(() => {
     if (!selectedYear) return
