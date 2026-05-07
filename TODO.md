@@ -2,7 +2,7 @@
 
 ## Sledeći korak (prioritet)
 
-- [ ] **Uklanjanje termina nastave** — mogućnost da se sakriju individualni termini (npr. student ide samo na jedan od dva termina vežbi)
+- [ ] **Swipe za uklanjanje termina** — uklanjanje temrina na telefonu radi swipe umesto x dugmeta
 
 ## Planirano
 

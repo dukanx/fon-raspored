@@ -26,6 +26,7 @@ export default function PreneseniPage() {
   const [odabraneVezbe, setOdabraneVezbe] = useState<ScheduleEntry | null>(null)
   const [dodato, setDodato] = useState(false)
   const [extraTermini, setExtraTermini] = useState<ScheduleEntry[]>([])
+  const [hiddenTermini, setHiddenTermini] = useState<ScheduleEntry[]>([])
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
 
@@ -66,9 +67,20 @@ export default function PreneseniPage() {
     const extra = localStorage.getItem(`fon_extra_${group}`)
     if (extra) setExtraTermini(JSON.parse(extra))
 
+    const hidden = localStorage.getItem(`fon_hidden_${group}`)
+    if (hidden) setHiddenTermini(JSON.parse(hidden))
+
     const savedPrev = localStorage.getItem(`fon_prev_subjects_${group}`)
     if (savedPrev) setPrevSubjects(JSON.parse(savedPrev))
   }, [router])
+
+  function vratiTermin(index: number) {
+    const group = sessionStorage.getItem('fon_group')
+    const novi = hiddenTermini.filter((_, i) => i !== index)
+    setHiddenTermini(novi)
+    if (novi.length === 0) localStorage.removeItem(`fon_hidden_${group}`)
+    else localStorage.setItem(`fon_hidden_${group}`, JSON.stringify(novi))
+  }
 
   function obrisiTermin(index: number) {
     const group = sessionStorage.getItem('fon_group')
@@ -184,7 +196,7 @@ export default function PreneseniPage() {
               Izmena rasporeda
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
-              Ovde možeš da ubaciš <strong>prenesene predmete</strong>, ili da odabereš predmet koji trenutno slušaš kako bi mu <strong>promenio termin</strong>.
+              Dodaj <strong>termine za predmete iz prethodnih godina</strong>, promeni termin postojećeg predmeta, ili vrati termine koje si sakrio klikom na <strong>✕</strong> u rasporedu.
             </p>
           </div>
           <button
@@ -243,6 +255,39 @@ export default function PreneseniPage() {
                 >
                   Obriši sve
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Skriveni termini */}
+          {hiddenTermini.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Skriveni termini
+              </label>
+              <div className="space-y-1">
+                {hiddenTermini.map((e, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 py-2 px-3 bg-gray-50 dark:bg-gray-800
+                     rounded-lg border border-gray-100 dark:border-gray-700"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {e.subject}
+                      </p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => vratiTermin(i)}
+                      className="text-xs text-gray-400 hover:text-[#024c7d] dark:hover:text-[#60c3ad] transition-colors shrink-0"
+                    >
+                      Vrati
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           )}

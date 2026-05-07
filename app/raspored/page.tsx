@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useSyncExternalStore } from 'react'
+import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
@@ -31,6 +31,10 @@ const COLORS = [
   { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d264a7', darkBg: '#3d1a30', darkText: '#e8a8d0' },
 ]
 
+function entryKey(e: ScheduleEntry) {
+  return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
+}
+
 function useSubjectColors(entries: ScheduleEntry[]) {
   const map: Record<string, number> = {}
   let i = 0
@@ -46,6 +50,7 @@ function useSubjectColors(entries: ScheduleEntry[]) {
 export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
+  const [hiddenEntries, setHiddenEntries] = useState<ScheduleEntry[]>([])
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
   const [showDownloadToast, setShowDownloadToast] = useState(false)
@@ -126,6 +131,9 @@ export default function RasporedPage() {
         }
 
         setEntries(merged)
+
+        const hiddenRaw = localStorage.getItem(`fon_hidden_${meta.group}`)
+        if (hiddenRaw) setHiddenEntries(JSON.parse(hiddenRaw))
       })
   }, [isHydrated, meta.group, meta.year, router])
   function toggleTheme() {
@@ -136,6 +144,18 @@ export default function RasporedPage() {
   }
 
   const colorMap = useSubjectColors(entries)
+
+  const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(entryKey)), [hiddenEntries])
+  const visibleEntries = useMemo(() => entries.filter(e => !hiddenKeys.has(entryKey(e))), [entries, hiddenKeys])
+
+  function hideEntry(e: ScheduleEntry) {
+    const key = entryKey(e)
+    if (hiddenKeys.has(key)) return
+    const next = [...hiddenEntries, e]
+    setHiddenEntries(next)
+    localStorage.setItem(`fon_hidden_${meta.group}`, JSON.stringify(next))
+  }
+
   function downloadPNG() {
     const canvas = document.createElement('canvas')
     const dpr = 2
@@ -200,7 +220,7 @@ export default function RasporedPage() {
 
       DAYS.forEach((day, di) => {
         const x = padding + timeW + colW * di
-        const cell = entries.filter(e => e.day === day && e.start === slot)
+        const cell = visibleEntries.filter(e => e.day === day && e.start === slot)
 
         if (!cell.length) return
 
@@ -283,7 +303,7 @@ export default function RasporedPage() {
       Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
     }
 
-    entries.forEach(e => {
+    visibleEntries.forEach(e => {
       const offset = DAY_OFFSET[e.day]
       const date = new Date(monday)
       date.setDate(monday.getDate() + offset)
@@ -570,7 +590,7 @@ export default function RasporedPage() {
                       {slot}
                     </div>
                     {DAYS.map(day => {
-                      const cell = entries.filter(e => e.day === day && e.start === slot)
+                      const cell = visibleEntries.filter(e => e.day === day && e.start === slot)
                       if (!cell.length) {
                         return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200 dark:border-0 outline-none" />
                       }
@@ -579,8 +599,15 @@ export default function RasporedPage() {
                           {cell.map((e, i) => {
                             const c = COLORS[colorMap[e.subject]]
                             return (
-                              <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="flex-1 rounded-lg p-2 min-h-[64px]">
-                                <p style={{ color: isDark ? c.darkText : c.text }} className="text-xs font-medium leading-snug line-clamp-2">
+                              <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="group/card flex-1 rounded-lg p-2 min-h-[64px] relative">
+                                <button
+                                  onClick={() => hideEntry(e)}
+                                  style={{ color: isDark ? c.darkText : c.text }}
+                                  className="absolute top-1 right-1 w-4 h-4 rounded flex items-center justify-center opacity-0 group-hover/card:opacity-60 hover:!opacity-100 transition-opacity text-[10px] leading-none bg-black/10 dark:bg-white/10"
+                                >
+                                  ✕
+                                </button>
+                                <p style={{ color: isDark ? c.darkText : c.text }} className="text-xs font-medium leading-snug line-clamp-2 pr-4">
                                   {e.subject}
                                 </p>
                                 <p style={{ color: isDark ? c.darkText : c.text }} className="text-xs mt-1 opacity-70">
@@ -604,7 +631,7 @@ export default function RasporedPage() {
         {view === 'list' && (
           <div className="space-y-6">
             {DAYS.map(day => {
-              const dayEntries = entries
+              const dayEntries = visibleEntries
                 .filter(e => e.day === day)
                 .sort((a, b) => a.start.localeCompare(b.start))
 
@@ -639,6 +666,12 @@ export default function RasporedPage() {
                           <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
                             {e.type_short}
                           </span>
+                          <button
+                            onClick={() => hideEntry(e)}
+                            className="w-6 h-6 flex items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
+                          >
+                            ✕
+                          </button>
                         </div>
                       )
                     })}
