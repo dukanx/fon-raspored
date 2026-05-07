@@ -153,7 +153,7 @@ export default function IzbornoPage() {
             <div className="mt-3 space-y-3">
               <p className="text-xs text-gray-400 dark:text-gray-500">
                 Termine dodaješ u rasporedu →{' '}
-                <span className="font-medium text-gray-600 dark:text-gray-300">Izmeni / Dodaj termine</span>
+                <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>
               </p>
 
               <div className="grid grid-cols-4 gap-1.5">
@@ -240,7 +240,7 @@ export default function IzbornoPage() {
           </span>
           <div className="flex w-full sm:w-auto items-stretch gap-2">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
               className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"

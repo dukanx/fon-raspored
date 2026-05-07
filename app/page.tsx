@@ -35,10 +35,24 @@ export default function OnboardingPage() {
   const selectedProgram = program ?? (isHydrated ? (localStorage.getItem('fon_saved_program') ?? '') : '')
   const enteredLastName = lastName ?? (isHydrated ? (localStorage.getItem('fon_saved_lastName') ?? '') : '')
 
-  // Ako je korisnik već prošao onboarding, idi direktno na raspored
   useEffect(() => {
     if (!isHydrated) return
-    if (sessionStorage.getItem('fon_group')) router.replace('/raspored')
+    // Isti tab — sessionStorage ima grupu
+    if (sessionStorage.getItem('fon_group')) { router.replace('/raspored'); return }
+    // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
+    const savedGroup = localStorage.getItem('fon_saved_group')
+    const savedYear = localStorage.getItem('fon_saved_year')
+    if (savedGroup && savedYear) {
+      sessionStorage.setItem('fon_group', savedGroup)
+      sessionStorage.setItem('fon_year', savedYear)
+      const prog = localStorage.getItem('fon_saved_program')
+      const name = localStorage.getItem('fon_saved_lastName')
+      const sem = localStorage.getItem('fon_saved_semester')
+      if (prog) sessionStorage.setItem('fon_program', prog)
+      if (name) sessionStorage.setItem('fon_lastName', name)
+      if (sem) sessionStorage.setItem('fon_semester', sem)
+      router.replace('/raspored')
+    }
   }, [isHydrated, router])
 
   // Učitaj JSON kad se odabere godina
@@ -86,9 +100,11 @@ export default function OnboardingPage() {
     sessionStorage.setItem('fon_semester', data.semester)
     if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
 
+    localStorage.setItem('fon_saved_group', groupId)
     localStorage.setItem('fon_saved_year', String(selectedYear))
     localStorage.setItem('fon_saved_program', selectedProgram)
     localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
+    localStorage.setItem('fon_saved_semester', data.semester)
     router.push('/izborni')
   }
 
@@ -228,9 +244,11 @@ export default function OnboardingPage() {
                 sessionStorage.setItem('fon_semester', data.semester)
                 if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
 
+                localStorage.setItem('fon_saved_group', groupId)
                 localStorage.setItem('fon_saved_year', String(selectedYear))
                 localStorage.setItem('fon_saved_program', selectedProgram)
                 localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
+                localStorage.setItem('fon_saved_semester', data.semester)
                 router.push('/izborni')
               }}
               className="w-full h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700
