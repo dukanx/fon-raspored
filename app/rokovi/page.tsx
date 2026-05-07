@@ -124,6 +124,11 @@ export default function RokoviPage() {
           const extraEntries: { subject: string }[] = JSON.parse(extra)
           for (const e of extraEntries) subjects.add(e.subject)
         }
+        const prev = localStorage.getItem(`fon_prev_subjects_${meta.group}`)
+        if (prev) {
+          const prevEntries: { subject: string }[] = JSON.parse(prev)
+          for (const e of prevEntries) subjects.add(e.subject)
+        }
         return subjects
       })()
     : null
