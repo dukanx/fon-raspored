@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSwipeable } from 'react-swipeable'
 import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import Link from 'next/link'
@@ -33,6 +34,40 @@ const COLORS = [
 
 function entryKey(e: ScheduleEntry) {
   return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
+}
+
+function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setOpen(true),
+    onSwipedRight: () => setOpen(false),
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+  })
+  return (
+    <div className="relative overflow-hidden sm:overflow-visible">
+      <div
+        className="absolute inset-y-0 right-0 w-14 flex items-center justify-center sm:hidden transition-opacity duration-200"
+        style={{ opacity: open ? 1 : 0 }}
+      >
+        <button
+          onClick={() => { onHide(); setOpen(false) }}
+          className="w-8 h-8 flex items-center justify-center rounded-full text-xs
+                     text-red-400 dark:text-red-400 bg-red-50 dark:bg-red-950/50
+                     hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        {...handlers}
+        className="transition-transform duration-200 sm:transform-none"
+        style={{ transform: open ? 'translateX(-56px)' : 'translateX(0)' }}
+      >
+        {children}
+      </div>
+    </div>
+  )
 }
 
 function useSubjectColors(entries: ScheduleEntry[]) {
@@ -647,32 +682,31 @@ export default function RasporedPage() {
                     {dayEntries.map((e, i) => {
                       const c = COLORS[colorMap[e.subject]]
                       return (
-                        <div
-                          key={i}
-                          className="flex items-center gap-3 py-2.5 border-b border-gray-100 dark:border-gray-800"
-                        >
-                          <span className="text-xs text-gray-400 dark:text-gray-500 w-24 flex-shrink-0">
-                            {SLOT_LABEL[e.start]}
-                          </span>
-                          <div className={`w-1 self-stretch rounded-full`} style={{ background: c.bar }} />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">
-                              {e.subject}
+                        <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
+                          <div className="flex items-center gap-3 py-2.5 border-b border-gray-100 dark:border-gray-800">
+                            <span className="text-xs text-gray-400 dark:text-gray-500 w-24 flex-shrink-0">
+                              {SLOT_LABEL[e.start]}
                             </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">
-                              {e.room}
+                            <div className="w-1 self-stretch rounded-full" style={{ background: c.bar }} />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">
+                                {e.subject}
+                              </span>
+                              <span className="text-xs text-gray-400 dark:text-gray-500">
+                                {e.room}
+                              </span>
+                            </div>
+                            <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
+                              {e.type_short}
                             </span>
+                            <button
+                              onClick={() => hideEntry(e)}
+                              className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
+                            >
+                              ✕
+                            </button>
                           </div>
-                          <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
-                            {e.type_short}
-                          </span>
-                          <button
-                            onClick={() => hideEntry(e)}
-                            className="w-6 h-6 flex items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
-                          >
-                            ✕
-                          </button>
-                        </div>
+                        </SwipeableListItem>
                       )
                     })}
                   </div>
