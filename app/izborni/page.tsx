@@ -152,7 +152,7 @@ export default function IzbornoPage() {
           {prevOpen && (
             <div className="mt-3 space-y-3">
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                Termine dodaješ u rasporedu →{' '}
+                Termine za predmete iz prethodnih godina dodaješ u tabu   <br /> →{' '}
                 <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>
               </p>
 

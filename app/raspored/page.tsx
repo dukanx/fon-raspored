@@ -387,7 +387,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
               Slika
             </button>
 
@@ -397,7 +397,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
               Izvezi u kalendar
             </button>
 
@@ -407,7 +407,7 @@ export default function RasporedPage() {
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
               Izmena termina
             </button>
 
@@ -421,7 +421,7 @@ export default function RasporedPage() {
             </button>
 
             <button
-              onClick={() => router.push('/')}
+              onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
               className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
               bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
               hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -483,7 +483,7 @@ export default function RasporedPage() {
                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/imageDownload.png" alt="" className="w-4 h-4 mr-1.5 opacity-100 dark:invert" />
               Slika
             </button>
 
@@ -493,7 +493,7 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
               Izvezi u kalendar
             </button>
 
@@ -505,7 +505,7 @@ export default function RasporedPage() {
              rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-60 dark:invert" />
+              <img src="/IzmenaTermina.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
               Izmena termina
             </button>
 
@@ -520,7 +520,7 @@ export default function RasporedPage() {
             {/* FON i Nazad — novi red */}
             <div className="w-full flex justify-end gap-2">
               <button
-                onClick={() => router.push('/')}
+                onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
                 className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
                  rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
                  hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"

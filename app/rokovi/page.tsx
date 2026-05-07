@@ -47,7 +47,7 @@ type Tab = 'kolokvijumi' | 'ispiti'
 
 export default function RokoviPage() {
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
-  const [tab, setTab] = useState<Tab>('ispiti')
+  const [tab, setTab] = useState<Tab>('kolokvijumi')
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date()
@@ -93,9 +93,20 @@ export default function RokoviPage() {
 
   useEffect(() => {
     if (!isHydrated) return
+    const today = new Date().toISOString().split('T')[0]
     fetch('/data/rokovi.json')
       .then(r => r.json())
-      .then((d: RokData[]) => setAllRokovi(Array.isArray(d) ? d : []))
+      .then((d: RokData[]) => {
+        const data = Array.isArray(d) ? d : []
+        setAllRokovi(data)
+        const hasActiveKol = data.some(r => r.tip === 'kolokvijum' && r.entries.some(e => e.date >= today))
+        if (hasActiveKol) {
+          setTab('kolokvijumi')
+        } else {
+          const hasActiveIsp = data.some(r => r.tip === 'ispit' && r.entries.some(e => e.date >= today))
+          setTab(hasActiveIsp ? 'ispiti' : 'kolokvijumi')
+        }
+      })
       .catch(() => setAllRokovi([]))
   }, [isHydrated])
 
