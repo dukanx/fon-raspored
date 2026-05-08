@@ -42,4 +42,6 @@ export interface RokData {
   rok: string                    // "Februarski 2025/26"
   tip: 'ispit' | 'kolokvijum'
   entries: RokEntry[]
+  prijava_datumi?: string[]      // ["05.04.2026.", "06.04.2026."]
+  reklamacija_datum?: string     // "07.04.2026."
 }

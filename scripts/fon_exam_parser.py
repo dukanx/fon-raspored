@@ -5,13 +5,13 @@ Korišćenje:
   python fon_exam_parser.py --pdf feb.pdf --tip ispit --rok "Februarski 2025/26" --output feb.json
   python fon_exam_parser.py --pdf kol.pdf --tip kolokvijum --rok "Prvi zimski 2025/26" --output kol.json
 """
-
 import argparse
 import json
 import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+
 
 try:
     import pdfplumber

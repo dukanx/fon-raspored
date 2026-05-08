@@ -54,6 +54,7 @@ export default function RokoviPage() {
     return { year: now.getFullYear(), month: now.getMonth() }
   })
   const [tooltip, setTooltip] = useState<{ date: string; entries: RokEntry[] } | null>(null)
+  const [dismissedBanners, setDismissedBanners] = useState<Set<string>>(new Set())
 
   const isMobile = useSyncExternalStore(
     (cb) => {
@@ -106,6 +107,12 @@ export default function RokoviPage() {
           const hasActiveIsp = data.some(r => r.tip === 'ispit' && r.entries.some(e => e.date >= today))
           setTab(hasActiveIsp ? 'ispiti' : 'kolokvijumi')
         }
+        const dismissed = new Set(
+          data
+            .filter(r => sessionStorage.getItem('fon_dismissed_prijava_' + r.rok))
+            .map(r => r.rok)
+        )
+        setDismissedBanners(dismissed)
       })
       .catch(() => setAllRokovi([]))
   }, [isHydrated])
@@ -152,6 +159,25 @@ export default function RokoviPage() {
   )
 
   const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
+
+  const prijavaNotice = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tipFilter = tab === 'kolokvijumi' ? 'kolokvijum' : 'ispit'
+    return allRokovi.find(r => {
+      if (r.tip !== tipFilter || !r.prijava_datumi?.length) return false
+      if (dismissedBanners.has(r.rok)) return false
+      const last = r.prijava_datumi.at(-1)!
+      const [d, m, y] = last.replace(/\.$/, '').split('.')
+      const deadline = new Date(+y, +m - 1, +d)
+      return deadline >= today
+    }) ?? null
+  }, [allRokovi, tab, dismissedBanners])
+
+  function dismissBanner(rok: string) {
+    setDismissedBanners(prev => new Set([...prev, rok]))
+    sessionStorage.setItem('fon_dismissed_prijava_' + rok, '1')
+  }
 
   const byDate = useMemo(() => {
     const map: Record<string, RokEntry[]> = {}
@@ -525,6 +551,33 @@ export default function RokoviPage() {
             </button>
           ))}
         </div>
+
+        {/* Baner za prijavu kolokvijuma */}
+        {prijavaNotice && (
+          <div className="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
+                          bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+            <svg className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                {tab === 'kolokvijumi' ? 'Prijava predispitnih obaveza' : 'Prijava ispita'}
+              </p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
+                {prijavaNotice.rok} · {prijavaNotice.prijava_datumi!.join(' i ')}
+                {prijavaNotice.reklamacija_datum && ` · Reklamacije: ${prijavaNotice.reklamacija_datum}`}
+              </p>
+            </div>
+            <button
+              onClick={() => dismissBanner(prijavaNotice.rok)}
+              className="text-amber-400 dark:text-amber-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors shrink-0 text-sm leading-none mt-0.5"
+              aria-label="Zatvori"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {!isHydrated ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">Učitavanje...</div>
