@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
@@ -10,35 +11,10 @@ PAGES = {
     'ispit':      'https://oas.fon.bg.ac.rs/raspored-ispita/',
 }
 
-KNOWN_FILE  = Path('scripts/known_pdfs.json')
-ROKOVI_FILE = Path('public/data/rokovi.json')
-PARSER      = Path('scripts/fon_exam_parser.py')
-
-
-def guess_rok(url: str) -> str:
-    u = url.lower()
-    if 'prvi'  in u and 'zimski' in u: return 'Prvi zimski kolokvijum'
-    if 'drugi' in u and 'zimski' in u: return 'Drugi zimski kolokvijum'
-    if 'prvi'  in u and 'letnji' in u: return 'Prvi letnji kolokvijum'
-    if 'drugi' in u and 'letnji' in u: return 'Drugi letnji kolokvijum'
-    if 'jan' in u: return 'Januarski ispitni rok'
-    if 'feb' in u: return 'Februarski ispitni rok'
-    if 'jun' in u: return 'Junski ispitni rok'
-    if 'jul' in u: return 'Julski ispitni rok'
-    if 'sep' in u: return 'Septembarski ispitni rok'
-    if 'okt' in u: return 'Oktobarski ispitni rok'
-    return url.split('/')[-1].replace('.pdf', '').replace('-', ' ')
-
-
-def merge_into_rokovi(new_rok: dict):
-    rokovi = json.loads(ROKOVI_FILE.read_text(encoding='utf-8')) if ROKOVI_FILE.exists() else []
-    rokovi = [r for r in rokovi if r.get('rok') != new_rok['rok']]
-    rokovi.append(new_rok)
-    def sort_key(r):
-        first_date = r['entries'][0]['date'] if r['entries'] else '9999'
-        return (0 if r['tip'] == 'ispit' else 1, first_date)
-    rokovi.sort(key=sort_key)
-    ROKOVI_FILE.write_text(json.dumps(rokovi, ensure_ascii=False, indent=2), encoding='utf-8')
+SCRIPTS_DIR = Path(__file__).parent
+KNOWN_FILE  = SCRIPTS_DIR / 'known_pdfs.json'
+ROKOVI_FILE = SCRIPTS_DIR.parent / 'public' / 'data' / 'rokovi.json'
+MERGE_SCRIPT = SCRIPTS_DIR / 'merge_rok.py'
 
 
 def main():
@@ -47,51 +23,71 @@ def main():
 
     new_pdfs = 0
     total_entries = 0
+    errors = []
 
-    for tip, url in PAGES.items():
+    for _, url in PAGES.items():
         print(f'Checking {url}...')
-        resp = requests.get(url, timeout=15)
+        try:
+            resp = requests.get(url, timeout=15)
+            resp.raise_for_status()
+        except Exception as e:
+            print(f'  GREŠKA pri dohvatanju stranice: {e}')
+            continue
+
         soup = BeautifulSoup(resp.text, 'html.parser')
 
         for a in soup.find_all('a', href=True):
             href = a['href']
-            if not href.endswith('.pdf') or href in known:
+            if not href.lower().endswith('.pdf') or href in known:
                 continue
 
-            print(f'  NEW: {href}')
+            print(f'  NOVO: {href}')
             new_known.append(href)
 
             pdf_name = href.split('/')[-1]
             pdf_path = Path(f'/tmp/{pdf_name}')
-            pdf_path.write_bytes(requests.get(href, timeout=30).content)
 
-            rok = guess_rok(href)
+            try:
+                pdf_path.write_bytes(requests.get(href, timeout=30).content)
+            except Exception as e:
+                print(f'  GREŠKA pri preuzimanju: {e}')
+                errors.append(href)
+                continue
 
             result = subprocess.run(
-                ['python', str(PARSER), '--pdf', str(pdf_path), '--tip', tip, '--rok', rok],
-                capture_output=True, text=True, check=True
+                [sys.executable, str(MERGE_SCRIPT), str(pdf_path), '--rokovi', str(ROKOVI_FILE)],
+                capture_output=True, text=True
             )
-            new_rok = json.loads(result.stdout)
-            count = len(new_rok['entries'])
 
-            if count == 0:
-                print(f'  WARNING: 0 unosa iz {pdf_name} — PDF format možda nije podržan', flush=True)
-            else:
-                merge_into_rokovi(new_rok)
-                print(f'  Merged {count} unosa -> {ROKOVI_FILE}')
-                total_entries += count
+            if result.returncode != 0:
+                print(f'  GREŠKA u merge_rok.py:\n{result.stderr}')
+                errors.append(href)
+                continue
+
+            print(result.stderr.strip())
+
+            # "Gotovo: N unosa u 'rok name'."
+            for line in result.stdout.splitlines():
+                if line.startswith('Gotovo:'):
+                    try:
+                        count = int(line.split(':')[1].strip().split()[0])
+                        total_entries += count
+                    except Exception:
+                        pass
 
             new_pdfs += 1
 
     KNOWN_FILE.write_text(json.dumps(new_known, indent=2, ensure_ascii=False), encoding='utf-8')
 
+    if errors:
+        print(f'\nGreške ({len(errors)}): {", ".join(errors)}')
+
     if new_pdfs == 0:
-        print('No new PDFs found.')
+        print('Nema novih PDF-ova.')
         commit_msg = 'auto: nema novih PDF-ova'
     else:
         commit_msg = f'auto: {new_pdfs} novi PDF{"" if new_pdfs == 1 else "-a"}, {total_entries} unosa'
 
-    # Postavi commit poruku kao env varijablu za workflow
     github_env = os.environ.get('GITHUB_ENV')
     if github_env:
         with open(github_env, 'a') as f:
