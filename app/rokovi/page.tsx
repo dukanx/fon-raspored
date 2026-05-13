@@ -141,8 +141,11 @@ export default function RokoviPage() {
     : null
 
   function filterEntries(entries: RokEntry[]): RokEntry[] {
-    if (!userSubjects) return entries
-    return entries.filter(e => userSubjects.has(e.subject))
+    return entries.filter(e => {
+      if (e.date < todayStr) return false
+      if (userSubjects && !userSubjects.has(e.subject)) return false
+      return true
+    })
   }
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
