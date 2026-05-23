@@ -389,8 +389,8 @@ export default function RasporedPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2 text-xs">
-              <Link 
-                href="/" 
+              <Link
+                href="/?edit=1"
                 className="font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
               >
                 1. Podaci
@@ -761,7 +761,7 @@ export default function RasporedPage() {
                    bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
                    dark:hover:bg-[#4db3a0] transition-colors"
             >
-              Razumeo
+              Razumem
             </button>
           </div>
         </div>

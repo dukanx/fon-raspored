@@ -37,6 +37,8 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (!isHydrated) return
+    // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") — ne preusmeravaj.
+    if (new URLSearchParams(window.location.search).get('edit') === '1') return
     // Isti tab — sessionStorage ima grupu
     if (sessionStorage.getItem('fon_group')) { router.replace('/raspored'); return }
     // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
@@ -225,7 +227,7 @@ export default function OnboardingPage() {
               : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
             }`}
         >
-          Prikaži raspored
+          Izaberi predmete
         </button>
 
         {/* Fallback - ručni odabir grupe */}
