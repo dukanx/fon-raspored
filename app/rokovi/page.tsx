@@ -334,7 +334,7 @@ export default function RokoviPage() {
                 <div
                   key={di}
                   onClick={() => hasEvents && setTooltip(t => t?.date === isoDate ? null : { date: isoDate, entries: dayEntries })}
-                  className={`relative min-h-[52px] rounded-lg p-1.5 transition-colors
+                  className={`relative min-h-13 rounded-lg p-1.5 transition-colors
                     ${hasEvents ? 'cursor-pointer' : ''}
                     ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
                     ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}

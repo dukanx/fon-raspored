@@ -602,7 +602,7 @@ export default function RasporedPage() {
         {view === 'grid' && (
           <div className="hidden sm:block">
             <div className="overflow-x-auto">
-              <div id="raspored-grid" className="min-w-[640px]">
+              <div id="raspored-grid" className="min-w-160">
 
                 {/* Day headers */}
                 <div className="grid gap-1 mb-1" style={{ gridTemplateColumns: '56px repeat(5, 1fr)' }}>
@@ -627,18 +627,18 @@ export default function RasporedPage() {
                     {DAYS.map(day => {
                       const cell = visibleEntries.filter(e => e.day === day && e.start === slot)
                       if (!cell.length) {
-                        return <div key={day} className="min-h-[64px] rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200 dark:border-0 outline-none" />
+                        return <div key={day} className="min-h-16 rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200 dark:border-0 outline-none" />
                       }
                       return (
                         <div key={day} className="flex flex-col gap-1">
                           {cell.map((e, i) => {
                             const c = COLORS[colorMap[e.subject]]
                             return (
-                              <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="group/card flex-1 rounded-lg p-2 min-h-[64px] relative">
+                              <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="group/card flex-1 rounded-lg p-2 min-h-16 relative">
                                 <button
                                   onClick={() => hideEntry(e)}
                                   style={{ color: isDark ? c.darkText : c.text }}
-                                  className="absolute top-1 right-1 w-4 h-4 rounded flex items-center justify-center opacity-0 group-hover/card:opacity-60 hover:!opacity-100 transition-opacity text-[10px] leading-none bg-black/10 dark:bg-white/10"
+                                  className="absolute top-1 right-1 w-4 h-4 rounded flex items-center justify-center opacity-0 group-hover/card:opacity-60 hover:opacity-100! transition-opacity text-[10px] leading-none bg-black/10 dark:bg-white/10"
                                 >
                                   ✕
                                 </button>
@@ -684,7 +684,7 @@ export default function RasporedPage() {
                       return (
                         <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
                           <div className="flex items-center gap-3 py-2.5 border-b border-gray-100 dark:border-gray-800">
-                            <span className="text-xs text-gray-400 dark:text-gray-500 w-24 flex-shrink-0">
+                            <span className="text-xs text-gray-400 dark:text-gray-500 w-24 shrink-0">
                               {SLOT_LABEL[e.start]}
                             </span>
                             <div className="w-1 self-stretch rounded-full" style={{ background: c.bar }} />
@@ -696,7 +696,7 @@ export default function RasporedPage() {
                                 {e.room}
                               </span>
                             </div>
-                            <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0">
+                            <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0">
                               {e.type_short}
                             </span>
                             <button
@@ -735,29 +735,29 @@ export default function RasporedPage() {
             <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
-                           flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                           flex items-center justify-center shrink-0 mt-0.5">1</span>
                 <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
               </div>
               <div className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
-                           flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                           flex items-center justify-center shrink-0 mt-0.5">2</span>
                 <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
               </div>
               <div className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
-                           flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                           flex items-center justify-center shrink-0 mt-0.5">3</span>
                 <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
               </div>
               <div className="flex gap-3">
                 <span className="w-6 h-6 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs
-                           flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                           flex items-center justify-center shrink-0 mt-0.5">4</span>
                 <p>Na telefonu: pronađi fajl u Downloads i klikni na njega — kalendar će se otvoriti automatski.</p>
               </div>
             </div>
 
             <button
               onClick={() => setShowIcsHelp(false)}
-              className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
+              className="mt-6 w-full py-2.5 rounded-lg text-sm font-medium active:scale-[0.97]
                    bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
                    dark:hover:bg-[#4db3a0] transition-colors"
             >
@@ -768,9 +768,9 @@ export default function RasporedPage() {
       )}
 
       {showDownloadToast && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100] animate-bounce">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-100 animate-bounce">
           <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
-            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:bg-green-500/20 dark:text-green-600 flex items-center justify-center flex-shrink-0">
+            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:bg-green-500/20 dark:text-green-600 flex items-center justify-center shrink-0">
               ✓
             </span>
             Slika rasporeda je uspešno preuzeta!
