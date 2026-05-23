@@ -15,6 +15,8 @@ SCRIPTS_DIR = Path(__file__).parent
 KNOWN_FILE  = SCRIPTS_DIR / 'known_pdfs.json'
 ROKOVI_FILE = SCRIPTS_DIR.parent / 'public' / 'data' / 'rokovi.json'
 MERGE_SCRIPT = SCRIPTS_DIR / 'merge_rok.py'
+# Spisak novih rokova koje send_push.mjs šalje kao notifikacije (efemerno u CI-ju).
+PENDING_NOTIFY_FILE = SCRIPTS_DIR / 'pending_notify.json'
 
 
 def main():
@@ -23,9 +25,10 @@ def main():
 
     new_pdfs = 0
     total_entries = 0
+    new_roks = []
     errors = []
 
-    for _, url in PAGES.items():
+    for tip, url in PAGES.items():
         print(f'Checking {url}...')
         try:
             resp = requests.get(url, timeout=15)
@@ -66,6 +69,7 @@ def main():
             print(result.stderr.strip())
 
             # "Gotovo: N unosa u 'rok name'."
+            rok_name = None
             for line in result.stdout.splitlines():
                 if line.startswith('Gotovo:'):
                     try:
@@ -73,7 +77,10 @@ def main():
                         total_entries += count
                     except Exception:
                         pass
+                    if "'" in line:
+                        rok_name = line.split("'")[1]
 
+            new_roks.append({'rok': rok_name or pdf_name, 'tip': tip})
             new_known.append(href)
             new_pdfs += 1
 
@@ -86,6 +93,11 @@ def main():
     if new_pdfs == 0:
         print('Nema novih PDF-ova.')
         return
+
+    # Zapiši nove rokove da ih send_push.mjs pošalje kao notifikacije.
+    PENDING_NOTIFY_FILE.write_text(
+        json.dumps(new_roks, indent=2, ensure_ascii=False), encoding='utf-8'
+    )
 
     commit_msg = f'auto: {new_pdfs} novi PDF{"" if new_pdfs == 1 else "-a"}, {total_entries} unosa'
 

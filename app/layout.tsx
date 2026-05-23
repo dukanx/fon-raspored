@@ -21,6 +21,11 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
     apple: '/apple-icon2.png',
   },
+  appleWebApp: {
+    capable: true,
+    title: 'FON Raspored',
+    statusBarStyle: 'default',
+  },
   openGraph: {
     title: 'FON Raspored',
     description: 'Unesi prezime i dobij lični raspored nastave',

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import type { RokData, RokEntry } from '@/lib/types'
+import NotificationBell from '@/components/NotificationBell'
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -462,6 +463,15 @@ export default function RokoviPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               {meta.program && `${meta.program} · `}{meta.year && `${meta.year}. godina`}
             </p>
+            <NotificationBell />
+            <a
+              href="https://student.fon.bg.ac.rs/security/login.jsf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-xs text-[#024c7d] dark:text-[#60c3ad] hover:underline"
+            >
+              Prijavi ispite na eStudent →
+            </a>
           </div>
 
           {/* Desktop controls */}
