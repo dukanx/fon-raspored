@@ -11,10 +11,11 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Ispiti i kolokvijumi** — lista i kalendarski prikaz; prikazuju se samo predmeti koje student sluša
 - **Izborni i preneseni predmeti** — poseban tok pri onboardingu za dodavanje izbornih i prenesenih predmeta, koji se potom prate u ispitima i kolokvijumima
 - **Notifikacija o prijavi** — baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
+- **Push notifikacije (PWA)** — aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, i na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu)
 - **Onboarding** — pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
 - **Dark/light mode**
 - **Export u iCal** — raspored se može uvesti u Google Calendar, Apple Calendar i sl.
-- **Automatsko ažuriranje** — GitHub Actions svake noći proverava FON sajt za nove PDF rasporede i automatski ih parsira i upisuje
+- **Automatsko ažuriranje** — GitHub Actions svaki dan proverava FON sajt za nove PDF rasporede i automatski ih parsira i upisuje
 
 ## Struktura projekta
 
@@ -22,26 +23,36 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 app/
   page.tsx              # Onboarding (izbor grupe, izbornih i prenesenih predmeta)
   raspored/page.tsx     # Nedeljni raspored nastave (sa opcijom skrivanja termina)
-  rokovi/page.tsx       # Ispiti i kolokvijumi (sa banerom o prijavi)
+  rokovi/page.tsx       # Ispiti i kolokvijumi (sa banerom o prijavi + dugme za notifikacije)
   izborni/              # Tok za izbor izbornih predmeta
   preneseni/            # Tok za izbor prenesenih predmeta
+  manifest.ts           # PWA manifest (instalacija na home screen)
+  actions.ts            # Server akcije — upis/brisanje push pretplata (Upstash Redis)
 
-public/data/
-  1god.json             # Raspored po godinama
-  2god.json
-  3god.json
-  4god.json
-  rokovi.json           # Ispitni rokovi i kolokvijumi (automatski ažurirano)
+components/
+  NotificationBell.tsx  # Dugme za uključivanje notifikacija + iOS uputstvo
+
+public/
+  sw.js                 # Service worker — prima Web Push i prikazuje notifikaciju
+  icon-192.png          # Ikonice za PWA manifest
+  icon-512.png
+  data/
+    1god.json           # Raspored po godinama
+    2god.json
+    3god.json
+    4god.json
+    rokovi.json         # Ispitni rokovi i kolokvijumi (automatski ažurirano)
 
 scripts/
   check_fon.py          # Scraper — proverava FON sajt za nove PDF-ove, poziva merge_rok.py
   merge_rok.py          # Orkestracija: pokreće parse_rok.py + fon_exam_parser.py, upisuje u rokovi.json
   fon_exam_parser.py    # Parser — PDF tabela termina → JSON (pdfplumber)
   parse_rok.py          # Parser — datumi prijave i reklamacije iz PDF zaglavlja (pymupdf)
+  send_push.mjs         # Slanje Web Push notifikacija (novi rokovi + podsetnici za prijavu)
   known_pdfs.json       # Lista već viđenih PDF URL-ova
 
 .github/workflows/
-  check-fon.yml         # Dnevna automatizacija
+  check-fon.yml         # Dnevna automatizacija (scraping + slanje notifikacija)
 ```
 
 ## Lokalni razvoj
@@ -55,12 +66,31 @@ Aplikacija se otvara na [http://localhost:3000](http://localhost:3000).
 
 ## Automatizacija rasporeda ispita
 
-GitHub Actions workflow (`check-fon.yml`) se pokreće svaki dan u ponoć i:
+GitHub Actions workflow (`check-fon.yml`) se pokreće svaki dan u 10:00 po Beogradu (`0 8 * * *` UTC) i:
 
 1. Scrape-uje [raspored-kolokvijuma](https://oas.fon.bg.ac.rs/raspored-kolokvijuma/) i [raspored-ispita](https://oas.fon.bg.ac.rs/raspored-ispita/)
 2. Za svaki novi PDF (koji nije u `known_pdfs.json`) — skida ga i parsira
 3. Rezultat merge-uje u `public/data/rokovi.json`
 4. Commit-uje i push-uje promene
+5. Šalje push notifikacije (`send_push.mjs`): za svaki nov rok, i podsetnik na dan početka i kraja prijave
+
+> Koraci za slanje notifikacija se izvršavaju samo ako su podešeni secrets (vidi „Push notifikacije" ispod); u suprotnom se preskaču i scraping radi kao i ranije.
+
+## Push notifikacije
+
+Pretplate korisnika se čuvaju u [Upstash Redis](https://upstash.com), a slanje ide preko Web Push protokola sa VAPID ključevima (`web-push`). Aplikacija mora biti dodata na home screen da bi notifikacije radile na iOS-u (16.4+); na Androidu i desktopu rade direktno.
+
+Potrebne promenljive okruženja:
+
+| Promenljiva | Gde | Opis |
+|---|---|---|
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Vercel + GitHub Secrets | Javni VAPID ključ (koristi ga i browser) |
+| `VAPID_PRIVATE_KEY` | Vercel + GitHub Secrets | Privatni VAPID ključ |
+| `VAPID_SUBJECT` | GitHub Secrets | `mailto:` adresa kontakta |
+| `UPSTASH_REDIS_REST_URL` | Vercel + GitHub Secrets | Upstash REST URL |
+| `UPSTASH_REDIS_REST_TOKEN` | Vercel + GitHub Secrets | Upstash REST token |
+
+VAPID ključevi se generišu sa `npx web-push generate-vapid-keys`.
 
 ### Ručno parsiranje PDF-a
 
@@ -107,6 +137,9 @@ Opcija sakrivanja pojedinačnih termina iz nedeljnog rasporeda — swipe na mobi
 ### v2.3 — Prijava ispita i kolokvijuma
 Parser za datume prijave i reklamacija iz PDF zaglavlja (`parse_rok.py`). Baner na stranici `/rokovi` koji automatski obaveštava kada se otvori period prijave; može se odbaciti za sesiju.
 
+### v2.4 — Push notifikacije (PWA)
+Aplikacija je sada PWA (manifest + service worker) i može se instalirati na home screen. Web Push notifikacije (VAPID, pretplate u Upstash Redis) za nove ispitne/kolokvijumske rokove i podsetnike na dan početka i kraja prijave (u 10h, sa linkom ka eStudentu). Radi na iOS-u (16.4+, instalirano), Androidu i desktopu. Slanje iz `send_push.mjs` u okviru dnevnog GitHub Actions workflow-a.
+
 ---
 
 ## Tech stack
@@ -114,4 +147,6 @@ Parser za datume prijave i reklamacija iz PDF zaglavlja (`parse_rok.py`). Baner 
 - [Next.js](https://nextjs.org) (App Router)
 - [Tailwind CSS](https://tailwindcss.com)
 - [pdfplumber](https://github.com/jsvine/pdfplumber) — parsiranje PDF rasporeda
-- GitHub Actions — automatsko ažuriranje podataka
+- [web-push](https://github.com/web-push-libs/web-push) + VAPID — Web Push notifikacije
+- [Upstash Redis](https://upstash.com) — čuvanje push pretplata
+- GitHub Actions — automatsko ažuriranje podataka i slanje notifikacija
