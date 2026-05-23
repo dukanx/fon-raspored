@@ -42,13 +42,6 @@ function todayBelgrade() {
   return fmt.format(new Date()) // npr. "2026-05-23"
 }
 
-function tomorrowBelgrade() {
-  const [y, m, d] = todayBelgrade().split('-').map(Number)
-  const dt = new Date(Date.UTC(y, m - 1, d))
-  dt.setUTCDate(dt.getUTCDate() + 1)
-  return dt.toISOString().slice(0, 10)
-}
-
 // "05.04.2026." -> "2026-04-05"
 function srToIso(s) {
   if (!s) return null
@@ -82,7 +75,7 @@ function newRokPayloads() {
 function reminderPayloads() {
   if (!existsSync(ROKOVI_FILE)) return []
   const roks = JSON.parse(readFileSync(ROKOVI_FILE, 'utf-8'))
-  const tomorrow = tomorrowBelgrade()
+  const today = todayBelgrade()
   const payloads = []
 
   for (const r of roks) {
@@ -91,29 +84,35 @@ function reminderPayloads() {
 
     const start = dates[0]
     const end = dates[dates.length - 1]
-    const kind = r.tip === 'ispit' ? 'ispit' : 'kolokvijum'
 
-    if (start === tomorrow) {
+    // Jednodnevna prijava (start === end) — samo jedna poruka tog dana.
+    if (start === end) {
+      if (start === today) {
+        payloads.push({
+          title: 'Danas je prijava',
+          body: `Danas je prijava za ${r.rok} (samo danas). Tapni za eStudent.`,
+          url: ESTUDENT_URL,
+          tag: `prijava-${r.rok}`,
+        })
+      }
+      continue
+    }
+
+    if (start === today) {
       payloads.push({
-        title: 'Sutra počinje prijava',
-        body: `Prijava za ${r.rok} počinje sutra. Tapni za eStudent.`,
+        title: 'Danas počinje prijava',
+        body: `Prijava za ${r.rok} počinje danas. Tapni za eStudent.`,
         url: ESTUDENT_URL,
         tag: `prijava-start-${r.rok}`,
       })
     }
-    // Ako je prijava jednodnevna, ne dupliraj (start === end).
-    if (end === tomorrow && end !== start) {
+    if (end === today) {
       payloads.push({
-        title: 'Sutra je poslednji dan prijave',
-        body: `Sutra je poslednji dan za prijavu: ${r.rok}. Tapni za eStudent.`,
+        title: 'Danas je poslednji dan prijave',
+        body: `Danas je poslednji dan za prijavu: ${r.rok}. Tapni za eStudent.`,
         url: ESTUDENT_URL,
         tag: `prijava-end-${r.rok}`,
       })
-    } else if (end === tomorrow && end === start) {
-      // jednodnevna prijava — "sutra je prijava"
-      payloads[payloads.length - 1].title = 'Sutra je prijava'
-      payloads[payloads.length - 1].body = `Sutra je prijava za ${r.rok} (samo taj dan). Tapni za eStudent.`
-      void kind
     }
   }
   return payloads

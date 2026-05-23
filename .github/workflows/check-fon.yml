@@ -2,7 +2,8 @@ name: Check FON for new PDFs
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    # 08:00 UTC = 10:00 po Beogradu (letnje vreme, kad i padaju prijave).
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 permissions:

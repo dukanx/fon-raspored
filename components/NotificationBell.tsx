@@ -170,7 +170,7 @@ export default function NotificationBell() {
       </button>
       {subscribed && (
         <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500 max-w-xs">
-          Obaveštavamo te o novim rokovima i podsetnik dan pred početak/kraj prijave.
+          Obaveštavamo te o novim rokovima i na dan kad počne i kad se završava prijava.
         </p>
       )}
       {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
