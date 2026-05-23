@@ -42,7 +42,6 @@ def main():
                 continue
 
             print(f'  NOVO: {href}')
-            new_known.append(href)
 
             pdf_name = href.split('/')[-1]
             pdf_path = Path(f'/tmp/{pdf_name}')
@@ -75,18 +74,20 @@ def main():
                     except Exception:
                         pass
 
+            new_known.append(href)
             new_pdfs += 1
 
-    KNOWN_FILE.write_text(json.dumps(new_known, indent=2, ensure_ascii=False), encoding='utf-8')
+    if new_known != known:
+        KNOWN_FILE.write_text(json.dumps(new_known, indent=2, ensure_ascii=False), encoding='utf-8')
 
     if errors:
         print(f'\nGreške ({len(errors)}): {", ".join(errors)}')
 
     if new_pdfs == 0:
         print('Nema novih PDF-ova.')
-        commit_msg = 'auto: nema novih PDF-ova'
-    else:
-        commit_msg = f'auto: {new_pdfs} novi PDF{"" if new_pdfs == 1 else "-a"}, {total_entries} unosa'
+        return
+
+    commit_msg = f'auto: {new_pdfs} novi PDF{"" if new_pdfs == 1 else "-a"}, {total_entries} unosa'
 
     github_env = os.environ.get('GITHUB_ENV')
     if github_env:
