@@ -1898,6 +1898,86 @@
       "start": "16:15",
       "end": "18:00",
       "room": "06"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Odnosi s javnošću",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C13",
+        "C15",
+        "C17",
+        "C18",
+        "C19",
+        "C21",
+        "C22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Odnosi s javnošću",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11",
+        "C13",
+        "C15",
+        "C17",
+        "C18",
+        "C19",
+        "C21",
+        "C22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Linearni statistički modeli",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "21"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Linearni statistički modeli",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "21"
     }
   ]
 }

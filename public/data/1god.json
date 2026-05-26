@@ -1527,6 +1527,128 @@
       "start": "18:15",
       "end": "20:00",
       "room": "50"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove operacionog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment tehnologije i razvoja (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Francuski jezik u menadžmentu 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Francuski jezik u menadžmentu 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "12"
     }
   ]
 }
