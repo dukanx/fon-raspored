@@ -48,11 +48,14 @@ scripts/
   merge_rok.py          # Orkestracija: pokreće parse_rok.py + fon_exam_parser.py, upisuje u rokovi.json
   fon_exam_parser.py    # Parser — PDF tabela termina → JSON (pdfplumber)
   parse_rok.py          # Parser — datumi prijave i reklamacije iz PDF zaglavlja (pymupdf)
+  fon_parser.py         # Parser rasporeda NASTAVE (PDF → god.json), širi grupe-prečice
+  update_nastava.py     # Orkestrator — nađe PDF-ove na FON sajtu, parsira, upiše god.json
   send_push.mjs         # Slanje Web Push notifikacija (novi rokovi + podsetnici za prijavu)
   known_pdfs.json       # Lista već viđenih PDF URL-ova
 
 .github/workflows/
-  check-fon.yml         # Dnevna automatizacija (scraping + slanje notifikacija)
+  check-fon.yml         # Dnevna automatizacija ispita/kolokvijuma (scraping + notifikacije)
+  update-nastava.yml    # Ručni workflow — regeneriše raspored nastave (god.json)
 ```
 
 ## Lokalni razvoj
@@ -76,6 +79,12 @@ GitHub Actions workflow (`check-fon.yml`) se pokreće svaki dan u 10:00 po Beogr
 
 > Koraci za slanje notifikacija se izvršavaju samo ako su podešeni secrets (vidi „Push notifikacije" ispod); u suprotnom se preskaču i scraping radi kao i ranije.
 
+PDF se po potrebi može parsirati i ručno (`merge_rok.py` detektuje tip, izvlači termine i datume prijave, i upisuje u `rokovi.json`).
+
+## Raspored nastave
+
+Raspored nastave (`1god.json`–`4god.json`) menja se ~4× godišnje, pa se ne skida dnevno nego po potrebi: `update_nastava.py` pronalazi aktuelne PDF-ove na [raspored-nastave](https://oas.fon.bg.ac.rs/raspored-nastave/) (po tekstu linka, bira najnoviju verziju), parsira ih (`fon_parser.py`, uz širenje grupa-prečica tipa „ISIT, svi") i regeneriše `god.json`. Pokreće se ručnim GitHub Actions workflow-om (`update-nastava.yml`) koji uz sigurnosnu proveru (broj predmeta/grupa ne sme da padne) otvara Pull Request sa promenama.
+
 ## Push notifikacije
 
 Pretplate korisnika se čuvaju u [Upstash Redis](https://upstash.com), a slanje ide preko Web Push protokola sa VAPID ključevima (`web-push`). Aplikacija mora biti dodata na home screen da bi notifikacije radile na iOS-u (16.4+); na Androidu i desktopu rade direktno.
@@ -91,34 +100,6 @@ Potrebne promenljive okruženja:
 | `UPSTASH_REDIS_REST_TOKEN` | Vercel + GitHub Secrets | Upstash REST token |
 
 VAPID ključevi se generišu sa `npx web-push generate-vapid-keys`.
-
-### Ručno parsiranje PDF-a
-
-`merge_rok.py` je glavna skripta za ručno parsiranje — automatski detektuje tip (ispit/kolokvijum), parsira i datume prijave i termine, i upisuje u `rokovi.json`:
-
-```bash
-pip install pdfplumber pymupdf
-
-# Parsiranje i upis u rokovi.json
-python scripts/merge_rok.py januar.pdf
-python scripts/merge_rok.py kol.pdf --rokovi public/data/rokovi.json
-
-# Dry run (samo prikaz, bez upisivanja)
-python scripts/merge_rok.py januar.pdf --dry-run
-
-# Prisiljavanje naziva roka
-python scripts/merge_rok.py januar.pdf --rok "Januarski ispitni rok 2025/26"
-```
-
-Za samo parsiranje termina (bez upisivanja u `rokovi.json`):
-
-```bash
-# Ispitni rok
-python scripts/fon_exam_parser.py --pdf januar.pdf --tip ispit --rok "Januarski ispitni rok" --output out.json
-
-# Kolokvijum
-python scripts/fon_exam_parser.py --pdf kol.pdf --tip kolokvijum --rok "Prvi zimski kolokvijum" --output out.json
-```
 
 ## Verzije
 
@@ -139,6 +120,9 @@ Parser za datume prijave i reklamacija iz PDF zaglavlja (`parse_rok.py`). Baner 
 
 ### v2.4 — Push notifikacije (PWA)
 Aplikacija je sada PWA (manifest + service worker) i može se instalirati na home screen. Web Push notifikacije (VAPID, pretplate u Upstash Redis) za nove ispitne/kolokvijumske rokove i podsetnike na dan početka i kraja prijave (u 10h, sa linkom ka eStudentu). Radi na iOS-u (16.4+, instalirano), Androidu i desktopu. Slanje iz `send_push.mjs` u okviru dnevnog GitHub Actions workflow-a.
+
+### v2.5 — Automatizacija rasporeda nastave
+Parser rasporeda nastave (`fon_parser.py`) + orkestrator (`update_nastava.py`) i ručni workflow koji regeneriše `god.json` sa FON sajta, sa sigurnosnom proverom i PR-om za pregled. Rešava ranije „tihe rupe" (izborni i projektni predmeti koji su ispadali pri parsiranju).
 
 ---
 

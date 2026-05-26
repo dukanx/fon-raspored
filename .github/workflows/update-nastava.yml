@@ -1,0 +1,61 @@
+name: Ažuriraj raspored nastave
+
+# Ručni okidač — pokreni kad FON objavi/updatuje raspored nastave (~4x godišnje).
+on:
+  workflow_dispatch:
+    inputs:
+      semester:
+        description: 'Semestar'
+        type: choice
+        options: [auto, letnji, zimski]
+        default: auto
+      years:
+        description: 'Godine (npr. "4" ili "1,2,3,4")'
+        default: '1,2,3,4'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install pdfplumber beautifulsoup4
+
+      - name: Regeneriši raspored nastave
+        run: |
+          ARGS="--years ${{ inputs.years }}"
+          if [ "${{ inputs.semester }}" != "auto" ]; then
+            ARGS="$ARGS --semester ${{ inputs.semester }}"
+          fi
+          python scripts/update_nastava.py $ARGS
+
+      - name: Napravi Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/raspored-nastave
+          delete-branch: true
+          title: 'auto: ažuriran raspored nastave'
+          commit-message: 'auto: ažuriran raspored nastave (god.json)'
+          body: |
+            Automatski regenerisan raspored nastave sa FON sajta
+            (`scripts/update_nastava.py`).
+
+            Pregledaj diff pre merge-a — posebno proveri da nije nešto
+            neočekivano nestalo. Sigurnosna provera već odbacuje regresiju
+            (manje predmeta/grupa nego ranije).
+          add-paths: |
+            public/data/1god.json
+            public/data/2god.json
+            public/data/3god.json
+            public/data/4god.json
