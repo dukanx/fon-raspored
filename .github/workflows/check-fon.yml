@@ -2,8 +2,11 @@ name: Check FON for new PDFs
 
 on:
   schedule:
-    # 08:00 UTC = 10:00 po Beogradu (letnje vreme, kad i padaju prijave).
-    - cron: '0 8 * * *'
+    # Tri pokušaja jer GitHub cron ume da kasni/preskoči zakazane run-ove,
+    # pogotovo na pun sat. Minut 7 i ne-pun-sat smanjuju propuštanja.
+    # 08:07 UTC = 10:07 po Beogradu (letnje vreme); pa 11:07 i 12:07 kao rezerva.
+    # Dedup u send_push.mjs sprečava duple notifikacije.
+    - cron: '7 8,9,10 * * *'
   workflow_dispatch:
 
 permissions:

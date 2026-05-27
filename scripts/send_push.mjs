@@ -161,12 +161,26 @@ async function sendAll(payloads) {
   console.log(`Poslato ${sent} notifikacija.`)
 }
 
+// Dedup: workflow se pokreće više puta dnevno (zbog nepouzdanog GitHub cron-a),
+// pa podsetnik za isti rok/fazu šaljemo samo jednom dnevno.
+async function dedupeReminders(payloads) {
+  const today = todayBelgrade()
+  const out = []
+  for (const p of payloads) {
+    const key = `sent:${today}:${p.tag}`
+    const fresh = await redis.set(key, '1', { nx: true, ex: 172800 }) // 2 dana
+    if (fresh) out.push(p)
+    else console.log(`Preskočeno (već poslato danas): ${p.tag}`)
+  }
+  return out
+}
+
 // --- main -------------------------------------------------------------------
 
 const mode = process.argv[2]
 let payloads = []
 if (mode === 'new') payloads = newRokPayloads()
-else if (mode === 'reminders') payloads = reminderPayloads()
+else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads())
 else {
   console.error("Upotreba: node scripts/send_push.mjs <new|reminders>")
   process.exit(1)
