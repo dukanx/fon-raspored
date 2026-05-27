@@ -65,7 +65,7 @@ function newRokPayloads() {
     const kind = r.tip === 'ispit' ? 'ispita' : 'kolokvijuma'
     return {
       title: `Novi raspored ${kind}`,
-      body: r.rok ? `Dodat je: ${r.rok}` : `Dodat je novi raspored ${kind}.`,
+      body: r.rok ? r.rok : `Novi raspored ${kind}.`,
       url: '/rokovi',
       tag: `rok-${r.rok || kind}`,
     }
@@ -89,8 +89,8 @@ function reminderPayloads() {
     if (start === end) {
       if (start === today) {
         payloads.push({
-          title: 'Danas je prijava',
-          body: `Danas je prijava za ${r.rok} (samo danas). Tapni za eStudent.`,
+          title: 'Prijava je danas',
+          body: `${r.rok} (samo danas) — klikni za eStudent`,
           url: ESTUDENT_URL,
           tag: `prijava-${r.rok}`,
         })
@@ -100,16 +100,16 @@ function reminderPayloads() {
 
     if (start === today) {
       payloads.push({
-        title: 'Danas počinje prijava',
-        body: `Prijava za ${r.rok} počinje danas. Tapni za eStudent.`,
+        title: 'Prijava počinje danas',
+        body: `${r.rok} — klikni za eStudent`,
         url: ESTUDENT_URL,
         tag: `prijava-start-${r.rok}`,
       })
     }
     if (end === today) {
       payloads.push({
-        title: 'Danas je poslednji dan prijave',
-        body: `Danas je poslednji dan za prijavu: ${r.rok}. Tapni za eStudent.`,
+        title: 'Poslednji dan prijave',
+        body: `${r.rok} — klikni za eStudent`,
         url: ESTUDENT_URL,
         tag: `prijava-end-${r.rok}`,
       })
