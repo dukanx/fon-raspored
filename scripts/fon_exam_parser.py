@@ -30,30 +30,71 @@ def extract_rows(page):
     return {y: sorted(rows[y], key=lambda w: w["x0"]) for y in sorted(rows.keys())}
 
 
-def words_in_range(row, x_min, x_max):
-    """Vraća reči iz reda u zadatom X opsegu."""
-    return [w["text"] for w in row if x_min <= w["x0"] < x_max]
-
-
 ROOMS_NOISE = {"СЕМЕСТРУ", "SEMESTR", "SEMESTER", "ЛЕТЊИ", "ЗИМСКИ", "ЛЕТЊЕМ",
                "2025/26", "2024/25", "2026/27"}
 
-# Poznati nazivi kolona u zaglavlju
-_ISPIT_HEADER_KEYS  = {"Predmet", "Datum", "Od", "Do", "Sale", "Napom."}
-_KOL_HEADER_KEYS    = {"Predmet", "Datum", "Od", "Do", "Sale"}
+# Datum u tabeli: DD/MM/YYYY, DD-MM-YYYY ili DD.MM.YYYY
+DATE_RE = re.compile(r"\d{2}[/.\-]\d{2}[/.\-]\d{4}")
+# P/U marker (P = pismeni, U = usmeni); latinica i ćirilica, sa ili bez tačke
+PU_RE = re.compile(r"^[PUПУ]\.?$")
+
+# Logičke kolone -> mogući nazivi u zaglavlju. FON menja nazive kroz
+# akreditacije/rokove ("Napomena" vs "Napom.", "Sale" vs "Sala"), pa hvatamo varijante.
+_COL_SYNONYMS = {
+    "predmet":  {"Predmet"},
+    "datum":    {"Datum"},
+    "od":       {"Od"},
+    "do":       {"Do"},
+    "sale":     {"Sale", "Sala"},
+    "napomena": {"Napomena", "Napom.", "Napom", "Napomene"},
+}
+# Bez ovih kolona red nije validno zaglavlje (Napomena i P/U su opcioni)
+_REQUIRED_COLS = {"predmet", "datum", "od", "do", "sale"}
+
+# Fallback X-pozicije zaglavlja kad detekcija ne uspe (stari layout ispita/kolokvijuma)
+_ISPIT_FALLBACK = {"predmet": 29, "datum": 281, "od": 345, "do": 385, "sale": 418, "napomena": 745}
+_KOL_FALLBACK   = {"predmet": 28, "datum": 227, "od": 296, "do": 334, "sale": 372, "napomena": 720}
 
 
-def _detect_columns(rows, required_keys):
-    """Vraća {naziv_kolone: x0} iz header reda koji sadrži sve required_keys."""
+def _detect_columns(rows):
+    """Pronađi red zaglavlja i vrati {logička_kolona: x0}.
+    Tolerantno na varijante naziva; vraća {} ako nijedan red nema sve obavezne kolone."""
     for _, row in rows.items():
-        text_set = {w["text"] for w in row}
-        if required_keys.issubset(text_set):
-            return {w["text"]: w["x0"] for w in row if w["text"] in required_keys}
+        found = {}
+        for w in row:
+            for col, names in _COL_SYNONYMS.items():
+                if col not in found and w["text"] in names:
+                    found[col] = w["x0"]
+        if _REQUIRED_COLS.issubset(found):
+            return found
     return {}
 
 
+def _bounds(cols):
+    """(lo, hi) X-granice po koloni.
+
+    Desne kolone (od/do/sale) se cepaju na sredinama između susednih zaglavlja —
+    vrednosti u PDF-u počinju ~7px levo od naziva, pa sredina pouzdano hvata bez
+    obzira na pomeraj kolona. Napomena počinje na svom zaglavlju (uz malu marginu).
+    Leva strana (predmet + P/U) se NE računa odavde — sidri se direktno na datum-token,
+    jer je kolona Predmet široka i sredina bi sekla duge nazive."""
+    datum, od, do, sale = cols["datum"], cols["od"], cols["do"], cols["sale"]
+    note = cols.get("napomena")
+    note_lo = (note - 5) if note is not None else 9999
+    return {
+        "datum_x":  datum,
+        "date_hi":  (datum + od) / 2,          # datum-token je levo od ovoga
+        "subj_hi":  datum - 15,                # nastavak naziva predmeta je levo od ovoga
+        "pu_min":   datum - 45,                # P/U marker nije levlje od ovoga
+        "od":       ((datum + od) / 2, (od + do) / 2),
+        "do":       ((od + do) / 2,    (do + sale) / 2),
+        "sale":     ((do + sale) / 2,  note_lo),
+        "note_lo":  note_lo,
+    }
+
+
 def to_iso(datum_str):
-    m = re.match(r"(\d{2})[/-](\d{2})[/-](\d{4})", datum_str)
+    m = re.match(r"(\d{2})[/.\-](\d{2})[/.\-](\d{4})", datum_str)
     return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else ""
 
 def parse_rooms(words):
@@ -81,181 +122,146 @@ def parse_rooms(words):
     return rooms
 
 
+def _is_header_row(texts):
+    """Red zaglavlja tabele (sadrži 'Datum' i 'Sale'/'Sala')."""
+    tset = set(texts)
+    return "Datum" in tset and bool({"Sale", "Sala"} & tset)
+
+
+def _parse(pdf_path, fallback, with_type):
+    """Zajedničko jezgro za ispit i kolokvijum.
+
+    with_type=True izdvaja P/U kolonu (pismeni/usmeni) — postoji samo kod ispita.
+
+    Strategija:
+      • kolone se auto-detektuju iz zaglavlja (tolerantno na varijante naziva),
+        uz fallback na stari layout;
+      • datum se prepoznaje regexom levo od kolone 'Od' (ne fiksnim opsegom),
+        a predmet i P/U se sidre na poziciju samog datuma — otporno na pomeraj
+        kolona i na to što vrednosti počinju levo od svojih zaglavlja;
+      • od/do/sale se čitaju preko sredina između susednih zaglavlja.
+    """
+    entries = []
+
+    with pdfplumber.open(pdf_path) as pdf:
+        pages_rows = [extract_rows(page) for page in pdf.pages]
+
+    # Detekcija kolona jednom — sa prve strane koja ima zaglavlje
+    cols = {}
+    for rows in pages_rows:
+        cols = _detect_columns(rows)
+        if cols:
+            break
+    b = _bounds(cols or fallback)
+
+    pending_subject = []
+    pending_rooms = []
+    # Kad datum-red nema svoj naziv (dvoredni naziv: linija 1 je iznad datum-reda),
+    # ovde pamtimo taj unos da bismo mu dopisali liniju 2 koja sledi ispod datum-reda.
+    tail_for = None
+    # Parsiranje kreće tek od zaglavlja (preskače uvodnu prozu sa datumima).
+    # Ako PDF uopšte nema zaglavlje, parsiramo sve (oslonac na fallback).
+    started = not bool(cols)
+
+    for rows in pages_rows:
+        for _, row in rows.items():
+            texts = [w["text"] for w in row]
+            if not texts:
+                continue
+
+            # Zaglavlje aktivira parsiranje i resetuje akumulirani naziv
+            if _is_header_row(texts):
+                started = True
+                pending_subject = []
+                pending_rooms = []
+                tail_for = None
+                continue
+
+            if not started:
+                continue
+
+            # Data red = ima datum-token levo od kolone 'Od'
+            date_w = next((w for w in row
+                           if w["x0"] < b["date_hi"] and DATE_RE.match(w["text"])), None)
+
+            if date_w:
+                date_iso = to_iso(date_w["text"])
+                left = [w for w in row if w["x0"] < date_w["x0"]]
+
+                tip = ""
+                if with_type and left and PU_RE.match(left[-1]["text"]) \
+                        and left[-1]["x0"] >= b["pu_min"]:
+                    tip = left[-1]["text"]
+                    left = left[:-1]
+
+                predmet_row = [w["text"] for w in left]
+                if predmet_row:
+                    pending_subject = predmet_row
+                subject = " ".join(pending_subject)
+
+                lo, hi = b["od"]
+                od = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
+                lo, hi = b["do"]
+                do_ = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
+                lo, hi = b["sale"]
+                sale_words = [w["text"] for w in row if lo <= w["x0"] < hi]
+                rooms = parse_rooms(sale_words) or pending_rooms
+                note = " ".join(w["text"] for w in row if w["x0"] >= b["note_lo"])
+
+                tail_for = None
+                if subject and date_iso:
+                    entry = {"subject": subject}
+                    if with_type:
+                        entry["type"] = tip
+                    entry.update({"date": date_iso, "start": od, "end": do_,
+                                  "rooms": rooms, "note": note})
+                    entries.append(entry)
+                    # Naziv nije bio na datum-redu → očekuj liniju 2 ispod
+                    if not predmet_row:
+                        tail_for = entry
+                    pending_subject = []
+                    pending_rooms = []
+                continue
+
+            # Nije data red → nastavak sala ili nastavak naziva predmeta
+            lo, hi = b["sale"]
+            cont_sale = [w["text"] for w in row if lo <= w["x0"] < hi]
+            left_words = [w for w in row if w["x0"] < b["subj_hi"]]
+
+            if cont_sale and entries and not left_words:
+                entries[-1]["rooms"] += parse_rooms(cont_sale)
+                continue
+
+            # Ignoriši usamljeni P/U marker (drugi red 'P/U' zaglavlja)
+            if left_words and not (len(left_words) == 1 and PU_RE.match(left_words[0]["text"])):
+                text = " ".join(w["text"] for w in left_words)
+                if tail_for is not None:
+                    # Druga linija dvorednog naziva — dopiši je prethodnom unosu
+                    tail_for["subject"] += " " + text
+                    tail_for = None
+                else:
+                    pending_subject.extend(w["text"] for w in left_words)
+                    # Kolokvijum: sale se ponekad pojave u redu pre datuma
+                    if cont_sale:
+                        pending_rooms = parse_rooms(cont_sale)
+
+    return entries
+
+
 def parse_ispit(pdf_path):
     """
     Parsira PDF sa ispitnim rokom.
     Kolone: Predmet | [P/U] | Datum | Od | Do | Sale | [Napomena]
-    Pozicije kolona se auto-detektuju iz header reda; ako nema headera,
-    koriste se hardkodirani fallback offsets.
     """
-    entries = []
-    cols = {}  # popunjava se sa prve strane
-
-    with pdfplumber.open(pdf_path) as pdf:
-        for page_idx, page in enumerate(pdf.pages):
-            rows = extract_rows(page)
-
-            # Detekcija kolona jednom — sa prve stranice koja ima header
-            if not cols:
-                cols = _detect_columns(rows, _ISPIT_HEADER_KEYS)
-
-            # Izveди granice iz detektovanih kolona (ili fallback)
-            x_datum = cols.get("Datum", 271)
-            x_od    = cols.get("Od",    338)
-            x_do    = cols.get("Do",    378)
-            x_sale  = cols.get("Sale",  418)
-            x_napom = cols.get("Napom.", 740)
-            # Predmet je sve levo od Datuma
-            x_pred_max = x_datum - 3
-            # P/U kolona između predmeta i datuma
-            x_pu_min = x_pred_max - 2
-            x_pu_max = x_datum + 3
-
-            pending_subject = []
-
-            for _, row in rows.items():
-                texts = [w["text"] for w in row]
-
-                if not texts:
-                    continue
-                if texts[0] in ("Predmet", "U", "P."):
-                    continue
-                if re.match(r"^[UNI VERZITE T]+$", " ".join(texts)):
-                    continue
-
-                datum_words = words_in_range(row, x_datum - 5, x_od - 3)
-                datum_str = datum_words[0] if datum_words else None
-
-                if datum_str and re.match(r"\d{2}[/\-]\d{2}[/\-]\d{4}", datum_str):
-                    predmet_words = words_in_range(row, 0, x_pred_max)
-                    if predmet_words:
-                        pending_subject = predmet_words
-                    subject = " ".join(pending_subject)
-
-                    tip_words = words_in_range(row, x_pu_min, x_pu_max)
-                    tip = tip_words[0] if tip_words else ""
-
-                    od_words = words_in_range(row, x_od - 3, x_do - 3)
-                    od = od_words[0] if od_words else ""
-
-                    do_words = words_in_range(row, x_do - 3, x_sale - 3)
-                    do_ = do_words[0] if do_words else ""
-
-                    sale_words = words_in_range(row, x_sale, x_napom)
-                    rooms = parse_rooms(sale_words)
-
-                    note_words = words_in_range(row, x_napom, 9999)
-                    note = " ".join(note_words)
-
-                    date_iso = to_iso(datum_str)
-
-                    if subject and date_iso:
-                        entries.append({
-                            "subject": subject,
-                            "type": tip,
-                            "date": date_iso,
-                            "start": od,
-                            "end": do_,
-                            "rooms": rooms,
-                            "note": note,
-                        })
-                        pending_subject = []
-
-                else:
-                    cont_sale = words_in_range(row, x_sale, x_napom)
-                    if cont_sale and entries and not words_in_range(row, 0, x_pred_max):
-                        entries[-1]["rooms"] += parse_rooms(cont_sale)
-                        continue
-                    cont = words_in_range(row, 0, x_pred_max)
-                    if cont and pending_subject is not None:
-                        pending_subject.extend(cont)
-
-    return entries
+    return _parse(pdf_path, _ISPIT_FALLBACK, with_type=True)
 
 
 def parse_kolokvijum(pdf_path):
     """
     Parsira PDF sa kolokvijumom.
     Kolone: Predmet | Datum | Od | Do | Sale | [Napom.]
-    Pozicije kolona se auto-detektuju iz header reda; fallback na hardkodirane vrednosti.
     """
-    entries = []
-    cols = {}
-
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            rows = extract_rows(page)
-
-            if not cols:
-                cols = _detect_columns(rows, _KOL_HEADER_KEYS)
-
-            x_datum = cols.get("Datum", 241)
-            x_od    = cols.get("Od",    315)
-            x_do    = cols.get("Do",    355)
-            x_sale  = cols.get("Sale",  395)
-            x_pred_max = x_datum - 3
-            # Napom. nije obavezan header u kolokvijum PDF-ovima
-            x_napom = cols.get("Napom.", 715)
-
-            pending_subject = []
-            pending_rooms = []
-
-            for _, row in rows.items():
-                texts = [w["text"] for w in row]
-
-                if not texts:
-                    continue
-                if texts[0] in ("Predmet", "Datum", "Od", "Do", "Sale", "Napom."):
-                    continue
-
-                datum_words = words_in_range(row, x_datum - 5, x_od - 3)
-                datum_str = datum_words[0] if datum_words else None
-
-                if datum_str and re.match(r"\d{2}[/\-]\d{2}[/\-]\d{4}", datum_str):
-                    predmet_words = words_in_range(row, 0, x_pred_max)
-                    if predmet_words:
-                        pending_subject = predmet_words
-                    subject = " ".join(pending_subject)
-
-                    od_words = words_in_range(row, x_od - 3, x_do - 3)
-                    od = od_words[0] if od_words else ""
-
-                    do_words = words_in_range(row, x_do - 3, x_sale - 3)
-                    do_ = do_words[0] if do_words else ""
-
-                    sale_words = words_in_range(row, x_sale, x_napom + 50)
-                    rooms = parse_rooms(sale_words) or pending_rooms
-
-                    note_words = words_in_range(row, x_napom, 9999)
-                    note = " ".join(note_words)
-
-                    date_iso = to_iso(datum_str)
-
-                    if subject and date_iso:
-                        entries.append({
-                            "subject": subject,
-                            "date": date_iso,
-                            "start": od,
-                            "end": do_,
-                            "rooms": rooms,
-                            "note": note,
-                        })
-                        pending_subject = []
-                        pending_rooms = []
-
-                else:
-                    cont_sale = words_in_range(row, x_sale, x_napom + 50)
-                    if cont_sale and entries and not words_in_range(row, 0, x_pred_max):
-                        entries[-1]["rooms"] += parse_rooms(cont_sale)
-                        continue
-                    cont = words_in_range(row, 0, x_pred_max)
-                    if cont:
-                        pending_subject.extend(cont)
-                        pre_datum_sale = words_in_range(row, x_sale, x_napom + 50)
-                        if pre_datum_sale:
-                            pending_rooms = parse_rooms(pre_datum_sale)
-
-    return entries
+    return _parse(pdf_path, _KOL_FALLBACK, with_type=False)
 
 
 def main():

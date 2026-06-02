@@ -74,6 +74,12 @@ def main():
             href = a['href']
             if not href.lower().endswith('.pdf') or href in known:
                 continue
+            # Aplikacija prati aktuelni program (akreditacija 2022); ispiti po staroj
+            # akreditaciji 2014 dolaze kao zaseban PDF i preskaču se. Kolokvijumi nemaju
+            # podelu po akreditaciji (nema tokena '2014'), pa ostaju.
+            if '2014' in href:
+                print(f'  Preskačem (akreditacija 2014): {href}')
+                continue
 
             print(f'  NOVO: {href}')
 
