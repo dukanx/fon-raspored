@@ -1297,552 +1297,33 @@
     "tip": "kolokvijum",
     "entries": [
       {
-        "subject": "Akreditacija i sertifikacija 05/06/2026",
+        "subject": "Akreditacija i sertifikacija",
         "date": "2026-06-05",
         "start": "15:15",
-        "end": "19",
+        "end": "16:15",
         "rooms": [
-          "за",
-          "основне",
-          "студије,",
-          "на",
-          "шалтеру",
-          "бр.",
-          "3,",
-          "од",
-          "11–13",
-          "часова,",
-          "или",
-          "путем",
-          "мејла,"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Analiza pouzdanosti i rizika 09/06/2026",
-        "date": "2026-06-09",
-        "start": "12:15",
-        "end": "15",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Baze podataka 05/06/2026",
-        "date": "2026-06-05",
-        "start": "16:55",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Baze podataka 05/06/2026",
-        "date": "2026-06-05",
-        "start": "18:30",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Baze podataka 05/06/2026",
-        "date": "2026-06-05",
-        "start": "20:05",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Cloud infrastruktura i servisi 06/06/2026",
-        "date": "2026-06-06",
-        "start": "08:00",
-        "end": "07",
-        "rooms": [
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Cloud infrastruktura i servisi 06/06/2026",
-        "date": "2026-06-06",
-        "start": "09:45",
-        "end": "07",
-        "rooms": [
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Cloud infrastruktura i servisi 06/06/2026",
-        "date": "2026-06-06",
-        "start": "11:30",
-        "end": "07",
-        "rooms": [
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Ekološki menadžment 08/06/2026",
-        "date": "2026-06-08",
-        "start": "13:00",
-        "end": "13",
-        "rooms": [
-          "1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "Amfiteatar 4",
-          "Amfiteatar 5"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Ekonometrijske metode 08/06/2026",
-        "date": "2026-06-08",
-        "start": "17:20",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "ETL i skladišta podataka 05/06/2026",
-        "date": "2026-06-05",
-        "start": "16:00",
-        "end": "21",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Finansijska tržišta 05/06/2026",
-        "date": "2026-06-05",
-        "start": "16:30",
-        "end": "15",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Finansijski menadžment i računovodstvo 08/06/2026",
-        "date": "2026-06-08",
-        "start": "10:30",
-        "end": "08",
-        "rooms": [
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Finansijski menadžment i računovodstvo 08/06/2026",
-        "date": "2026-06-08",
-        "start": "11:45",
-        "end": "08",
-        "rooms": [
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Inteligentni sistemi 05/06/2026",
-        "date": "2026-06-05",
-        "start": "08:00",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Izborni - Osnove teorije igara 09/06/2026",
-        "date": "2026-06-09",
-        "start": "14:30",
-        "end": "13",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Jezici i okruženja za razvoj IS 08/06/2026",
-        "date": "2026-06-08",
-        "start": "14:50",
-        "end": "07",
-        "rooms": [
-          "09"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Klijentske veb tehnologije i skriptni jezici 06/06/2026",
-        "date": "2026-06-06",
-        "start": "15:30",
-        "end": "60",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Kontrola kvaliteta 05/06/2026",
-        "date": "2026-06-05",
-        "start": "16:15",
-        "end": "Amfiteatar",
-        "rooms": [
-          "1",
-          "Amfiteatar 2"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Mašinsko učenje 09/06/2026",
-        "date": "2026-06-09",
-        "start": "17:45",
-        "end": "40",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Matematika 2 05/06/2026",
-        "date": "2026-06-05",
-        "start": "10:00",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "4",
-          "Amfiteatar 5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Matematika 2 05/06/2026",
-        "date": "2026-06-05",
-        "start": "12:00",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "4",
-          "Amfiteatar 5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Matematika 2 05/06/2026",
-        "date": "2026-06-05",
-        "start": "14:00",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "21",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "Amfiteatar",
-          "5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Matematika 3 05/06/2026",
-        "date": "2026-06-05",
-        "start": "14:00",
-        "end": "21",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Metrologija i normativno regulisanje 09/06/2026",
-        "date": "2026-06-09",
-        "start": "18:15",
-        "end": "62",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Mikroservisna arhitektura IS 06/06/2026",
-        "date": "2026-06-06",
-        "start": "08:00",
-        "end": "06",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Napredne .NET tehnologije 05/06/2026",
-        "date": "2026-06-05",
-        "start": "15:15",
-        "end": "06",
-        "rooms": [
-          "08"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Napredne Java tehnologije 05/06/2026",
-        "date": "2026-06-05",
-        "start": "11:00",
-        "end": "60",
-        "rooms": [
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Numerička analiza 08/06/2026",
-        "date": "2026-06-08",
-        "start": "13:05",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Numerička analiza 08/06/2026",
-        "date": "2026-06-08",
-        "start": "15:00",
-        "end": "11",
-        "rooms": [
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Operaciona istraživanja 2 08/06/2026",
-        "date": "2026-06-08",
-        "start": "08:00",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62",
-          "pismeni",
-          "deo"
-        ],
-        "note": "pismeni"
-      },
-      {
-        "subject": "Operaciona istraživanja 2 08/06/2026",
-        "date": "2026-06-08",
-        "start": "09:15",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62",
-          "pismeni",
-          "deo"
-        ],
-        "note": "pismeni"
-      },
-      {
-        "subject": "Osnove finansijskog menadžmenta 08/06/2026",
-        "date": "2026-06-08",
-        "start": "20:00",
-        "end": "19",
-        "rooms": [
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Osnove naučnog izračunavanja 08/06/2026",
-        "date": "2026-06-08",
-        "start": "08:00",
-        "end": "15",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Osnove operacionog menadžmenta 06/06/2026",
-        "date": "2026-06-06",
-        "start": "13:15",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "4",
-          "Amfiteatar 5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Osnove programiranja 05/06/2026",
-        "date": "2026-06-05",
-        "start": "09:15",
-        "end": "07",
-        "rooms": [
-          "09",
-          "11",
           "19"
         ],
         "note": ""
       },
       {
-        "subject": "Planiranje kvaliteta 08/06/2026",
-        "date": "2026-06-08",
-        "start": "14:00",
-        "end": "21",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Planiranje proizvodnje i usluga 06/06/2026",
-        "date": "2026-06-06",
-        "start": "17:00",
-        "end": "20",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Poslovna analitika 08/06/2026",
-        "date": "2026-06-08",
-        "start": "14:30",
-        "end": "16",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Poslovna inteligencija 06/06/2026",
-        "date": "2026-06-06",
-        "start": "13:15",
-        "end": "06",
+        "subject": "Analiza pouzdanosti i rizika",
+        "date": "2026-06-09",
+        "start": "12:15",
+        "end": "13:15",
         "rooms": [
+          "15"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Baze podataka",
+        "date": "2026-06-05",
+        "start": "16:55",
+        "end": "18:15",
+        "rooms": [
+          "06",
+          "07",
           "08",
           "09",
           "11",
@@ -1856,65 +1337,52 @@
         "note": ""
       },
       {
-        "subject": "Poslovna inteligencija 06/06/2026",
-        "date": "2026-06-06",
-        "start": "15:30",
-        "end": "07",
+        "subject": "Baze podataka",
+        "date": "2026-06-05",
+        "start": "18:30",
+        "end": "19:50",
         "rooms": [
+          "06",
+          "07",
+          "08",
           "09",
           "11",
           "19",
           "40",
-          "50"
+          "50",
+          "60",
+          "61",
+          "62"
         ],
         "note": ""
       },
       {
-        "subject": "Poslovni informacioni sistemi 05/06/2026",
+        "subject": "Baze podataka",
         "date": "2026-06-05",
-        "start": "18:15",
-        "end": "30",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Poslovno pravo 06/06/2026",
-        "date": "2026-06-06",
-        "start": "11:30",
-        "end": "Amfiteatar",
+        "start": "20:05",
+        "end": "21:25",
         "rooms": [
-          "4"
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
         ],
         "note": ""
       },
       {
-        "subject": "Pravne osnove informacionih sistema 05/06/2026",
-        "date": "2026-06-05",
+        "subject": "Cloud infrastruktura i servisi",
+        "date": "2026-06-06",
         "start": "08:00",
-        "end": "Amfiteatar",
+        "end": "09:30",
         "rooms": [
-          "1"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Preduzetništvo 08/06/2026",
-        "date": "2026-06-08",
-        "start": "11:30",
-        "end": "Amfiteatar",
-        "rooms": [
-          "1",
-          "Amfiteatar 2",
-          "Amfiteatar 3"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Principi programiranja 09/06/2026",
-        "date": "2026-06-09",
-        "start": "12:30",
-        "end": "06",
-        "rooms": [
+          "07",
           "08",
           "09",
           "11",
@@ -1928,106 +1396,182 @@
         "note": ""
       },
       {
-        "subject": "Principi programiranja 09/06/2026",
-        "date": "2026-06-09",
-        "start": "13:50",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50",
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Principi programiranja 09/06/2026",
-        "date": "2026-06-09",
-        "start": "15:00",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Programiranje 2 (NA) 09/06/2026",
-        "date": "2026-06-09",
-        "start": "16:10",
-        "end": "06",
-        "rooms": [
-          "08",
-          "09",
-          "11"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Programiranje repozitorijuma podataka 09/06/2026",
-        "date": "2026-06-09",
-        "start": "10:15",
-        "end": "60",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Programski jezici 06/06/2026",
+        "subject": "Cloud infrastruktura i servisi",
         "date": "2026-06-06",
-        "start": "14:30",
-        "end": "12",
+        "start": "09:45",
+        "end": "11:15",
         "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Cloud infrastruktura i servisi",
+        "date": "2026-06-06",
+        "start": "11:30",
+        "end": "13:00",
+        "rooms": [
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Ekološki menadžment",
+        "date": "2026-06-08",
+        "start": "13:00",
+        "end": "14:00",
+        "rooms": [
+          "13",
           "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "4",
+          "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
         ],
         "note": ""
       },
       {
-        "subject": "Programski jezici 06/06/2026",
-        "date": "2026-06-06",
-        "start": "17:00",
-        "end": "12",
+        "subject": "Ekonometrijske metode",
+        "date": "2026-06-08",
+        "start": "17:20",
+        "end": "19:40",
         "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "21",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "Amfiteatar",
-          "5",
-          "Čitaonica"
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
         ],
         "note": ""
       },
       {
-        "subject": "Programski jezici za analitiku 06/06/2026",
+        "subject": "ETL i skladišta podataka",
+        "date": "2026-06-05",
+        "start": "16:00",
+        "end": "20:00",
+        "rooms": [
+          "21"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Finansijska tržišta",
+        "date": "2026-06-05",
+        "start": "16:30",
+        "end": "17:30",
+        "rooms": [
+          "15"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Finansijski menadžment i računovodstvo",
+        "date": "2026-06-08",
+        "start": "10:30",
+        "end": "11:30",
+        "rooms": [
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Finansijski menadžment i računovodstvo",
+        "date": "2026-06-08",
+        "start": "11:45",
+        "end": "12:45",
+        "rooms": [
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Inteligentni sistemi",
+        "date": "2026-06-05",
+        "start": "08:00",
+        "end": "09:00",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Izborni - Osnove teorije igara",
+        "date": "2026-06-09",
+        "start": "14:30",
+        "end": "16:30",
+        "rooms": [
+          "13"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Jezici i okruženja za razvoj IS",
+        "date": "2026-06-08",
+        "start": "14:50",
+        "end": "17:05",
+        "rooms": [
+          "07",
+          "08",
+          "09"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Klijentske veb tehnologije i skriptni jezici",
         "date": "2026-06-06",
-        "start": "17:45",
-        "end": "40",
+        "start": "15:30",
+        "end": "17:30",
         "rooms": [
           "60",
           "61"
@@ -2035,142 +1579,163 @@
         "note": ""
       },
       {
-        "subject": "Razvoj i održavanje softvera 08/06/2026",
-        "date": "2026-06-08",
-        "start": "15:00",
-        "end": "06",
-        "rooms": [],
+        "subject": "Kontrola kvaliteta",
+        "date": "2026-06-05",
+        "start": "16:15",
+        "end": "17:15",
+        "rooms": [
+          "Amfiteatar 1",
+          "Amfiteatar 2"
+        ],
         "note": ""
       },
       {
-        "subject": "Serverske veb tehnologije 09/06/2026",
+        "subject": "Mašinsko učenje",
         "date": "2026-06-09",
-        "start": "16:00",
-        "end": "61",
-        "rooms": [],
+        "start": "17:45",
+        "end": "19:45",
+        "rooms": [
+          "40",
+          "50"
+        ],
         "note": ""
       },
       {
-        "subject": "Simulacija u poslovnom odlučivanju 05/06/2026",
+        "subject": "Matematika 2",
+        "date": "2026-06-05",
+        "start": "10:00",
+        "end": "11:45",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Matematika 2",
+        "date": "2026-06-05",
+        "start": "12:00",
+        "end": "13:45",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Matematika 2",
+        "date": "2026-06-05",
+        "start": "14:00",
+        "end": "15:45",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "21",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar",
+          "4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Matematika 3",
+        "date": "2026-06-05",
+        "start": "14:00",
+        "end": "15:45",
+        "rooms": [
+          "21"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Metrologija i normativno regulisanje kvaliteta",
+        "date": "2026-06-09",
+        "start": "18:15",
+        "end": "19:15",
+        "rooms": [
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Mikroservisna arhitektura IS",
+        "date": "2026-06-06",
+        "start": "08:00",
+        "end": "10:15",
+        "rooms": [
+          "06"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Napredne .NET tehnologije",
         "date": "2026-06-05",
         "start": "15:15",
-        "end": "11",
+        "end": "16:45",
         "rooms": [
-          "50",
-          "60",
-          "61",
-          "62"
+          "06",
+          "07",
+          "08"
         ],
         "note": ""
       },
       {
-        "subject": "Statistika 09/06/2026",
-        "date": "2026-06-09",
-        "start": "08:00",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "4",
-          "Amfiteatar 5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Statistika 09/06/2026",
-        "date": "2026-06-09",
-        "start": "10:05",
-        "end": "12",
-        "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "4",
-          "Amfiteatar 5",
-          "Čitaonica"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Statistika 09/06/2026",
-        "date": "2026-06-09",
-        "start": "12:15",
-        "end": "13",
-        "rooms": [
-          "Amfiteatar 1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "Amfiteatar 4",
-          "Amfiteatar 5"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Strateški menadžment 05/06/2026",
-        "date": "2026-06-05",
-        "start": "09:15",
-        "end": "40",
-        "rooms": [
-          "60",
-          "61",
-          "62"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Strukture podataka i algoritmi 05/06/2026",
+        "subject": "Napredne Java tehnologije",
         "date": "2026-06-05",
         "start": "11:00",
-        "end": "06",
+        "end": "13:15",
         "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50"
+          "60",
+          "61",
+          "62"
         ],
         "note": ""
       },
       {
-        "subject": "Strukture podataka i algoritmi 05/06/2026",
-        "date": "2026-06-05",
-        "start": "12:15",
-        "end": "06",
+        "subject": "Numerička analiza",
+        "date": "2026-06-08",
+        "start": "13:05",
+        "end": "14:35",
         "rooms": [
-          "08",
-          "09",
-          "11",
-          "19",
-          "40",
-          "50"
-        ],
-        "note": ""
-      },
-      {
-        "subject": "Strukture podataka i algoritmi 05/06/2026",
-        "date": "2026-06-05",
-        "start": "13:30",
-        "end": "06",
-        "rooms": [
+          "06",
+          "07",
           "08",
           "09",
           "11",
@@ -2184,12 +1749,103 @@
         "note": ""
       },
       {
-        "subject": "Teorija igara 09/06/2026",
-        "date": "2026-06-09",
-        "start": "14:30",
-        "end": "Amfiteatar",
+        "subject": "Numerička analiza",
+        "date": "2026-06-08",
+        "start": "15:00",
+        "end": "16:30",
         "rooms": [
-          "1",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Operaciona istraživanja 2",
+        "date": "2026-06-08",
+        "start": "08:00",
+        "end": "09:00",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": "pismeni"
+      },
+      {
+        "subject": "Operaciona istraživanja 2",
+        "date": "2026-06-08",
+        "start": "09:15",
+        "end": "10:15",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": "pismeni"
+      },
+      {
+        "subject": "Osnove finansijskog menadžmenta",
+        "date": "2026-06-08",
+        "start": "20:00",
+        "end": "20:50",
+        "rooms": [
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Osnove naučnog izračunavanja",
+        "date": "2026-06-08",
+        "start": "08:00",
+        "end": "09:00",
+        "rooms": [
+          "15"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Osnove operacionog menadžmenta",
+        "date": "2026-06-06",
+        "start": "13:15",
+        "end": "14:15",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3",
           "Amfiteatar 4",
@@ -2199,51 +1855,431 @@
         "note": ""
       },
       {
-        "subject": "Upravljačko računovodstvo 09/06/2026",
-        "date": "2026-06-09",
-        "start": "17:00",
-        "end": "Amfiteatar",
+        "subject": "Osnove programiranja",
+        "date": "2026-06-05",
+        "start": "09:15",
+        "end": "10:45",
         "rooms": [
-          "1",
-          "Amfiteatar 2",
-          "Amfiteatar 3",
-          "Amfiteatar 4",
-          "Amfiteatar 5"
+          "07",
+          "08",
+          "09",
+          "11",
+          "19"
         ],
         "note": ""
       },
       {
-        "subject": "Upravljanje dokumentacijom 06/06/2026",
+        "subject": "Planiranje kvaliteta",
+        "date": "2026-06-08",
+        "start": "14:00",
+        "end": "15:00",
+        "rooms": [
+          "21",
+          "2"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Planiranje proizvodnje i usluga",
+        "date": "2026-06-06",
+        "start": "17:00",
+        "end": "19:00",
+        "rooms": [
+          "20",
+          "30"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Poslovna analitika",
+        "date": "2026-06-08",
+        "start": "14:30",
+        "end": "20:30",
+        "rooms": [
+          "16"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Poslovna inteligencija",
+        "date": "2026-06-06",
+        "start": "13:15",
+        "end": "15:15",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Poslovna inteligencija",
+        "date": "2026-06-06",
+        "start": "15:30",
+        "end": "17:30",
+        "rooms": [
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Poslovni informacioni sistemi",
+        "date": "2026-06-05",
+        "start": "18:15",
+        "end": "19:45",
+        "rooms": [
+          "30"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Poslovno pravo",
         "date": "2026-06-06",
         "start": "11:30",
-        "end": "Amfiteatar",
+        "end": "13:00",
         "rooms": [
-          "1",
+          "Amfiteatar 4"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Pravne osnove informacionih sistema",
+        "date": "2026-06-05",
+        "start": "08:00",
+        "end": "09:30",
+        "rooms": [
+          "Amfiteatar 1"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Preduzetništvo",
+        "date": "2026-06-08",
+        "start": "11:30",
+        "end": "12:30",
+        "rooms": [
+          "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3"
         ],
         "note": ""
       },
       {
-        "subject": "Upravljanje inovacijama 09/06/2026",
+        "subject": "Principi programiranja",
+        "date": "2026-06-09",
+        "start": "12:30",
+        "end": "13:20",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Principi programiranja",
+        "date": "2026-06-09",
+        "start": "13:50",
+        "end": "14:40",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Principi programiranja",
+        "date": "2026-06-09",
+        "start": "15:00",
+        "end": "15:50",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Programiranje 2 (NA)",
+        "date": "2026-06-09",
+        "start": "16:10",
+        "end": "18:10",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Programiranje repozitorijuma podataka",
+        "date": "2026-06-09",
+        "start": "10:15",
+        "end": "12:15",
+        "rooms": [
+          "60",
+          "61"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Programski jezici",
+        "date": "2026-06-06",
+        "start": "14:30",
+        "end": "16:45",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Programski jezici",
+        "date": "2026-06-06",
+        "start": "17:00",
+        "end": "19:15",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "21",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar",
+          "4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Programski jezici za analitiku",
+        "date": "2026-06-06",
+        "start": "17:45",
+        "end": "18:45",
+        "rooms": [
+          "40",
+          "50",
+          "60",
+          "61"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Razvoj i održavanje softvera",
+        "date": "2026-06-08",
+        "start": "15:00",
+        "end": "16:30",
+        "rooms": [
+          "06"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Serverske veb tehnologije",
+        "date": "2026-06-09",
+        "start": "16:00",
+        "end": "18:00",
+        "rooms": [
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Simulacija u poslovnom odlučivanju",
+        "date": "2026-06-05",
+        "start": "15:15",
+        "end": "16:15",
+        "rooms": [
+          "11",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Statistika",
+        "date": "2026-06-09",
+        "start": "08:00",
+        "end": "09:50",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Statistika",
+        "date": "2026-06-09",
+        "start": "10:05",
+        "end": "11:55",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Statistika",
         "date": "2026-06-09",
         "start": "12:15",
-        "end": "12",
+        "end": "14:05",
         "rooms": [
-          "17",
-          "18",
-          "20",
-          "21",
-          "30"
+          "13",
+          "14",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
         ],
         "note": ""
       },
       {
-        "subject": "Upravljanje investicijama 06/06/2026",
-        "date": "2026-06-06",
-        "start": "19:00",
-        "end": "06",
+        "subject": "Strateški menadžment",
+        "date": "2026-06-05",
+        "start": "09:15",
+        "end": "10:25",
         "rooms": [
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Strukture podataka i algoritmi",
+        "date": "2026-06-05",
+        "start": "11:00",
+        "end": "12:00",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Strukture podataka i algoritmi",
+        "date": "2026-06-05",
+        "start": "12:15",
+        "end": "13:15",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Strukture podataka i algoritmi",
+        "date": "2026-06-05",
+        "start": "13:30",
+        "end": "14:30",
+        "rooms": [
+          "06",
+          "07",
           "08",
           "09",
           "11",
@@ -2257,66 +2293,54 @@
         "note": ""
       },
       {
-        "subject": "Upravljanje lancima snabdevanja 1 05/06/2026",
-        "date": "2026-06-05",
-        "start": "14:15",
-        "end": "20",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Uvod u informacione sisteme 06/06/2026",
-        "date": "2026-06-06",
-        "start": "08:00",
-        "end": "12",
+        "subject": "Teorija igara",
+        "date": "2026-06-09",
+        "start": "14:30",
+        "end": "16:30",
         "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
           "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "4",
+          "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
         ],
         "note": ""
       },
       {
-        "subject": "Uvod u informacione sisteme 06/06/2026",
-        "date": "2026-06-06",
-        "start": "09:45",
-        "end": "12",
+        "subject": "Upravljačko računovodstvo",
+        "date": "2026-06-09",
+        "start": "17:00",
+        "end": "18:15",
         "rooms": [
-          "14",
-          "15",
-          "16",
-          "17",
-          "18",
-          "20",
-          "21",
-          "30",
           "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "4",
+          "Amfiteatar 4",
           "Amfiteatar 5",
-          "Čitaonica"
+          "3"
         ],
         "note": ""
       },
       {
-        "subject": "Uvod u informacione sisteme 06/06/2026",
+        "subject": "Upravljanje dokumentacijom",
         "date": "2026-06-06",
         "start": "11:30",
-        "end": "12",
+        "end": "13:00",
         "rooms": [
-          "15",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Upravljanje inovacijama",
+        "date": "2026-06-09",
+        "start": "12:15",
+        "end": "13:15",
+        "rooms": [
+          "12",
           "16",
           "17",
           "18",
@@ -2327,27 +2351,13 @@
         "note": ""
       },
       {
-        "subject": "Uvod u poslovnu analitiku 08/06/2026",
-        "date": "2026-06-08",
-        "start": "14:30",
-        "end": "18",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Uvod u skladišta podataka 08/06/2026",
-        "date": "2026-06-08",
-        "start": "17:20",
-        "end": "20",
-        "rooms": [],
-        "note": ""
-      },
-      {
-        "subject": "Veštačka inteligencija 09/06/2026",
-        "date": "2026-06-09",
-        "start": "08:00",
-        "end": "06",
+        "subject": "Upravljanje investicijama",
+        "date": "2026-06-06",
+        "start": "19:00",
+        "end": "20:40",
         "rooms": [
+          "06",
+          "07",
           "08",
           "09",
           "11",
@@ -2361,11 +2371,132 @@
         "note": ""
       },
       {
-        "subject": "Veštačka inteligencija 09/06/2026",
+        "subject": "Upravljanje lancima snabdevanja 1",
+        "date": "2026-06-05",
+        "start": "14:15",
+        "end": "15:05",
+        "rooms": [
+          "20",
+          "30"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Uvod u informacione sisteme",
+        "date": "2026-06-06",
+        "start": "08:00",
+        "end": "09:30",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Uvod u informacione sisteme",
+        "date": "2026-06-06",
+        "start": "09:45",
+        "end": "11:15",
+        "rooms": [
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30",
+          "Amfiteatar 1",
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "Čitaonica"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Uvod u informacione sisteme",
+        "date": "2026-06-06",
+        "start": "11:30",
+        "end": "13:00",
+        "rooms": [
+          "12",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "20",
+          "21",
+          "30"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Uvod u poslovnu analitiku",
+        "date": "2026-06-08",
+        "start": "14:30",
+        "end": "20:30",
+        "rooms": [
+          "18"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Uvod u skladišta podataka",
+        "date": "2026-06-08",
+        "start": "17:20",
+        "end": "21:20",
+        "rooms": [
+          "20"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Veštačka inteligencija",
+        "date": "2026-06-09",
+        "start": "08:00",
+        "end": "09:00",
+        "rooms": [
+          "06",
+          "07",
+          "08",
+          "09",
+          "11",
+          "19",
+          "40",
+          "50",
+          "60",
+          "61",
+          "62"
+        ],
+        "note": ""
+      },
+      {
+        "subject": "Veštačka inteligencija",
         "date": "2026-06-09",
         "start": "09:15",
-        "end": "06",
+        "end": "10:15",
         "rooms": [
+          "06",
+          "07",
           "08",
           "09",
           "11",
@@ -2377,11 +2508,14 @@
         "note": ""
       },
       {
-        "subject": "Vrednovanje preduzeća 09/06/2026",
+        "subject": "Vrednovanje preduzeća",
         "date": "2026-06-09",
         "start": "14:00",
-        "end": "16",
-        "rooms": [],
+        "end": "15:00",
+        "rooms": [
+          "16",
+          "4"
+        ],
         "note": ""
       }
     ],
@@ -2407,7 +2541,7 @@
         "note": ""
       },
       {
-        "subject": "Analiza ilogičkoprojektovanje IS (projekat)",
+        "subject": "Analiza i logičko projektovanje IS (projekat)",
         "type": "U",
         "date": "2026-06-17",
         "start": "10:30",
@@ -2429,7 +2563,7 @@
         "note": ""
       },
       {
-        "subject": "Analiza pouzdanostiirizika",
+        "subject": "Analiza pouzdanosti i rizika",
         "type": "P",
         "date": "2026-06-15",
         "start": "08:15",
@@ -2440,7 +2574,7 @@
         "note": ""
       },
       {
-        "subject": "Analiza pouzdanostiirizika",
+        "subject": "Analiza pouzdanosti i rizika",
         "type": "U",
         "date": "2026-06-22",
         "start": "17:00",
@@ -2478,7 +2612,7 @@
         "note": ""
       },
       {
-        "subject": "Cloud infrastrukturaiservisi",
+        "subject": "Cloud infrastruktura i servisi",
         "type": "P",
         "date": "2026-06-18",
         "start": "12:30",
@@ -2499,7 +2633,7 @@
         "note": "integralni test"
       },
       {
-        "subject": "Cloud infrastrukturaiservisi",
+        "subject": "Cloud infrastruktura i servisi",
         "type": "P",
         "date": "2026-06-18",
         "start": "13:30",
@@ -2520,7 +2654,7 @@
         "note": "integralni test"
       },
       {
-        "subject": "Cloud infrastrukturaiservisi",
+        "subject": "Cloud infrastruktura i servisi",
         "type": "P",
         "date": "2026-06-24",
         "start": "11:15",
@@ -2541,7 +2675,7 @@
         "note": "integralnizad"
       },
       {
-        "subject": "Cloud infrastrukturaiservisi",
+        "subject": "Cloud infrastruktura i servisi",
         "type": "P",
         "date": "2026-06-24",
         "start": "13:45",
@@ -2562,7 +2696,7 @@
         "note": "integralnizad"
       },
       {
-        "subject": "Cloud infrastrukturaiservisi",
+        "subject": "Cloud infrastruktura i servisi",
         "type": "U",
         "date": "2026-06-27",
         "start": "16:00",
@@ -2588,7 +2722,7 @@
         "note": ""
       },
       {
-        "subject": "Digitalnatransformacijaiinformacionodruštv",
+        "subject": "Digitalnatransformacijaiinformacionodruštv o",
         "type": "P",
         "date": "2026-06-15",
         "start": "08:00",
@@ -2610,7 +2744,7 @@
         "note": ""
       },
       {
-        "subject": "Dizajnkorisničkoginterfejsa",
+        "subject": "Dizajn korisničkog interfejsa",
         "type": "P",
         "date": "2026-06-18",
         "start": "14:45",
@@ -2621,7 +2755,7 @@
         "note": ""
       },
       {
-        "subject": "Ekološkimenadžment",
+        "subject": "Ekološki menadžment",
         "type": "U",
         "date": "2026-06-18",
         "start": "14:30",
@@ -2643,7 +2777,7 @@
         "note": ""
       },
       {
-        "subject": "Ekonometrijskemetode",
+        "subject": "Ekonometrijske metode",
         "type": "P",
         "date": "2026-06-20",
         "start": "17:00",
@@ -2663,7 +2797,7 @@
         "note": ""
       },
       {
-        "subject": "Ekonometrijskimodeliipredviđanje",
+        "subject": "Ekonometrijski modeli i predviđanje",
         "type": "U",
         "date": "2026-06-19",
         "start": "17:00",
@@ -2675,7 +2809,7 @@
         "note": ""
       },
       {
-        "subject": "Ekonomikaposlovanjaiplaniranje",
+        "subject": "Ekonomika poslovanja i planiranje",
         "type": "P",
         "date": "2026-06-24",
         "start": "08:00",
@@ -2695,7 +2829,7 @@
         "note": "prvi deo"
       },
       {
-        "subject": "Ekonomikaposlovanjaiplaniranje",
+        "subject": "Ekonomika poslovanja i planiranje",
         "type": "P",
         "date": "2026-06-24",
         "start": "09:45",
@@ -2714,7 +2848,7 @@
         "note": "prvi deo"
       },
       {
-        "subject": "Ekonomikaposlovanjaiplaniranje",
+        "subject": "Ekonomika poslovanja i planiranje",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -2726,7 +2860,7 @@
         "note": "drugi deo"
       },
       {
-        "subject": "Engleskijezik u menadžmentu 1",
+        "subject": "Engleski jezik u menadžmentu 1",
         "type": "P",
         "date": "2026-06-20",
         "start": "08:00",
@@ -2740,7 +2874,7 @@
         "note": ""
       },
       {
-        "subject": "Engleskijezik u menadžmentu 1",
+        "subject": "Engleski jezik u menadžmentu 1",
         "type": "P",
         "date": "2026-06-20",
         "start": "10:15",
@@ -2754,7 +2888,7 @@
         "note": ""
       },
       {
-        "subject": "Engleskijezik u menadžmentu 1",
+        "subject": "Engleski jezik u menadžmentu 1",
         "type": "P",
         "date": "2026-06-20",
         "start": "12:30",
@@ -2768,7 +2902,7 @@
         "note": ""
       },
       {
-        "subject": "Engleskijezik u menadžmentu 2",
+        "subject": "Engleski jezik u menadžmentu 2",
         "type": "P",
         "date": "2026-06-22",
         "start": "16:00",
@@ -2779,7 +2913,7 @@
         "note": ""
       },
       {
-        "subject": "Engleskijezik za akademskenamene",
+        "subject": "Engleski jezik za akademske namene",
         "type": "P",
         "date": "2026-06-22",
         "start": "16:00",
@@ -2790,7 +2924,7 @@
         "note": ""
       },
       {
-        "subject": "ETL iskladištapodataka",
+        "subject": "ETL i skladišta podataka",
         "type": "P",
         "date": "2026-06-17",
         "start": "11:00",
@@ -2801,7 +2935,7 @@
         "note": ""
       },
       {
-        "subject": "ETL iskladištapodataka",
+        "subject": "ETL i skladišta podataka",
         "type": "U",
         "date": "2026-06-25",
         "start": "17:30",
@@ -2812,7 +2946,7 @@
         "note": ""
       },
       {
-        "subject": "Finansijskatržišta",
+        "subject": "Finansijska tržišta",
         "type": "P",
         "date": "2026-06-15",
         "start": "08:00",
@@ -2823,7 +2957,7 @@
         "note": ""
       },
       {
-        "subject": "Finansijskimenadžmentiračunovodstvo",
+        "subject": "Finansijski menadžment i računovodstvo",
         "type": "P",
         "date": "2026-06-17",
         "start": "18:30",
@@ -2845,7 +2979,7 @@
         "note": ""
       },
       {
-        "subject": "Finansijskimenadžmentiračunovodstvo",
+        "subject": "Finansijski menadžment i računovodstvo",
         "type": "U",
         "date": "2026-06-26",
         "start": "10:30",
@@ -2856,7 +2990,7 @@
         "note": ""
       },
       {
-        "subject": "Funkcionalnijezici",
+        "subject": "Funkcionalni jezici",
         "type": "P",
         "date": "2026-06-16",
         "start": "13:30",
@@ -2867,7 +3001,7 @@
         "note": ""
       },
       {
-        "subject": "Funkcionalnijezici",
+        "subject": "Funkcionalni jezici",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -2889,7 +3023,7 @@
         "note": ""
       },
       {
-        "subject": "Inteligentnisistemi",
+        "subject": "Inteligentni sistemi",
         "type": "P",
         "date": "2026-06-20",
         "start": "14:30",
@@ -2909,7 +3043,7 @@
         "note": ""
       },
       {
-        "subject": "Interakcijačovek-računar",
+        "subject": "Interakcija čovek-računar",
         "type": "P",
         "date": "2026-06-18",
         "start": "14:45",
@@ -2923,7 +3057,7 @@
         "note": ""
       },
       {
-        "subject": "Internet inteligentnihuređaja",
+        "subject": "Internet inteligentnih uređaja",
         "type": "U",
         "date": "2026-06-23",
         "start": "12:15",
@@ -2934,7 +3068,7 @@
         "note": ""
       },
       {
-        "subject": "Interpersonalneveštine u organizaciji",
+        "subject": "Interpersonalne veštine u organizaciji",
         "type": "P",
         "date": "2026-06-20",
         "start": "08:00",
@@ -2947,7 +3081,7 @@
         "note": ""
       },
       {
-        "subject": "Investicionobankarstvo",
+        "subject": "Investiciono bankarstvo",
         "type": "P",
         "date": "2026-06-18",
         "start": "13:00",
@@ -2958,7 +3092,7 @@
         "note": ""
       },
       {
-        "subject": "Inženjeringprocesa (NA)",
+        "subject": "Inženjering procesa (NA)",
         "type": "P",
         "date": "2026-06-19",
         "start": "08:00",
@@ -2980,7 +3114,7 @@
         "note": ""
       },
       {
-        "subject": "Inženjeringprocesa (NA)",
+        "subject": "Inženjering procesa (NA)",
         "type": "P",
         "date": "2026-06-19",
         "start": "10:00",
@@ -3002,7 +3136,7 @@
         "note": ""
       },
       {
-        "subject": "Jeziciiokruženja za razvoj IS",
+        "subject": "Jezici i okruženja za razvoj IS",
         "type": "P",
         "date": "2026-06-15",
         "start": "11:45",
@@ -3014,7 +3148,7 @@
         "note": ""
       },
       {
-        "subject": "Jeziciiokruženja za razvoj IS",
+        "subject": "Jezici i okruženja za razvoj IS",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -3027,7 +3161,7 @@
         "note": ""
       },
       {
-        "subject": "Klijentskevebtehnologijeiskriptnijezici",
+        "subject": "Klijentske veb tehnologije i skriptni jezici",
         "type": "P",
         "date": "2026-06-19",
         "start": "14:45",
@@ -3041,7 +3175,7 @@
         "note": ""
       },
       {
-        "subject": "Klijentskevebtehnologijeiskriptnijezici",
+        "subject": "Klijentske veb tehnologije i skriptni jezici",
         "type": "U",
         "date": "2026-06-22",
         "start": "16:00",
@@ -3055,7 +3189,7 @@
         "note": ""
       },
       {
-        "subject": "Konkurentnoidistribuiranoprogramiranje -",
+        "subject": "Konkurentno i distribuirano programiranje - projekat",
         "type": "U",
         "date": "2026-06-26",
         "start": "13:30",
@@ -3066,7 +3200,7 @@
         "note": ""
       },
       {
-        "subject": "Kontrolakvaliteta",
+        "subject": "Kontrola kvaliteta",
         "type": "P",
         "date": "2026-06-15",
         "start": "08:00",
@@ -3084,7 +3218,7 @@
         "note": ""
       },
       {
-        "subject": "Kontrolakvaliteta",
+        "subject": "Kontrola kvaliteta",
         "type": "U",
         "date": "2026-06-20",
         "start": "17:30",
@@ -3096,7 +3230,7 @@
         "note": ""
       },
       {
-        "subject": "Linearnistatističkimodeli",
+        "subject": "Linearni statistički modeli",
         "type": "P",
         "date": "2026-06-20",
         "start": "15:15",
@@ -3107,7 +3241,7 @@
         "note": ""
       },
       {
-        "subject": "Linearnistatističkimodeli",
+        "subject": "Linearni statistički modeli",
         "type": "U",
         "date": "2026-06-27",
         "start": "15:45",
@@ -3130,7 +3264,7 @@
         "note": ""
       },
       {
-        "subject": "Mašinskoučenje",
+        "subject": "Mašinsko učenje",
         "type": "P",
         "date": "2026-06-19",
         "start": "10:15",
@@ -3143,7 +3277,7 @@
         "note": ""
       },
       {
-        "subject": "Mašinskoučenje",
+        "subject": "Mašinsko učenje",
         "type": "U",
         "date": "2026-06-24",
         "start": "08:00",
@@ -3292,7 +3426,7 @@
         "note": ""
       },
       {
-        "subject": "Medijskekomunikacije",
+        "subject": "Medijske komunikacije",
         "type": "P",
         "date": "2026-06-26",
         "start": "13:30",
@@ -3317,7 +3451,7 @@
         "note": ""
       },
       {
-        "subject": "Menadžmentproizvodnjeipružanjausluga",
+        "subject": "Menadžment proizvodnje i pružanja usluga",
         "type": "P",
         "date": "2026-06-15",
         "start": "16:30",
@@ -3332,7 +3466,7 @@
         "note": ""
       },
       {
-        "subject": "Menadžmentproizvodnjeipružanjausluga",
+        "subject": "Menadžment proizvodnje i pružanja usluga",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -3345,7 +3479,7 @@
         "note": ""
       },
       {
-        "subject": "Menadžmenttehnologijeirazvoja (NA)",
+        "subject": "Menadžment tehnologije i razvoja (NA)",
         "type": "P",
         "date": "2026-06-23",
         "start": "14:30",
@@ -3371,7 +3505,7 @@
         "note": ""
       },
       {
-        "subject": "Menadžmenttehnologijeirazvoja (NA)",
+        "subject": "Menadžment tehnologije i razvoja (NA)",
         "type": "P",
         "date": "2026-06-23",
         "start": "16:50",
@@ -3406,7 +3540,7 @@
         "note": ""
       },
       {
-        "subject": "Metodologijaizrade IT projekta",
+        "subject": "Metodologija izrade IT projekta",
         "type": "P",
         "date": "2026-06-24",
         "start": "10:00",
@@ -3417,7 +3551,7 @@
         "note": ""
       },
       {
-        "subject": "Metrologijainormativnoregulisanjekvaliteta",
+        "subject": "Metrologija i normativno regulisanje kvaliteta",
         "type": "P",
         "date": "2026-06-18",
         "start": "17:00",
@@ -3428,7 +3562,7 @@
         "note": ""
       },
       {
-        "subject": "Mikroservisnaarhitektura IS",
+        "subject": "Mikroservisna arhitektura IS",
         "type": "P",
         "date": "2026-06-18",
         "start": "12:15",
@@ -3441,7 +3575,7 @@
         "note": ""
       },
       {
-        "subject": "Mobilnoračunarstvo",
+        "subject": "Mobilno računarstvo",
         "type": "P",
         "date": "2026-06-24",
         "start": "16:00",
@@ -3453,7 +3587,7 @@
         "note": ""
       },
       {
-        "subject": "Modeliiindikatoripoboljšavanjakvaliteta",
+        "subject": "Modeli i indikatori poboljšavanja kvaliteta",
         "type": "P",
         "date": "2026-06-17",
         "start": "13:00",
@@ -3534,7 +3668,7 @@
         "note": ""
       },
       {
-        "subject": "Numeričkaanaliza",
+        "subject": "Numerička analiza",
         "type": "P",
         "date": "2026-06-19",
         "start": "08:00",
@@ -3553,7 +3687,7 @@
         "note": ""
       },
       {
-        "subject": "Numeričkaanaliza",
+        "subject": "Numerička analiza",
         "type": "P",
         "date": "2026-06-19",
         "start": "10:15",
@@ -3569,7 +3703,7 @@
         "note": ""
       },
       {
-        "subject": "Numeričkaanaliza",
+        "subject": "Numerička analiza",
         "type": "U",
         "date": "2026-06-26",
         "start": "10:15",
@@ -3581,7 +3715,7 @@
         "note": ""
       },
       {
-        "subject": "Ocenakvalitetaposlovnogsistema",
+        "subject": "Ocena kvaliteta poslovnog sistema",
         "type": "P",
         "date": "2026-06-15",
         "start": "12:00",
@@ -3593,7 +3727,7 @@
         "note": ""
       },
       {
-        "subject": "Odabranapoglavljaiz IS",
+        "subject": "Odabrana poglavlja iz IS",
         "type": "U",
         "date": "2026-06-26",
         "start": "08:00",
@@ -3606,7 +3740,7 @@
         "note": ""
       },
       {
-        "subject": "Operacionaistraživanja 2",
+        "subject": "Operaciona istraživanja 2",
         "type": "P",
         "date": "2026-06-19",
         "start": "12:00",
@@ -3628,7 +3762,7 @@
         "note": "pismeni deo"
       },
       {
-        "subject": "Operacionaistraživanja 2",
+        "subject": "Operaciona istraživanja 2",
         "type": "P",
         "date": "2026-06-19",
         "start": "14:00",
@@ -3648,7 +3782,7 @@
         "note": "pismeni deo"
       },
       {
-        "subject": "Operacionaistraživanja 2",
+        "subject": "Operaciona istraživanja 2",
         "type": "U",
         "date": "2026-06-24",
         "start": "10:00",
@@ -3659,7 +3793,7 @@
         "note": "pismeni deo"
       },
       {
-        "subject": "Organizacijaspecijalnihdogađaja",
+        "subject": "Organizacija specijalnih događaja",
         "type": "P",
         "date": "2026-06-18",
         "start": "13:00",
@@ -3670,7 +3804,7 @@
         "note": ""
       },
       {
-        "subject": "Osnovefinansijskogmenadžmenta",
+        "subject": "Osnove finansijskog menadžmenta",
         "type": "P",
         "date": "2026-06-15",
         "start": "18:30",
@@ -3687,7 +3821,7 @@
         "note": ""
       },
       {
-        "subject": "Osnovefinansijskogmenadžmenta",
+        "subject": "Osnove finansijskog menadžmenta",
         "type": "U",
         "date": "2026-06-24",
         "start": "16:00",
@@ -3709,7 +3843,7 @@
         "note": ""
       },
       {
-        "subject": "Osnoveoperacionogmenadžmenta",
+        "subject": "Osnove operacionog menadžmenta",
         "type": "P",
         "date": "2026-06-18",
         "start": "10:00",
@@ -3733,7 +3867,7 @@
         "note": ""
       },
       {
-        "subject": "Osnoveoperacionogmenadžmenta",
+        "subject": "Osnove operacionog menadžmenta",
         "type": "U",
         "date": "2026-06-18",
         "start": "12:00",
@@ -3744,7 +3878,7 @@
         "note": ""
       },
       {
-        "subject": "Osnoveprogramiranja",
+        "subject": "Osnove programiranja",
         "type": "P",
         "date": "2026-06-20",
         "start": "12:30",
@@ -3758,7 +3892,7 @@
         "note": ""
       },
       {
-        "subject": "Osnoveprogramiranja",
+        "subject": "Osnove programiranja",
         "type": "P",
         "date": "2026-06-24",
         "start": "08:00",
@@ -3770,7 +3904,7 @@
         "note": "odbranasem"
       },
       {
-        "subject": "Osnoveprogramiranja",
+        "subject": "Osnove programiranja",
         "type": "U",
         "date": "2026-06-27",
         "start": "13:00",
@@ -3781,7 +3915,7 @@
         "note": ""
       },
       {
-        "subject": "Osnoveračunarskeinteligencije",
+        "subject": "Osnove računarske inteligencije",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -3792,7 +3926,7 @@
         "note": ""
       },
       {
-        "subject": "Osnovikvalitetasoftvera",
+        "subject": "Osnovi kvaliteta softvera",
         "type": "P",
         "date": "2026-06-17",
         "start": "16:15",
@@ -3803,7 +3937,7 @@
         "note": ""
       },
       {
-        "subject": "Osnovikvalitetasoftvera",
+        "subject": "Osnovi kvaliteta softvera",
         "type": "U",
         "date": "2026-06-27",
         "start": "08:00",
@@ -3815,7 +3949,7 @@
         "note": ""
       },
       {
-        "subject": "Planiranjekvaliteta",
+        "subject": "Planiranje kvaliteta",
         "type": "P",
         "date": "2026-06-16",
         "start": "13:30",
@@ -3826,7 +3960,7 @@
         "note": ""
       },
       {
-        "subject": "Planiranjekvaliteta",
+        "subject": "Planiranje kvaliteta",
         "type": "U",
         "date": "2026-06-24",
         "start": "08:00",
@@ -3837,7 +3971,7 @@
         "note": ""
       },
       {
-        "subject": "Planiranjeproizvodnjeiusluga",
+        "subject": "Planiranje proizvodnje i usluga",
         "type": "P",
         "date": "2026-06-17",
         "start": "10:30",
@@ -3849,7 +3983,7 @@
         "note": ""
       },
       {
-        "subject": "Planiranjeproizvodnjeiusluga",
+        "subject": "Planiranje proizvodnje i usluga",
         "type": "U",
         "date": "2026-06-23",
         "start": "12:15",
@@ -3862,7 +3996,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovnaanalitika",
+        "subject": "Poslovna analitika",
         "type": "P",
         "date": "2026-06-15",
         "start": "16:30",
@@ -3873,7 +4007,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovnainteligencija",
+        "subject": "Poslovna inteligencija",
         "type": "P",
         "date": "2026-06-19",
         "start": "12:30",
@@ -3893,7 +4027,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovnainteligencija",
+        "subject": "Poslovna inteligencija",
         "type": "P",
         "date": "2026-06-19",
         "start": "14:45",
@@ -3908,7 +4042,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovnainteligencija",
+        "subject": "Poslovna inteligencija",
         "type": "U",
         "date": "2026-06-27",
         "start": "13:00",
@@ -3930,7 +4064,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovneaplikacije u spredšitokruženju",
+        "subject": "Poslovne aplikacije u spredšit okruženju",
         "type": "P",
         "date": "2026-06-18",
         "start": "17:00",
@@ -3941,7 +4075,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovneaplikacije u spredšitokruženju",
+        "subject": "Poslovne aplikacije u spredšit okruženju",
         "type": "U",
         "date": "2026-06-25",
         "start": "15:00",
@@ -3952,7 +4086,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovniinformacionisistemi",
+        "subject": "Poslovni informacioni sistemi",
         "type": "P",
         "date": "2026-06-19",
         "start": "16:00",
@@ -3963,7 +4097,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovniinformacionisistemi",
+        "subject": "Poslovni informacioni sistemi",
         "type": "U",
         "date": "2026-06-27",
         "start": "08:00",
@@ -3976,7 +4110,7 @@
         "note": ""
       },
       {
-        "subject": "Poslovnopravo",
+        "subject": "Poslovno pravo",
         "type": "P",
         "date": "2026-06-17",
         "start": "15:30",
@@ -3987,7 +4121,7 @@
         "note": ""
       },
       {
-        "subject": "Pravneosnoveinformacionihsistema",
+        "subject": "Pravne osnove informacionih sistema",
         "type": "U",
         "date": "2026-06-17",
         "start": "15:30",
@@ -3999,7 +4133,7 @@
         "note": ""
       },
       {
-        "subject": "Preduzetničkoupravljanjemalimisrednjimpr",
+        "subject": "Preduzetničko upravljanje malim i srednjim preduzećima",
         "type": "U",
         "date": "2026-06-26",
         "start": "12:00",
@@ -4176,7 +4310,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "P",
         "date": "2026-06-20",
         "start": "08:00",
@@ -4194,7 +4328,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "P",
         "date": "2026-06-20",
         "start": "12:30",
@@ -4212,7 +4346,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "P",
         "date": "2026-06-20",
         "start": "17:30",
@@ -4230,7 +4364,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "U",
         "date": "2026-06-24",
         "start": "12:15",
@@ -4250,7 +4384,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "U",
         "date": "2026-06-24",
         "start": "14:30",
@@ -4270,7 +4404,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici",
+        "subject": "Programski jezici",
         "type": "U",
         "date": "2026-06-24",
         "start": "16:45",
@@ -4290,7 +4424,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici za analitiku",
+        "subject": "Programski jezici za analitiku",
         "type": "P",
         "date": "2026-06-17",
         "start": "14:00",
@@ -4306,7 +4440,7 @@
         "note": ""
       },
       {
-        "subject": "Programskijezici za analitiku",
+        "subject": "Programski jezici za analitiku",
         "type": "U",
         "date": "2026-06-25",
         "start": "17:30",
@@ -4427,7 +4561,7 @@
         "note": ""
       },
       {
-        "subject": "Razvojmobilnihaplikacijaiservisa - projekat",
+        "subject": "Razvoj mobilnih aplikacija i servisa - projekat",
         "type": "P",
         "date": "2026-06-25",
         "start": "16:00",
@@ -4438,7 +4572,7 @@
         "note": ""
       },
       {
-        "subject": "Razvojmobilnihaplikacijaiservisa - projekat",
+        "subject": "Razvoj mobilnih aplikacija i servisa - projekat",
         "type": "U",
         "date": "2026-06-25",
         "start": "17:00",
@@ -4449,7 +4583,7 @@
         "note": ""
       },
       {
-        "subject": "Razvojnaprednihaplikacijaelektronskogposl",
+        "subject": "Razvojnaprednihaplikacijaelektronskogposl ovanja - projek",
         "type": "P",
         "date": "2026-06-25",
         "start": "15:00",
@@ -4460,7 +4594,7 @@
         "note": ""
       },
       {
-        "subject": "Razvojnaprednihaplikacijaelektronskogposl",
+        "subject": "Razvojnaprednihaplikacijaelektronskogposl ovanja - projek",
         "type": "U",
         "date": "2026-06-25",
         "start": "17:00",
@@ -4471,7 +4605,7 @@
         "note": ""
       },
       {
-        "subject": "Rukovođenjeiliderstvo",
+        "subject": "Rukovođenje i liderstvo",
         "type": "U",
         "date": "2026-06-26",
         "start": "08:00",
@@ -4482,7 +4616,7 @@
         "note": ""
       },
       {
-        "subject": "Serverskevebtehnologije",
+        "subject": "Serverske veb tehnologije",
         "type": "P",
         "date": "2026-06-20",
         "start": "10:20",
@@ -4496,7 +4630,7 @@
         "note": ""
       },
       {
-        "subject": "Serverskevebtehnologije",
+        "subject": "Serverske veb tehnologije",
         "type": "U",
         "date": "2026-06-27",
         "start": "08:00",
@@ -4510,7 +4644,7 @@
         "note": ""
       },
       {
-        "subject": "Simulacija u poslovnomodlučivanju",
+        "subject": "Simulacija u poslovnom odlučivanju",
         "type": "U",
         "date": "2026-06-26",
         "start": "11:00",
@@ -4521,7 +4655,7 @@
         "note": ""
       },
       {
-        "subject": "Sistemmenadžmentakvaliteta",
+        "subject": "Sistem menadžmenta kvaliteta",
         "type": "P",
         "date": "2026-06-15",
         "start": "12:30",
@@ -4534,7 +4668,7 @@
         "note": ""
       },
       {
-        "subject": "Sistemmenadžmentakvaliteta",
+        "subject": "Sistem menadžmenta kvaliteta",
         "type": "U",
         "date": "2026-06-27",
         "start": "08:00",
@@ -4687,7 +4821,7 @@
         "note": ""
       },
       {
-        "subject": "Strukturepodatakaialgoritmi",
+        "subject": "Strukture podataka i algoritmi",
         "type": "P",
         "date": "2026-06-16",
         "start": "08:00",
@@ -4708,7 +4842,7 @@
         "note": ""
       },
       {
-        "subject": "Strukturepodatakaialgoritmi",
+        "subject": "Strukture podataka i algoritmi",
         "type": "P",
         "date": "2026-06-16",
         "start": "10:45",
@@ -4729,7 +4863,7 @@
         "note": ""
       },
       {
-        "subject": "Strukturepodatakaialgoritmi",
+        "subject": "Strukture podataka i algoritmi",
         "type": "P",
         "date": "2026-06-16",
         "start": "13:30",
@@ -4754,7 +4888,7 @@
         "note": ""
       },
       {
-        "subject": "Teorijaigara",
+        "subject": "Teorija igara",
         "type": "P",
         "date": "2026-06-17",
         "start": "08:00",
@@ -4769,7 +4903,7 @@
         "note": ""
       },
       {
-        "subject": "Treningirazvoj",
+        "subject": "Trening i razvoj",
         "type": "P",
         "date": "2026-06-17",
         "start": "11:30",
@@ -4781,7 +4915,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljačkoračunovodstvo",
+        "subject": "Upravljačko računovodstvo",
         "type": "P",
         "date": "2026-06-19",
         "start": "18:00",
@@ -4797,7 +4931,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljačkoračunovodstvo",
+        "subject": "Upravljačko računovodstvo",
         "type": "U",
         "date": "2026-06-24",
         "start": "08:00",
@@ -4808,7 +4942,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjedokumentacijom",
+        "subject": "Upravljanje dokumentacijom",
         "type": "P",
         "date": "2026-06-17",
         "start": "16:15",
@@ -4824,7 +4958,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjedokumentacijom",
+        "subject": "Upravljanje dokumentacijom",
         "type": "P",
         "date": "2026-06-23",
         "start": "09:30",
@@ -4841,7 +4975,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjeinovacijama",
+        "subject": "Upravljanje inovacijama",
         "type": "P",
         "date": "2026-06-15",
         "start": "12:00",
@@ -4858,7 +4992,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjeinovacijama",
+        "subject": "Upravljanje inovacijama",
         "type": "U",
         "date": "2026-06-26",
         "start": "11:00",
@@ -4870,7 +5004,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjeinvesticijama",
+        "subject": "Upravljanje investicijama",
         "type": "P",
         "date": "2026-06-16",
         "start": "16:00",
@@ -4891,7 +5025,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjekvalitetomprojekta",
+        "subject": "Upravljanje kvalitetom projekta",
         "type": "P",
         "date": "2026-06-18",
         "start": "15:00",
@@ -4904,7 +5038,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjekvalitetomprojekta",
+        "subject": "Upravljanje kvalitetom projekta",
         "type": "U",
         "date": "2026-06-22",
         "start": "16:00",
@@ -4915,7 +5049,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjelancimasnabdevanja 1",
+        "subject": "Upravljanje lancima snabdevanja 1",
         "type": "U",
         "date": "2026-06-18",
         "start": "13:00",
@@ -4926,7 +5060,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjeodržavanjem",
+        "subject": "Upravljanje održavanjem",
         "type": "U",
         "date": "2026-06-25",
         "start": "17:30",
@@ -4937,7 +5071,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjepromenama",
+        "subject": "Upravljanje promenama",
         "type": "P",
         "date": "2026-06-17",
         "start": "13:00",
@@ -4951,7 +5085,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjepromenama",
+        "subject": "Upravljanje promenama",
         "type": "U",
         "date": "2026-06-26",
         "start": "08:00",
@@ -4963,7 +5097,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjerizikom u",
+        "subject": "Upravljanjerizikom u razvojuaplikacijaelektronskogposlov",
         "type": "U",
         "date": "2026-06-26",
         "start": "13:30",
@@ -4974,7 +5108,7 @@
         "note": ""
       },
       {
-        "subject": "Upravljanjetroškovima",
+        "subject": "Upravljanje troškovima",
         "type": "P",
         "date": "2026-06-26",
         "start": "14:00",
@@ -4990,7 +5124,7 @@
         "note": "prvi deo"
       },
       {
-        "subject": "Upravljanjetroškovima",
+        "subject": "Upravljanje troškovima",
         "type": "U",
         "date": "2026-06-27",
         "start": "08:00",
@@ -5001,7 +5135,7 @@
         "note": "drugi deo"
       },
       {
-        "subject": "Utvrđivanjenormativa rada iučinka",
+        "subject": "Utvrđivanje normativa rada i učinka",
         "type": "P",
         "date": "2026-06-20",
         "start": "13:00",
@@ -5012,7 +5146,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u informacionesisteme",
+        "subject": "Uvod u informacione sisteme",
         "type": "U",
         "date": "2026-06-22",
         "start": "10:30",
@@ -5035,7 +5169,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u informacionesisteme",
+        "subject": "Uvod u informacione sisteme",
         "type": "U",
         "date": "2026-06-22",
         "start": "12:15",
@@ -5057,7 +5191,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u informacionesisteme",
+        "subject": "Uvod u informacione sisteme",
         "type": "U",
         "date": "2026-06-22",
         "start": "14:00",
@@ -5079,7 +5213,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u",
+        "subject": "Uvod u menadžment elektronskog poslovanja",
         "type": "P",
         "date": "2026-06-16",
         "start": "17:45",
@@ -5090,7 +5224,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u",
+        "subject": "Uvod u menadžment elektronskog poslovanja",
         "type": "U",
         "date": "2026-06-24",
         "start": "08:00",
@@ -5101,7 +5235,7 @@
         "note": ""
       },
       {
-        "subject": "Uvod u poslovnuanalitiku",
+        "subject": "Uvod u poslovnu analitiku",
         "type": "U",
         "date": "2026-06-15",
         "start": "16:30",
@@ -5134,7 +5268,7 @@
         "note": ""
       },
       {
-        "subject": "Veštačkainteligencija",
+        "subject": "Veštačka inteligencija",
         "type": "P",
         "date": "2026-06-18",
         "start": "08:00",
@@ -5155,7 +5289,7 @@
         "note": ""
       },
       {
-        "subject": "Veštačkainteligencija",
+        "subject": "Veštačka inteligencija",
         "type": "P",
         "date": "2026-06-18",
         "start": "10:15",
@@ -5176,7 +5310,7 @@
         "note": ""
       },
       {
-        "subject": "Virtuelnarealnostiračunarskasimulacija",
+        "subject": "Virtuelna realnost i računarska simulacija",
         "type": "U",
         "date": "2026-06-26",
         "start": "16:00",
@@ -5199,7 +5333,7 @@
         "note": ""
       },
       {
-        "subject": "Vrednovanjepreduzeća",
+        "subject": "Vrednovanje preduzeća",
         "type": "P",
         "date": "2026-06-17",
         "start": "11:00",
@@ -5210,7 +5344,7 @@
         "note": ""
       },
       {
-        "subject": "Zaštitaračunarskihsistema",
+        "subject": "Zaštita računarskih sistema",
         "type": "P",
         "date": "2026-06-18",
         "start": "14:45",
