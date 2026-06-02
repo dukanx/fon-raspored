@@ -29,6 +29,12 @@ RE_DATE_SINGLE = re.compile(
     r"(\d{1,2})\.(\d{2})\.(\d{4})\.?\s*године",
     re.IGNORECASE,
 )
+# Ispitni rok: prijava je opseg "у периоду од DD.MM. YYYY ... до DD.MM.YYYY"
+# (datumi nemaju reč "године", a između može biti "(petak)" i sl.)
+RE_DATE_OD_DO = re.compile(
+    r"од\s+(\d{1,2})\.(\d{1,2})\.\s*(\d{4})\.?.*?до\s+(\d{1,2})\.(\d{1,2})\.(\d{4})",
+    re.IGNORECASE,
+)
 RE_SEMESTER = re.compile(
     r"У\s+(ЛЕТЊЕМ|ЗИМСКОМ|LETЊEM|ZIMSKOM)\s+СЕМЕСТРУ\s+(\d{4}/\d{2,4})",
     re.IGNORECASE,
@@ -123,6 +129,9 @@ def detect_and_parse(text: str) -> dict:
             if m:
                 d1, d2, month, year = m.groups()
                 result["prijava_datumi"] = [fmt_date(d1, month, year), fmt_date(d2, month, year)]
+            elif (m := RE_DATE_OD_DO.search(line)):
+                d1, m1, y1, d2, m2, y2 = m.groups()
+                result["prijava_datumi"] = [fmt_date(d1, m1, y1), fmt_date(d2, m2, y2)]
             else:
                 m = RE_DATE_SINGLE.search(line)
                 if m:

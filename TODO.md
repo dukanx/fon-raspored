@@ -197,6 +197,7 @@ Gde se šta čuva:
 
 ## Admin i podaci
 
+- [ ] **Ručna ispravka slepljenih naziva predmeta** — neki FON ispitni PDF-ovi (npr. junski) imaju izgubljene razmake u nazivu (`Poslovniinformacionisistemi`, `Poslovnopravo`). U izvoru nema razmaka pa se ne mogu razdvojiti automatski. Plan: mapa `slepljeno -> tačno` (npr. `scripts/subject_fixes.json`) koja se primenjuje pri parsiranju; dopunjava se ručno kako se uoče novi slučajevi. (Datum/vreme/sala su tačni — ovo je samo naziv.)
 - [ ] **Admin panel** — interfejs za ručno ažuriranje JSON fajlova sa rasporedom (upload novog semestra bez deploy-a)
 - [ ] **Automatska detekcija promene semestra** — web scraping ili praćenje FON sajta za nove rasporede; pošto su fajlovi PDF, istražiti pipeline: scraper skida PDF → Python skripta parsira i generiše JSON → fajl se automatski ažurira
 
