@@ -101,6 +101,7 @@ def main():
 
             # "Gotovo: N unosa u 'rok name'."
             rok_name = None
+            count = 0
             for line in result.stdout.splitlines():
                 if line.startswith('Gotovo:'):
                     try:
@@ -110,6 +111,13 @@ def main():
                         pass
                     if "'" in line:
                         rok_name = line.split("'")[1]
+
+            if count == 0:
+                # Parser nije izvukao ni jedan unos — PDF se ne beleži kao poznat
+                # da bi bio pokušan ponovo pri sledećem pokretanju.
+                print(f'  UPOZORENJE: 0 unosa iz {pdf_name} — neće biti ubeležen kao poznat (retry sledeći put).')
+                errors.append(href)
+                continue
 
             new_roks.append({'rok': rok_name or pdf_name, 'tip': tip})
             new_known.append(href)

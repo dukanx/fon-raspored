@@ -38,6 +38,19 @@ def words_in_range(row, x_min, x_max):
 ROOMS_NOISE = {"СЕМЕСТРУ", "SEMESTR", "SEMESTER", "ЛЕТЊИ", "ЗИМСКИ", "ЛЕТЊЕМ",
                "2025/26", "2024/25", "2026/27"}
 
+# Poznati nazivi kolona u zaglavlju
+_ISPIT_HEADER_KEYS  = {"Predmet", "Datum", "Od", "Do", "Sale", "Napom."}
+_KOL_HEADER_KEYS    = {"Predmet", "Datum", "Od", "Do", "Sale"}
+
+
+def _detect_columns(rows, required_keys):
+    """Vraća {naziv_kolone: x0} iz header reda koji sadrži sve required_keys."""
+    for _, row in rows.items():
+        text_set = {w["text"] for w in row}
+        if required_keys.issubset(text_set):
+            return {w["text"]: w["x0"] for w in row if w["text"] in required_keys}
+    return {}
+
 
 def to_iso(datum_str):
     m = re.match(r"(\d{2})[/-](\d{2})[/-](\d{4})", datum_str)
@@ -71,20 +84,38 @@ def parse_rooms(words):
 def parse_ispit(pdf_path):
     """
     Parsira PDF sa ispitnim rokom.
-    Kolone: Predmet | P/U | Datum | Od | Do | Sale | Napomena
-    X pozicije: predmet<250, tip~251, datum~271, od~338, do~378, sale>=418, napomena>=740
+    Kolone: Predmet | [P/U] | Datum | Od | Do | Sale | [Napomena]
+    Pozicije kolona se auto-detektuju iz header reda; ako nema headera,
+    koriste se hardkodirani fallback offsets.
     """
     entries = []
+    cols = {}  # popunjava se sa prve strane
 
     with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
+        for page_idx, page in enumerate(pdf.pages):
             rows = extract_rows(page)
-            pending_subject = []  # Predmet može biti višeredan
+
+            # Detekcija kolona jednom — sa prve stranice koja ima header
+            if not cols:
+                cols = _detect_columns(rows, _ISPIT_HEADER_KEYS)
+
+            # Izveди granice iz detektovanih kolona (ili fallback)
+            x_datum = cols.get("Datum", 271)
+            x_od    = cols.get("Od",    338)
+            x_do    = cols.get("Do",    378)
+            x_sale  = cols.get("Sale",  418)
+            x_napom = cols.get("Napom.", 740)
+            # Predmet je sve levo od Datuma
+            x_pred_max = x_datum - 3
+            # P/U kolona između predmeta i datuma
+            x_pu_min = x_pred_max - 2
+            x_pu_max = x_datum + 3
+
+            pending_subject = []
 
             for _, row in rows.items():
                 texts = [w["text"] for w in row]
 
-                # Preskoči header i prazne redove
                 if not texts:
                     continue
                 if texts[0] in ("Predmet", "U", "P."):
@@ -92,30 +123,28 @@ def parse_ispit(pdf_path):
                 if re.match(r"^[UNI VERZITE T]+$", " ".join(texts)):
                     continue
 
-                # Proveri da li red ima datum (x~271)
-                datum_words = words_in_range(row, 265, 330)
+                datum_words = words_in_range(row, x_datum - 5, x_od - 3)
                 datum_str = datum_words[0] if datum_words else None
 
                 if datum_str and re.match(r"\d{2}[/\-]\d{2}[/\-]\d{4}", datum_str):
-                    # Ovo je podatkovni red
-                    predmet_words = words_in_range(row, 0, 250)
+                    predmet_words = words_in_range(row, 0, x_pred_max)
                     if predmet_words:
                         pending_subject = predmet_words
                     subject = " ".join(pending_subject)
 
-                    tip_words = words_in_range(row, 248, 265)
+                    tip_words = words_in_range(row, x_pu_min, x_pu_max)
                     tip = tip_words[0] if tip_words else ""
 
-                    od_words = words_in_range(row, 330, 375)
+                    od_words = words_in_range(row, x_od - 3, x_do - 3)
                     od = od_words[0] if od_words else ""
 
-                    do_words = words_in_range(row, 375, 415)
+                    do_words = words_in_range(row, x_do - 3, x_sale - 3)
                     do_ = do_words[0] if do_words else ""
 
-                    sale_words = words_in_range(row, 415, 740)
+                    sale_words = words_in_range(row, x_sale, x_napom)
                     rooms = parse_rooms(sale_words)
 
-                    note_words = words_in_range(row, 740, 9999)
+                    note_words = words_in_range(row, x_napom, 9999)
                     note = " ".join(note_words)
 
                     date_iso = to_iso(datum_str)
@@ -123,7 +152,7 @@ def parse_ispit(pdf_path):
                     if subject and date_iso:
                         entries.append({
                             "subject": subject,
-                            "type": tip,   # P = pismeni, U = usmeni
+                            "type": tip,
                             "date": date_iso,
                             "start": od,
                             "end": do_,
@@ -133,13 +162,11 @@ def parse_ispit(pdf_path):
                         pending_subject = []
 
                 else:
-                    # Nastavak sala u sledećem redu (nema datuma, sale na x>=415)
-                    cont_sale = words_in_range(row, 415, 740)
-                    if cont_sale and entries and not words_in_range(row, 0, 250):
+                    cont_sale = words_in_range(row, x_sale, x_napom)
+                    if cont_sale and entries and not words_in_range(row, 0, x_pred_max):
                         entries[-1]["rooms"] += parse_rooms(cont_sale)
                         continue
-                    # Nastavak naziva predmeta
-                    cont = words_in_range(row, 0, 250)
+                    cont = words_in_range(row, 0, x_pred_max)
                     if cont and pending_subject is not None:
                         pending_subject.extend(cont)
 
@@ -149,14 +176,27 @@ def parse_ispit(pdf_path):
 def parse_kolokvijum(pdf_path):
     """
     Parsira PDF sa kolokvijumom.
-    Kolone: Predmet | Datum | Od | Do | Sale | Napom.
-    X pozicije: predmet<240, datum~227-241, od~295-315, do~333-355, sale>=370
+    Kolone: Predmet | Datum | Od | Do | Sale | [Napom.]
+    Pozicije kolona se auto-detektuju iz header reda; fallback na hardkodirane vrednosti.
     """
     entries = []
+    cols = {}
 
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             rows = extract_rows(page)
+
+            if not cols:
+                cols = _detect_columns(rows, _KOL_HEADER_KEYS)
+
+            x_datum = cols.get("Datum", 241)
+            x_od    = cols.get("Od",    315)
+            x_do    = cols.get("Do",    355)
+            x_sale  = cols.get("Sale",  395)
+            x_pred_max = x_datum - 3
+            # Napom. nije obavezan header u kolokvijum PDF-ovima
+            x_napom = cols.get("Napom.", 715)
+
             pending_subject = []
             pending_rooms = []
 
@@ -168,25 +208,25 @@ def parse_kolokvijum(pdf_path):
                 if texts[0] in ("Predmet", "Datum", "Od", "Do", "Sale", "Napom."):
                     continue
 
-                datum_words = words_in_range(row, 220, 325)
+                datum_words = words_in_range(row, x_datum - 5, x_od - 3)
                 datum_str = datum_words[0] if datum_words else None
 
                 if datum_str and re.match(r"\d{2}[/\-]\d{2}[/\-]\d{4}", datum_str):
-                    predmet_words = words_in_range(row, 0, 240)
+                    predmet_words = words_in_range(row, 0, x_pred_max)
                     if predmet_words:
                         pending_subject = predmet_words
                     subject = " ".join(pending_subject)
 
-                    od_words = words_in_range(row, 290, 360)
+                    od_words = words_in_range(row, x_od - 3, x_do - 3)
                     od = od_words[0] if od_words else ""
 
-                    do_words = words_in_range(row, 355, 400)
+                    do_words = words_in_range(row, x_do - 3, x_sale - 3)
                     do_ = do_words[0] if do_words else ""
 
-                    sale_words = words_in_range(row, 395, 770)
+                    sale_words = words_in_range(row, x_sale, x_napom + 50)
                     rooms = parse_rooms(sale_words) or pending_rooms
 
-                    note_words = words_in_range(row, 715, 9999)
+                    note_words = words_in_range(row, x_napom, 9999)
                     note = " ".join(note_words)
 
                     date_iso = to_iso(datum_str)
@@ -204,16 +244,14 @@ def parse_kolokvijum(pdf_path):
                         pending_rooms = []
 
                 else:
-                    # Nastavak sala u sledećem redu (nema datuma, sale na x>=395)
-                    cont_sale = words_in_range(row, 395, 770)
-                    if cont_sale and entries and not words_in_range(row, 0, 240):
+                    cont_sale = words_in_range(row, x_sale, x_napom + 50)
+                    if cont_sale and entries and not words_in_range(row, 0, x_pred_max):
                         entries[-1]["rooms"] += parse_rooms(cont_sale)
                         continue
-                    # Nastavak naziva predmeta (može imati i sale u istom redu)
-                    cont = words_in_range(row, 0, 240)
+                    cont = words_in_range(row, 0, x_pred_max)
                     if cont:
                         pending_subject.extend(cont)
-                        pre_datum_sale = words_in_range(row, 395, 770)
+                        pre_datum_sale = words_in_range(row, x_sale, x_napom + 50)
                         if pre_datum_sale:
                             pending_rooms = parse_rooms(pre_datum_sale)
 
