@@ -21,7 +21,8 @@ import argparse
 from pathlib import Path
 
 SCRIPTS_DIR = Path(__file__).parent
-ROKOVI_DEFAULT = SCRIPTS_DIR.parent / "public" / "data" / "rokovi.json"
+DATA_DIR = SCRIPTS_DIR.parent / "public" / "data"
+ROKOVI_DEFAULT = DATA_DIR / "rokovi.json"
 
 # Importuj parsere iz istog direktorijuma
 sys.path.insert(0, str(SCRIPTS_DIR))
@@ -34,6 +35,46 @@ def normalize(s: str) -> str:
     s = re.sub(r"\d{4}/\d{2,4}", "", s)
     s = re.sub(r"[^a-zšđčćžA-ZŠĐČĆŽ ]", "", s)
     return " ".join(s.lower().split())
+
+
+def _subject_key(s: str) -> str:
+    """Ključ za poređenje naziva predmeta: lowercase, bez razmaka i interpunkcije
+    (zadržava slova i cifre). Tako 'Poslovniinformacionisistemi' (slepljeno iz PDF-a)
+    i 'Poslovni informacioni sistemi' (nastava) daju isti ključ."""
+    return re.sub(r"[^0-9a-zšđžčć]", "", s.lower())
+
+
+def build_subject_map() -> dict:
+    """Mapa {ključ -> kanonski naziv} iz rasporeda nastave (1–4god.json).
+
+    Nastava ima tačne nazive (sa razmacima), pa ih koristimo kao rečnik za
+    ispravku slepljenih/varijantnih naziva iz ispitnih/kolokvijumskih PDF-ova."""
+    mapping: dict[str, str] = {}
+    for f in sorted(DATA_DIR.glob("[1-4]god.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        for e in d.get("entries", []):
+            subj = e.get("subject")
+            if not subj:
+                continue
+            key = _subject_key(subj)
+            if key:
+                mapping.setdefault(key, subj)
+    return mapping
+
+
+def canonicalize_subjects(entries: list, subject_map: dict) -> int:
+    """Zameni naziv predmeta kanonskim iz nastave (po normalizovanom ključu).
+    Nazive kojih nema u nastavi ostavlja netaknute. Vraća broj zamena."""
+    fixed = 0
+    for e in entries:
+        canon = subject_map.get(_subject_key(e.get("subject", "")))
+        if canon and canon != e["subject"]:
+            e["subject"] = canon
+            fixed += 1
+    return fixed
 
 
 def find_matching_rok(data: list, tip: str, parsed_rok: str) -> int | None:
@@ -102,6 +143,13 @@ def main():
     else:
         entries = fep.parse_kolokvijum(str(pdf_path))
     print(f"  pronađeno {len(entries)} unosa.", file=sys.stderr)
+
+    # Ispravi nazive predmeta na kanonske iz nastave (rešava slepljene nazive
+    # i usklađuje ih sa filterom u aplikaciji koji poredi po tačnom nazivu).
+    subject_map = build_subject_map()
+    if subject_map:
+        n_fixed = canonicalize_subjects(entries, subject_map)
+        print(f"  kanonizovano naziva (po nastavi): {n_fixed}", file=sys.stderr)
 
     # ── 3. Merge u rokovi.json ─────────────────────────────────────────────────
     print(f"[3/3] Upisivanje u {rokovi_path.name} ...", file=sys.stderr)

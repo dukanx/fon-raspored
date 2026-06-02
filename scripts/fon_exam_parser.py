@@ -35,8 +35,9 @@ ROOMS_NOISE = {"СЕМЕСТРУ", "SEMESTR", "SEMESTER", "ЛЕТЊИ", "ЗИМ�
 
 # Datum u tabeli: DD/MM/YYYY, DD-MM-YYYY ili DD.MM.YYYY
 DATE_RE = re.compile(r"\d{2}[/.\-]\d{2}[/.\-]\d{4}")
-# P/U marker (P = pismeni, U = usmeni); latinica i ćirilica, sa ili bez tačke
-PU_RE = re.compile(r"^[PUПУ]\.?$")
+# P/U marker (P = pismeni, U = usmeni); latinica i ćirilica, uz opcionu tačku ili
+# kosu crtu — u zaglavlju se pojavljuje kao "P/" (drugi red je "U").
+PU_RE = re.compile(r"^[PUПУ][./]?$")
 
 # Logičke kolone -> mogući nazivi u zaglavlju. FON menja nazive kroz
 # akreditacije/rokove ("Napomena" vs "Napom.", "Sale" vs "Sala"), pa hvatamo varijante.
@@ -154,96 +155,102 @@ def _parse(pdf_path, fallback, with_type):
             break
     b = _bounds(cols or fallback)
 
-    pending_subject = []
+    # Svi redovi u jednom nizu — radi pogleda unapred i preko granica strana
+    flat = [row for rows in pages_rows for row in rows.values()]
+
+    def find_date(row):
+        return next((w for w in row
+                     if w["x0"] < b["date_hi"] and DATE_RE.match(w["text"])), None)
+
+    def own_predmet(row, date_w):
+        """Reči naziva na samom datum-redu (levo od datuma, bez P/U markera)."""
+        left = [w for w in row if w["x0"] < date_w["x0"]]
+        if with_type and left and PU_RE.match(left[-1]["text"]) \
+                and left[-1]["x0"] >= b["pu_min"]:
+            left = left[:-1]
+        return [w["text"] for w in left]
+
+    pending_subject = []   # nakupljeni prefiks (linije naziva iznad datum-reda)
     pending_rooms = []
-    # Kad datum-red nema svoj naziv (dvoredni naziv: linija 1 je iznad datum-reda),
-    # ovde pamtimo taj unos da bismo mu dopisali liniju 2 koja sledi ispod datum-reda.
-    tail_for = None
     # Parsiranje kreće tek od zaglavlja (preskače uvodnu prozu sa datumima).
     # Ako PDF uopšte nema zaglavlje, parsiramo sve (oslonac na fallback).
     started = not bool(cols)
 
-    for rows in pages_rows:
-        for _, row in rows.items():
-            texts = [w["text"] for w in row]
-            if not texts:
-                continue
+    for i, row in enumerate(flat):
+        texts = [w["text"] for w in row]
+        if not texts:
+            continue
 
-            # Zaglavlje aktivira parsiranje i resetuje akumulirani naziv
-            if _is_header_row(texts):
-                started = True
-                pending_subject = []
-                pending_rooms = []
-                tail_for = None
-                continue
+        # Zaglavlje aktivira parsiranje i resetuje akumulirani naziv
+        if _is_header_row(texts):
+            started = True
+            pending_subject = []
+            pending_rooms = []
+            continue
 
-            if not started:
-                continue
+        if not started:
+            continue
 
-            # Data red = ima datum-token levo od kolone 'Od'
-            date_w = next((w for w in row
-                           if w["x0"] < b["date_hi"] and DATE_RE.match(w["text"])), None)
+        date_w = find_date(row)
 
-            if date_w:
-                date_iso = to_iso(date_w["text"])
-                left = [w for w in row if w["x0"] < date_w["x0"]]
+        if date_w:
+            tip = ""
+            left = [w for w in row if w["x0"] < date_w["x0"]]
+            if with_type and left and PU_RE.match(left[-1]["text"]) \
+                    and left[-1]["x0"] >= b["pu_min"]:
+                tip = left[-1]["text"]
+                left = left[:-1]
 
-                tip = ""
-                if with_type and left and PU_RE.match(left[-1]["text"]) \
-                        and left[-1]["x0"] >= b["pu_min"]:
-                    tip = left[-1]["text"]
-                    left = left[:-1]
+            # Naziv = nakupljeni prefiks (linije iznad) + naziv na samom datum-redu
+            subject = " ".join(pending_subject + [w["text"] for w in left])
 
-                predmet_row = [w["text"] for w in left]
-                if predmet_row:
-                    pending_subject = predmet_row
-                subject = " ".join(pending_subject)
-
-                lo, hi = b["od"]
-                od = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
-                lo, hi = b["do"]
-                do_ = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
-                lo, hi = b["sale"]
-                sale_words = [w["text"] for w in row if lo <= w["x0"] < hi]
-                rooms = parse_rooms(sale_words) or pending_rooms
-                note = " ".join(w["text"] for w in row if w["x0"] >= b["note_lo"])
-
-                tail_for = None
-                if subject and date_iso:
-                    entry = {"subject": subject}
-                    if with_type:
-                        entry["type"] = tip
-                    entry.update({"date": date_iso, "start": od, "end": do_,
-                                  "rooms": rooms, "note": note})
-                    entries.append(entry)
-                    # Naziv nije bio na datum-redu → očekuj liniju 2 ispod
-                    if not predmet_row:
-                        tail_for = entry
-                    pending_subject = []
-                    pending_rooms = []
-                continue
-
-            # Nije data red → nastavak sala ili nastavak naziva predmeta
+            lo, hi = b["od"]
+            od = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
+            lo, hi = b["do"]
+            do_ = next((w["text"] for w in row if lo <= w["x0"] < hi), "")
             lo, hi = b["sale"]
-            cont_sale = [w["text"] for w in row if lo <= w["x0"] < hi]
-            left_words = [w for w in row if w["x0"] < b["subj_hi"]]
+            sale_words = [w["text"] for w in row if lo <= w["x0"] < hi]
+            rooms = parse_rooms(sale_words) or pending_rooms
+            note = " ".join(w["text"] for w in row if w["x0"] >= b["note_lo"])
+            date_iso = to_iso(date_w["text"])
 
-            if cont_sale and entries and not left_words:
-                entries[-1]["rooms"] += parse_rooms(cont_sale)
-                continue
+            if subject and date_iso:
+                entry = {"subject": subject}
+                if with_type:
+                    entry["type"] = tip
+                entry.update({"date": date_iso, "start": od, "end": do_,
+                              "rooms": rooms, "note": note})
+                entries.append(entry)
+            pending_subject = []
+            pending_rooms = []
+            continue
 
-            # Ignoriši usamljeni P/U marker (drugi red 'P/U' zaglavlja)
-            if left_words and not (len(left_words) == 1 and PU_RE.match(left_words[0]["text"])):
-                text = " ".join(w["text"] for w in left_words)
-                if tail_for is not None:
-                    # Druga linija dvorednog naziva — dopiši je prethodnom unosu
-                    tail_for["subject"] += " " + text
-                    tail_for = None
-                else:
-                    pending_subject.extend(w["text"] for w in left_words)
-                    # Kolokvijum: sale se ponekad pojave u redu pre datuma
-                    if cont_sale:
-                        pending_rooms = parse_rooms(cont_sale)
+        # Nije datum-red → nastavak sala ili nastavak naziva predmeta
+        lo, hi = b["sale"]
+        cont_sale = [w["text"] for w in row if lo <= w["x0"] < hi]
+        left_words = [w for w in row if w["x0"] < b["subj_hi"]]
+
+        if cont_sale and entries and not left_words:
+            entries[-1]["rooms"] += parse_rooms(cont_sale)
+            continue
+
+        # Usamljeni P/U marker (drugi red 'P/U' zaglavlja) ili prazno — preskoči
+        if not left_words or (len(left_words) == 1 and PU_RE.match(left_words[0]["text"])):
+            continue
+
+        # Dvoredni naziv: pogledaj sledeći datum-red. Ako on NEMA svoj naziv, ovaj
+        # red je njegov prefiks (linija iznad); inače je rep (linija ispod) prethodnog.
+        nxt = next((flat[j] for j in range(i + 1, len(flat)) if find_date(flat[j])), None)
+        nxt_borrows = nxt is not None and not own_predmet(nxt, find_date(nxt))
+
+        if nxt_borrows:
+            pending_subject.extend(w["text"] for w in left_words)
+            if cont_sale:                       # kolokvijum: sale u redu pre datuma
+                pending_rooms = parse_rooms(cont_sale)
+        elif entries:
+            entries[-1]["subject"] += " " + " ".join(w["text"] for w in left_words)
+        else:
+            pending_subject.extend(w["text"] for w in left_words)
 
     return entries
 
