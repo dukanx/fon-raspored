@@ -101,12 +101,37 @@ export default function RokoviPage() {
       .then((d: RokData[]) => {
         const data = Array.isArray(d) ? d : []
         setAllRokovi(data)
-        const hasActiveKol = data.some(r => r.tip === 'kolokvijum' && r.entries.some(e => e.date >= today))
-        if (hasActiveKol) {
+        const savedSubjects = meta.group ? localStorage.getItem(`fon_subjects_${meta.group}`) : null
+        const subjectSet: Set<string> | null = savedSubjects
+          ? new Set(Object.entries(JSON.parse(savedSubjects)).filter(([, v]) => v !== false).map(([k]) => k))
+          : null
+        const extra = meta.group ? localStorage.getItem(`fon_extra_${meta.group}`) : null
+        if (subjectSet && extra) {
+          for (const e of JSON.parse(extra) as { subject: string }[]) subjectSet.add(e.subject)
+        }
+        const prev = meta.group ? localStorage.getItem(`fon_prev_subjects_${meta.group}`) : null
+        if (subjectSet && prev) {
+          for (const e of JSON.parse(prev) as { subject: string }[]) subjectSet.add(e.subject)
+        }
+
+        const nearestDate = (tip: string) =>
+          data
+            .filter(r => r.tip === tip)
+            .flatMap(r => r.entries.filter(e => !subjectSet || subjectSet.has(e.subject)).map(e => e.date))
+            .filter(d => d >= today)
+            .sort()[0] ?? null
+
+        const nearestKol = nearestDate('kolokvijum')
+        const nearestIsp = nearestDate('ispit')
+
+        if (!nearestKol && !nearestIsp) {
+          setTab('kolokvijumi')
+        } else if (!nearestKol) {
+          setTab('ispiti')
+        } else if (!nearestIsp) {
           setTab('kolokvijumi')
         } else {
-          const hasActiveIsp = data.some(r => r.tip === 'ispit' && r.entries.some(e => e.date >= today))
-          setTab(hasActiveIsp ? 'ispiti' : 'kolokvijumi')
+          setTab(nearestIsp <= nearestKol ? 'ispiti' : 'kolokvijumi')
         }
         const dismissed = new Set(
           data
