@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import type { RokData, RokEntry } from '@/lib/types'
 import NotificationBell from '@/components/NotificationBell'
@@ -44,6 +45,48 @@ function buildColorMap(entries: RokEntry[]) {
   return map
 }
 
+function rokEntryKey(e: RokEntry) {
+  return `${e.date}|${e.start}|${e.subject}|${e.type ?? ''}`
+}
+
+function escapeICS(s: string) {
+  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
+}
+
+function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setOpen(true),
+    onSwipedRight: () => setOpen(false),
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+  })
+  return (
+    <div className="relative overflow-hidden sm:overflow-visible">
+      <div
+        className="absolute inset-y-0 right-0 w-14 flex items-center justify-center sm:hidden transition-opacity duration-200"
+        style={{ opacity: open ? 1 : 0 }}
+      >
+        <button
+          onClick={() => { onHide(); setOpen(false) }}
+          className="w-8 h-8 flex items-center justify-center rounded-full text-xs
+                     text-red-400 dark:text-red-400 bg-red-50 dark:bg-red-950/50
+                     hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        {...handlers}
+        className="transition-transform duration-200 sm:transform-none"
+        style={{ transform: open ? 'translateX(-56px)' : 'translateX(0)' }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
 type Tab = 'kolokvijumi' | 'ispiti'
 
 export default function RokoviPage() {
@@ -54,8 +97,11 @@ export default function RokoviPage() {
     const now = new Date()
     return { year: now.getFullYear(), month: now.getMonth() }
   })
-  const [tooltip, setTooltip] = useState<{ date: string; entries: RokEntry[] } | null>(null)
+  const [tooltip, setTooltip] = useState<{ date: string } | null>(null)
   const [dismissedBanners, setDismissedBanners] = useState<Set<string>>(new Set())
+  const [hiddenEntries, setHiddenEntries] = useState<RokEntry[]>([])
+  const [showHidden, setShowHidden] = useState(false)
+  const [downloadToast, setDownloadToast] = useState(false)
 
   const isMobile = useSyncExternalStore(
     (cb) => {
@@ -166,10 +212,35 @@ export default function RokoviPage() {
       })()
     : null
 
+  const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(rokEntryKey)), [hiddenEntries])
+
+  // Skriveni termini se čuvaju odvojeno po tabu i grupi
+  useEffect(() => {
+    if (!isHydrated || !meta.group) { setHiddenEntries([]); return }
+    const raw = localStorage.getItem(`fon_rok_hidden_${tab}_${meta.group}`)
+    setHiddenEntries(raw ? JSON.parse(raw) : [])
+    setShowHidden(false)
+  }, [isHydrated, tab, meta.group])
+
+  function hideEntry(e: RokEntry) {
+    if (hiddenKeys.has(rokEntryKey(e))) return
+    const next = [...hiddenEntries, e]
+    setHiddenEntries(next)
+    localStorage.setItem(`fon_rok_hidden_${tab}_${meta.group}`, JSON.stringify(next))
+  }
+
+  function restoreEntry(e: RokEntry) {
+    const key = rokEntryKey(e)
+    const next = hiddenEntries.filter(h => rokEntryKey(h) !== key)
+    setHiddenEntries(next)
+    localStorage.setItem(`fon_rok_hidden_${tab}_${meta.group}`, JSON.stringify(next))
+  }
+
   function filterEntries(entries: RokEntry[]): RokEntry[] {
     return entries.filter(e => {
       if (e.date < todayStr) return false
       if (userSubjects && !userSubjects.has(e.subject)) return false
+      if (hiddenKeys.has(rokEntryKey(e))) return false
       return true
     })
   }
@@ -184,8 +255,48 @@ export default function RokoviPage() {
 
   const allFilteredEntries = useMemo(
     () => activeRokovi.flatMap(r => filterEntries(r.entries)),
-    [activeRokovi, userSubjects] // eslint-disable-line react-hooks/exhaustive-deps
+    [activeRokovi, userSubjects, hiddenKeys] // eslint-disable-line react-hooks/exhaustive-deps
   )
+
+  function downloadICS() {
+    if (!allFilteredEntries.length) return
+    const lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//FON Raspored//SR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+    ]
+    const sorted = [...allFilteredEntries].sort(
+      (a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)
+    )
+    for (const e of sorted) {
+      const dateStr = e.date.replace(/-/g, '')
+      const [sh, sm] = e.start.split(':')
+      const [eh, em] = e.end.split(':')
+      const typeLabel = e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : ''
+      const desc = [tab === 'ispiti' ? 'Ispit' : 'Kolokvijum', e.note].filter(Boolean).join(' · ')
+      lines.push('BEGIN:VEVENT')
+      lines.push(`UID:${dateStr}-${sh}${sm}-${e.subject.replace(/\s/g, '')}-${e.type ?? ''}@fonraspored`)
+      lines.push(`DTSTART;TZID=Europe/Belgrade:${dateStr}T${sh}${sm}00`)
+      lines.push(`DTEND;TZID=Europe/Belgrade:${dateStr}T${eh}${em}00`)
+      lines.push(`SUMMARY:${escapeICS(e.subject + (typeLabel ? ` [${typeLabel}]` : ''))}`)
+      if (e.rooms.length) lines.push(`LOCATION:${escapeICS(e.rooms.join(', '))}`)
+      lines.push(`DESCRIPTION:${escapeICS(desc)}`)
+      // Podsetnik dan ranije
+      lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Podsetnik', 'TRIGGER:-P1D', 'END:VALARM')
+      lines.push('END:VEVENT')
+    }
+    lines.push('END:VCALENDAR')
+
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const link = document.createElement('a')
+    link.download = `${tab}-${meta.group}.ics`
+    link.href = URL.createObjectURL(blob)
+    link.click()
+    setDownloadToast(true)
+    setTimeout(() => setDownloadToast(false), 3500)
+  }
 
   const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
 
@@ -227,6 +338,34 @@ export default function RokoviPage() {
 
   const isEmpty = activeRokovi.length === 0
 
+  function ActionButtons() {
+    return (
+      <>
+        <button
+          onClick={downloadICS}
+          disabled={allFilteredEntries.length === 0}
+          className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
+            text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700
+            rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800
+            disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
+          Izvezi u kalendar
+        </button>
+        {hiddenEntries.length > 0 && (
+          <button
+            onClick={() => setShowHidden(s => !s)}
+            className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
+              text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800
+              rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            Skriveni ({hiddenEntries.length})
+          </button>
+        )}
+      </>
+    )
+  }
+
   // --- Lista view ---
   function ListView() {
     const groups = activeRokovi
@@ -266,25 +405,34 @@ export default function RokoviPage() {
                   {dateEntries.map((e, i) => {
                     const c = COLORS[colorMap[e.subject]]
                     return (
-                      <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                        <span className="text-xs text-gray-400 dark:text-gray-500 w-10 text-right shrink-0">{e.start}</span>
-                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: c.bar }} />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
-                          <span className="text-xs text-gray-400 dark:text-gray-500">
-                            {e.rooms.join(', ')}
-                            {e.note ? ` · ${e.note}` : ''}
-                          </span>
-                        </div>
-                        {e.type && (
-                          <span
-                            style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
-                            className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
+                      <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
+                        <div className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 w-10 text-right shrink-0">{e.start}</span>
+                          <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: c.bar }} />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                              {e.rooms.join(', ')}
+                              {e.note ? ` · ${e.note}` : ''}
+                            </span>
+                          </div>
+                          {e.type && (
+                            <span
+                              style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
+                              className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
+                            >
+                              {e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}
+                            </span>
+                          )}
+                          <button
+                            onClick={() => hideEntry(e)}
+                            className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
+                            aria-label="Sakrij termin"
                           >
-                            {e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}
-                          </span>
-                        )}
-                      </div>
+                            ✕
+                          </button>
+                        </div>
+                      </SwipeableListItem>
                     )
                   })}
                 </div>
@@ -358,7 +506,7 @@ export default function RokoviPage() {
               return (
                 <div
                   key={di}
-                  onClick={() => hasEvents && setTooltip(t => t?.date === isoDate ? null : { date: isoDate, entries: dayEntries })}
+                  onClick={() => hasEvents && setTooltip(t => t?.date === isoDate ? null : { date: isoDate })}
                   className={`relative min-h-13 rounded-lg p-1.5 transition-colors
                     ${hasEvents ? 'cursor-pointer' : ''}
                     ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
@@ -397,7 +545,7 @@ export default function RokoviPage() {
           </div>
         ))}
 
-        {tooltip && (
+        {tooltip && (byDate[tooltip.date]?.length ?? 0) > 0 && (
           <div className="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -406,7 +554,7 @@ export default function RokoviPage() {
               <button onClick={() => setTooltip(null)} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
             </div>
             <div className="space-y-3">
-              {tooltip.entries.map((e, i) => {
+              {(byDate[tooltip.date] ?? []).map((e, i) => {
                 const c = COLORS[colorMap[e.subject]]
                 return (
                   <div key={i} className="flex items-start gap-3">
@@ -419,6 +567,13 @@ export default function RokoviPage() {
                       </p>
                       {e.note && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.note}</p>}
                     </div>
+                    <button
+                      onClick={() => hideEntry(e)}
+                      className="w-6 h-6 flex items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
+                      aria-label="Sakrij termin"
+                    >
+                      ✕
+                    </button>
                   </div>
                 )
               })}
@@ -574,20 +729,27 @@ export default function RokoviPage() {
           </div>
         </div>
 
-        {/* Tab toggle */}
-        <div className="flex gap-1 mb-6 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl w-fit">
-          {(['ispiti', 'kolokvijumi'] as Tab[]).map(t => (
-            <button
-              key={t}
-              onClick={() => { setTab(t); setTooltip(null) }}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize
-                ${tab === t
-                  ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-            >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </button>
-          ))}
+        {/* Tab toggle + akcije (desktop: skroz desno u istoj liniji) */}
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl w-fit">
+            {(['ispiti', 'kolokvijumi'] as Tab[]).map(t => (
+              <button
+                key={t}
+                onClick={() => { setTab(t); setTooltip(null) }}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize
+                  ${tab === t
+                    ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </button>
+            ))}
+          </div>
+          {isHydrated && !isEmpty && (
+            <div className="hidden sm:flex items-center gap-2">
+              <ActionButtons />
+            </div>
+          )}
         </div>
 
         {/* Baner za prijavu kolokvijuma */}
@@ -617,6 +779,42 @@ export default function RokoviPage() {
           </div>
         )}
 
+        {/* Akcije (mobilni): izvoz u kalendar + skriveni termini */}
+        {isHydrated && !isEmpty && (
+          <div className="mb-5 flex flex-wrap items-center gap-2 sm:hidden">
+            <ActionButtons />
+          </div>
+        )}
+
+        {showHidden && hiddenEntries.length > 0 && (
+          <div className="mb-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/40 p-4">
+            <h4 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
+              Skriveni termini
+            </h4>
+            <div className="space-y-2">
+              {hiddenEntries.map((e, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 block truncate">{e.subject}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      {getDaySr(e.date)}, {formatDateSr(e.date)} · {e.start}
+                      {e.type && ` · ${e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}`}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => restoreEntry(e)}
+                    className="px-2.5 py-1 text-xs font-medium rounded-md shrink-0
+                      text-[#024c7d] dark:text-[#60c3ad] border border-[#024c7d]/30 dark:border-[#60c3ad]/30
+                      hover:bg-[#024c7d]/5 dark:hover:bg-[#60c3ad]/10 transition-colors"
+                  >
+                    Vrati
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!isHydrated ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">Učitavanje...</div>
         ) : view === 'list' ? (
@@ -626,6 +824,17 @@ export default function RokoviPage() {
         )}
 
       </div>
+
+      {downloadToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-100">
+          <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
+            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:text-green-600 flex items-center justify-center shrink-0">
+              ✓
+            </span>
+            Kalendar (.ics) preuzet — otvori fajl da dodaš termine.
+          </div>
+        </div>
+      )}
     </main>
   )
 }
