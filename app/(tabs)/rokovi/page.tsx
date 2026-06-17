@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry } from '@/lib/types'
 import NotificationBell from '@/components/NotificationBell'
 
@@ -26,6 +27,40 @@ const SR_MONTHS_SHORT = [
 const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
 
 const SR_DAYS_FULL = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
+
+const GLASS = 'liquid-glass'
+
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (props: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...props,
+})
+const IconBack = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+)
+const IconMoon = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
+)
+const IconSun = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+)
+const IconExternal = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+)
+const IconCalendar = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+)
+const IconList = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+)
+const IconHidden = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
+)
 
 function formatDateSr(isoDate: string) {
   const d = new Date(isoDate + 'T00:00:00')
@@ -62,16 +97,17 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
     trackMouse: false,
   })
   return (
-    <div className="relative overflow-hidden sm:overflow-visible">
+    <div className="relative overflow-hidden rounded-2xl sm:overflow-visible">
       <div
-        className="absolute inset-y-0 right-0 w-14 flex items-center justify-center sm:hidden transition-opacity duration-200"
+        className="absolute inset-y-0 right-0 flex w-16 items-center justify-center sm:hidden transition-opacity duration-200"
         style={{ opacity: open ? 1 : 0 }}
       >
         <button
           onClick={() => { onHide(); setOpen(false) }}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-xs
-                     text-red-400 dark:text-red-400 bg-red-50 dark:bg-red-950/50
-                     hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-full
+                     text-red-500 bg-red-50 dark:bg-red-950/60 dark:text-red-400
+                     hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors"
+          aria-label="Sakrij termin"
         >
           ✕
         </button>
@@ -79,7 +115,7 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
       <div
         {...handlers}
         className="transition-transform duration-200 sm:transform-none"
-        style={{ transform: open ? 'translateX(-56px)' : 'translateX(0)' }}
+        style={{ transform: open ? 'translateX(-64px)' : 'translateX(0)' }}
       >
         {children}
       </div>
@@ -90,6 +126,7 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
 type Tab = 'kolokvijumi' | 'ispiti'
 
 export default function RokoviPage() {
+  const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
   const [tab, setTab] = useState<Tab>('kolokvijumi')
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
@@ -187,7 +224,7 @@ export default function RokoviPage() {
         setDismissedBanners(dismissed)
       })
       .catch(() => setAllRokovi([]))
-  }, [isHydrated])
+  }, [isHydrated, meta.group])
 
   // Skup predmeta koje student sluša (regularni + preneseni iz prošlih godina)
   const userSubjects: Set<string> | null = isHydrated && meta.group
@@ -344,21 +381,20 @@ export default function RokoviPage() {
         <button
           onClick={downloadICS}
           disabled={allFilteredEntries.length === 0}
-          className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
-            text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700
-            rounded-lg bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800
-            disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70
+            disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
         >
-          <img src="/export-date-calendar-icon.png" alt="" className="w-4 h-4 mr-1.5 opacity-80 dark:invert" />
+          <IconCalendar className="h-4 w-4 opacity-80" />
           Izvezi u kalendar
         </button>
         {hiddenEntries.length > 0 && (
           <button
             onClick={() => setShowHidden(s => !s)}
-            className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
-              text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800
-              rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+              text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           >
+            <IconHidden className="h-4 w-4 opacity-80" />
             Skriveni ({hiddenEntries.length})
           </button>
         )}
@@ -470,9 +506,7 @@ export default function RokoviPage() {
               const d = new Date(prev.year, prev.month - 1)
               return { year: d.getFullYear(), month: d.getMonth() }
             })}
-            className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700
-              bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300
-              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className={`rounded-lg px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           >←</button>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 capitalize">
             {SR_MONTHS[month]} {year}
@@ -482,20 +516,18 @@ export default function RokoviPage() {
               const d = new Date(prev.year, prev.month + 1)
               return { year: d.getFullYear(), month: d.getMonth() }
             })}
-            className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700
-              bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300
-              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className={`rounded-lg px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           >→</button>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 mb-1">
+        <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5">
           {SR_DAYS_SHORT.map(d => (
             <div key={d} className="text-center text-xs text-gray-400 dark:text-gray-500 py-1 font-medium">{d}</div>
           ))}
         </div>
 
         {weeks.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-7 gap-1 mb-1">
+          <div key={wi} className="mb-1 grid grid-cols-7 gap-1 sm:mb-1.5 sm:gap-1.5">
             {week.map((day, di) => {
               if (!day) return <div key={di} />
               const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
@@ -507,7 +539,7 @@ export default function RokoviPage() {
                 <div
                   key={di}
                   onClick={() => hasEvents && setTooltip(t => t?.date === isoDate ? null : { date: isoDate })}
-                  className={`relative min-h-13 rounded-lg p-1.5 transition-colors
+                  className={`relative min-h-13 rounded-lg p-1.5 transition-colors sm:min-h-20 sm:p-2
                     ${hasEvents ? 'cursor-pointer' : ''}
                     ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
                     ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
@@ -546,12 +578,18 @@ export default function RokoviPage() {
         ))}
 
         {tooltip && (byDate[tooltip.date]?.length ?? 0) > 0 && (
-          <div className="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+          <div className={`mt-4 rounded-xl p-4 ${GLASS}`}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 {getDaySr(tooltip.date)}, {formatDateSr(tooltip.date)}
               </h4>
-              <button onClick={() => setTooltip(null)} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">✕</button>
+              <button
+                onClick={() => setTooltip(null)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-base leading-none text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
+                aria-label="Zatvori detalje"
+              >
+                ✕
+              </button>
             </div>
             <div className="space-y-3">
               {(byDate[tooltip.date] ?? []).map((e, i) => {
@@ -626,130 +664,111 @@ export default function RokoviPage() {
   }
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+    <main className="min-h-screen pb-32 sm:pb-0">
+      <div className="mx-auto max-w-4xl px-3 py-3 sm:px-4 sm:py-8">
 
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-2 text-xs">
-              <Link
-                href="/raspored"
-                className="font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+        <header className="mb-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Rokovi</h1>
+              <p className="mt-0.5 truncate text-sm text-gray-500 dark:text-gray-400">
+                {meta.program && `${meta.program} · `}{meta.year && `${meta.year}. godina`}
+              </p>
+              <div className="mt-2 flex w-full flex-col items-start gap-2 sm:w-auto sm:flex-row sm:items-start sm:gap-3">
+                <NotificationBell className="min-w-0" />
+                <a
+                  href="https://student.fon.bg.ac.rs/security/login.jsf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center rounded-lg bg-[#024c7d]/10 px-3 py-1.5 text-xs font-semibold text-[#024c7d]
+                             hover:bg-[#024c7d]/15 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15 transition-colors"
+                >
+                  eStudent →
+                </a>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => router.push('/raspored')}
+                className={`hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 sm:inline-flex ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
               >
-                ← Raspored
-              </Link>
-            </div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Ispiti i kolokvijumi</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-              {meta.program && `${meta.program} · `}{meta.year && `${meta.year}. godina`}
-            </p>
-            <NotificationBell />
-            <a
-              href="https://student.fon.bg.ac.rs/security/login.jsf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-block text-xs text-[#024c7d] dark:text-[#60c3ad] hover:underline"
-            >
-              Prijavi ispite na eStudent →
-            </a>
-          </div>
-
-          {/* Desktop controls */}
-          <div className="hidden sm:flex sm:items-center sm:gap-2">
-            <div className="flex overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                <IconBack className="h-4 w-4 opacity-80" />
+                Nazad
+              </button>
               <button
-                onClick={() => setManualView('calendar')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors
-                  ${view === 'calendar' ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
-                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
-              >Kalendar</button>
-              <button
-                onClick={() => setManualView('list')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors
-                  ${view === 'list' ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
-                    : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800'}`}
-              >Lista</button>
+                onClick={toggleTheme}
+                aria-label="Promeni temu"
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              >
+                <IconMoon className="h-[18px] w-[18px] dark:hidden" />
+                <IconSun className="hidden h-[18px] w-[18px] dark:block" />
+              </button>
+              <a
+                href={tab === 'kolokvijumi'
+                  ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
+                  : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#024c7d]/20 dark:border-[#60c3ad]/25
+                           bg-[#024c7d]/10 dark:bg-[#60c3ad]/10 px-3 py-2 text-xs font-semibold backdrop-blur-2xl
+                           text-[#024c7d] dark:text-[#60c3ad] hover:bg-[#024c7d]/15 dark:hover:bg-[#60c3ad]/15 transition-colors"
+              >
+                FON <IconExternal className="h-3.5 w-3.5" />
+              </a>
             </div>
-            <a
-              href={tab === 'kolokvijumi'
-                ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
-                : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium
-                text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900
-                rounded-lg bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50
-                transition-colors"
-            >
-              FON →
-            </a>
-            <button
-              onClick={toggleTheme}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-xs text-gray-500 border border-gray-300
-                rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-                hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Promeni temu"
-            >
-              <img src="/moon.png" alt="Tamna tema" className="w-4 h-4 dark:hidden" />
-              <img src="/sun.png" alt="Svetla tema" className="w-4 h-4 hidden dark:block" />
-            </button>
           </div>
 
-          {/* Mobile controls */}
-          <div className="flex gap-2 sm:hidden">
-            <button onClick={() => setManualView('list')}
-              className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors
-                ${view === 'list' ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
-                  : 'bg-white text-gray-600 border border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700'}`}
-            >Lista</button>
-            <button onClick={() => setManualView('calendar')}
-              className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors
-                ${view === 'calendar' ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]'
-                  : 'bg-white text-gray-600 border border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700'}`}
-            >Kalendar</button>
-            <a
-              href={tab === 'kolokvijumi'
-                ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
-                : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-900 text-xs font-medium
-                text-blue-700 dark:text-blue-300 bg-blue-50/70 dark:bg-blue-950/40
-                hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-            >
-              FON →
-            </a>
-            <button onClick={toggleTheme}
-              className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500
-                bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700"
-            >
-              <img src="/moon.png" alt="Tamna tema" className="w-4 h-4 dark:hidden" />
-              <img src="/sun.png" alt="Svetla tema" className="w-4 h-4 hidden dark:block" />
-            </button>
-          </div>
-        </div>
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <div className={`inline-flex rounded-full p-1 ${GLASS}`}>
+              {([['list', 'Lista', IconList], ['calendar', 'Kalendar', IconCalendar]] as const).map(([v, label, Icon]) => (
+                <button
+                  key={v}
+                  onClick={() => setManualView(v)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                    ${view === v
+                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
 
-        {/* Tab toggle + akcije (desktop: skroz desno u istoj liniji) */}
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl w-fit">
+            {isHydrated && !isEmpty && (
+              <div className="hidden items-center gap-2 sm:flex">
+                <ActionButtons />
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Akcije (mobilni): izvoz u kalendar + skriveni termini */}
+        {isHydrated && !isEmpty && (
+          <div className="mb-5 flex flex-wrap items-center gap-2 sm:hidden">
+            <ActionButtons />
+          </div>
+        )}
+
+        <div className="mb-6 flex items-center justify-between gap-3 border-b border-gray-200/70 dark:border-gray-800/80">
+          <div className="flex items-end gap-6">
             {(['ispiti', 'kolokvijumi'] as Tab[]).map(t => (
               <button
                 key={t}
                 onClick={() => { setTab(t); setTooltip(null) }}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize
+                className={`relative pb-2 text-sm font-semibold transition-colors capitalize
                   ${tab === t
-                    ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                    ? 'text-[#024c7d] dark:text-[#60c3ad]'
+                    : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'}`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
+                {tab === t && (
+                  <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#024c7d] dark:bg-[#60c3ad]" />
+                )}
               </button>
             ))}
           </div>
-          {isHydrated && !isEmpty && (
-            <div className="hidden sm:flex items-center gap-2">
-              <ActionButtons />
-            </div>
-          )}
         </div>
 
         {/* Baner za prijavu kolokvijuma */}
@@ -779,15 +798,8 @@ export default function RokoviPage() {
           </div>
         )}
 
-        {/* Akcije (mobilni): izvoz u kalendar + skriveni termini */}
-        {isHydrated && !isEmpty && (
-          <div className="mb-5 flex flex-wrap items-center gap-2 sm:hidden">
-            <ActionButtons />
-          </div>
-        )}
-
         {showHidden && hiddenEntries.length > 0 && (
-          <div className="mb-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/40 p-4">
+          <div className={`mb-5 rounded-xl p-4 ${GLASS}`}>
             <h4 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
               Skriveni termini
             </h4>
@@ -826,7 +838,7 @@ export default function RokoviPage() {
       </div>
 
       {downloadToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-100">
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-100 sm:bottom-6">
           <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
             <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:text-green-600 flex items-center justify-center shrink-0">
               ✓

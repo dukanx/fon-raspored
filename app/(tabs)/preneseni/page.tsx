@@ -11,6 +11,34 @@ const SLOT_LABEL: Record<string, string> = {
   '16:15': '16:15–18:00', '18:15': '18:15–20:00',
 }
 
+const GLASS = 'liquid-glass'
+
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (props: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...props,
+})
+const IconBack = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+)
+const IconMoon = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
+)
+const IconSun = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+)
+const IconChevronDown = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
+)
+const IconChevronUp = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="m18 15-6-6-6 6" /></svg>
+)
+
 export default function PreneseniPage() {
   const router = useRouter()
   const [godina, setGodina] = useState<number | null>(null)
@@ -29,6 +57,38 @@ export default function PreneseniPage() {
   const [hiddenTermini, setHiddenTermini] = useState<ScheduleEntry[]>([])
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
+  const [manualOpen, setManualOpen] = useState(false)
+
+  function toggleTheme() {
+    const root = document.documentElement
+    const willBeDark = !root.classList.contains('dark')
+    root.classList.toggle('dark', willBeDark)
+    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+  }
+
+  async function refreshTrenutniRaspored(nextExtra: ScheduleEntry[]) {
+    const group = sessionStorage.getItem('fon_group')
+    const year = sessionStorage.getItem('fon_year')
+    if (!group || !year) return
+
+    const data: SemesterData = await fetch(`/data/${year}god.json`).then(r => r.json())
+    const all = getScheduleForGroup(data, group)
+    const saved = localStorage.getItem(`fon_subjects_${group}`)
+    let baseFiltered = saved
+      ? all.filter(e => {
+        const checked: Record<string, boolean> = JSON.parse(saved)
+        return checked[e.subject] !== false
+      })
+      : all
+
+    baseFiltered = baseFiltered.filter(b => {
+      const gaziGaVreme = nextExtra.some(ex => ex.day === b.day && ex.start === b.start)
+      const gaziGaPredmet = nextExtra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
+      return !gaziGaVreme && !gaziGaPredmet
+    })
+
+    setTrenutniRaspored([...baseFiltered, ...nextExtra])
+  }
 
   useEffect(() => {
     const group = sessionStorage.getItem('fon_group')
@@ -86,9 +146,9 @@ export default function PreneseniPage() {
     const group = sessionStorage.getItem('fon_group')
     const novi = extraTermini.filter((_, i) => i !== index)
     setExtraTermini(novi)
-    localStorage.setItem(`fon_extra_${group}`, JSON.stringify(novi))
-    // Opciono: refetch da bi se odmah vratio "pregaženi" predmet, ili reload strane
-    window.location.reload()
+    if (novi.length === 0) localStorage.removeItem(`fon_extra_${group}`)
+    else localStorage.setItem(`fon_extra_${group}`, JSON.stringify(novi))
+    void refreshTrenutniRaspored(novi)
   }
 
   async function handleGodinaSelect(g: number, autoSelect?: string) {
@@ -101,6 +161,7 @@ export default function PreneseniPage() {
     setOdabraneVezbe(null)
     setDodato(false)
     setPredmetSearch('')
+    if (autoSelect) setManualOpen(false)
 
     let data = godineData[g]
     if (!data) {
@@ -134,6 +195,26 @@ export default function PreneseniPage() {
 
     const termini = godineData[godina].entries.filter(e => e.subject === predmet)
     setDostupniTermini(termini)
+  }
+
+  function clearSelectedSubject() {
+    setGodina(null)
+    setOdabraniPredmet('')
+    setPredmeti([])
+    setDostupniTermini([])
+    setPredmetSearch('')
+    setPreporuka(null)
+    setOdabranoPredavanje(null)
+    setOdabraneVezbe(null)
+    setDodato(false)
+  }
+
+  function handlePrevSubjectClick(item: { year: number; subject: string }) {
+    if (godina === item.year && odabraniPredmet === item.subject) {
+      clearSelectedSubject()
+      return
+    }
+    void handleGodinaSelect(item.year, item.subject)
   }
 
   async function getPreporuka() {
@@ -187,29 +268,38 @@ export default function PreneseniPage() {
 
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-lg mx-auto px-4 py-8">
+    <main className="min-h-screen pb-32 sm:pb-0">
+      <div className="mx-auto max-w-lg px-3 py-3 sm:px-4 sm:py-8">
 
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <header className="mb-6 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
               Izmena rasporeda
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
-              Dodaj <strong>termine za predmete iz prethodnih godina</strong>, promeni termin postojećeg predmeta, ili vrati termine koje si sakrio klikom na <strong>✕</strong> u rasporedu.
+            <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+              Dodaj <strong>termine za predmete iz prethodnih godina</strong>, promeni termin postojećeg predmeta, ili vrati sakrivene termine.
             </p>
           </div>
-          <button
-            onClick={() => router.push('/raspored')}
-            className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200
-                       rounded-lg bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-                       hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shrink-0"
-          >
-            ← Nazad
-          </button>
-        </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              aria-label="Promeni temu"
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+            >
+              <IconMoon className="h-[18px] w-[18px] dark:hidden" />
+              <IconSun className="hidden h-[18px] w-[18px] dark:block" />
+            </button>
+            <button
+              onClick={() => router.push('/raspored')}
+              className={`hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 sm:inline-flex ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+            >
+              <IconBack className="h-4 w-4" />
+              Nazad
+            </button>
+          </div>
+        </header>
 
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 space-y-5">
+        <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
           {/* Dodati termini */}
           {extraTermini.length > 0 && (
@@ -221,8 +311,7 @@ export default function PreneseniPage() {
                 {extraTermini.map((e, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-3 py-2 px-3 bg-gray-50 dark:bg-gray-800
-                     rounded-lg border border-gray-100 dark:border-gray-700"
+                    className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -243,13 +332,13 @@ export default function PreneseniPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+              <div className="mt-2 border-t border-[#024c7d]/15 pt-2 dark:border-white/20">
                 <button
                   onClick={() => {
                     const group = sessionStorage.getItem('fon_group')
                     setExtraTermini([])
                     localStorage.removeItem(`fon_extra_${group}`)
-                    window.location.reload()
+                    void refreshTrenutniRaspored([])
                   }}
                   className="text-xs text-red-400 hover:text-red-600 transition-colors"
                 >
@@ -269,8 +358,7 @@ export default function PreneseniPage() {
                 {hiddenTermini.map((e, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-3 py-2 px-3 bg-gray-50 dark:bg-gray-800
-                     rounded-lg border border-gray-100 dark:border-gray-700"
+                    className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -302,11 +390,11 @@ export default function PreneseniPage() {
                 {prevSubjects.map((p, i) => (
                   <button
                     key={i}
-                    onClick={() => handleGodinaSelect(p.year, p.subject)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors
+                    onClick={() => handlePrevSubjectClick(p)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors
                       ${odabraniPredmet === p.subject && godina === p.year
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700'}`}
+                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                        : 'bg-white/70 text-gray-600 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20'}`}
                   >
                     <span className="text-gray-400 dark:text-gray-500 font-normal">{p.year}.</span>
                     {p.subject}
@@ -316,75 +404,99 @@ export default function PreneseniPage() {
             </div>
           )}
 
-          {/* Godina prenesenog predmeta */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Godina slušanja predmeta
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map(g => (
-                <button
-                  key={g}
-                  onClick={() => handleGodinaSelect(g)}
-                  className={`py-2 rounded-lg text-sm font-medium border transition-colors
-                    ${godina === g
-                      ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
-                    }`}
-                >
-                  {g}.
-                </button>
-              ))}
-            </div>
-          </div>
+          <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
+            <button
+              type="button"
+              onClick={() => setManualOpen(v => !v)}
+              className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
+            >
+              <div>
+                <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
+                  Ne vidiš predmet gore?
+                </p>
+                <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                  Ručno izaberi godinu i pronađi predmet ako ga nisi dodao u prenesene.
+                </p>
+              </div>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
+                {manualOpen ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
+              </span>
+            </button>
 
-          {/* Predmet */}
-          {godina && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Predmet
-              </label>
-              {loadingData ? (
-                <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-              ) : odabraniPredmet ? (
-                  <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                    <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{odabraniPredmet}</span>
-                    <button
-                      onClick={() => { setOdabraniPredmet(''); setDostupniTermini([]); setPreporuka(null); setOdabranoPredavanje(null); setOdabraneVezbe(null) }}
-                      className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0 ml-2 transition-colors"
-                    >
-                      Promeni
-                    </button>
+            {manualOpen && (
+              <div className="mt-4 space-y-4 border-t border-[#024c7d]/10 pt-4 dark:border-white/10">
+                {/* Godina prenesenog predmeta */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Godina slušanja predmeta
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 2, 3, 4].map(g => (
+                      <button
+                        key={g}
+                        onClick={() => handleGodinaSelect(g)}
+                        className={`py-2 rounded-full text-sm font-medium border transition-colors
+                          ${godina === g
+                            ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                            : 'bg-white/70 text-gray-700 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20 dark:hover:bg-gray-800/70'
+                          }`}
+                      >
+                        {g}.
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <div className="space-y-1.5">
-                    <input
-                      type="text"
-                      value={predmetSearch}
-                      onChange={e => setPredmetSearch(e.target.value)}
-                      placeholder="Pretraži predmet..."
-                      className="w-full h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-sm
-                                 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
-                                 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
-                                 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                    />
-                    <div className="max-h-44 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
-                      {predmeti
-                        .filter(p => p.toLowerCase().includes(predmetSearch.toLowerCase()))
-                        .map(p => (
-                          <div
-                            key={p}
-                            onClick={() => handlePredmetSelect(p)}
-                            className="px-3 py-2 cursor-pointer text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                          >
-                            {p}
-                          </div>
-                        ))}
-                    </div>
+                </div>
+
+                {/* Predmet */}
+                {godina && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Predmet
+                    </label>
+                    {loadingData ? (
+                      <div className="h-10 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                    ) : odabraniPredmet ? (
+                      <div className="flex items-center justify-between rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2.5 dark:border-white/20 dark:bg-gray-900/65">
+                        <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{odabraniPredmet}</span>
+                        <button
+                          onClick={() => { setOdabraniPredmet(''); setDostupniTermini([]); setPreporuka(null); setOdabranoPredavanje(null); setOdabraneVezbe(null) }}
+                          className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0 ml-2 transition-colors"
+                        >
+                          Promeni
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5">
+                        <input
+                          type="text"
+                          value={predmetSearch}
+                          onChange={e => setPredmetSearch(e.target.value)}
+                          placeholder="Pretraži predmet..."
+                          className="w-full h-10 px-3 rounded-xl border border-[#024c7d]/15 dark:border-white/20 text-sm
+                                     text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                                     focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
+                                     placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        />
+                        <div className="max-h-44 overflow-y-auto rounded-xl border border-[#024c7d]/15 dark:border-white/20 divide-y divide-[#024c7d]/10 dark:divide-white/10 bg-white/60 dark:bg-gray-900/55">
+                          {predmeti
+                            .filter(p => p.toLowerCase().includes(predmetSearch.toLowerCase()))
+                            .map(p => (
+                              <div
+                                key={p}
+                                onClick={() => handlePredmetSelect(p)}
+                                className="cursor-pointer px-3 py-2 text-sm text-gray-900 transition-colors hover:bg-white/70 dark:text-gray-100 dark:hover:bg-gray-800/65"
+                              >
+                                {p}
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Dostupni termini */}
           {dostupniTermini.length > 0 && (
@@ -400,13 +512,13 @@ export default function PreneseniPage() {
                       return (
                         <label
                           key={`p-${i}`}
-                          className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
+                          className={`flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
                         ${odabranoPredavanje === e
                               ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
                               : preklapanje 
                                 ? 'bg-orange-50/50 dark:bg-orange-900/10 border-transparent hover:bg-orange-50 dark:hover:bg-orange-900/20' 
-                                : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
+                                : 'bg-white/60 dark:bg-gray-800/50 border-transparent hover:bg-white/70 dark:hover:bg-gray-700/60'}`}
                         >
                           <input
                             type="checkbox"
@@ -445,13 +557,13 @@ export default function PreneseniPage() {
                       return (
                         <label
                           key={`v-${i}`}
-                          className={`flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer
+                          className={`flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
                         ${odabraneVezbe === e
                               ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
                               : preklapanje 
                                 ? 'bg-orange-50/50 dark:bg-orange-900/10 border-transparent hover:bg-orange-50 dark:hover:bg-orange-900/20' 
-                                : 'bg-gray-50 dark:bg-gray-800/60 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700/60'}`}
+                                : 'bg-white/60 dark:bg-gray-800/50 border-transparent hover:bg-white/70 dark:hover:bg-gray-700/60'}`}
                         >
                           <input
                             type="checkbox"
@@ -486,9 +598,9 @@ export default function PreneseniPage() {
             <button
               onClick={getPreporuka}
               disabled={loading}
-              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors
+              className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors
                 ${loading
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
+                  ? 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
                   : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
             >
               {loading ? 'Analiziram...' : '✨ Predloži najbolje termine (P + V)'}
@@ -497,7 +609,7 @@ export default function PreneseniPage() {
 
           {/* Preporuka */}
           {preporuka && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+            <div className={`rounded-xl p-4 ${GLASS}`}>
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">AI preporuka</p>
               <div className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed space-y-2">
                 {preporuka.split('\n').map((line, i) => (
@@ -534,17 +646,19 @@ export default function PreneseniPage() {
                   `fon_extra_${sessionStorage.getItem('fon_group')}`,
                   JSON.stringify(extra)
                 )
+                setExtraTermini(extra)
+                void refreshTrenutniRaspored(extra)
                 setDodato(true)
-                // Reload da bi se osvežio trenutni raspored i prikazala promena odmah
-                window.location.reload()
+                setOdabranoPredavanje(null)
+                setOdabraneVezbe(null)
               }}
               disabled={!canAdd}
-              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors
+            className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors
       ${dodato
                   ? 'bg-green-100 text-green-800 cursor-default dark:bg-green-950/50 dark:text-green-300'
                   : canAdd
                     ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
+                    : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}
             >
               {dodato ? '✓ Dodato u raspored' : 'Dodaj odabrane termine u raspored'}
             </button>

@@ -10,6 +10,7 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Skrivanje termina** — swipe na mobilnom ili klik na termin ga sakriva iz rasporeda; bira se koji termini su relevantni; čuva se u localStorage
 - **Ispiti i kolokvijumi** — lista i kalendarski prikaz; prikazuju se samo predmeti koje student sluša
 - **Izborni i preneseni predmeti** — poseban tok pri onboardingu za dodavanje izbornih i prenesenih predmeta, koji se potom prate u ispitima i kolokvijumima
+- **Glass dizajn** — responzivni “liquid glass” UI, mobilni donji navbar i jasnije razdvojene akcije za raspored, rokove i izmenu termina
 - **Notifikacija o prijavi** — baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
 - **Push notifikacije (PWA)** — aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, i na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu)
 - **Onboarding** — pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
@@ -22,14 +23,17 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 ```
 app/
   page.tsx              # Onboarding (izbor grupe, izbornih i prenesenih predmeta)
-  raspored/page.tsx     # Nedeljni raspored nastave (sa opcijom skrivanja termina)
-  rokovi/page.tsx       # Ispiti i kolokvijumi (sa banerom o prijavi + dugme za notifikacije)
+  (tabs)/
+    layout.tsx          # Layout za tabove sa zajedničkom navigacijom
+    raspored/page.tsx   # Nedeljni raspored nastave (lista/sedmica + export)
+    rokovi/page.tsx     # Rokovi (ispiti/kolokvijumi, kalendar/lista + notifikacije)
+    preneseni/page.tsx  # Izmena rasporeda i dodavanje termina prenesenih predmeta
   izborni/              # Tok za izbor izbornih predmeta
-  preneseni/            # Tok za izbor prenesenih predmeta
   manifest.ts           # PWA manifest (instalacija na home screen)
   actions.ts            # Server akcije — upis/brisanje push pretplata (Upstash Redis)
 
 components/
+  BottomNav.tsx         # Mobilni donji navbar za glavne tabove
   NotificationBell.tsx  # Dugme za uključivanje notifikacija + iOS uputstvo
 
 public/
@@ -123,6 +127,9 @@ Aplikacija je sada PWA (manifest + service worker) i može se instalirati na hom
 
 ### v2.5 — Automatizacija rasporeda nastave
 Parser rasporeda nastave (`fon_parser.py`) + orkestrator (`update_nastava.py`) i ručni workflow koji regeneriše `god.json` sa FON sajta, sa sigurnosnom proverom i PR-om za pregled. Rešava ranije „tihe rupe" (izborni i projektni predmeti koji su ispadali pri parsiranju).
+
+### v2.6 — Glass dizajn
+Redizajn aplikacije u “liquid glass” stilu: frosted paneli i dugmad, novi mobilni donji navbar, kompaktniji mobilni prikaz rasporeda, širi i čitljiviji desktop prikazi za raspored i rokove, usklađene akcije za export/sliku/kalendar i bolji tok za prenesene predmete (ručno dodavanje sakriveno dok nije potrebno).
 
 ---
 

@@ -6,6 +6,8 @@ import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import BlurText from '@/components/BlurText'
 
+const GLASS = 'liquid-glass'
+
 export default function OnboardingPage() {
   const router = useRouter()
 
@@ -117,17 +119,10 @@ export default function OnboardingPage() {
     !loading
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
+    <main className="relative min-h-screen flex items-center justify-center px-4 py-10">
+      <div className={`w-full max-w-md rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4 text-xs">
-            <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">1. Podaci</span>
-            <span className="text-gray-300 dark:text-gray-700">→</span>
-            <span className="font-medium text-gray-400">2. Predmeti</span>
-            <span className="text-gray-300 dark:text-gray-700">→</span>
-            <span className="font-medium text-gray-400">3. Raspored</span>
-          </div>
           <BlurText
             text="FON Raspored"
             animateBy="letters"
@@ -151,10 +146,10 @@ export default function OnboardingPage() {
               <button
                 key={y}
                 onClick={() => handleYearSelect(y)}
-                className={`py-2 rounded-lg text-sm font-medium border transition-colors
+                className={`py-2 rounded-full text-sm font-medium border transition-colors
                   ${selectedYear === y
-                    ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
+                    ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                    : 'bg-white/70 text-gray-700 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20 dark:hover:bg-gray-800/70'
                   }`}
               >
                 {y}.
@@ -170,14 +165,14 @@ export default function OnboardingPage() {
               Studijski program
             </label>
             {loading ? (
-              <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+              <div className="h-10 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
             ) : (
               <select
                 value={selectedProgram}
                 onChange={e => setProgram(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm
-                           text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
-                           dark:border-gray-700 focus:outline-none focus:ring-2
+                className="w-full h-10 px-3 rounded-xl border border-[#024c7d]/15 text-sm
+                           text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                           dark:border-white/20 focus:outline-none focus:ring-2
                            focus:ring-[#024c7d] dark:focus:ring-[#60c3ad] focus:border-transparent"
               >
                 <option value="">Izaberi program...</option>
@@ -201,9 +196,9 @@ export default function OnboardingPage() {
               onChange={e => setLastName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && canSubmit && handleSubmit()}
               placeholder="npr. Petrović"
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 text-sm
-                         text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
-                         dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500
+              className="w-full h-10 px-3 rounded-xl border border-[#024c7d]/15 text-sm
+                         text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                         dark:border-white/20 placeholder-gray-400 dark:placeholder-gray-500
                          focus:outline-none focus:ring-2 focus:ring-[#024c7d]
                          dark:focus:ring-[#60c3ad] focus:border-transparent"
             />
@@ -212,7 +207,7 @@ export default function OnboardingPage() {
 
         {/* Greška */}
         {error && (
-          <p className="mb-4 text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/50 px-3 py-2 rounded-lg">
+          <p className="mb-4 rounded-xl border border-red-200/70 bg-red-50/80 px-3 py-2 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
             {error}
           </p>
         )}
@@ -221,10 +216,10 @@ export default function OnboardingPage() {
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
+          className={`w-full rounded-xl py-2.5 text-sm font-medium transition-all active:scale-[0.97]
             ${canSubmit
               ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'
+              : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
             }`}
         >
           Izaberi predmete
@@ -232,7 +227,7 @@ export default function OnboardingPage() {
 
         {/* Fallback - ručni odabir grupe */}
         {selectedYear && data && (
-          <div className="mt-6 pt-6 border-t border-gray-300 dark:border-gray-800">
+          <div className="mt-6 border-t border-[#024c7d]/15 pt-6 dark:border-white/20">
             <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
               Znaš svoju grupu? Odaberi direktno
             </p>
@@ -253,8 +248,8 @@ export default function OnboardingPage() {
                 localStorage.setItem('fon_saved_semester', data.semester)
                 router.push('/izborni')
               }}
-              className="w-full h-10 px-3 rounded-lg border border-gray-200 dark:border-gray-700
-                 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
+              className="w-full h-10 px-3 rounded-xl border border-[#024c7d]/15 dark:border-white/20
+                 text-sm text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
                  focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
                  focus:border-transparent"
             >
@@ -271,6 +266,18 @@ export default function OnboardingPage() {
         )}
 
       </div>
+
+      <footer className="absolute inset-x-0 bottom-0 py-4 text-center text-xs text-gray-400 dark:text-gray-600">
+        Made by{' '}
+        <a
+          href="https://github.com/dukanx"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#024c7d] dark:text-[#60c3ad] hover:underline font-medium"
+        >
+          dukanx
+        </a>
+      </footer>
     </main>
   )
 }

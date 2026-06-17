@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 
+const GLASS = 'liquid-glass'
+
 export default function IzbornoPage() {
   const router = useRouter()
   const isHydrated = useSyncExternalStore(
@@ -48,8 +50,10 @@ export default function IzbornoPage() {
     const savedPrev = localStorage.getItem(`fon_prev_subjects_${group}`)
     if (savedPrev) {
       const parsed = JSON.parse(savedPrev)
-      setPrevSelected(parsed)
-      if (parsed.length > 0) setPrevOpen(true)
+      queueMicrotask(() => {
+        setPrevSelected(parsed)
+        if (parsed.length > 0) setPrevOpen(true)
+      })
     }
   }, [group, isHydrated, router, year])
 
@@ -97,16 +101,9 @@ export default function IzbornoPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
+      <div className={`w-full max-w-md rounded-[1.75rem] p-8 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-4 text-xs">
-            <span className="font-medium text-gray-400">1. Podaci</span>
-            <span className="text-gray-300 dark:text-gray-700">→</span>
-            <span className="font-semibold text-[#024c7d] dark:text-[#60c3ad]">2. Predmeti</span>
-            <span className="text-gray-300 dark:text-gray-700">→</span>
-            <span className="font-medium text-gray-400">3. Raspored</span>
-          </div>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Odčekiraj predmete koje ne slušaš
@@ -117,8 +114,8 @@ export default function IzbornoPage() {
           {subjects.map(subject => (
             <label
               key={subject}
-              className="flex items-center gap-3 py-2.5 px-2 rounded-lg
-                         hover:bg-gray-50 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
+              className="flex items-center gap-3 rounded-xl px-2 py-2.5
+                         hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
             >
               <input
                 type="checkbox"
@@ -134,7 +131,7 @@ export default function IzbornoPage() {
         </div>
 
         {/* Predmeti iz prošlih godina */}
-        <div className="mb-6 border-t border-gray-100 dark:border-gray-800 pt-4">
+        <div className="mb-6 border-t border-white/75 pt-4 dark:border-white/15">
           <button
             type="button"
             onClick={() => setPrevOpen(v => !v)}
@@ -143,7 +140,7 @@ export default function IzbornoPage() {
             <span className="text-xs w-2">{prevOpen ? '▾' : '▸'}</span>
             <span>Predmeti iz prošlih godina</span>
             {prevSelected.length > 0 && (
-              <span className="ml-1 text-[10px] bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d] rounded-full px-1.5 py-0.5 font-medium leading-none">
+                <span className="ml-1 rounded-full bg-[#024c7d] px-1.5 py-0.5 text-[10px] font-medium leading-none text-white dark:bg-[#60c3ad] dark:text-[#024c7d]">
                 {prevSelected.length}
               </span>
             )}
@@ -152,8 +149,8 @@ export default function IzbornoPage() {
           {prevOpen && (
             <div className="mt-3 space-y-3">
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                Termine za predmete iz prethodnih godina dodaješ u tabu   <br /> →{' '}
-                <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>
+                Termine za predmete iz prethodnih godina dodaješ u tabu{' '}
+                <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>.
               </p>
 
               <div className="grid grid-cols-4 gap-1.5">
@@ -161,10 +158,10 @@ export default function IzbornoPage() {
                   <button
                     key={g}
                     onClick={() => handlePrevGodina(g)}
-                    className={`py-1.5 rounded-lg text-xs font-medium border transition-colors
+                    className={`py-1.5 rounded-full text-xs font-medium border transition-colors
                       ${prevGodina === g
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700'}`}
+                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                        : 'bg-white/70 text-gray-600 border-white/70 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/15'}`}
                   >
                     {g}. god
                   </button>
@@ -178,13 +175,13 @@ export default function IzbornoPage() {
                     value={prevSearch}
                     onChange={e => setPrevSearch(e.target.value)}
                     placeholder="Pretraži predmet..."
-                    className="w-full h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-700 text-sm
-                               text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900
+                    className="w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm
+                               text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
                                focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
                                placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   />
                   {prevLoading ? (
-                    <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+                    <div className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
                   ) : (
                     <div className="max-h-40 overflow-y-auto space-y-0.5">
                       {filteredPrev.map(p => {
@@ -192,7 +189,7 @@ export default function IzbornoPage() {
                         return (
                           <label
                             key={p}
-                            className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
+                            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
                           >
                             <input
                               type="checkbox"
@@ -217,7 +214,7 @@ export default function IzbornoPage() {
                     <span
                       key={i}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium
-                                 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                 bg-white/70 dark:bg-gray-800/65 text-gray-600 dark:text-gray-400"
                     >
                       {s.year}. · {s.subject}
                       <button
@@ -241,19 +238,17 @@ export default function IzbornoPage() {
           <div className="flex w-full sm:w-auto items-stretch gap-2">
             <button
               onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500
-              bg-white dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700
-              hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className={`flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
             >
               ← Nazad
             </button>
             <button
               onClick={handleConfirm}
               disabled={checkedCount === 0}
-              className={`flex-2 sm:flex-none flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.97]
+              className={`flex-[2] sm:flex-none flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97]
                 ${checkedCount > 0
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}`}
+                  : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}
             >
               Prikaži raspored →
             </button>
