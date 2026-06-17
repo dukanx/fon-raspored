@@ -12,7 +12,7 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray
 }
 
-export default function NotificationBell() {
+export default function NotificationBell({ className = 'mt-3' }: { className?: string }) {
   const [supported, setSupported] = useState<boolean | null>(null)
   const [subscribed, setSubscribed] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -22,7 +22,12 @@ export default function NotificationBell() {
   const [showIOSModal, setShowIOSModal] = useState(false)
 
   useEffect(() => {
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    const ua = navigator.userAgent
+    const platform = navigator.platform
+    const maxTouchPoints = navigator.maxTouchPoints ?? 0
+    const iosUA = /iPad|iPhone|iPod/.test(ua)
+    const ipadOS = platform === 'MacIntel' && maxTouchPoints > 1
+    const ios = (iosUA || ipadOS) && maxTouchPoints > 0
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       // iOS Safari koristi navigator.standalone
@@ -104,12 +109,12 @@ export default function NotificationBell() {
     </svg>
   )
   const offBtnClass =
-    'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500'
+    'liquid-glass inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-white/80 dark:text-gray-300 dark:hover:bg-gray-800/70 sm:px-3'
 
   // iOS pre instalacije: dugme otvara uputstvo (Web Push radi tek iz home screen-a).
   if (isIOS && !isStandalone) {
     return (
-      <div className="mt-3">
+      <div className={className}>
         <button onClick={() => setShowIOSModal(true)} className={offBtnClass}>
           {bellOutline}
           Uključi notifikacije
@@ -121,7 +126,7 @@ export default function NotificationBell() {
             onClick={() => setShowIOSModal(false)}
           >
             <div
-              className="w-full max-w-xs rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-5 shadow-xl"
+              className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1.5">
@@ -148,21 +153,21 @@ export default function NotificationBell() {
 
   if (!supported) {
     return (
-      <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+      <p className={`${className} text-xs text-gray-400 dark:text-gray-500`}>
         Notifikacije nisu podržane u ovom browseru.
       </p>
     )
   }
 
   return (
-    <div className="mt-3">
+    <div className={className}>
       <button
         onClick={subscribed ? disable : enable}
         disabled={busy}
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors
+        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3
           ${subscribed
             ? 'text-[#024c7d] dark:text-[#60c3ad] border-[#024c7d]/30 dark:border-[#60c3ad]/30 bg-[#024c7d]/5 dark:bg-[#60c3ad]/10 hover:bg-[#024c7d]/10'
-            : 'text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-500'}
+            : 'liquid-glass text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/70'}
           ${busy ? 'opacity-60 cursor-wait' : ''}`}
       >
         {subscribed ? bellFilled : bellOutline}

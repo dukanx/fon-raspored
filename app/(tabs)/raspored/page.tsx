@@ -1,0 +1,753 @@
+'use client'
+
+import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useRouter } from 'next/navigation'
+import { useSwipeable } from 'react-swipeable'
+import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
+import { getScheduleForGroup } from '@/lib/schedule'
+import Link from 'next/link'
+
+const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
+const DAY_SHORT: Record<DayOfWeek, string> = {
+  Ponedeljak: 'Pon', Utorak: 'Uto', Sreda: 'Sre', Četvrtak: 'Čet', Petak: 'Pet'
+}
+const DAY_OFFSET: Record<DayOfWeek, number> = {
+  Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
+}
+
+
+const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
+const SLOT_LABEL: Record<string, string> = {
+  '08:15': '08:15–10:00',
+  '10:15': '10:15–12:00',
+  '12:15': '12:15–14:00',
+  '14:15': '14:15–16:00',
+  '16:15': '16:15–18:00',
+  '18:15': '18:15–20:00',
+}
+
+const COLORS = [
+  { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
+  { bg: '#e8e7f5', text: '#44408a', bar: '#9b95c9', darkBg: '#1e1b3d', darkText: '#b8b4e0' },
+  { bg: '#cce0f0', text: '#012f4e', bar: '#004b7c', darkBg: '#051e30', darkText: '#7ab5d8' },
+  { bg: '#fde6e5', text: '#892d2a', bar: '#f48580', darkBg: '#3d1512', darkText: '#f4a09c' },
+  { bg: '#fff4d6', text: '#7a5a00', bar: '#ffcd67', darkBg: '#3d3200', darkText: '#ffd97a' },
+  { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d057a0', darkBg: '#3d1a30', darkText: '#e8a8d0' },
+]
+
+// Liquid-glass površina (frosted) — koristi se za kartice, dugmad, header, bar
+const GLASS = 'liquid-glass'
+
+/* ---------- Ikonice (stroke, currentColor — rade u obe teme) ---------- */
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (props: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...props,
+})
+const IconCalendar = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+)
+const IconImage = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-4.5-4.5L5 22" /></svg>
+)
+const IconEdit = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+)
+const IconExam = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
+)
+const IconBack = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+)
+const IconMoon = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
+)
+const IconSun = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+)
+const IconExternal = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+)
+const IconClose = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M18 6 6 18M6 6l12 12" /></svg>
+)
+const IconWeek = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 9v11M15 9v11" /></svg>
+)
+const IconList = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+)
+
+function entryKey(e: ScheduleEntry) {
+  return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
+}
+
+function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setOpen(true),
+    onSwipedRight: () => setOpen(false),
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+  })
+  return (
+    <div className="relative overflow-hidden rounded-2xl sm:overflow-visible">
+      <div
+        className="absolute inset-y-0 right-0 flex w-16 items-center justify-center sm:hidden transition-opacity duration-200"
+        style={{ opacity: open ? 1 : 0 }}
+      >
+        <button
+          onClick={() => { onHide(); setOpen(false) }}
+          className="flex h-9 w-9 items-center justify-center rounded-full
+                     text-red-500 bg-red-50 dark:bg-red-950/60 dark:text-red-400
+                     hover:bg-red-100 dark:hover:bg-red-900/60 transition-colors"
+          aria-label="Sakrij termin"
+        >
+          <IconClose className="h-4 w-4" />
+        </button>
+      </div>
+      <div
+        {...handlers}
+        className="transition-transform duration-200 sm:transform-none"
+        style={{ transform: open ? 'translateX(-64px)' : 'translateX(0)' }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function useSubjectColors(entries: ScheduleEntry[]) {
+  const map: Record<string, number> = {}
+  let i = 0
+  for (const e of entries) {
+    if (!(e.subject in map)) {
+      map[e.subject] = i % COLORS.length
+      i++
+    }
+  }
+  return map
+}
+
+export default function RasporedPage() {
+  const router = useRouter()
+  const [entries, setEntries] = useState<ScheduleEntry[]>([])
+  const [hiddenEntries, setHiddenEntries] = useState<ScheduleEntry[]>([])
+  const [loaded, setLoaded] = useState(false)
+  const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
+  const [showIcsHelp, setShowIcsHelp] = useState(false)
+  const [showDownloadToast, setShowDownloadToast] = useState(false)
+
+  const isMobile = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') return () => { }
+      window.addEventListener('resize', onStoreChange)
+      return () => window.removeEventListener('resize', onStoreChange)
+    },
+    () => window.innerWidth < 640,
+    () => true   // mobile-first: pre hidracije pretpostavi telefon → lista
+  )
+  const isDark = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === 'undefined') return () => { }
+      const observer = new MutationObserver(onStoreChange)
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+      return () => observer.disconnect()
+    },
+    () => document.documentElement.classList.contains('dark'),
+    () => false
+  )
+  const isHydrated = useSyncExternalStore(
+    () => () => { },
+    () => true,
+    () => false
+  )
+
+  const view: 'grid' | 'list' = manualView ?? (isMobile ? 'list' : 'grid')
+  const meta = isHydrated
+    ? {
+      group: sessionStorage.getItem('fon_group') ?? '',
+      year: sessionStorage.getItem('fon_year') ?? '',
+      lastName: sessionStorage.getItem('fon_lastName') ?? '',
+      semester: sessionStorage.getItem('fon_semester') ?? '',
+      program: sessionStorage.getItem('fon_program') ?? '',
+    }
+    : { group: '', year: '', lastName: '', semester: '', program: '' }
+
+  useEffect(() => {
+    if (!isHydrated) return
+
+    if (!meta.group || !meta.year) {
+      router.replace('/')
+      return
+    }
+
+    fetch(`/data/${meta.year}god.json`)
+      .then(r => r.json())
+      .then((data: SemesterData) => {
+        const all = getScheduleForGroup(data, meta.group)
+        const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
+        const checked: Record<string, boolean> = saved ? JSON.parse(saved) : {}
+        let base = saved ? all.filter(e => checked[e.subject] !== false) : all
+
+        const extraRaw = localStorage.getItem(`fon_extra_${meta.group}`)
+        const extra: ScheduleEntry[] = extraRaw ? JSON.parse(extraRaw) : []
+
+        // MAGIJA: Filtriramo iz base:
+        // 1. Termine koje preneseni predmeti gaze po vremenu (isti dan i vreme)
+        // 2. Originalne termine istog predmeta i tipa (P/V) ako smo mu dodali novi termin
+        base = base.filter(b => {
+          const gaziGaVreme = extra.some(ex => ex.day === b.day && ex.start === b.start)
+          const gaziGaPredmet = extra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
+          return !gaziGaVreme && !gaziGaPredmet
+        })
+        const merged = [...base]
+        for (const item of extra) {
+          const exists = merged.some(e =>
+            e.subject === item.subject &&
+            e.day === item.day &&
+            e.start === item.start &&
+            e.type_short === item.type_short &&
+            e.room === item.room
+          )
+          if (!exists) merged.push(item)
+        }
+
+        setEntries(merged)
+        setLoaded(true)
+
+        const hiddenRaw = localStorage.getItem(`fon_hidden_${meta.group}`)
+        if (hiddenRaw) setHiddenEntries(JSON.parse(hiddenRaw))
+      })
+  }, [isHydrated, meta.group, meta.year, router])
+  function toggleTheme() {
+    const root = document.documentElement
+    const willBeDark = !root.classList.contains('dark')
+    root.classList.toggle('dark', willBeDark)
+    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+  }
+
+  const colorMap = useSubjectColors(entries)
+
+  const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(entryKey)), [hiddenEntries])
+  const visibleEntries = useMemo(() => entries.filter(e => !hiddenKeys.has(entryKey(e))), [entries, hiddenKeys])
+
+  function hideEntry(e: ScheduleEntry) {
+    const key = entryKey(e)
+    if (hiddenKeys.has(key)) return
+    const next = [...hiddenEntries, e]
+    setHiddenEntries(next)
+    localStorage.setItem(`fon_hidden_${meta.group}`, JSON.stringify(next))
+  }
+
+  function downloadPNG() {
+    const canvas = document.createElement('canvas')
+    const dpr = 2
+    const colW = 160
+    const rowH = 80
+    const headerH = 32
+    const timeW = 56
+    const padding = 16
+
+    canvas.width = (timeW + colW * 5 + padding * 2) * dpr
+    canvas.height = (headerH + rowH * SLOTS.length + padding * 2) * dpr
+
+    const ctx = canvas.getContext('2d')!
+    ctx.scale(dpr, dpr)
+
+    // Pozadina
+    ctx.fillStyle = '#f9fafb'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Grid area bela
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(padding + timeW, padding, colW * 5, headerH + rowH * SLOTS.length)
+
+    // Dan headeri
+    const dayNames = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet']
+    dayNames.forEach((d, i) => {
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '500 11px system-ui, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(d, padding + timeW + colW * i + colW / 2, padding + 20)
+    })
+
+    // Grid linije
+    ctx.strokeStyle = '#f3f4f6'
+    ctx.lineWidth = 1
+
+    SLOTS.forEach((_, si) => {
+      const y = padding + headerH + rowH * si
+      ctx.beginPath()
+      ctx.moveTo(padding + timeW, y)
+      ctx.lineTo(padding + timeW + colW * 5, y)
+      ctx.stroke()
+    })
+
+    dayNames.forEach((_, di) => {
+      const x = padding + timeW + colW * di
+      ctx.beginPath()
+      ctx.moveTo(x, padding + headerH)
+      ctx.lineTo(x, padding + headerH + rowH * SLOTS.length)
+      ctx.stroke()
+    })
+
+    // Vreme i blokovi
+    SLOTS.forEach((slot, si) => {
+      const y = padding + headerH + rowH * si
+
+      // Vreme label
+      ctx.fillStyle = '#9ca3af'
+      ctx.font = '11px system-ui, sans-serif'
+      ctx.textAlign = 'right'
+      ctx.fillText(slot, padding + timeW - 6, y + 16)
+
+      DAYS.forEach((day, di) => {
+        const x = padding + timeW + colW * di
+        const cell = visibleEntries.filter(e => e.day === day && e.start === slot)
+
+        if (!cell.length) return
+
+        const blockH = (rowH - 8) / cell.length
+
+        cell.forEach((e, bi) => {
+          const c = COLORS[colorMap[e.subject]]
+          const bx = x + 3
+          const by = y + 4 + blockH * bi
+          const bw = colW - 6
+          const bh = blockH - 3
+
+          // Blok pozadina
+          ctx.fillStyle = c.bg
+          ctx.beginPath()
+          ctx.roundRect(bx, by, bw, bh, 6)
+          ctx.fill()
+
+          // Naziv predmeta
+          ctx.fillStyle = c.text
+          ctx.font = '500 10px system-ui, sans-serif'
+          ctx.textAlign = 'left'
+
+          // Wrap tekst
+          const words = e.subject.split(' ')
+          let line = ''
+          let lineY = by + 13
+          for (const word of words) {
+            const test = line + word + ' '
+            if (ctx.measureText(test).width > bw - 8 && line) {
+              ctx.fillText(line.trim(), bx + 5, lineY)
+              line = word + ' '
+              lineY += 12
+              if (lineY > by + bh - 8) break
+            } else {
+              line = test
+            }
+          }
+          if (line) ctx.fillText(line.trim(), bx + 5, lineY)
+
+          // Tip i sala
+          ctx.fillStyle = c.text
+          ctx.globalAlpha = 0.7
+          ctx.font = '10px system-ui, sans-serif'
+          ctx.fillText(`${e.type_short} · ${e.room}`, bx + 5, by + bh - 5)
+          ctx.globalAlpha = 1
+        })
+      })
+    })
+
+    // Header info
+    ctx.fillStyle = '#111827'
+    ctx.font = '500 13px system-ui, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(`${meta.lastName} · Grupa ${meta.group} · ${meta.semester}`, padding + timeW, padding - 4)
+
+    const link = document.createElement('a')
+    link.download = `raspored-${meta.group}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+    setShowDownloadToast(true)
+    setTimeout(() => setShowDownloadToast(false), 3000)
+  }
+
+  function downloadICS() {
+    const lines: string[] = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//FON Raspored//SR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+    ]
+
+    // Datum prvog ponedeljka tekuće sedmice
+    const today = new Date()
+    const monday = new Date(today)
+    monday.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+
+    visibleEntries.forEach(e => {
+      const offset = DAY_OFFSET[e.day]
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + offset)
+
+      const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '')
+
+      const [startH, startM] = e.start.split(':')
+      const [endH, endM] = e.end.split(':')
+
+      const dtstart = `${dateStr}T${startH}${startM}00`
+      const dtend = `${dateStr}T${endH}${endM}00`
+
+      const uid = `${dateStr}-${e.subject.replace(/\s/g, '')}-${e.type_short}@fonraspored`
+
+      lines.push('BEGIN:VEVENT')
+      lines.push(`UID:${uid}`)
+      lines.push(`DTSTART;TZID=Europe/Belgrade:${dtstart}`)
+      lines.push(`DTEND;TZID=Europe/Belgrade:${dtend}`)
+      lines.push(`SUMMARY:${e.subject} [${e.type_short}]`)
+      lines.push(`LOCATION:Sala ${e.room}`)
+      lines.push(`DESCRIPTION:Grupa ${meta.group}`)
+      const now = new Date()
+      const isLetnji = now.getMonth() >= 1 && now.getMonth() <= 7
+      const endDate = isLetnji
+        ? `${now.getFullYear()}0630T235959Z`
+        : `${now.getFullYear()}0131T235959Z`
+
+      lines.push(`RRULE:FREQ=WEEKLY;UNTIL=${endDate}`)
+      lines.push('END:VEVENT')
+    })
+
+    lines.push('END:VCALENDAR')
+
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const link = document.createElement('a')
+    link.download = `raspored-${meta.group}.ics`
+    link.href = URL.createObjectURL(blob)
+    link.click()
+
+
+  }
+
+  // Export akcije (skidanje slike / kalendar) — NISU navigacija, stoje uz kontrole
+  const exportActions = [
+    { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: downloadPNG },
+    { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
+  ]
+  // Navigacija — donji tab-bar na mobilnom
+  const navActions = [
+    { key: 'izmena', short: 'Izmena', long: 'Izmena termina', Icon: IconEdit, onClick: () => router.push('/preneseni') },
+    { key: 'ispiti', short: 'Rokovi', long: 'Rokovi', Icon: IconExam, onClick: () => router.push('/rokovi') },
+  ]
+
+  const isLoading = !isHydrated || !loaded
+  const isEmpty = loaded && visibleEntries.length === 0
+
+  return (
+    <>
+      {/* ---------- Sticky header ---------- */}
+      <header>
+        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6">
+
+          {/* Naslov + tema + FON */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                Grupa {meta.group || '—'}
+              </h1>
+              <p className="mt-0.5 truncate text-sm text-gray-500 dark:text-gray-400">
+                {meta.program && `${meta.program} · `}{meta.semester}
+              </p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium text-gray-600 dark:text-gray-300 sm:w-auto sm:px-3 sm:py-2 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                aria-label="Nazad"
+              >
+                <IconBack className="h-4 w-4 opacity-80" />
+                <span className="hidden sm:inline">Nazad</span>
+              </button>
+              <button
+                onClick={toggleTheme}
+                aria-label="Promeni temu"
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              >
+                <IconMoon className="h-[18px] w-[18px] dark:hidden" />
+                <IconSun className="hidden h-[18px] w-[18px] dark:block" />
+              </button>
+              <a
+                href="https://oas.fon.bg.ac.rs/raspored-nastave/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#024c7d]/20 dark:border-[#60c3ad]/25
+                           bg-[#024c7d]/10 dark:bg-[#60c3ad]/10 px-3 py-2 text-xs font-semibold backdrop-blur-2xl
+                           text-[#024c7d] dark:text-[#60c3ad] hover:bg-[#024c7d]/15 dark:hover:bg-[#60c3ad]/15 transition-colors"
+              >
+                FON <IconExternal className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* Prikaz (Lista/Sedmica) + export + desktop toolbar */}
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <div className={`inline-flex rounded-full p-1 ${GLASS}`}>
+              {([['list', 'Lista', IconList], ['grid', 'Sedmica', IconWeek]] as const).map(([v, label, Icon]) => (
+                <button
+                  key={v}
+                  onClick={() => setManualView(v)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                    ${view === v
+                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Export (mobilni): male staklene ikonice */}
+            <div className="flex items-center gap-2 sm:hidden">
+              {exportActions.map(({ key, long, Icon, onClick }) => (
+                <button
+                  key={key}
+                  onClick={onClick}
+                  aria-label={long}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                >
+                  <Icon className="h-[18px] w-[18px]" />
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop toolbar */}
+            <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex">
+              <div className="flex items-center gap-2">
+                {exportActions.map(({ key, long, Icon, onClick }) => (
+                  <button
+                    key={key}
+                    onClick={onClick}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                  >
+                    <Icon className="h-4 w-4 opacity-80" />
+                    {long}
+                  </button>
+                ))}
+              </div>
+              <div className="mx-1 h-6 w-px bg-white/70 dark:bg-white/15" />
+              <div className="flex items-center gap-2">
+                {navActions.map(({ key, long, Icon, onClick }) => (
+                  <button
+                    key={key}
+                    onClick={onClick}
+                    className={key === 'ispiti'
+                      ? 'inline-flex items-center gap-1.5 rounded-lg border border-[#024c7d]/20 bg-[#024c7d]/10 px-3.5 py-1.5 text-xs font-semibold text-[#024c7d] shadow-sm transition-colors hover:bg-[#024c7d]/15 dark:border-[#60c3ad]/25 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15'
+                      : `inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                  >
+                    <Icon className="h-4 w-4 opacity-80" />
+                    {long}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ---------- Sadržaj ---------- */}
+      <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
+
+        {isLoading ? (
+          <div className="space-y-2.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className={`h-[78px] rounded-2xl ${GLASS} animate-pulse`} />
+            ))}
+          </div>
+        ) : isEmpty ? (
+          <div className={`mx-auto mt-10 max-w-sm rounded-2xl border-dashed p-8 text-center ${GLASS}`}>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Nema termina za prikaz</p>
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Svi termini su sakriveni ili predmeti nisu izabrani. Proveri korak „2. Predmeti“.
+            </p>
+            <Link
+              href="/izborni"
+              className="mt-4 inline-flex rounded-lg bg-[#024c7d] px-4 py-2 text-xs font-medium text-white
+                         hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
+            >
+              Izaberi predmete
+            </Link>
+          </div>
+        ) : view === 'grid' ? (
+          <div className="overflow-hidden">
+            <div id="raspored-grid">
+
+              {/* Day headers */}
+              <div className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1">
+                <div />
+                {DAYS.map(d => (
+                  <div key={d} className="text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 py-1 sm:text-xs">
+                    {DAY_SHORT[d]}
+                  </div>
+                ))}
+              </div>
+
+              {/* Slots */}
+              {SLOTS.map(slot => (
+                <div
+                  key={slot}
+                  className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1"
+                >
+                  <div className="text-right pr-1 pt-1 text-[9px] text-gray-400 dark:text-gray-500 leading-tight sm:pr-2 sm:pt-1.5 sm:text-xs">
+                    {slot}
+                  </div>
+                  {DAYS.map(day => {
+                    const cell = visibleEntries.filter(e => e.day === day && e.start === slot)
+                    if (!cell.length) {
+                      return <div key={day} className="min-h-11 rounded-lg bg-gray-100/60 dark:bg-gray-800/60 border border-gray-200 dark:border-0 outline-none sm:min-h-20" />
+                    }
+                    return (
+                      <div key={day} className="flex flex-col gap-0.5 sm:gap-1">
+                        {cell.map((e, i) => {
+                          const c = COLORS[colorMap[e.subject]]
+                          return (
+                            <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="group/card flex-1 rounded-lg p-1.5 min-h-11 relative sm:min-h-20 sm:p-2.5">
+                              <button
+                                onClick={() => hideEntry(e)}
+                                style={{ color: isDark ? c.darkText : c.text }}
+                                className="absolute top-1 right-1 hidden w-4 h-4 rounded items-center justify-center opacity-0 group-hover/card:opacity-60 hover:opacity-100! transition-opacity text-[10px] leading-none bg-black/10 dark:bg-white/10 sm:flex"
+                              >
+                                ✕
+                              </button>
+                              <p style={{ color: isDark ? c.darkText : c.text }} className="text-[10px] font-medium leading-snug line-clamp-2 sm:text-xs sm:pr-4">
+                                {e.subject}
+                              </p>
+                              <p style={{ color: isDark ? c.darkText : c.text }} className="text-[9px] mt-0.5 opacity-70 truncate sm:text-xs sm:mt-1">
+                                {e.type_short} · {e.room}
+                              </p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {DAYS.map(day => {
+              const dayEntries = visibleEntries
+                .filter(e => e.day === day)
+                .sort((a, b) => a.start.localeCompare(b.start))
+
+              if (!dayEntries.length) return null
+
+              return (
+                <div key={day}>
+                  <h2 className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider
+                                 mb-2 pb-2 border-b border-gray-200 dark:border-gray-800">
+                    {day}
+                  </h2>
+                  <div className="space-y-1">
+                    {dayEntries.map((e, i) => {
+                      const c = COLORS[colorMap[e.subject]]
+                      return (
+                        <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
+                          <div className="flex items-center gap-2 py-2.5 border-b border-gray-100 dark:border-gray-800 sm:gap-3">
+                            <span className="text-xs font-medium text-gray-500 dark:text-gray-300 tabular-nums w-[72px] shrink-0 sm:w-24">
+                              {SLOT_LABEL[e.start]}
+                            </span>
+                            <div className="w-1 self-stretch rounded-full" style={{ background: c.bar }} />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">
+                                {e.subject}
+                              </span>
+                              <span className="text-xs text-gray-400 dark:text-gray-500">
+                                {e.room}
+                              </span>
+                            </div>
+                            <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0">
+                              {e.type_short}
+                            </span>
+                            <button
+                              onClick={() => hideEntry(e)}
+                              className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </SwipeableListItem>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </main>
+
+      {/* ICS tutorial modal */}
+      {showIcsHelp && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+          onClick={() => setShowIcsHelp(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
+              Kako dodati u kalendar
+            </h2>
+
+            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">1</span>
+                <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">2</span>
+                <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">3</span>
+                <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">4</span>
+                <p>Na telefonu: pronađi fajl u Downloads i klikni na njega — kalendar će se otvoriti automatski.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowIcsHelp(false)}
+              className="mt-6 w-full rounded-lg py-2.5 text-sm font-medium active:scale-[0.97]
+                         bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                         dark:hover:bg-[#4db3a0] transition-colors"
+            >
+              Razumem
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showDownloadToast && (
+        <div className="fixed bottom-28 left-1/2 z-[100] -translate-x-1/2 animate-bounce sm:bottom-6">
+          <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-xl dark:bg-gray-100 dark:text-gray-900">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/20 text-green-400 dark:text-green-600">
+              ✓
+            </span>
+            Slika rasporeda je uspešno preuzeta!
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
