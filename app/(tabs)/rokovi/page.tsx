@@ -757,7 +757,7 @@ export default function RokoviPage() {
               <button
                 key={t}
                 onClick={() => { setTab(t); setTooltip(null) }}
-                className={`relative pb-2 text-sm font-semibold transition-colors capitalize
+                className={`no-hover-lift relative pb-2 text-sm font-semibold transition-colors capitalize
                   ${tab === t
                     ? 'text-[#024c7d] dark:text-[#60c3ad]'
                     : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'}`}
@@ -784,7 +784,7 @@ export default function RokoviPage() {
                 {tab === 'kolokvijumi' ? 'Prijava predispitnih obaveza' : 'Prijava ispita'}
               </p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                {prijavaNotice.rok} · {prijavaNotice.prijava_datumi!.join(' i ')}
+                {prijavaNotice.rok} · {prijavaNotice.prijava_datumi!.join(' - ')}
                 {prijavaNotice.reklamacija_datum && ` · Reklamacije: ${prijavaNotice.reklamacija_datum}`}
               </p>
             </div>

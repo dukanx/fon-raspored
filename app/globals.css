@@ -108,7 +108,8 @@ a[href]:hover {
   transition: box-shadow 0.15s ease, transform 0.1s ease;
 }
 
-.no-hover-lift:hover {
+.no-hover-lift:hover,
+.no-hover-lift:active {
   box-shadow: none !important;
   transform: none !important;
 }
