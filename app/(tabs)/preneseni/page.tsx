@@ -209,6 +209,13 @@ export default function PreneseniPage() {
     setDodato(false)
   }
 
+  function toggleManualOpen() {
+    setManualOpen(open => {
+      if (open) clearSelectedSubject()
+      return !open
+    })
+  }
+
   function handlePrevSubjectClick(item: { year: number; subject: string }) {
     if (godina === item.year && odabraniPredmet === item.subject) {
       clearSelectedSubject()
@@ -407,7 +414,7 @@ export default function PreneseniPage() {
           <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
             <button
               type="button"
-              onClick={() => setManualOpen(v => !v)}
+              onClick={toggleManualOpen}
               className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
             >
               <div>

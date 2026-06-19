@@ -135,7 +135,7 @@ export default function IzbornoPage() {
           <button
             type="button"
             onClick={() => setPrevOpen(v => !v)}
-            className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left"
+            className="no-hover-lift flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left"
           >
             <span className="text-xs w-2">{prevOpen ? '▾' : '▸'}</span>
             <span>Predmeti iz prošlih godina</span>
@@ -160,8 +160,8 @@ export default function IzbornoPage() {
                     onClick={() => handlePrevGodina(g)}
                     className={`py-1.5 rounded-full text-xs font-medium border transition-colors
                       ${prevGodina === g
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                        : 'bg-white/70 text-gray-600 border-white/70 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/15'}`}
+                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm ring-1 ring-[#024c7d]/25 dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad] dark:ring-[#60c3ad]/25'
+                        : 'bg-white/70 text-gray-600 border-[#024c7d]/25 ring-1 ring-[#024c7d]/10 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/25 dark:ring-white/10'}`}
                   >
                     {g}. god
                   </button>

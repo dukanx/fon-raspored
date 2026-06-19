@@ -35,8 +35,8 @@ export default function BottomNav() {
   const router = useRouter()
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:hidden">
-      <div className="liquid-glass pointer-events-auto mx-auto flex max-w-md items-stretch gap-1 rounded-[1.75rem] px-2 py-1.5">
+    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)] sm:hidden">
+      <div className="liquid-glass pointer-events-auto mx-auto flex max-w-md items-stretch gap-1 rounded-[2rem] px-2 py-1.5">
         {TABS.map(({ key, href, short, Icon }) => {
           const active = pathname === href
           return (
@@ -47,7 +47,7 @@ export default function BottomNav() {
                   ? window.scrollTo({ top: 0, behavior: 'smooth' })
                   : router.push(href)
               }
-              className={`relative flex flex-1 flex-col items-center gap-0.5 rounded-[1.375rem] px-2 py-1.5 transition-colors duration-300 ${
+              className={`relative flex flex-1 flex-col items-center gap-0.5 rounded-[1.5625rem] px-2 py-1.5 transition-colors duration-300 ${
                 active
                   ? 'text-[#024c7d] dark:text-[#60c3ad]'
                   : 'text-gray-500 dark:text-gray-400 active:scale-90 transition-transform'
@@ -56,7 +56,7 @@ export default function BottomNav() {
               {active && (
                 <motion.span
                   layoutId="navPill"
-                  className="absolute inset-0 rounded-[1.375rem] bg-[#024c7d]/10 dark:bg-[#60c3ad]/15"
+                  className="absolute inset-0 rounded-[1.5625rem] bg-[#024c7d]/10 dark:bg-[#60c3ad]/15"
                   transition={{ type: 'spring', stiffness: 420, damping: 36 }}
                 />
               )}
