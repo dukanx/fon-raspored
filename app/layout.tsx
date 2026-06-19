@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://fon-raspored-five.vercel.app'),
   title: "FON Raspored",
   description: "Lični raspored nastave za studente FON-a",
   icons: {
@@ -31,7 +32,13 @@ export const metadata: Metadata = {
     description: 'Unesi prezime i dobij lični raspored nastave',
     url: 'https://fon-raspored-five.vercel.app',
     siteName: 'FON Raspored',
-    images: [{ url: 'https://fon-raspored-five.vercel.app/og-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/linkPic.png', width: 1536, height: 1024, alt: 'FON Raspored' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FON Raspored',
+    description: 'Unesi prezime i dobij lični raspored nastave',
+    images: ['/linkPic.png'],
   },
 }
 
