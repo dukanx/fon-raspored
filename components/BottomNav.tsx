@@ -43,9 +43,15 @@ export default function BottomNav() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
       const delta = currentScrollY - lastScrollY.current
+      const scrollingElement = document.scrollingElement ?? document.documentElement
+      const maxScrollY = scrollingElement.scrollHeight - window.innerHeight
+      const isNearBottom = maxScrollY - currentScrollY < 96
+      const wasNearBottom = maxScrollY - lastScrollY.current < 96
 
       if (currentScrollY < 24) {
         setIsCompact(false)
+        lastScrollY.current = currentScrollY
+      } else if (delta < 0 && isNearBottom && wasNearBottom) {
         lastScrollY.current = currentScrollY
       } else if (Math.abs(delta) > 6) {
         setIsCompact(delta > 0)
