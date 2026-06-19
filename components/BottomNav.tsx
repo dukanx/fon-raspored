@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
 
@@ -33,10 +34,45 @@ const TABS = [
 export default function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
+  const [isCompact, setIsCompact] = useState(false)
+  const lastScrollY = useRef(0)
+
+  useEffect(() => {
+    lastScrollY.current = window.scrollY
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const delta = currentScrollY - lastScrollY.current
+
+      if (currentScrollY < 24) {
+        setIsCompact(false)
+        lastScrollY.current = currentScrollY
+      } else if (Math.abs(delta) > 6) {
+        setIsCompact(delta > 0)
+        lastScrollY.current = currentScrollY
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)] sm:hidden">
-      <div className="liquid-glass pointer-events-auto mx-auto flex max-w-md items-stretch gap-1 rounded-[2rem] px-2 py-1.5">
+    <nav
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 transition-[padding] duration-300 sm:hidden ${
+        isCompact
+          ? 'px-12 pb-[calc(env(safe-area-inset-bottom)+0.35rem)]'
+          : 'px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)]'
+      }`}
+    >
+      <div
+        className={`liquid-glass pointer-events-auto mx-auto flex items-stretch transition-all duration-300 ${
+          isCompact
+            ? 'max-w-64 gap-0.5 rounded-[1.65rem] px-1.5 py-1'
+            : 'max-w-md gap-1 rounded-[2rem] px-2 py-1.5'
+        }`}
+      >
         {TABS.map(({ key, href, short, Icon }) => {
           const active = pathname === href
           return (
@@ -47,7 +83,11 @@ export default function BottomNav() {
                   ? window.scrollTo({ top: 0, behavior: 'smooth' })
                   : router.push(href)
               }
-              className={`relative flex flex-1 flex-col items-center gap-0.5 rounded-[1.5625rem] px-2 py-1.5 transition-colors duration-300 ${
+              className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
+                isCompact ? 'gap-0 py-1' : 'gap-0.5 py-1.5'
+              } ${
+                isCompact ? 'px-1.5' : 'px-2'
+              } ${
                 active
                   ? 'text-[#024c7d] dark:text-[#60c3ad]'
                   : 'text-gray-500 dark:text-gray-400 active:scale-90 transition-transform'
@@ -60,8 +100,18 @@ export default function BottomNav() {
                   transition={{ type: 'spring', stiffness: 420, damping: 36 }}
                 />
               )}
-              <Icon className="relative h-[22px] w-[22px]" />
-              <span className={`relative text-[10px] ${active ? 'font-semibold' : 'font-medium'}`}>{short}</span>
+              <Icon
+                className={`relative transition-all duration-300 ${
+                  isCompact ? 'h-5 w-5' : 'h-[22px] w-[22px]'
+                }`}
+              />
+              <span
+                className={`relative overflow-hidden text-[10px] transition-all duration-300 ${
+                  isCompact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100'
+                } ${active ? 'font-semibold' : 'font-medium'}`}
+              >
+                {short}
+              </span>
             </button>
           )
         })}
