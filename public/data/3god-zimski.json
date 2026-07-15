@@ -1,0 +1,1628 @@
+{
+  "semester": "Zimski 2025/26",
+  "year": 3,
+  "groups": {},
+  "entries": [
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "13"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C15",
+        "C17",
+        "C18"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "30"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "12"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1",
+        "C2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1",
+        "C2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "C19",
+        "C21",
+        "C22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C5",
+        "C6",
+        "C7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C15",
+        "C17",
+        "C18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "30"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1",
+        "C2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3",
+        "C4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "09"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "30"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "C19",
+        "C21",
+        "C22"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Teorija sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C5",
+        "C6",
+        "C7"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3",
+        "C4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3",
+        "C4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "08"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11",
+        "C15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "14"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C3"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "30"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "50"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Industrijsko i menadžment inženjerstvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "C19"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Lean logistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C19",
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Lin proizvodnja i usluge",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C13",
+        "C21",
+        "C22"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "10:15",
+      "end": "11:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija odlučivanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C15",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "14"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "10:15",
+      "end": "11:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "11:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "11:15",
+      "end": "12:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljački sistemi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "15"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "12"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Korporativne komunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C17",
+        "C18",
+        "D8",
+        "D15",
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C7"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "14"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "13:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "13:15",
+      "end": "14:00",
+      "room": "19"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "12"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "14"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C17",
+        "C18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "16"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "14"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje kvalitetom",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "60"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Teorija odlučivanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C17",
+        "C18",
+        "C21",
+        "C22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje kvalitetom",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C15"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "11"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11",
+        "C15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "17"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C22"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "14"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "61"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "60"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "20"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "21"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C2"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "16"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Lin proizvodnja i usluge",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C22"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C11",
+        "C15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Lin proizvodnja i usluge",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija odlučivanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C22"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Projektovanje softvera",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "11:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "11:15",
+      "end": "12:00",
+      "room": "19"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Upravljanje projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C11",
+        "C13",
+        "C15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Projektovanje softvera",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C5",
+        "C6",
+        "C7"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "14:15",
+      "end": "15:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Industrijsko i menadžment inženjerstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C3"
+      ],
+      "start": "14:15",
+      "end": "15:00",
+      "room": "19"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C1",
+        "C2"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "50"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Lin proizvodnja i usluge",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "C5",
+        "C6",
+        "C7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Lean logistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C19",
+        "D15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "17"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Industrijsko i menadžment inženjerstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C13"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje informacionih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "15"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "21"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "07"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "06"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "15"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6",
+        "C7"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "21"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6",
+        "C7"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "06"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računarske mreže i telekomunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6",
+        "C7"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "07"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C6"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "12:15",
+      "end": "13:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C5"
+      ],
+      "start": "12:15",
+      "end": "13:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje softvera",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18",
+        "C19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "13:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C4"
+      ],
+      "start": "13:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "13"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljački sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljački sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove finansijskog menadžmenta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "20"
+    },
+    {
+      "day": "Petak",
+      "subject": "Operaciona istraživanja 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "C18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "18"
+    }
+  ]
+}

@@ -84,6 +84,22 @@ function rokEntryKey(e: RokEntry) {
   return `${e.date}|${e.start}|${e.subject}|${e.type ?? ''}`
 }
 
+// Dodaje predmete drugog semestra u set za filtriranje rokova:
+// - fon_other_sem_${group}: predmeti drugog semestra koje je student ručno štiklirao
+// - fon_subjects_history: akumulirani izbor po semestrima (za mešane Sep/Okt rokove)
+function addOtherSemesterSubjects(set: Set<string>, group: string) {
+  const other = localStorage.getItem(`fon_other_sem_${group}`)
+  if (other) {
+    for (const s of JSON.parse(other) as string[]) set.add(s)
+  }
+  const hist = localStorage.getItem('fon_subjects_history')
+  if (hist) {
+    for (const arr of Object.values(JSON.parse(hist) as Record<string, string[]>)) {
+      for (const s of arr) set.add(s)
+    }
+  }
+}
+
 function escapeICS(s: string) {
   return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
 }
@@ -196,6 +212,7 @@ export default function RokoviPage() {
         if (subjectSet && prev) {
           for (const e of JSON.parse(prev) as { subject: string }[]) subjectSet.add(e.subject)
         }
+        if (subjectSet && meta.group) addOtherSemesterSubjects(subjectSet, meta.group)
 
         const nearestDate = (tip: string) =>
           data
@@ -245,6 +262,7 @@ export default function RokoviPage() {
           const prevEntries: { subject: string }[] = JSON.parse(prev)
           for (const e of prevEntries) subjects.add(e.subject)
         }
+        addOtherSemesterSubjects(subjects, meta.group)
         return subjects
       })()
     : null

@@ -112,20 +112,19 @@ def build_year(raspored_url, grupe_url, year, semester_str):
     }
 
 
-def load_existing(year):
+def load_existing(path):
     import json
-    path = DATA_DIR / f"{year}god.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
 
 
-def check_regression(year, new):
-    """Vraća listu problema (prazno = OK) poredeći sa postojećim god.json."""
+def check_regression(new, compare_path):
+    """Vraća listu problema (prazno = OK) poredeći sa postojećim fajlom."""
     problems = []
     if not new["entries"]:
         problems.append("0 stavki u rasporedu")
-    old = load_existing(year)
+    old = load_existing(compare_path)
     if old:
         old_subj = {e["subject"] for e in old["entries"]}
         new_subj = {e["subject"] for e in new["entries"]}
@@ -149,6 +148,8 @@ def main():
     ap.add_argument("--years", default="1,2,3,4", help="Godine, npr. '4' ili '1,2,3,4'")
     ap.add_argument("--force", action="store_true",
                     help="Upiši i pored regresije (preskače sigurnosnu proveru)")
+    ap.add_argument("--archive-only", action="store_true",
+                    help="Upiši samo god-{semestar}.json arhivu; ne diraj god.json (backfill)")
     args = ap.parse_args()
 
     semester = args.semester or auto_semester()
@@ -170,7 +171,10 @@ def main():
         print(f"  raspored: {pdfs[y]['raspored'].split('/')[-1]}", file=sys.stderr)
         print(f"  grupe:    {(pdfs[y]['grupe'] or '???').split('/')[-1]}", file=sys.stderr)
         res = build_year(pdfs[y]["raspored"], pdfs[y]["grupe"], y, semester_str)
-        problems = check_regression(y, res)
+        compare_path = DATA_DIR / (
+            f"{y}god-{semester}.json" if args.archive_only else f"{y}god.json"
+        )
+        problems = check_regression(res, compare_path)
         n_subj = len({e["subject"] for e in res["entries"]})
         print(f"  -> stavki={len(res['entries'])} grupa={len(res['groups'])} predmeta={n_subj}",
               file=sys.stderr)
@@ -189,9 +193,16 @@ def main():
 
     import json
     for y, res in results.items():
-        path = DATA_DIR / f"{y}god.json"
-        path.write_text(json.dumps(res, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"Upisano: {path}", file=sys.stderr)
+        payload = json.dumps(res, ensure_ascii=False, indent=2)
+        # Arhiva po semestru — kroz akademsku godinu se nakupe i letnji i zimski,
+        # pa mešani Sep/Okt rokovi mogu da nude predmete oba semestra.
+        archive = DATA_DIR / f"{y}god-{semester}.json"
+        archive.write_text(payload, encoding="utf-8")
+        print(f"Upisano: {archive}", file=sys.stderr)
+        if not args.archive_only:
+            path = DATA_DIR / f"{y}god.json"
+            path.write_text(payload, encoding="utf-8")
+            print(f"Upisano: {path}", file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -18,6 +18,7 @@ export default function IzbornoPage() {
   const year = isHydrated ? (sessionStorage.getItem('fon_year') ?? '') : ''
   const [subjects, setSubjects] = useState<string[]>([])
   const [checked, setChecked] = useState<Record<string, boolean>>({})
+  const [semester, setSemester] = useState<string>('')
 
   const [prevOpen, setPrevOpen] = useState(false)
   const [prevGodina, setPrevGodina] = useState<number | null>(null)
@@ -26,6 +27,18 @@ export default function IzbornoPage() {
   const [prevLoading, setPrevLoading] = useState(false)
   const [prevSelected, setPrevSelected] = useState<{ year: number; subject: string }[]>([])
 
+  // Predmeti iz drugog semestra (za mešane septembarski/oktobarski rok)
+  const [otherOpen, setOtherOpen] = useState(false)
+  const [otherSubjects, setOtherSubjects] = useState<string[]>([])
+  const [otherSearch, setOtherSearch] = useState('')
+  const [otherLoading, setOtherLoading] = useState(false)
+  const [otherLoaded, setOtherLoaded] = useState(false)
+  const [otherSelected, setOtherSelected] = useState<string[]>([])
+
+  // "Letnji 2025/26" -> zimski je drugi semestar (i obrnuto)
+  const otherSemWord = semester.toLowerCase().startsWith('letnji') ? 'zimski' : 'letnji'
+  const otherSemLabel = otherSemWord === 'zimski' ? 'zimskog' : 'letnjeg'
+
   useEffect(() => {
     if (!isHydrated) return
     if (!group || !year) { router.replace('/'); return }
@@ -33,6 +46,7 @@ export default function IzbornoPage() {
     fetch(`/data/${year}god.json`)
       .then(r => r.json())
       .then((data: SemesterData) => {
+        setSemester(data.semester)
         const entries = getScheduleForGroup(data, group)
         const unique = [...new Set(entries.map(e => e.subject))].sort()
         setSubjects(unique)
@@ -55,6 +69,15 @@ export default function IzbornoPage() {
         if (parsed.length > 0) setPrevOpen(true)
       })
     }
+
+    const savedOther = localStorage.getItem(`fon_other_sem_${group}`)
+    if (savedOther) {
+      const parsed = JSON.parse(savedOther)
+      queueMicrotask(() => {
+        setOtherSelected(parsed)
+        if (parsed.length > 0) setOtherOpen(true)
+      })
+    }
   }, [group, isHydrated, router, year])
 
   useEffect(() => {
@@ -62,12 +85,46 @@ export default function IzbornoPage() {
     localStorage.setItem(`fon_prev_subjects_${group}`, JSON.stringify(prevSelected))
   }, [prevSelected, isHydrated, group])
 
+  useEffect(() => {
+    if (!isHydrated || !group) return
+    localStorage.setItem(`fon_other_sem_${group}`, JSON.stringify(otherSelected))
+  }, [otherSelected, isHydrated, group])
+
+  // Lenjivo učitaj predmete drugog semestra kad se sekcija prvi put otvori
+  function loadOtherSemester() {
+    if (otherLoaded || !year || !semester) return
+    setOtherLoading(true)
+    fetch(`/data/${year}god-${otherSemWord}.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .then((data: SemesterData | null) => {
+        if (data) {
+          setOtherSubjects([...new Set(data.entries.map(e => e.subject))].sort())
+        }
+        setOtherLoaded(true)
+      })
+      .catch(() => setOtherLoaded(true))
+      .finally(() => setOtherLoading(false))
+  }
+
+  function toggleOtherSubject(subject: string) {
+    setOtherSelected(prev =>
+      prev.includes(subject) ? prev.filter(s => s !== subject) : [...prev, subject]
+    )
+  }
+
   function toggle(subject: string) {
     setChecked(prev => ({ ...prev, [subject]: !prev[subject] }))
   }
 
   function handleConfirm() {
     localStorage.setItem(`fon_subjects_${group}`, JSON.stringify(checked))
+    // Akumuliraj izbor po semestru — mešani Sep/Okt rokovi uniraju oba semestra.
+    if (semester) {
+      const raw = localStorage.getItem('fon_subjects_history')
+      const hist: Record<string, string[]> = raw ? JSON.parse(raw) : {}
+      hist[semester] = Object.entries(checked).filter(([, v]) => v).map(([k]) => k)
+      localStorage.setItem('fon_subjects_history', JSON.stringify(hist))
+    }
     router.push('/raspored')
   }
 
@@ -219,6 +276,96 @@ export default function IzbornoPage() {
                       {s.year}. · {s.subject}
                       <button
                         onClick={() => togglePrevSubject(s.year, s.subject)}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 leading-none"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Predmeti iz drugog semestra (za septembarski/oktobarski rok) */}
+        <div className="mb-6 border-t border-white/75 pt-4 dark:border-white/15">
+          <button
+            type="button"
+            onClick={() => { setOtherOpen(v => !v); loadOtherSemester() }}
+            className="no-hover-lift flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left"
+          >
+            <span className="text-xs w-2">{otherOpen ? '▾' : '▸'}</span>
+            <span>Predmeti iz {otherSemLabel} semestra</span>
+            {otherSelected.length > 0 && (
+              <span className="ml-1 rounded-full bg-[#024c7d] px-1.5 py-0.5 text-[10px] font-medium leading-none text-white dark:bg-[#60c3ad] dark:text-[#024c7d]">
+                {otherSelected.length}
+              </span>
+            )}
+          </button>
+
+          {otherOpen && (
+            <div className="mt-3 space-y-3">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                U septembarskom i oktobarskom roku ima predmeta iz oba semestra.
+                Štikliraj one iz {otherSemLabel} semestra koje polažeš da bi im video termine.
+              </p>
+
+              {otherLoading ? (
+                <div className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+              ) : otherLoaded && otherSubjects.length === 0 ? (
+                <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                  Raspored {otherSemLabel} semestra još nije dostupan.
+                </p>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={otherSearch}
+                    onChange={e => setOtherSearch(e.target.value)}
+                    placeholder="Pretraži predmet..."
+                    className="w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm
+                               text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                               focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
+                               placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  />
+                  <div className="max-h-40 overflow-y-auto space-y-0.5">
+                    {otherSubjects
+                      .filter(p => p.toLowerCase().includes(otherSearch.toLowerCase()))
+                      .map(p => {
+                        const isSelected = otherSelected.includes(p)
+                        return (
+                          <label
+                            key={p}
+                            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleOtherSubject(p)}
+                              className="w-3.5 h-3.5 rounded accent-[#024c7d] dark:accent-[#60c3ad] shrink-0"
+                            />
+                            <span className={`text-xs ${isSelected ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+                              {p}
+                            </span>
+                          </label>
+                        )
+                      })}
+                  </div>
+                </>
+              )}
+
+              {otherSelected.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {otherSelected.map(s => (
+                    <span
+                      key={s}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium
+                                 bg-white/70 dark:bg-gray-800/65 text-gray-600 dark:text-gray-400"
+                    >
+                      {s}
+                      <button
+                        onClick={() => toggleOtherSubject(s)}
                         className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 leading-none"
                       >
                         ×
