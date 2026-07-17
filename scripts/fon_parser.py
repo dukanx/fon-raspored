@@ -167,8 +167,61 @@ def expand_groups(raw, groups_dict=None):
     return codes
 
 
+# Data-red bez naziva: počinje sa "P "/"V " i ima vreme — znak da se dug naziv
+# predmeta prelio u red iznad/ispod. Primer: "P A1,A2,A3 10:15-12:00 Amfiteatar 2"
+_SUBJECTLESS_DATA_RE = re.compile(r"^(P|V)\s+.+\d{1,2}:\d{2}-\d{1,2}:\d{2}")
+_TIME_RE = re.compile(r"\d{1,2}:\d{2}")
+
+
+def _is_subject_fragment(line):
+    """Red koji liči na (deo) naziva predmeta: bez vremena, bez P/V+grupa, ima slova."""
+    if not line or line in DAYS:
+        return False
+    if _TIME_RE.search(line):
+        return False
+    if re.match(r"^(P|V)\s+[A-Z]\d", line):
+        return False
+    if any(skip in line for skip in SKIP_LINES):
+        return False
+    if re.match(r"^\d+$", line):
+        return False
+    return bool(re.search(r"[A-Za-zČĆŽŠĐčćžšđ]", line))
+
+
+def stitch_wrapped_subjects(lines):
+    """
+    Spaja naziv predmeta prelomljen u dve linije oko data-reda. Layout (3 reda):
+      'Osnove informaciono komunikacionih' | 'P A1,A2,A3 10:15-12:00 Amf 2' | 'tehnologija'
+    -> 'Osnove informaciono komunikacionih tehnologija P A1,A2,A3 10:15-12:00 Amf 2'
+    """
+    lines = [l.strip() for l in lines]
+    n = len(lines)
+    consumed = [False] * n
+    replaced = {}
+
+    for i, line in enumerate(lines):
+        if not _SUBJECTLESS_DATA_RE.match(line):
+            continue
+        prefix = lines[i - 1] if i > 0 and not consumed[i - 1] and _is_subject_fragment(lines[i - 1]) else ""
+        suffix = lines[i + 1] if i + 1 < n and _is_subject_fragment(lines[i + 1]) else ""
+        subject = " ".join(p for p in (prefix, suffix) if p).strip()
+        if not subject:
+            continue
+        merged = f"{subject} {line}"
+        if ENTRY_RE.match(merged):
+            if prefix:
+                consumed[i - 1] = True
+            if suffix:
+                consumed[i + 1] = True
+            replaced[i] = merged
+
+    return [replaced.get(i, lines[i]) for i in range(n) if not consumed[i]]
+
+
 def parse_schedule_lines(lines, groups_dict=None):
     """Parsira linije u listu unosa. groups_dict služi za širenje prečica grupa."""
+    lines = stitch_wrapped_subjects(lines)
+
     entries = []
     current_day = None
     pending = None        # za prelom vremena u sledeći red (string)
