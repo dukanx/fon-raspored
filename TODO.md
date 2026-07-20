@@ -190,7 +190,7 @@ Gde se šta čuva:
 - [ ] Unit testovi za `lib/schedule.ts` — pokriti logiku normalizacije ćirilice, range matching i detekciju izbornih predmeta
 - [ ] Skeleton loading stanja na `/raspored` i `/preneseni` za sporije konekcije
 - [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi — jasna poruka korisniku sa sugestijom
-- [ ] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — dokumentovati šta se čuva i kada se briše
+- [ ] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — dokumentovati šta se čuva i kada se briše. *(Delimično urađeno: ključevi vezani za semestar + reset na promenu semestra dokumentovani u `docs/rokovi-semestar-flip.md`; ostaje pun audit svih ključeva.)*
 - [ ] Poboljšati tipove — smanjiti `any` i neeksplicitne tipove tamo gde postoje
 
 ---

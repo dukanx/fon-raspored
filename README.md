@@ -9,6 +9,8 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Raspored nastave** — filtriran po godini, programu i grupi; pregled po danima
 - **Skrivanje termina** — swipe na mobilnom ili klik na termin ga sakriva iz rasporeda; bira se koji termini su relevantni; čuva se u localStorage
 - **Ispiti i kolokvijumi** — lista i kalendarski prikaz; prikazuju se samo predmeti koje student sluša
+- **Rokovi kroz oba semestra** — septembarski i oktobarski rok mešaju predmete oba semestra; aplikacija pamti izbor po semestru i (u letnjem) nudi dodavanje zimskih predmeta radi ponavljanja u septembru
+- **Promena semestra** — kad se objavi raspored za novi semestar, aplikacija podseća studenta da ponovo izabere predmete (kredencijali ostaju), pa raspored i rokovi ostaju tačni
 - **Izborni i preneseni predmeti** — poseban tok pri onboardingu za dodavanje izbornih i prenesenih predmeta, koji se potom prate u ispitima i kolokvijumima
 - **Glass dizajn** — responzivni “liquid glass” UI, mobilni donji navbar i jasnije razdvojene akcije za raspored, rokove i izmenu termina
 - **Notifikacija o prijavi** — baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
@@ -130,6 +132,9 @@ Parser rasporeda nastave (`fon_parser.py`) + orkestrator (`update_nastava.py`) i
 
 ### v2.6 — Glass dizajn
 Redizajn aplikacije u “liquid glass” stilu: frosted paneli i dugmad, novi mobilni donji navbar, kompaktniji mobilni prikaz rasporeda, širi i čitljiviji desktop prikazi za raspored i rokove, usklađene akcije za export/sliku/kalendar i bolji tok za prenesene predmete (ručno dodavanje sakriveno dok nije potrebno).
+
+### v2.7 — Rokovi kroz oba semestra i promena semestra
+Septembarski i oktobarski rok mešaju predmete oba semestra. Aplikacija akumulira izbor predmeta po semestru i (u letnjem) nudi dodavanje zimskih predmeta koji se polažu u septembru, pa se prikazuju i ponavljanja iz prethodnog semestra. Pri promeni semestra resetuje izbor predmeta i podseća studenta da izabere ponovo (kredencijali ostaju), uz detekciju otpornu na re-objavu istog rasporeda. Popravljen i parser koji je ispuštao predmete sa nazivom prelomljenim u dva reda (npr. Osnove IKT).
 
 ---
 

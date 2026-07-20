@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
+import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 
 const GLASS = 'liquid-glass'
 
@@ -43,6 +44,11 @@ export default function IzbornoPage() {
     if (!isHydrated) return
     if (!group || !year) { router.replace('/'); return }
 
+    // Sinhrono čitanje — persist-efekat za otherSelected piše pre nego što
+    // fetch stigne, pa bi async čitanje videlo već pregaženu vrednost.
+    const savedSubjectsRaw = localStorage.getItem(`fon_subjects_${group}`)
+    const savedOtherRaw = localStorage.getItem(`fon_other_sem_${group}`)
+
     fetch(`/data/${year}god.json`)
       .then(r => r.json())
       .then((data: SemesterData) => {
@@ -51,13 +57,25 @@ export default function IzbornoPage() {
         const unique = [...new Set(entries.map(e => e.subject))].sort()
         setSubjects(unique)
 
-        const saved = localStorage.getItem(`fon_subjects_${group}`)
+        // Prevrtanje semestra: sačuvani izbori se odnose na predmete starog
+        // semestra — reconcileSemester ih resetuje da rokovi filter ne sakrije
+        // nove predmete. (Isti helper koristi i raspored za "Nov semestar" popup.)
+        const flipped = reconcileSemester(data.semester, group)
+
+        const saved = flipped ? null : savedSubjectsRaw
         if (saved) {
           setChecked(JSON.parse(saved))
         } else {
           const all: Record<string, boolean> = {}
           unique.forEach(s => { all[s] = true })
           setChecked(all)
+        }
+
+        const savedOther = flipped ? null : savedOtherRaw
+        if (savedOther) {
+          const parsed = JSON.parse(savedOther)
+          setOtherSelected(parsed)
+          if (parsed.length > 0) setOtherOpen(true)
         }
       })
 
@@ -67,15 +85,6 @@ export default function IzbornoPage() {
       queueMicrotask(() => {
         setPrevSelected(parsed)
         if (parsed.length > 0) setPrevOpen(true)
-      })
-    }
-
-    const savedOther = localStorage.getItem(`fon_other_sem_${group}`)
-    if (savedOther) {
-      const parsed = JSON.parse(savedOther)
-      queueMicrotask(() => {
-        setOtherSelected(parsed)
-        if (parsed.length > 0) setOtherOpen(true)
       })
     }
   }, [group, isHydrated, router, year])
@@ -117,12 +126,24 @@ export default function IzbornoPage() {
   }
 
   function handleConfirm() {
+    // Potvrda izbora = korisnik je odradio "Nov semestar" korak.
+    acknowledgeFlip()
     localStorage.setItem(`fon_subjects_${group}`, JSON.stringify(checked))
     // Akumuliraj izbor po semestru — mešani Sep/Okt rokovi uniraju oba semestra.
     if (semester) {
       const raw = localStorage.getItem('fon_subjects_history')
       const hist: Record<string, string[]> = raw ? JSON.parse(raw) : {}
       hist[semester] = Object.entries(checked).filter(([, v]) => v).map(([k]) => k)
+      // Orezivanje: čuvaj samo tekuću i prošlu školsku godinu ("Letnji 2025/26" -> 2025).
+      // Prošla mora da ostane — Sep/Okt rok pripada staroj školskoj godini.
+      const ayStart = (s: string) => parseInt(s.match(/(\d{4})\/\d{2}/)?.[1] ?? '', 10)
+      const current = ayStart(semester)
+      if (!Number.isNaN(current)) {
+        for (const key of Object.keys(hist)) {
+          const y = ayStart(key)
+          if (Number.isNaN(y) || y < current - 1) delete hist[key]
+        }
+      }
       localStorage.setItem('fon_subjects_history', JSON.stringify(hist))
     }
     router.push('/raspored')
@@ -288,7 +309,10 @@ export default function IzbornoPage() {
           )}
         </div>
 
-        {/* Predmeti iz drugog semestra (za septembarski/oktobarski rok) */}
+        {/* Predmeti iz drugog semestra — prikaži SAMO u letnjem semestru.
+            Mešani Sep/Okt rok uvek padne u letnjem i traži zimske predmete
+            (ponavljanja); u zimskom je picker suvišan i samo zbunjuje. */}
+        {semester.toLowerCase().startsWith('letnji') && (
         <div className="mb-6 border-t border-white/75 pt-4 dark:border-white/15">
           <button
             type="button"
@@ -377,6 +401,7 @@ export default function IzbornoPage() {
             </div>
           )}
         </div>
+        )}
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           <span className="text-xs text-gray-400 dark:text-gray-500 w-full sm:w-auto text-center sm:text-left">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
+import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import Link from 'next/link'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -142,6 +143,7 @@ export default function RasporedPage() {
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
   const [showDownloadToast, setShowDownloadToast] = useState(false)
+  const [showFlipPopup, setShowFlipPopup] = useState(false)
 
   const isMobile = useSyncExternalStore(
     (onStoreChange) => {
@@ -190,6 +192,11 @@ export default function RasporedPage() {
     fetch(`/data/${meta.year}god.json`)
       .then(r => r.json())
       .then((data: SemesterData) => {
+        // Prevrtanje semestra: resetuj stari izbor predmeta i digni "Nov
+        // semestar" popup. Mora pre čitanja fon_subjects (reset ga briše).
+        reconcileSemester(data.semester, meta.group)
+        if (isFlipPending(data.semester)) setShowFlipPopup(true)
+
         const all = getScheduleForGroup(data, meta.group)
         const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
         const checked: Record<string, boolean> = saved ? JSON.parse(saved) : {}
@@ -230,6 +237,16 @@ export default function RasporedPage() {
     const willBeDark = !root.classList.contains('dark')
     root.classList.toggle('dark', willBeDark)
     localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+  }
+
+  function dismissFlip() {
+    acknowledgeFlip()
+    setShowFlipPopup(false)
+  }
+  function goPickSubjects() {
+    acknowledgeFlip()
+    setShowFlipPopup(false)
+    router.push('/izborni')
   }
 
   const colorMap = useSubjectColors(entries)
@@ -692,6 +709,47 @@ export default function RasporedPage() {
           </div>
         )}
       </main>
+
+      {/* "Nov semestar" — reset predmeta (kredencijali ostaju) */}
+      {showFlipPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+          onClick={dismissFlip}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+              Nov semestar - Proveri predmete
+            </h2>
+            <p className="mb-6 text-sm text-center text-gray-600 dark:text-gray-300">
+              Objavljen je raspored za novi semestar. 
+              </p>
+            <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
+              Ranije izabrani predmeti su
+              resetovani, izaberi svoje predmete ponovo da ti raspored i rokovi
+              budu tačni.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row-reverse">
+              <button
+                onClick={goPickSubjects}
+                className="flex-1 rounded-lg py-2.5 text-sm font-medium active:scale-[0.97]
+                           bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                           dark:hover:bg-[#4db3a0] transition-colors"
+              >
+                Izaberi predmete
+              </button>
+              <button
+                onClick={dismissFlip}
+                className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              >
+                Kasnije
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ICS tutorial modal */}
       {showIcsHelp && (
