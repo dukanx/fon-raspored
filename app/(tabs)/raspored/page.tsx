@@ -40,6 +40,9 @@ const COLORS = [
 const GLASS = 'liquid-glass'
 
 /* ---------- Ikonice (stroke, currentColor — rade u obe teme) ---------- */
+// Metapodaci predmeta scrapovani sa oas.fon.bg.ac.rs (public/data/subjects-meta.json)
+type SubjectMeta = { url: string; espb: string | null; katedra: string | null }
+
 type IconProps = React.SVGProps<SVGSVGElement>
 const baseIcon = (props: IconProps) => ({
   viewBox: '0 0 24 24',
@@ -173,6 +176,7 @@ export default function RasporedPage() {
   const [showFlipPopup, setShowFlipPopup] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
   const [rokovi, setRokovi] = useState<RokData[]>([])
+  const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
   const [note, setNote] = useState('')
   const noteRef = useRef<HTMLTextAreaElement>(null)
 
@@ -266,6 +270,15 @@ export default function RasporedPage() {
       .catch(() => setRokovi([]))
   }, [isHydrated])
 
+  // Metapodaci predmeta (ESPB / katedra / link na FON sajt) — za panel.
+  useEffect(() => {
+    if (!isHydrated) return
+    fetch('/data/subjects-meta.json')
+      .then(r => r.json())
+      .then((d: Record<string, SubjectMeta>) => setSubjectsMeta(d && typeof d === 'object' ? d : {}))
+      .catch(() => setSubjectsMeta({}))
+  }, [isHydrated])
+
   // Beleška raste u visinu prema sadržaju.
   useEffect(() => {
     const el = noteRef.current
@@ -320,6 +333,7 @@ export default function RasporedPage() {
       .map(e => ({ ...e, rok: r.rok, tip: r.tip })))
       .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
     : []
+  const subjectMeta = selectedSubject ? subjectsMeta[selectedSubject] : undefined
 
   function hideEntry(e: ScheduleEntry) {
     const key = entryKey(e)
@@ -798,6 +812,31 @@ export default function RasporedPage() {
                 <IconClose className="h-4 w-4" />
               </button>
             </div>
+
+            {/* O predmetu — ESPB / katedra / link na FON sajt (ako imamo meta) */}
+            {subjectMeta && (
+              <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                {subjectMeta.espb && (
+                  <span className="shrink-0 rounded-full bg-[#024c7d]/10 px-2 py-0.5 text-xs font-medium text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                    {/^\d+$/.test(subjectMeta.espb) ? `${subjectMeta.espb} ESPB` : `ESPB: ${subjectMeta.espb}`}
+                  </span>
+                )}
+                {subjectMeta.katedra && (
+                  <span className="min-w-0 truncate text-xs text-gray-500 dark:text-gray-400">{subjectMeta.katedra}</span>
+                )}
+                <a
+                  href={subjectMeta.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[#024c7d] hover:underline dark:text-[#60c3ad]"
+                >
+                  FON sajt
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
+                    <path d="M7 17 17 7M9 7h8v8" />
+                  </svg>
+                </a>
+              </div>
+            )}
 
             {/* Termini u nedelji */}
             <div className="mb-4">

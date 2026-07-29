@@ -1,0 +1,572 @@
+{
+ "Akreditacija i sertifikacija": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-akreditacija-i-sertifikacija/"
+ },
+ "Analitika performansi - osnovni koncepti": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analitika-performansi-osnovni-koncepti/"
+ },
+ "Analiza i logičko projektovanje IS (projekat)": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analiza-i-logicko-projektovanje-is-projekat/"
+ },
+ "Analiza podataka": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analiza-podataka/"
+ },
+ "Analiza pouzdanosti i rizika": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analiza-pouzdanosti-i-rizika/"
+ },
+ "Baze podataka": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-baze-podataka/"
+ },
+ "Cloud infrastruktura i servisi": {
+  "espb": "5",
+  "katedra": "Katedra za elektornsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-cloud-infrastruktura-i-servisi/"
+ },
+ "Digitalni marketing": {
+  "espb": "6",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "url": "https://oas.fon.bg.ac.rs/predmet-digitalni-marketing/"
+ },
+ "Dizajn korisničkog interfejsa": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-dizajn-korisnickog-interfejsa/"
+ },
+ "Duboko učenje i neuronske mreže": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-duboko-ucenje-i-neuronske-mreze/"
+ },
+ "ETL i skladišta podataka": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-etl-i-skladista-podataka/"
+ },
+ "Eko-marketing": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
+  "url": "https://oas.fon.bg.ac.rs/predmet-eko-marketing/"
+ },
+ "Ekološki menadžment": {
+  "espb": "5",
+  "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ekoloski-menadzment/"
+ },
+ "Ekonometrijske metode": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ekonometrijske-metode/"
+ },
+ "Ekonometrijski modeli i predviđanje": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ekonometrijski-modeli-i-predvidjanje/"
+ },
+ "Ekonomika poslovanja i planiranje": {
+  "espb": "5",
+  "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ekonomika-poslovanja-i-planiranje/"
+ },
+ "Engleski jezik struke 3": {
+  "espb": "4",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-struke-3/"
+ },
+ "Engleski jezik u menadžmentu 1": {
+  "espb": "6",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-u-menadzmentu-1/"
+ },
+ "Engleski jezik u menadžmentu 2": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-u-menadzmentu-2/"
+ },
+ "Engleski jezik za akademske namene": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-za-akademske-namene/"
+ },
+ "Finansijska tržišta": {
+  "espb": "6",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-finansijska-trzista/"
+ },
+ "Finansijski menadžment i računovodstvo": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-finansijski-menadzment-i-racunovodstvo/"
+ },
+ "Francuski jezik u menadžmentu 1": {
+  "espb": "6",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/francuski-jezik-u-menadzmentu-1/"
+ },
+ "Funkcionalni jezici": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-funkcionalni-jezici/"
+ },
+ "Inteligentni sistemi": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-inteligentni-sistemi/"
+ },
+ "Interakcija čovek-računar": {
+  "espb": "6",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-interakcija-covek-racunar/"
+ },
+ "Internet inteligentnih uređaja": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-internet-inteligentnih-uredjaja/"
+ },
+ "Interpersonalne veštine u organizaciji": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-interpersonalne-vestine-u-organizaciji/"
+ },
+ "Investiciono bankarstvo": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-investiciono-bankarstvo/"
+ },
+ "Inženjering procesa (NA)": {
+  "espb": "5",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-inzenjering-procesa/"
+ },
+ "Jezici i okruženja za razvoj IS": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-jezici-i-okruzenja-za-razvoj-is/"
+ },
+ "Klijentske veb tehnologije i skriptni jezici": {
+  "espb": "6",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-klijentske-veb-tehnologije-i-skriptni-jezici/"
+ },
+ "Konkurentno i distribuirano programiranje - projekat": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-konkurentno-i-distribuirano-programiranje-projekat/"
+ },
+ "Kontrola kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-kontrola-kvaliteta/"
+ },
+ "Kvalitet u IT": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-kvalitet-u-it/"
+ },
+ "Linearni statistički modeli": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-linearni-statisticki-modeli/"
+ },
+ "Marketing logistika": {
+  "espb": "5",
+  "katedra": null,
+  "url": "https://oas.fon.bg.ac.rs/predmet-marketing-logistika/"
+ },
+ "Matematika 2": {
+  "espb": "6",
+  "katedra": "Katedra za matematiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-matematika-2/"
+ },
+ "Mašinsko učenje": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-masinsko-ucenje/"
+ },
+ "Medijske komunikacije": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "url": "https://oas.fon.bg.ac.rs/predmet-medijske-komunikacije/"
+ },
+ "Menadžment proizvodnje i pružanja usluga": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-proizvodnje-i-pruzanja-usluga/"
+ },
+ "Menadžment tehnologije i razvoja (NA)": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-tehnologije-i-razvoja/"
+ },
+ "Metode optimizacije": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-metode-optimizacije/"
+ },
+ "Metodologija izrade IT projekta": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-metodologija-izrade-it-projekta/"
+ },
+ "Metrologija i normativno regulisanje kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-metrologija-i-normativno-regulisanje-kvaliteta/"
+ },
+ "Međunarodni marketing": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "url": "https://oas.fon.bg.ac.rs/predmet-medjunarodni-marketing/"
+ },
+ "Mobilno računarstvo": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-mobilno-racunarstvo/"
+ },
+ "Modeli i indikatori poboljšavanja kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-modeli-i-indikatori-poboljsavanja-kvaliteta/"
+ },
+ "Multimediji": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-multimediji/"
+ },
+ "Napredne .NET tehnologije": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-napredne-net-tehnologije/"
+ },
+ "Napredne Java tehnologije": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-napredne-java-tehnologije/"
+ },
+ "Neuronske mreže": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje sistemima",
+  "url": "https://oas.fon.bg.ac.rs/predmet-neuronske-mreze/"
+ },
+ "Numerička analiza": {
+  "espb": "6",
+  "katedra": "Katedra za matematiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-numericka-analiza/"
+ },
+ "Ocena kvaliteta poslovnog sistema": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ocena-kvaliteta-poslovnog-sistema/"
+ },
+ "Odabrana poglavlja iz IS": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-odabrana-poglavlja-iz-is/"
+ },
+ "Odnosi s javnošću": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "url": "https://oas.fon.bg.ac.rs/predmet-odnosi-s-javnoscu/"
+ },
+ "Operaciona istraživanja 2": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-operaciona-istrazivanja-2/"
+ },
+ "Organizacija specijalnih događaja": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-organizacija-specijalnih-dogadjaja/"
+ },
+ "Osnove finansijskog menadžmenta": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-finansijskog-menadzmenta/"
+ },
+ "Osnove operacionog menadžmenta": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-operacionog-menadzmenta/"
+ },
+ "Osnove programiranja": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-programiranja/"
+ },
+ "Osnove računarske inteligencije": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje sistemima",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-racunarske-inteligencije/"
+ },
+ "Osnove teorije igara": {
+  "espb": "4",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-teorije-igara/"
+ },
+ "Osnovi kvaliteta softvera": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnovi-kvaliteta-softvera/"
+ },
+ "Planiranje kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-planiranje-kvaliteta/"
+ },
+ "Planiranje proizvodnje i usluga": {
+  "espb": "6",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem uslugama",
+  "url": "https://oas.fon.bg.ac.rs/predmet-planiranje-proizvodnje-i-usluga/"
+ },
+ "Poslovna analitika": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovna-analitika/"
+ },
+ "Poslovna inteligencija": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovna-inteligencija/"
+ },
+ "Poslovne aplikacije u spredšit okruženju": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovne-aplikacije-u-spredsit-okruzenju/"
+ },
+ "Poslovni informacioni sistemi": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovni-informacioni-sistemi/"
+ },
+ "Poslovno pravo": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovno-pravo/"
+ },
+ "Poslovno pregovaranje i veštine komunikacije": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "url": "https://oas.fon.bg.ac.rs/predmet-poslovno-pregovaranje-i-vestine-komunikacije/"
+ },
+ "Pravne osnove informacionih sistema": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-pravne-osnove-informacionih-sistema/"
+ },
+ "Preduzetničko upravljanje malim i srednjim preduzećima": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
+  "url": "https://oas.fon.bg.ac.rs/predmet-preduzetnicko-upravljanje-malim-i-srednjim-preduzecima/"
+ },
+ "Preduzetništvo": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-preduzetnistvo/"
+ },
+ "Principi programiranja": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-principi-programiranja/"
+ },
+ "Programiranje 2 (NA)": {
+  "espb": "6",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programiranje-2/"
+ },
+ "Programiranje repozitorijuma podataka": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programiranje-repozitorijuma-podataka/"
+ },
+ "Programski jezici": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programski-jezici/"
+ },
+ "Programski jezici za analitiku": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programski-jezici-za-analitiku/"
+ },
+ "Psihologija": {
+  "espb": "MiO - 6, IST - 5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-psihologija/"
+ },
+ "Razvoj mobilnih aplikacija i servisa - projekat": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-razvoj-mobilnih-aplikacija-i-servisa-projekat/"
+ },
+ "Razvoj naprednih aplikacija elektronskog poslovanja - projekat": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-razvoj-naprednih-aplikacija-elektronskog-poslovanja-projekat/"
+ },
+ "Rukovođenje i liderstvo": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-rukovodjenje-i-liderstvo/"
+ },
+ "Serverske veb tehnologije": {
+  "espb": "6",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-serverske-veb-tehnologije/"
+ },
+ "Simulacija u poslovnom odlučivanju": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "url": "https://oas.fon.bg.ac.rs/predmet-simulacija-u-poslovnom-odlucivanju/"
+ },
+ "Simulacioni modeli u finansijama": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-simulacioni-modeli-u-finansijama/"
+ },
+ "Sistem menadžmenta kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-sistem-menadzmenta-kvaliteta/"
+ },
+ "Sociologija": {
+  "espb": "MiO - 6, IST - 5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-sociologija/"
+ },
+ "Softverski alati": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-softverski-alati/"
+ },
+ "Standardizacija": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-standardizacija/"
+ },
+ "Statistika": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-statistika/"
+ },
+ "Strateški menadžment": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment i upravljanje projektima",
+  "url": "https://oas.fon.bg.ac.rs/predmet-strateski-menadzment/"
+ },
+ "Strukture podataka i algoritmi": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-strukture-podataka-i-algoritmi/"
+ },
+ "Teorija igara": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-teorija-igara/"
+ },
+ "Trening i razvoj": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "url": "https://oas.fon.bg.ac.rs/predmet-trening-i-razvoj/"
+ },
+ "Upravljanje dokumentacijom": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-dokumentacijom/"
+ },
+ "Upravljanje inovacijama": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-inovacijama/"
+ },
+ "Upravljanje investicijama": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment i upravljanje projektima",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-investicijama/"
+ },
+ "Upravljanje kvalitetom projekta": {
+  "espb": "6",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-kvalitetom-projekta/"
+ },
+ "Upravljanje lancima snabdevanja 1": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-lancima-snabdevanja-1/"
+ },
+ "Upravljanje održavanjem": {
+  "espb": "5",
+  "katedra": "Katedra za računarski integrisanu proizvodnju i logistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-odrzavanjem/"
+ },
+ "Upravljanje promenama": {
+  "espb": "5",
+  "katedra": "Katedra za interdisciplinirana istraživanja u menadžmentu",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-promenama/"
+ },
+ "Upravljanje rizikom u razvoju aplikacija elektronskog poslovanja": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-rizikom-u-razvoju-aplikacija-elektronskog-poslovanja/"
+ },
+ "Upravljanje troškovima": {
+  "espb": "5",
+  "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-troskovima/"
+ },
+ "Upravljačko računovodstvo": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljacko-racunovodstvo/"
+ },
+ "Utvrđivanje normativa rada i učinka": {
+  "espb": "5",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-utvrdjivanje-normativa-rada-i-ucinka/"
+ },
+ "Uvod u informacione sisteme": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "url": "https://oas.fon.bg.ac.rs/predmet-uvod-u-informacione-sisteme/"
+ },
+ "Uvod u menadžment elektronskog poslovanja": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-uvod-u-menadzment-elektronskog-poslovanja/"
+ },
+ "Uvod u poslovnu analitiku": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "url": "https://oas.fon.bg.ac.rs/predmet-uvod-u-poslovnu-analitiku/"
+ },
+ "Veštačka inteligencija": {
+  "espb": "6",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-vestacka-inteligencija/"
+ },
+ "Virtuelna realnost i računarska simulacija": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "url": "https://oas.fon.bg.ac.rs/predmet-virtuelna-realnost-i-racunarska-simulacija/"
+ },
+ "Vrednovanje preduzeća": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "url": "https://oas.fon.bg.ac.rs/predmet-vrednovanje-preduzeca/"
+ },
+ "Zaštita računarskih sistema": {
+  "espb": "6",
+  "katedra": "Katedra za informacione tehnologije",
+  "url": "https://oas.fon.bg.ac.rs/predmet-zastita-racunarskih-sistema/"
+ }
+}
