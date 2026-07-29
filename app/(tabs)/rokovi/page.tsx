@@ -156,15 +156,6 @@ export default function RokoviPage() {
   const [showHidden, setShowHidden] = useState(false)
   const [downloadToast, setDownloadToast] = useState(false)
 
-  const isMobile = useSyncExternalStore(
-    (cb) => {
-      if (typeof window === 'undefined') return () => {}
-      window.addEventListener('resize', cb)
-      return () => window.removeEventListener('resize', cb)
-    },
-    () => window.innerWidth < 640,
-    () => false
-  )
   const isDark = useSyncExternalStore(
     (cb) => {
       if (typeof window === 'undefined') return () => {}
@@ -181,7 +172,9 @@ export default function RokoviPage() {
     () => false
   )
 
-  const view: 'list' | 'calendar' = manualView ?? (isMobile ? 'list' : 'calendar')
+  // Default je uvek "Kalendar" — i na telefonu i na desktopu; korisnik može
+  // ručno na "Lista".
+  const view: 'list' | 'calendar' = manualView ?? 'calendar'
 
   const meta = isHydrated
     ? {

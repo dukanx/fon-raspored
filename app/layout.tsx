@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
-import { Analytics } from '@vercel/analytics/react'
+// Next-specifična integracija (usePathname/useSearchParams) — NE patchuje
+// history.pushState kao /react, koji je lomio navigaciju u Next 16.
+import { Analytics } from '@vercel/analytics/next'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,11 +55,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <Analytics />
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Providers>
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

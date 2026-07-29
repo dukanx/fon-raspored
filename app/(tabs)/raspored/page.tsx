@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
-import type { SemesterData, ScheduleEntry, DayOfWeek } from '@/lib/types'
+import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import Link from 'next/link'
@@ -88,6 +88,33 @@ function entryKey(e: ScheduleEntry) {
   return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
 }
 
+// Isti predmet/dan/vreme/tip u više sala = jedan logički termin (npr. vežbe
+// podeljene na dve sale). Spajamo u jedan blok sa svim salama, da se ne prikazuju
+// kao dve odvojene kocke i da skrivanje radi na tom jednom terminu.
+function mergeSameSlot(list: ScheduleEntry[]): ScheduleEntry[] {
+  const byKey = new Map<string, ScheduleEntry>()
+  for (const e of list) {
+    const k = entryKey(e)
+    const existing = byKey.get(k)
+    if (!existing) {
+      byKey.set(k, { ...e })
+      continue
+    }
+    const rooms = [...new Set([...existing.room.split(', '), ...e.room.split(', ')])]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, 'sr', { numeric: true }))
+    existing.room = rooms.join(', ')
+    existing.groups = [...new Set([...existing.groups, ...e.groups])]
+  }
+  return [...byKey.values()]
+}
+
+const SR_MONTHS_SHORT = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec']
+function formatRokDate(iso: string) {
+  const d = new Date(iso + 'T00:00:00')
+  return `${d.getDate()}. ${SR_MONTHS_SHORT[d.getMonth()]}`
+}
+
 function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const handlers = useSwipeable({
@@ -144,16 +171,11 @@ export default function RasporedPage() {
   const [showIcsHelp, setShowIcsHelp] = useState(false)
   const [showDownloadToast, setShowDownloadToast] = useState(false)
   const [showFlipPopup, setShowFlipPopup] = useState(false)
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
+  const [rokovi, setRokovi] = useState<RokData[]>([])
+  const [note, setNote] = useState('')
+  const noteRef = useRef<HTMLTextAreaElement>(null)
 
-  const isMobile = useSyncExternalStore(
-    (onStoreChange) => {
-      if (typeof window === 'undefined') return () => { }
-      window.addEventListener('resize', onStoreChange)
-      return () => window.removeEventListener('resize', onStoreChange)
-    },
-    () => window.innerWidth < 640,
-    () => true   // mobile-first: pre hidracije pretpostavi telefon → lista
-  )
   const isDark = useSyncExternalStore(
     (onStoreChange) => {
       if (typeof window === 'undefined') return () => { }
@@ -170,7 +192,9 @@ export default function RasporedPage() {
     () => false
   )
 
-  const view: 'grid' | 'list' = manualView ?? (isMobile ? 'list' : 'grid')
+  // Default je uvek "Sedmica" (grid) — i na telefonu i na desktopu; korisnik
+  // može ručno na "Lista".
+  const view: 'grid' | 'list' = manualView ?? 'grid'
   const meta = isHydrated
     ? {
       group: sessionStorage.getItem('fon_group') ?? '',
@@ -225,13 +249,42 @@ export default function RasporedPage() {
           if (!exists) merged.push(item)
         }
 
-        setEntries(merged)
+        setEntries(mergeSameSlot(merged))
         setLoaded(true)
 
         const hiddenRaw = localStorage.getItem(`fon_hidden_${meta.group}`)
         if (hiddenRaw) setHiddenEntries(JSON.parse(hiddenRaw))
       })
   }, [isHydrated, meta.group, meta.year, router])
+
+  // Rokovi (ispiti/kolokvijumi) — za sekciju "Vezani rokovi" u panelu predmeta.
+  useEffect(() => {
+    if (!isHydrated) return
+    fetch('/data/rokovi.json')
+      .then(r => r.json())
+      .then((d: RokData[]) => setRokovi(Array.isArray(d) ? d : []))
+      .catch(() => setRokovi([]))
+  }, [isHydrated])
+
+  // Beleška raste u visinu prema sadržaju.
+  useEffect(() => {
+    const el = noteRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [note, selectedSubject])
+
+  // Otvori panel predmeta i učitaj njegovu belešku (bez setState u efektu).
+  function openSubject(subject: string) {
+    setSelectedSubject(subject)
+    setNote(localStorage.getItem(`fon_note_${subject}`) ?? '')
+  }
+
+  function saveNote(value: string) {
+    setNote(value)
+    if (selectedSubject) localStorage.setItem(`fon_note_${selectedSubject}`, value)
+  }
+
   function toggleTheme() {
     const root = document.documentElement
     const willBeDark = !root.classList.contains('dark')
@@ -253,6 +306,20 @@ export default function RasporedPage() {
 
   const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(entryKey)), [hiddenEntries])
   const visibleEntries = useMemo(() => entries.filter(e => !hiddenKeys.has(entryKey(e))), [entries, hiddenKeys])
+
+  // Panel predmeta: vidljivi termini tog predmeta (sedmična slika) + nadolazeći
+  // rokovi. Vučemo iz visibleEntries da skrivanje iz panela odmah ukloni red.
+  const todayStr = new Date().toISOString().split('T')[0]
+  const subjectTermine = selectedSubject
+    ? visibleEntries.filter(e => e.subject === selectedSubject)
+      .sort((a, b) => DAY_OFFSET[a.day] - DAY_OFFSET[b.day] || a.start.localeCompare(b.start))
+    : []
+  const subjectRokovi: (RokEntry & { rok: string; tip: RokData['tip'] })[] = selectedSubject
+    ? rokovi.flatMap(r => r.entries
+      .filter(e => e.subject === selectedSubject && e.date >= todayStr)
+      .map(e => ({ ...e, rok: r.rok, tip: r.tip })))
+      .sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start))
+    : []
 
   function hideEntry(e: ScheduleEntry) {
     const key = entryKey(e)
@@ -631,9 +698,15 @@ export default function RasporedPage() {
                         {cell.map((e, i) => {
                           const c = COLORS[colorMap[e.subject]]
                           return (
-                            <div key={i} style={{ background: isDark ? c.darkBg : c.bg }} className="group/card flex-1 rounded-lg p-1.5 min-h-11 relative sm:min-h-20 sm:p-2.5">
+                            <div
+                              key={i}
+                              onClick={() => openSubject(e.subject)}
+                              style={{ background: isDark ? c.darkBg : c.bg }}
+                              className={`group/card flex-1 cursor-pointer rounded-lg p-1.5 min-h-11 relative transition-shadow sm:min-h-20 sm:p-2.5
+                                ${selectedSubject === e.subject ? 'ring-2 ring-[#024c7d]/50 dark:ring-[#60c3ad]/50' : ''}`}
+                            >
                               <button
-                                onClick={() => hideEntry(e)}
+                                onClick={ev => { ev.stopPropagation(); hideEntry(e) }}
                                 style={{ color: isDark ? c.darkText : c.text }}
                                 className="absolute top-1 right-1 hidden w-4 h-4 rounded items-center justify-center opacity-0 group-hover/card:opacity-60 hover:opacity-100! transition-opacity text-[10px] leading-none bg-black/10 dark:bg-white/10 sm:flex"
                               >
@@ -706,6 +779,81 @@ export default function RasporedPage() {
                 </div>
               )
             })}
+          </div>
+        )}
+
+        {/* Panel predmeta — tap na blok u sedmici otvara info ispod */}
+        {selectedSubject && (
+          <div className={`mx-auto mt-6 max-w-3xl rounded-2xl p-4 sm:p-5 ${GLASS}`}>
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="h-5 w-1 shrink-0 rounded-full" style={{ background: COLORS[colorMap[selectedSubject]].bar }} />
+                <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{selectedSubject}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedSubject(null)}
+                aria-label="Zatvori"
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              >
+                <IconClose className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Termini u nedelji */}
+            <div className="mb-4">
+              <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Termini</h4>
+              <div className="space-y-1.5">
+                {subjectTermine.map((e, i) => (
+                  <div key={i} className="flex items-center gap-2.5 text-sm">
+                    <span className="w-8 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">{DAY_SHORT[e.day]}</span>
+                    <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}–${e.end}`}</span>
+                    <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{e.type_short}</span>
+                    <span className="flex-1 truncate text-xs text-gray-500 dark:text-gray-400">{e.room}</span>
+                    <button
+                      onClick={() => hideEntry(e)}
+                      aria-label="Sakrij termin"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-gray-300 transition-colors hover:bg-red-50 hover:text-red-400 dark:text-gray-600 dark:hover:bg-red-950/40"
+                    >
+                      <IconClose className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+                {subjectTermine.length === 0 && (
+                  <p className="text-xs italic text-gray-400 dark:text-gray-500">Svi termini ovog predmeta su skriveni.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Vezani rokovi — samo ako ih ima */}
+            {subjectRokovi.length > 0 && (
+              <div className="mb-4">
+                <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Rokovi</h4>
+                <div className="space-y-1.5">
+                  {subjectRokovi.map((e, i) => (
+                    <div key={i} className="flex items-center gap-2.5 text-sm">
+                      <span className="w-14 shrink-0 text-xs font-medium text-gray-700 dark:text-gray-200">{formatRokDate(e.date)}</span>
+                      <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{e.start}</span>
+                      <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+                        {e.tip === 'ispit' ? 'Ispit' : 'Kolokvijum'} · {e.rok}{e.rooms.length ? ` · ${e.rooms.join(', ')}` : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lična beleška */}
+            <div className="rounded-xl border border-gray-200/80 bg-gray-50/60 p-3 dark:border-gray-700/70 dark:bg-gray-800/40">
+              <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Beleška</h4>
+              <textarea
+                ref={noteRef}
+                value={note}
+                onChange={ev => saveNote(ev.target.value)}
+                placeholder="Npr. poeni na vežbama, napomene..."
+                rows={2}
+                className="block max-h-64 min-h-14 w-full resize-none overflow-y-auto rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:ring-[#60c3ad]"
+              />
+            </div>
           </div>
         )}
       </main>
