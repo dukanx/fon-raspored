@@ -6,6 +6,7 @@ import { useSwipeable } from 'react-swipeable'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
+import type { SubjectMeta } from '@/lib/subjects'
 import Link from 'next/link'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -40,9 +41,6 @@ const COLORS = [
 const GLASS = 'liquid-glass'
 
 /* ---------- Ikonice (stroke, currentColor — rade u obe teme) ---------- */
-// Metapodaci predmeta scrapovani sa oas.fon.bg.ac.rs (public/data/subjects-meta.json)
-type SubjectMeta = { url: string; espb: string | null; katedra: string | null }
-
 type IconProps = React.SVGProps<SVGSVGElement>
 const baseIcon = (props: IconProps) => ({
   viewBox: '0 0 24 24',

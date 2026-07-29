@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
+import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
 
 const GLASS = 'liquid-glass'
 
@@ -17,7 +18,10 @@ export default function IzbornoPage() {
   )
   const group = isHydrated ? (sessionStorage.getItem('fon_group') ?? '') : ''
   const year = isHydrated ? (sessionStorage.getItem('fon_year') ?? '') : ''
+  const program = isHydrated ? (sessionStorage.getItem('fon_program') ?? '') : ''
+  const track: Track = programToTrack(program)
   const [subjects, setSubjects] = useState<string[]>([])
+  const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const [semester, setSemester] = useState<string>('')
 
@@ -49,10 +53,13 @@ export default function IzbornoPage() {
     const savedSubjectsRaw = localStorage.getItem(`fon_subjects_${group}`)
     const savedOtherRaw = localStorage.getItem(`fon_other_sem_${group}`)
 
-    fetch(`/data/${year}god.json`)
-      .then(r => r.json())
-      .then((data: SemesterData) => {
+    Promise.all([
+      fetch(`/data/${year}god.json`).then(r => r.json()),
+      fetch('/data/subjects-meta.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+    ])
+      .then(([data, meta]: [SemesterData, Record<string, SubjectMeta>]) => {
         setSemester(data.semester)
+        setSubjectsMeta(meta && typeof meta === 'object' ? meta : {})
         const entries = getScheduleForGroup(data, group)
         const unique = [...new Set(entries.map(e => e.subject))].sort()
         setSubjects(unique)
@@ -66,9 +73,22 @@ export default function IzbornoPage() {
         if (saved) {
           setChecked(JSON.parse(saved))
         } else {
-          const all: Record<string, boolean> = {}
-          unique.forEach(s => { all[s] = true })
-          setChecked(all)
+          // Pametan default: obavezni čekirani, izborni odčekirani (student sam
+          // bira koje izborne sluša). Dvosmisleni/nepoznati -> čekirani (bezbedno).
+          const tr = programToTrack(program)
+          const smart: Record<string, boolean> = {}
+          unique.forEach(s => { smart[s] = defaultChecked(meta?.[s]?.status, tr) })
+          // Guard: kod finih modula (tip. 4. godina) grubi IST/MiO status označi
+          // sve kao izborno -> ništa ne bi bilo čekirano. Tada fallback na staro
+          // ponašanje (sve čekirano), pa student odčekira šta ne sluša.
+          const anyChecked = Object.values(smart).some(Boolean)
+          if (anyChecked) {
+            setChecked(smart)
+          } else {
+            const all: Record<string, boolean> = {}
+            unique.forEach(s => { all[s] = true })
+            setChecked(all)
+          }
         }
 
         const savedOther = flipped ? null : savedOtherRaw
@@ -87,7 +107,7 @@ export default function IzbornoPage() {
         if (parsed.length > 0) setPrevOpen(true)
       })
     }
-  }, [group, isHydrated, router, year])
+  }, [group, isHydrated, router, year, program])
 
   useEffect(() => {
     if (!isHydrated || !group) return
@@ -177,6 +197,11 @@ export default function IzbornoPage() {
     p.toLowerCase().includes(prevSearch.toLowerCase())
   )
 
+  // Pametan default se primenjuje samo kad status razlikuje obavezne od izbornih
+  // za ovaj smer. Kod finih modula (4. god) gde je sve "izborno" -> isključen,
+  // pa ne prikazujemo "izborni" tagove ni izmenjen tekst (sve je čekirano).
+  const smartMode = subjects.some(s => defaultChecked(subjectsMeta[s]?.status, track))
+
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">
       <div className={`w-full max-w-md rounded-[1.75rem] p-8 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
@@ -184,7 +209,9 @@ export default function IzbornoPage() {
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Odčekiraj predmete koje ne slušaš
+            {smartMode
+              ? 'Obavezni su već čekirani — čekiraj izborne koje slušaš'
+              : 'Odčekiraj predmete koje ne slušaš'}
           </p>
         </div>
 
@@ -201,9 +228,14 @@ export default function IzbornoPage() {
                 onChange={() => toggle(subject)}
                 className="w-4 h-4 rounded accent-[#024c7d] dark:accent-[#60c3ad] shrink-0"
               />
-              <span className={`text-sm ${checked[subject] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
+              <span className={`flex-1 text-sm ${checked[subject] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
                 {subject}
               </span>
+              {smartMode && subjectsMeta[subject] && !defaultChecked(subjectsMeta[subject].status, track) && (
+                <span className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                  izborni
+                </span>
+              )}
             </label>
           ))}
         </div>
