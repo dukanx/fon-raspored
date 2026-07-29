@@ -25,6 +25,15 @@ URL_PATTERNS = [
     "https://oas.fon.bg.ac.rs/{}/",
 ]
 
+# Predmeti čiji se naziv u rasporedu razlikuje od naziva stranice (preimenovani).
+# Ključ = naziv iz rasporeda, vrednost = tačan URL stranice.
+URL_OVERRIDES = {
+    'Mikroservisna arhitektura IS':
+        'https://oas.fon.bg.ac.rs/mikroservisna-arhitektura-informacionih-sistema/',
+    'Internet marketing':
+        'https://oas.fon.bg.ac.rs/predmet-internet-marketing-i-drustveni-mediji/',
+}
+
 SLUG_DIA = str.maketrans({
     'č': 'c', 'ć': 'c', 'š': 's', 'ž': 'z', 'đ': 'dj',
     'Č': 'c', 'Ć': 'c', 'Š': 's', 'Ž': 'z', 'Đ': 'dj',
@@ -96,7 +105,13 @@ def parse(raw):
     m = re.search(r'Катедра\s+(Катедра[^0-9]*?)\s*(?:Број ЕСПБ|Модул|Статус|Циљ)', text)
     if m:
         katedra = to_latin(re.sub(r'\s+', ' ', m.group(1)).strip())
-    return espb, katedra
+    # Status: "Obavezan predmet" / "Izborni predmet" ili modul-zavisno
+    # "IST - Obavezan predmet, MiO - Izborni predmet".
+    status = None
+    m = re.search(r'Статус предмета\s+(.{1,90}?)\s*(?:Катедра|Број ЕСПБ|Циљ|Модул|Исход)', text)
+    if m:
+        status = to_latin(re.sub(r'\s+', ' ', m.group(1)).strip())
+    return espb, katedra, status
 
 
 def collect_subjects():
@@ -112,32 +127,44 @@ def collect_subjects():
     return sorted(names, key=lambda s: s.lower())
 
 
+def candidate_urls(name):
+    if name in URL_OVERRIDES:
+        return [URL_OVERRIDES[name]]
+    urls = []
+    for slug in variants(name):
+        for pat in URL_PATTERNS:
+            urls.append(pat.format(slug))
+    return urls
+
+
 def main():
     subjects = collect_subjects()
+    dest = os.path.join(DATA, 'subjects-meta.json')
+    # Merge-safe: postojeći unosi se zadrže ako scrape promaši (mrežni prekid).
     out = {}
+    if os.path.exists(dest):
+        out = json.load(open(dest, encoding='utf-8'))
     miss = []
     for i, name in enumerate(subjects, 1):
         found = None
-        for slug in variants(name):
-            for pat in URL_PATTERNS:
-                raw = fetch(pat.format(slug))
-                if raw:
-                    espb, katedra = parse(raw)
-                    found = {'url': pat.format(slug), 'espb': espb, 'katedra': katedra}
-                    break
-                time.sleep(0.12)
-            if found:
+        for url in candidate_urls(name):
+            raw = fetch(url)
+            if raw:
+                espb, katedra, status = parse(raw)
+                found = {'url': url, 'espb': espb, 'katedra': katedra, 'status': status}
                 break
+            time.sleep(0.12)
         if found:
             out[name] = found
-            print(f"[{i:3}/{len(subjects)}] OK   {name[:42]:42} espb={found['espb']}", flush=True)
+            print(f"[{i:3}/{len(subjects)}] OK   {name[:40]:40} status={found['status']}", flush=True)
+        elif name in out:
+            print(f"[{i:3}/{len(subjects)}] KEEP {name[:40]:40} (zadržan stari unos)", flush=True)
         else:
             miss.append(name)
             print(f"[{i:3}/{len(subjects)}] MISS {name}", flush=True)
         time.sleep(0.08)
-    dest = os.path.join(DATA, 'subjects-meta.json')
     json.dump(out, open(dest, 'w', encoding='utf-8'), ensure_ascii=False, indent=1, sort_keys=True)
-    print(f"\nHIT {len(out)}/{len(subjects)}  MISS: {miss}\n-> {dest}")
+    print(f"\nHIT/KEEP {len(out)}/{len(subjects)}  MISS: {miss}\n-> {dest}")
 
 
 if __name__ == '__main__':
