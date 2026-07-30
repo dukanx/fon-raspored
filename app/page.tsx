@@ -5,9 +5,20 @@ import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved } from '@/lib/storage'
+import { decodeShare } from '@/lib/share'
 import BlurText from '@/components/BlurText'
 
 const GLASS = 'liquid-glass'
+
+// Izvuče share kod iz nalepljenog teksta — bilo pun URL (.../deli?s=KOD) bilo
+// sam kod. Omogućava da se deljeni raspored primeni i unutar sveže instalirane
+// PWA (na iOS-u home-screen app ima odvojen storage od Safarija).
+function extractShareCode(input: string): string {
+  const t = input.trim()
+  if (!t) return ''
+  const m = t.match(/[?&]s=([^&\s]+)/)
+  return m ? m[1] : t
+}
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -19,6 +30,8 @@ export default function OnboardingPage() {
   const [programs, setPrograms] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [shareInput, setShareInput] = useState('')
+  const [shareError, setShareError] = useState<string | null>(null)
   const isHydrated = useSyncExternalStore(
     () => () => { },
     () => true,
@@ -126,6 +139,17 @@ export default function OnboardingPage() {
       semester: data.semester,
     })
     router.push('/izborni')
+  }
+
+  // Otvori deljeni raspored iz nalepljenog linka — vodi na /deli koji radi u
+  // istom (PWA) kontekstu, pa se primenjuje na pravi storage.
+  function openSharedLink() {
+    const code = extractShareCode(shareInput)
+    if (!code || !decodeShare(code)) {
+      setShareError('Link nije važeći. Nalepi ceo link koji si dobio.')
+      return
+    }
+    router.push(`/deli?s=${code}`)
   }
 
   const canSubmit =
@@ -240,6 +264,42 @@ export default function OnboardingPage() {
         >
           Izaberi predmete
         </button>
+
+        {/* Nalepi deljeni link — koristi se npr. posle instalacije PWA (iOS home
+            screen app ima odvojen storage od Safarija) */}
+        <div className="mt-6 border-t border-[#024c7d]/15 pt-6 dark:border-white/20">
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
+            Imaš link od druga? Nalepi ga
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={shareInput}
+              onChange={e => { setShareInput(e.target.value); setShareError(null) }}
+              onKeyDown={e => e.key === 'Enter' && shareInput.trim() && openSharedLink()}
+              placeholder="Nalepi link…"
+              className="flex-1 h-10 px-3 rounded-xl border border-[#024c7d]/15 text-sm
+                         text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                         dark:border-white/20 placeholder-gray-400 dark:placeholder-gray-500
+                         focus:outline-none focus:ring-2 focus:ring-[#024c7d]
+                         dark:focus:ring-[#60c3ad] focus:border-transparent"
+            />
+            <button
+              onClick={openSharedLink}
+              disabled={!shareInput.trim()}
+              className={`shrink-0 rounded-xl px-4 text-sm font-medium transition-colors
+                ${shareInput.trim()
+                  ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+                  : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
+                }`}
+            >
+              Otvori
+            </button>
+          </div>
+          {shareError && (
+            <p className="mt-2 text-xs text-red-500 dark:text-red-400 text-center">{shareError}</p>
+          )}
+        </div>
 
         {/* Fallback - ručni odabir grupe */}
         {selectedYear && data && (
