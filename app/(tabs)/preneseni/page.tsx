@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
+import { session, app, byGroup } from '@/lib/storage'
 
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15–10:00', '10:15': '10:15–12:00',
@@ -63,22 +64,20 @@ export default function PreneseniPage() {
     const root = document.documentElement
     const willBeDark = !root.classList.contains('dark')
     root.classList.toggle('dark', willBeDark)
-    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+    app.theme.set(willBeDark ? 'dark' : 'light')
   }
 
   async function refreshTrenutniRaspored(nextExtra: ScheduleEntry[]) {
-    const group = sessionStorage.getItem('fon_group')
-    const year = sessionStorage.getItem('fon_year')
+    const group = session.group.get()
+    const year = session.year.get()
     if (!group || !year) return
 
     const data: SemesterData = await fetch(`/data/${year}god.json`).then(r => r.json())
     const all = getScheduleForGroup(data, group)
-    const saved = localStorage.getItem(`fon_subjects_${group}`)
-    let baseFiltered = saved
-      ? all.filter(e => {
-        const checked: Record<string, boolean> = JSON.parse(saved)
-        return checked[e.subject] !== false
-      })
+    const savedSubjects = byGroup.subjects(group).get()
+    const hasSaved = Object.keys(savedSubjects).length > 0
+    let baseFiltered = hasSaved
+      ? all.filter(e => savedSubjects[e.subject] !== false)
       : all
 
     baseFiltered = baseFiltered.filter(b => {
@@ -91,63 +90,53 @@ export default function PreneseniPage() {
   }
 
   useEffect(() => {
-    const group = sessionStorage.getItem('fon_group')
-    const year = sessionStorage.getItem('fon_year')
+    const group = session.group.get()
+    const year = session.year.get()
     if (!group || !year) { router.replace('/'); return }
 
     fetch(`/data/${year}god.json`)
       .then(r => r.json())
       .then((data: SemesterData) => {
         const all = getScheduleForGroup(data, group)
-        const saved = localStorage.getItem(`fon_subjects_${group}`)
-        let baseFiltered = saved
-          ? all.filter(e => {
-            const checked: Record<string, boolean> = JSON.parse(saved)
-            return checked[e.subject] !== false
-          })
+        const savedSubjects = byGroup.subjects(group).get()
+        const hasSaved = Object.keys(savedSubjects).length > 0
+        let baseFiltered = hasSaved
+          ? all.filter(e => savedSubjects[e.subject] !== false)
           : all
 
-       const extra = localStorage.getItem(`fon_extra_${group}`)
-        if (extra) {
-          const extraEntries: ScheduleEntry[] = JSON.parse(extra)
-          
+        const extraEntries = byGroup.extra(group).get()
+        if (extraEntries.length > 0) {
           // Automatsko gaženje: sakrij redovne predmete po VREMENU i po PREDMETU
           baseFiltered = baseFiltered.filter(b => {
             const gaziGaVreme = extraEntries.some(ex => ex.day === b.day && ex.start === b.start)
             const gaziGaPredmet = extraEntries.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
             return !gaziGaVreme && !gaziGaPredmet
           })
-          
+
           baseFiltered = [...baseFiltered, ...extraEntries]
-          
         }
         setTrenutniRaspored(baseFiltered)
       })
 
-    const extra = localStorage.getItem(`fon_extra_${group}`)
-    if (extra) setExtraTermini(JSON.parse(extra))
-
-    const hidden = localStorage.getItem(`fon_hidden_${group}`)
-    if (hidden) setHiddenTermini(JSON.parse(hidden))
-
-    const savedPrev = localStorage.getItem(`fon_prev_subjects_${group}`)
-    if (savedPrev) setPrevSubjects(JSON.parse(savedPrev))
+    setExtraTermini(byGroup.extra(group).get())
+    setHiddenTermini(byGroup.hidden(group).get())
+    setPrevSubjects(byGroup.prevSubjects(group).get())
   }, [router])
 
   function vratiTermin(index: number) {
-    const group = sessionStorage.getItem('fon_group')
+    const group = session.group.get() ?? ''
     const novi = hiddenTermini.filter((_, i) => i !== index)
     setHiddenTermini(novi)
-    if (novi.length === 0) localStorage.removeItem(`fon_hidden_${group}`)
-    else localStorage.setItem(`fon_hidden_${group}`, JSON.stringify(novi))
+    if (novi.length === 0) byGroup.hidden(group).remove()
+    else byGroup.hidden(group).set(novi)
   }
 
   function obrisiTermin(index: number) {
-    const group = sessionStorage.getItem('fon_group')
+    const group = session.group.get() ?? ''
     const novi = extraTermini.filter((_, i) => i !== index)
     setExtraTermini(novi)
-    if (novi.length === 0) localStorage.removeItem(`fon_extra_${group}`)
-    else localStorage.setItem(`fon_extra_${group}`, JSON.stringify(novi))
+    if (novi.length === 0) byGroup.extra(group).remove()
+    else byGroup.extra(group).set(novi)
     void refreshTrenutniRaspored(novi)
   }
 
@@ -342,9 +331,8 @@ export default function PreneseniPage() {
               <div className="mt-2 border-t border-[#024c7d]/15 pt-2 dark:border-white/20">
                 <button
                   onClick={() => {
-                    const group = sessionStorage.getItem('fon_group')
                     setExtraTermini([])
-                    localStorage.removeItem(`fon_extra_${group}`)
+                    byGroup.extra(session.group.get() ?? '').remove()
                     void refreshTrenutniRaspored([])
                   }}
                   className="text-xs text-red-400 hover:text-red-600 transition-colors"
@@ -632,8 +620,8 @@ export default function PreneseniPage() {
           {(trebaPredavanje || trebaVezbe) && (
             <button
               onClick={() => {
-                const saved = localStorage.getItem(`fon_extra_${sessionStorage.getItem('fon_group')}`)
-                const extra: ScheduleEntry[] = saved ? JSON.parse(saved) : []
+                const group = session.group.get() ?? ''
+                const extra = byGroup.extra(group).get()
                 const zaDodavanje = [odabranoPredavanje, odabraneVezbe].filter(Boolean) as ScheduleEntry[]
 
                 for (const termin of zaDodavanje) {
@@ -649,10 +637,7 @@ export default function PreneseniPage() {
                   }
                 }
 
-                localStorage.setItem(
-                  `fon_extra_${sessionStorage.getItem('fon_group')}`,
-                  JSON.stringify(extra)
-                )
+                byGroup.extra(group).set(extra)
                 setExtraTermini(extra)
                 void refreshTrenutniRaspored(extra)
                 setDodato(true)

@@ -5,6 +5,7 @@ import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry } from '@/lib/types'
+import { session, app, byGroup } from '@/lib/storage'
 import NotificationBell from '@/components/NotificationBell'
 
 const COLORS = [
@@ -88,15 +89,9 @@ function rokEntryKey(e: RokEntry) {
 // - fon_other_sem_${group}: predmeti drugog semestra koje je student ručno štiklirao
 // - fon_subjects_history: akumulirani izbor po semestrima (za mešane Sep/Okt rokove)
 function addOtherSemesterSubjects(set: Set<string>, group: string) {
-  const other = localStorage.getItem(`fon_other_sem_${group}`)
-  if (other) {
-    for (const s of JSON.parse(other) as string[]) set.add(s)
-  }
-  const hist = localStorage.getItem('fon_subjects_history')
-  if (hist) {
-    for (const arr of Object.values(JSON.parse(hist) as Record<string, string[]>)) {
-      for (const s of arr) set.add(s)
-    }
+  for (const s of byGroup.otherSem(group).get()) set.add(s)
+  for (const arr of Object.values(app.subjectsHistory.get())) {
+    for (const s of arr) set.add(s)
   }
 }
 
@@ -178,10 +173,10 @@ export default function RokoviPage() {
 
   const meta = isHydrated
     ? {
-        group: sessionStorage.getItem('fon_group') ?? '',
-        year: sessionStorage.getItem('fon_year') ?? '',
-        program: sessionStorage.getItem('fon_program') ?? '',
-        semester: sessionStorage.getItem('fon_semester') ?? '',
+        group: session.group.get() ?? '',
+        year: session.year.get() ?? '',
+        program: session.program.get() ?? '',
+        semester: session.semester.get() ?? '',
       }
     : { group: '', year: '', program: '', semester: '' }
 
@@ -193,19 +188,15 @@ export default function RokoviPage() {
       .then((d: RokData[]) => {
         const data = Array.isArray(d) ? d : []
         setAllRokovi(data)
-        const savedSubjects = meta.group ? localStorage.getItem(`fon_subjects_${meta.group}`) : null
-        const subjectSet: Set<string> | null = savedSubjects
-          ? new Set(Object.entries(JSON.parse(savedSubjects)).filter(([, v]) => v !== false).map(([k]) => k))
+        const savedSubjects = meta.group ? byGroup.subjects(meta.group).get() : {}
+        const subjectSet: Set<string> | null = Object.keys(savedSubjects).length > 0
+          ? new Set(Object.entries(savedSubjects).filter(([, v]) => v !== false).map(([k]) => k))
           : null
-        const extra = meta.group ? localStorage.getItem(`fon_extra_${meta.group}`) : null
-        if (subjectSet && extra) {
-          for (const e of JSON.parse(extra) as { subject: string }[]) subjectSet.add(e.subject)
+        if (subjectSet && meta.group) {
+          for (const e of byGroup.extra(meta.group).get()) subjectSet.add(e.subject)
+          for (const e of byGroup.prevSubjects(meta.group).get()) subjectSet.add(e.subject)
+          addOtherSemesterSubjects(subjectSet, meta.group)
         }
-        const prev = meta.group ? localStorage.getItem(`fon_prev_subjects_${meta.group}`) : null
-        if (subjectSet && prev) {
-          for (const e of JSON.parse(prev) as { subject: string }[]) subjectSet.add(e.subject)
-        }
-        if (subjectSet && meta.group) addOtherSemesterSubjects(subjectSet, meta.group)
 
         const nearestDate = (tip: string) =>
           data
@@ -228,7 +219,7 @@ export default function RokoviPage() {
         }
         const dismissed = new Set(
           data
-            .filter(r => sessionStorage.getItem('fon_dismissed_prijava_' + r.rok))
+            .filter(r => session.dismissedPrijava(r.rok).get())
             .map(r => r.rok)
         )
         setDismissedBanners(dismissed)
@@ -239,22 +230,13 @@ export default function RokoviPage() {
   // Skup predmeta koje student sluša (regularni + preneseni iz prošlih godina)
   const userSubjects: Set<string> | null = isHydrated && meta.group
     ? (() => {
-        const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
-        if (!saved) return null
-        const checked: Record<string, boolean> = JSON.parse(saved)
+        const checked = byGroup.subjects(meta.group).get()
+        if (Object.keys(checked).length === 0) return null
         const subjects = new Set(
           Object.entries(checked).filter(([, v]) => v !== false).map(([k]) => k)
         )
-        const extra = localStorage.getItem(`fon_extra_${meta.group}`)
-        if (extra) {
-          const extraEntries: { subject: string }[] = JSON.parse(extra)
-          for (const e of extraEntries) subjects.add(e.subject)
-        }
-        const prev = localStorage.getItem(`fon_prev_subjects_${meta.group}`)
-        if (prev) {
-          const prevEntries: { subject: string }[] = JSON.parse(prev)
-          for (const e of prevEntries) subjects.add(e.subject)
-        }
+        for (const e of byGroup.extra(meta.group).get()) subjects.add(e.subject)
+        for (const e of byGroup.prevSubjects(meta.group).get()) subjects.add(e.subject)
         addOtherSemesterSubjects(subjects, meta.group)
         return subjects
       })()
@@ -265,8 +247,7 @@ export default function RokoviPage() {
   // Skriveni termini se čuvaju odvojeno po tabu i grupi
   useEffect(() => {
     if (!isHydrated || !meta.group) { setHiddenEntries([]); return }
-    const raw = localStorage.getItem(`fon_rok_hidden_${tab}_${meta.group}`)
-    setHiddenEntries(raw ? JSON.parse(raw) : [])
+    setHiddenEntries(byGroup.rokHidden(tab, meta.group).get())
     setShowHidden(false)
   }, [isHydrated, tab, meta.group])
 
@@ -274,14 +255,14 @@ export default function RokoviPage() {
     if (hiddenKeys.has(rokEntryKey(e))) return
     const next = [...hiddenEntries, e]
     setHiddenEntries(next)
-    localStorage.setItem(`fon_rok_hidden_${tab}_${meta.group}`, JSON.stringify(next))
+    byGroup.rokHidden(tab, meta.group).set(next)
   }
 
   function restoreEntry(e: RokEntry) {
     const key = rokEntryKey(e)
     const next = hiddenEntries.filter(h => rokEntryKey(h) !== key)
     setHiddenEntries(next)
-    localStorage.setItem(`fon_rok_hidden_${tab}_${meta.group}`, JSON.stringify(next))
+    byGroup.rokHidden(tab, meta.group).set(next)
   }
 
   function filterEntries(entries: RokEntry[]): RokEntry[] {
@@ -364,7 +345,7 @@ export default function RokoviPage() {
 
   function dismissBanner(rok: string) {
     setDismissedBanners(prev => new Set([...prev, rok]))
-    sessionStorage.setItem('fon_dismissed_prijava_' + rok, '1')
+    session.dismissedPrijava(rok).set()
   }
 
   const byDate = useMemo(() => {
@@ -381,7 +362,7 @@ export default function RokoviPage() {
     const root = document.documentElement
     const willBeDark = !root.classList.contains('dark')
     root.classList.toggle('dark', willBeDark)
-    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+    app.theme.set(willBeDark ? 'dark' : 'light')
   }
 
   const isEmpty = activeRokovi.length === 0

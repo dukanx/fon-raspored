@@ -7,6 +7,7 @@ import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '
 import { getScheduleForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import type { SubjectMeta } from '@/lib/subjects'
+import { session, saved as savedStore, app, byGroup, note as noteStore } from '@/lib/storage'
 import Link from 'next/link'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -199,11 +200,11 @@ export default function RasporedPage() {
   const view: 'grid' | 'list' = manualView ?? 'grid'
   const meta = isHydrated
     ? {
-      group: sessionStorage.getItem('fon_group') ?? '',
-      year: sessionStorage.getItem('fon_year') ?? '',
-      lastName: sessionStorage.getItem('fon_lastName') ?? '',
-      semester: sessionStorage.getItem('fon_semester') ?? '',
-      program: sessionStorage.getItem('fon_program') ?? '',
+      group: session.group.get() ?? '',
+      year: session.year.get() ?? '',
+      lastName: session.lastName.get() ?? '',
+      semester: session.semester.get() ?? '',
+      program: session.program.get() ?? '',
     }
     : { group: '', year: '', lastName: '', semester: '', program: '' }
 
@@ -224,12 +225,11 @@ export default function RasporedPage() {
         if (isFlipPending(data.semester)) setShowFlipPopup(true)
 
         const all = getScheduleForGroup(data, meta.group)
-        const saved = localStorage.getItem(`fon_subjects_${meta.group}`)
-        const checked: Record<string, boolean> = saved ? JSON.parse(saved) : {}
-        let base = saved ? all.filter(e => checked[e.subject] !== false) : all
+        const checked = byGroup.subjects(meta.group).get()
+        const hasSaved = Object.keys(checked).length > 0
+        let base = hasSaved ? all.filter(e => checked[e.subject] !== false) : all
 
-        const extraRaw = localStorage.getItem(`fon_extra_${meta.group}`)
-        const extra: ScheduleEntry[] = extraRaw ? JSON.parse(extraRaw) : []
+        const extra = byGroup.extra(meta.group).get()
 
         // MAGIJA: Filtriramo iz base:
         // 1. Termine koje preneseni predmeti gaze po vremenu (isti dan i vreme)
@@ -254,8 +254,7 @@ export default function RasporedPage() {
         setEntries(mergeSameSlot(merged))
         setLoaded(true)
 
-        const hiddenRaw = localStorage.getItem(`fon_hidden_${meta.group}`)
-        if (hiddenRaw) setHiddenEntries(JSON.parse(hiddenRaw))
+        setHiddenEntries(byGroup.hidden(meta.group).get())
       })
   }, [isHydrated, meta.group, meta.year, router])
 
@@ -288,19 +287,19 @@ export default function RasporedPage() {
   // Otvori panel predmeta i učitaj njegovu belešku (bez setState u efektu).
   function openSubject(subject: string) {
     setSelectedSubject(subject)
-    setNote(localStorage.getItem(`fon_note_${subject}`) ?? '')
+    setNote(noteStore(subject).get() ?? '')
   }
 
   function saveNote(value: string) {
     setNote(value)
-    if (selectedSubject) localStorage.setItem(`fon_note_${selectedSubject}`, value)
+    if (selectedSubject) noteStore(selectedSubject).set(value)
   }
 
   function toggleTheme() {
     const root = document.documentElement
     const willBeDark = !root.classList.contains('dark')
     root.classList.toggle('dark', willBeDark)
-    localStorage.setItem('fon_theme', willBeDark ? 'dark' : 'light')
+    app.theme.set(willBeDark ? 'dark' : 'light')
   }
 
   function dismissFlip() {
@@ -338,7 +337,7 @@ export default function RasporedPage() {
     if (hiddenKeys.has(key)) return
     const next = [...hiddenEntries, e]
     setHiddenEntries(next)
-    localStorage.setItem(`fon_hidden_${meta.group}`, JSON.stringify(next))
+    byGroup.hidden(meta.group).set(next)
   }
 
   function downloadPNG() {
@@ -560,7 +559,7 @@ export default function RasporedPage() {
 
             <div className="flex shrink-0 items-center gap-2">
               <button
-                onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
+                onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium text-gray-600 dark:text-gray-300 sm:w-auto sm:px-3 sm:py-2 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
                 aria-label="Nazad"
               >
