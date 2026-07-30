@@ -7,6 +7,7 @@ import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
 import BlurText from '@/components/BlurText'
+import InstallPrompt from '@/components/InstallPrompt'
 
 const GLASS = 'liquid-glass'
 
@@ -172,9 +173,11 @@ export default function OnboardingPage() {
             className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
           />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Unesi svoje podatke i dobij lični raspored
+            Tvoj raspored, ispiti i kolokvijumi na jednom mestu
           </p>
         </div>
+
+        <InstallPrompt className="mb-6" />
 
         {/* Godina */}
         <div className="mb-5">
@@ -269,7 +272,7 @@ export default function OnboardingPage() {
             screen app ima odvojen storage od Safarija) */}
         <div className="mt-6 border-t border-[#024c7d]/15 pt-6 dark:border-white/20">
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
-            Imaš link od druga? Nalepi ga
+            Imaš link od kolege? Nalepi ga
           </p>
           <div className="flex gap-2">
             <input

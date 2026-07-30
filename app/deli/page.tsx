@@ -6,6 +6,7 @@ import type { SemesterData } from '@/lib/types'
 import { uniqueSubjectsForGroup } from '@/lib/schedule'
 import { decodeShare } from '@/lib/share'
 import { session, saved, byGroup } from '@/lib/storage'
+import InstallPrompt from '@/components/InstallPrompt'
 
 const GLASS = 'liquid-glass'
 
@@ -147,6 +148,8 @@ export default function DeliPage() {
                 možemo tačno da prenesemo. Možeš da ih izabereš ručno.
               </p>
             )}
+
+            <InstallPrompt withLink className="mt-4" />
 
             <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
               Ovo će zameniti tvoj trenutni izbor na ovom uređaju.
