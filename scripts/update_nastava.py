@@ -141,6 +141,28 @@ def check_regression(new, compare_path):
     return problems
 
 
+def check_meta_coverage(results):
+    """Upozori na predmete iz rasporeda koji nemaju unos u subjects-meta.json.
+
+    Ne-fatalno: takvi predmeti u aplikaciji default padaju na "čekiran" i nemaju
+    ESPB/link. Kad se pojave, pokreni scripts/scrape_subjects_meta.py da ih dopuni.
+    (Status flip postojećeg predmeta ovo NE hvata — za to pun re-scrape.)
+    """
+    import json
+    meta_path = DATA_DIR / "subjects-meta.json"
+    meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+    subjects = {e["subject"] for res in results.values() for e in res["entries"]}
+    missing = sorted(s for s in subjects if s not in meta)
+    if missing:
+        print(f"\nPAŽNJA: {len(missing)} predmeta bez meta (ESPB/status/link):",
+              file=sys.stderr)
+        for s in missing:
+            print(f"  - {s}", file=sys.stderr)
+        print("  -> pokreni: python scripts/scrape_subjects_meta.py", file=sys.stderr)
+    else:
+        print("Meta pokrivenost: OK (svi predmeti imaju unos).", file=sys.stderr)
+
+
 def main():
     ap = argparse.ArgumentParser(description="Ažurira raspored nastave (god.json) sa FON sajta.")
     ap.add_argument("--semester", choices=["letnji", "zimski"], default=None,
@@ -203,6 +225,8 @@ def main():
             path = DATA_DIR / f"{y}god.json"
             path.write_text(payload, encoding="utf-8")
             print(f"Upisano: {path}", file=sys.stderr)
+
+    check_meta_coverage(results)
 
 
 if __name__ == "__main__":
