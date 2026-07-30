@@ -10,6 +10,25 @@ type BeforeInstallPromptEvent = Event & {
 
 const GLASS = 'liquid-glass'
 
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (p: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...p,
+})
+// Strelica u fioku — "instaliraj / preuzmi".
+const IconInstall = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 3v11M8 10l4 4 4-4" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
+)
+// Zaobljeni kvadrat sa plusom — iOS "Dodaj na početni ekran".
+const IconAddToHome = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="5" /><path d="M12 8v8M8 12h8" /></svg>
+)
+
 // Kartica sa uputstvom za instalaciju PWA. Sama se sakrije ako je app već
 // instalirana (standalone) ili na desktopu bez install prompta.
 //
@@ -81,10 +100,11 @@ export default function InstallPrompt({
   return (
     <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 p-4 ${GLASS} ${className}`}>
       <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100">
-        📲 Instaliraj aplikaciju
+        <IconInstall className="h-4 w-4 text-[#024c7d] dark:text-[#60c3ad]" />
+        Instaliraj aplikaciju
       </p>
       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Brže i lakše korišćenje, radi i offline, i može da te podseti na rokove.
+        Brže i lakše korišćenje, uz mogućnost notifikacija za rokove i prijave ispita.
       </p>
 
       {deferred ? (
@@ -97,7 +117,10 @@ export default function InstallPrompt({
       ) : platform === 'ios' ? (
         <ol className="mt-3 list-decimal list-inside space-y-1 text-xs text-gray-600 dark:text-gray-300">
           <li>Klikni <span className="font-medium">Podeli</span> (Share) u Safariju.</li>
-          <li>Izaberi <span className="font-medium">{'„Na početni ekran”'}</span> (Add to Home Screen).</li>
+          <li>
+            Izaberi <span className="font-medium">{'„Na početni ekran”'}</span>{' '}
+            <IconAddToHome className="inline h-4 w-4 align-text-bottom" /> (Add to Home Screen).
+          </li>
           <li>Otvori aplikaciju sa početnog ekrana.</li>
         </ol>
       ) : (

@@ -161,7 +161,8 @@ export default function OnboardingPage() {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-4 py-10">
-      <div className={`w-full max-w-md rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
+      <div className="flex w-full max-w-md flex-col gap-4">
+      <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         <div className="mb-8">
           <BlurText
@@ -176,8 +177,6 @@ export default function OnboardingPage() {
             Tvoj raspored, ispiti i kolokvijumi na jednom mestu
           </p>
         </div>
-
-        <InstallPrompt className="mb-6" />
 
         {/* Godina */}
         <div className="mb-5">
@@ -340,6 +339,9 @@ export default function OnboardingPage() {
           </div>
         )}
 
+        </div>
+
+        <InstallPrompt />
       </div>
 
       <footer className="absolute inset-x-0 bottom-0 py-4 text-center text-xs text-gray-400 dark:text-gray-600">
