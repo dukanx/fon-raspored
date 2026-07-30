@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'reac
 import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup } from '@/lib/schedule'
+import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
+import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup, note as noteStore } from '@/lib/storage'
 import Link from 'next/link'
@@ -57,6 +58,9 @@ const IconCalendar = (p: IconProps) => (
 )
 const IconImage = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-4.5-4.5L5 22" /></svg>
+)
+const IconShare = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></svg>
 )
 const IconEdit = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
@@ -172,6 +176,8 @@ export default function RasporedPage() {
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
   const [showDownloadToast, setShowDownloadToast] = useState(false)
+  const [showShareToast, setShowShareToast] = useState(false)
+  const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
   const [rokovi, setRokovi] = useState<RokData[]>([])
@@ -225,6 +231,7 @@ export default function RasporedPage() {
         if (isFlipPending(data.semester)) setShowFlipPopup(true)
 
         const all = getScheduleForGroup(data, meta.group)
+        setAllSubjects(uniqueSubjectsForGroup(data, meta.group))
         const checked = byGroup.subjects(meta.group).get()
         const hasSaved = Object.keys(checked).length > 0
         let base = hasSaved ? all.filter(e => checked[e.subject] !== false) : all
@@ -300,6 +307,40 @@ export default function RasporedPage() {
     const willBeDark = !root.classList.contains('dark')
     root.classList.toggle('dark', willBeDark)
     app.theme.set(willBeDark ? 'dark' : 'light')
+  }
+
+  // Napravi /deli link sa trenutnim izborom predmeta i podeli ga (native share
+  // na mobilnom, inače kopiraj u clipboard + toast).
+  async function shareSchedule() {
+    if (!meta.group || !meta.year || allSubjects.length === 0) return
+    const checked = byGroup.subjects(meta.group).get()
+    const s = allSubjects
+      .map((_, i) => i)
+      .filter(i => checked[allSubjects[i]] !== false)
+    const encoded = encodeShare({
+      v: 1,
+      y: Number(meta.year),
+      g: meta.group,
+      n: allSubjects.length,
+      s,
+    })
+    const url = `${window.location.origin}/deli?s=${encoded}`
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'FON Raspored', text: `Raspored — grupa ${meta.group}`, url })
+        return
+      } catch {
+        return // korisnik otkazao share sheet — ne kopiraj
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url)
+      setShowShareToast(true)
+      setTimeout(() => setShowShareToast(false), 3000)
+    } catch {
+      // clipboard nedostupan (npr. http) — tiho odustani
+    }
   }
 
   function dismissFlip() {
@@ -528,6 +569,7 @@ export default function RasporedPage() {
 
   // Export akcije (skidanje slike / kalendar) — NISU navigacija, stoje uz kontrole
   const exportActions = [
+    { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: () => { void shareSchedule() } },
     { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: downloadPNG },
     { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
@@ -987,6 +1029,17 @@ export default function RasporedPage() {
               ✓
             </span>
             Slika rasporeda je uspešno preuzeta!
+          </div>
+        </div>
+      )}
+
+      {showShareToast && (
+        <div className="fixed bottom-28 left-1/2 z-[100] -translate-x-1/2 animate-bounce sm:bottom-6">
+          <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-xl dark:bg-gray-100 dark:text-gray-900">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/20 text-green-400 dark:text-green-600">
+              ✓
+            </span>
+            Link je kopiran!
           </div>
         </div>
       )}
