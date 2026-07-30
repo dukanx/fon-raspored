@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { app } from '@/lib/storage'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -8,15 +9,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
 
     const applyTheme = () => {
-      const savedTheme = localStorage.getItem('fon_theme')
-      const isDark = savedTheme === 'dark'
+      const isDark = app.theme.get() === 'dark'
       root.classList.toggle('dark', isDark)
     }
 
     applyTheme()
 
     const onSystemThemeChange = () => {
-      if (!localStorage.getItem('fon_theme')) {
+      if (!app.theme.get()) {
         applyTheme()
       }
     }
