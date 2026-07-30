@@ -14,6 +14,7 @@ Pokretanje:
 """
 
 import argparse
+import os
 import re
 import sys
 import tempfile
@@ -161,6 +162,20 @@ def check_meta_coverage(results):
         print("  -> pokreni: python scripts/scrape_subjects_meta.py", file=sys.stderr)
     else:
         print("Meta pokrivenost: OK (svi predmeti imaju unos).", file=sys.stderr)
+
+    # U GitHub Actions: napiši vidljiv blok na Summary stranicu run-a (ne samo
+    # u log koraka koji se mora ručno raširiti).
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a", encoding="utf-8") as f:
+            if missing:
+                f.write(f"### ⚠️ {len(missing)} predmeta bez meta\n\n")
+                f.write("Nemaju ESPB/status/link — pokreni "
+                        "`python scripts/scrape_subjects_meta.py`:\n\n")
+                for s in missing:
+                    f.write(f"- {s}\n")
+            else:
+                f.write("### ✅ Meta pokrivenost OK\n\nSvi predmeti imaju unos.\n")
 
 
 def main():
