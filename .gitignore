@@ -41,6 +41,7 @@ yarn-error.log*
 next-env.d.ts
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # efemerni spisak novih rokova za push (generiše check_fon.py u CI-ju)
 /scripts/pending_notify.json

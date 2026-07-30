@@ -1,0 +1,1794 @@
+[
+  {
+    "subject": "Alati za izveštavanje i vizuelizaciju podataka",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "15:00",
+    "end": "17:00",
+    "rooms": [
+      "08",
+      "09"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Arhitektura računara i operativni sistemi",
+    "type": "U",
+    "date": "2026-03-07",
+    "start": "09:00",
+    "end": "09:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19"
+    ],
+    "note": "lab. test I sm"
+  },
+  {
+    "subject": "Arhitektura računara i operativni sistemi",
+    "type": "U",
+    "date": "2026-03-07",
+    "start": "10:00",
+    "end": "10:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19"
+    ],
+    "note": "lab. test II sm"
+  },
+  {
+    "subject": "Arhitektura računara i operativni sistemi",
+    "type": "U",
+    "date": "2026-03-07",
+    "start": "11:00",
+    "end": "11:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19"
+    ],
+    "note": "lab. test III s"
+  },
+  {
+    "subject": "Arhitektura računara i operativni sistemi",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Baze podataka 2",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "15:00",
+    "end": "16:40",
+    "rooms": [
+      "06"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Baze podataka 2",
+    "type": "U",
+    "date": "2026-03-09",
+    "start": "11:00",
+    "end": "12:40",
+    "rooms": [
+      "20"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Big data infrastruktura i servisi",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "14:00",
+    "end": "16:00",
+    "rooms": [
+      "15"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Biostatistika",
+    "type": "P",
+    "date": "2026-03-07",
+    "start": "13:00",
+    "end": "15:15",
+    "rooms": [
+      "06"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Brend menadžment",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "16:30",
+    "end": "17:30",
+    "rooms": [
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Dinamika organizacionih sistema",
+    "type": "U",
+    "date": "2026-03-03",
+    "start": "13:00",
+    "end": "14:30",
+    "rooms": [
+      "20"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Diskretne matematičke strukture",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "08:00",
+    "end": "10:15",
+    "rooms": [
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Diskretne matematičke strukture",
+    "type": "U",
+    "date": "2026-03-11",
+    "start": "08:00",
+    "end": "08:45",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Distribuirani računarski sistemi",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "19"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Ekonomija",
+    "type": "U",
+    "date": "2026-03-05",
+    "start": "11:00",
+    "end": "17:00",
+    "rooms": [
+      "Amfiteatar 4"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Ekonomija",
+    "type": "U",
+    "date": "2026-03-06",
+    "start": "11:00",
+    "end": "17:00",
+    "rooms": [
+      "Amfiteatar 4"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Ekonomija",
+    "type": "U",
+    "date": "2026-03-07",
+    "start": "10:30",
+    "end": "15:30",
+    "rooms": [
+      "Amfiteatar 4"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Elektronsko poslovanje (NA)",
+    "type": "P",
+    "date": "2026-03-11",
+    "start": "15:00",
+    "end": "18:00",
+    "rooms": [
+      "50"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Elektronsko poslovanje (NA)",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "08:00",
+    "end": "13:45",
+    "rooms": [
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "odbrana sem."
+  },
+  {
+    "subject": "Elektronsko poslovanje (NA)",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "08:00",
+    "end": "15:30",
+    "rooms": [
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Engleski jezik u informatici",
+    "type": "P",
+    "date": "2026-03-12",
+    "start": "08:00",
+    "end": "09:30",
+    "rooms": [
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Engleski jezik u informatici",
+    "type": "P",
+    "date": "2026-03-12",
+    "start": "13:15",
+    "end": "14:45",
+    "rooms": [
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "IV smena"
+  },
+  {
+    "subject": "Engleski jezik u informatici",
+    "type": "P",
+    "date": "2026-03-12",
+    "start": "11:30",
+    "end": "13:00",
+    "rooms": [
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "III smena"
+  },
+  {
+    "subject": "Engleski jezik u informatici",
+    "type": "P",
+    "date": "2026-03-12",
+    "start": "09:45",
+    "end": "11:15",
+    "rooms": [
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "E-obrazovanje",
+    "type": "P",
+    "date": "2026-03-11",
+    "start": "12:00",
+    "end": "14:00",
+    "rooms": [
+      "06"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Francuski jezik u informatici",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "12"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Implementacija IS (projekat)",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "14:00",
+    "end": "15:30",
+    "rooms": [
+      "13"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Industrijsko i menadžment inženjerstvo",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "13:15",
+    "end": "15:15",
+    "rooms": [
+      "Amfiteatar 4",
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Internet marketing i društveni mediji",
+    "type": "U",
+    "date": "2026-03-04",
+    "start": "13:15",
+    "end": "17:15",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Internet tehnologije",
+    "type": "U",
+    "date": "2026-03-07",
+    "start": "09:00",
+    "end": "12:00",
+    "rooms": [
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "odbrana sem."
+  },
+  {
+    "subject": "Internet tehnologije",
+    "type": "P",
+    "date": "2026-03-08",
+    "start": "08:00",
+    "end": "11:00",
+    "rooms": [
+      "60",
+      "61",
+      "62",
+      "2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Internet tehnologije",
+    "type": "U",
+    "date": "2026-03-12",
+    "start": "15:00",
+    "end": "18:00",
+    "rooms": [
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Inženjering kvaliteta",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "08"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Inženjering kvaliteta",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "12:00",
+    "end": "14:00",
+    "rooms": [
+      "17"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Korporativne finansije",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "13:00",
+    "end": "14:30",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Korporativne finansije",
+    "type": "U",
+    "date": "2026-03-06",
+    "start": "14:00",
+    "end": "17:00",
+    "rooms": [
+      "20"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Korporativne komunikacije",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "11:00",
+    "end": "14:00",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Lean logistika",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "15:30",
+    "end": "17:40",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Lean logistika",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "10:00",
+    "end": "15:00",
+    "rooms": [
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Lin proizvodnja i usluge",
+    "type": "P",
+    "date": "2026-03-13",
+    "start": "14:30",
+    "end": "15:30",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Marketing",
+    "type": "U",
+    "date": "2026-03-03",
+    "start": "12:00",
+    "end": "13:00",
+    "rooms": [
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Marketing",
+    "type": "U",
+    "date": "2026-03-03",
+    "start": "13:30",
+    "end": "14:30",
+    "rooms": [
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Matematika 1",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "08:00",
+    "end": "10:15",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Matematika 1",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "10:30",
+    "end": "12:45",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Matematika 1",
+    "type": "U",
+    "date": "2026-03-11",
+    "start": "09:00",
+    "end": "15:00",
+    "rooms": [
+      "Amfiteatar 2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Matematika 1",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "08:00",
+    "end": "14:00",
+    "rooms": [
+      "Amfiteatar 2"
+    ],
+    "note": "rezerva"
+  },
+  {
+    "subject": "Matematika 3",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "08:00",
+    "end": "10:15",
+    "rooms": [
+      "Amfiteatar 1"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Matematika 3",
+    "type": "U",
+    "date": "2026-03-11",
+    "start": "09:00",
+    "end": "14:30",
+    "rooms": [
+      "Amfiteatar 2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Menadžment",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "08:00",
+    "end": "08:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Menadžment",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "09:00",
+    "end": "09:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Menadžment",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "10:00",
+    "end": "11:15",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "III smena"
+  },
+  {
+    "subject": "Menadžment",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "11:30",
+    "end": "12:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "IV smena"
+  },
+  {
+    "subject": "Menadžment ljudskih resursa",
+    "type": "U",
+    "date": "2026-03-11",
+    "start": "08:00",
+    "end": "09:00",
+    "rooms": [
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Menadžment ljudskih resursa",
+    "type": "U",
+    "date": "2026-03-11",
+    "start": "09:30",
+    "end": "10:30",
+    "rooms": [
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Menadžment prodaje",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "13:00",
+    "end": "15:00",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Menadžment totalnog kvaliteta",
+    "type": "P",
+    "date": "2026-03-12",
+    "start": "10:00",
+    "end": "11:15",
+    "rooms": [
+      "13"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Modelovanje poslovnih procesa",
+    "type": "P",
+    "date": "2026-03-07",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar",
+      "4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Multimedijalna produkcija",
+    "type": "P",
+    "date": "2026-03-13",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "40",
+      "50"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Multimediji",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "14:00",
+    "end": "18:00",
+    "rooms": [
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Napredna analiza podataka",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "08",
+      "09"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Napredne .NET tehnologije",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "10:30",
+    "end": "12:30",
+    "rooms": [
+      "19"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Napredne .NET tehnologije",
+    "type": "U",
+    "date": "2026-03-10",
+    "start": "10:00",
+    "end": "11:30",
+    "rooms": [
+      "20"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Operaciona istraživanja 1",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "10:30",
+    "end": "12:15",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 5",
+      "Čitaonica",
+      "3"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Operaciona istraživanja 1",
+    "type": "P",
+    "date": "2026-03-09",
+    "start": "12:30",
+    "end": "14:15",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Operaciona istraživanja 1",
+    "type": "U",
+    "date": "2026-03-12",
+    "start": "10:00",
+    "end": "15:30",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Operaciona istraživanja 1",
+    "type": "U",
+    "date": "2026-03-12",
+    "start": "09:30",
+    "end": "15:30",
+    "rooms": [
+      "Amfiteatar 2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Osnove finansijskog menadžmenta",
+    "type": "P",
+    "date": "2026-03-07",
+    "start": "15:30",
+    "end": "17:00",
+    "rooms": [
+      "08",
+      "09",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "MiO"
+  },
+  {
+    "subject": "Osnove finansijskog menadžmenta",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "08:00",
+    "end": "13:00",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Osnove informaciono komunikacionih tehnologija",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "08:00",
+    "end": "09:00",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Osnove informaciono komunikacionih tehnologija",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "11:00",
+    "end": "12:00",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "III lab."
+  },
+  {
+    "subject": "Osnove informaciono komunikacionih tehnologija",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "09:30",
+    "end": "10:30",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II lab."
+  },
+  {
+    "subject": "Osnove informaciono komunikacionih tehnologija",
+    "type": "P",
+    "date": "2026-03-08",
+    "start": "08:00",
+    "end": "09:30",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Osnove informaciono komunikacionih tehnologija",
+    "type": "P",
+    "date": "2026-03-08",
+    "start": "10:00",
+    "end": "11:30",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Osnove kvaliteta",
+    "type": "U",
+    "date": "2026-03-06",
+    "start": "08:00",
+    "end": "09:00",
+    "rooms": [
+      "13",
+      "14",
+      "17",
+      "18",
+      "21",
+      "30",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Osnove kvaliteta",
+    "type": "U",
+    "date": "2026-03-06",
+    "start": "09:30",
+    "end": "10:30",
+    "rooms": [
+      "13",
+      "14",
+      "17",
+      "18",
+      "21",
+      "30",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Osnovi organizacije",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "10:00",
+    "end": "14:00",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2"
+    ],
+    "note": "test"
+  },
+  {
+    "subject": "Osnovi organizacije",
+    "type": "U",
+    "date": "2026-03-10",
+    "start": "11:00",
+    "end": "20:00",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Pravo i etika obrade podataka",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "10:00",
+    "end": "11:30",
+    "rooms": [
+      "13"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Programiranje 1 (NA)",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "09:00",
+    "end": "10:15",
+    "rooms": [
+      "06",
+      "07",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Programiranje 1 (NA)",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "10:45",
+    "end": "12:00",
+    "rooms": [
+      "06",
+      "07",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Programiranje 3",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "19"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Programiranje repozitorijuma podataka",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "08:00",
+    "end": "10:00",
+    "rooms": [
+      "60",
+      "61"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Programiranje repozitorijuma podataka",
+    "type": "U",
+    "date": "2026-03-08",
+    "start": "16:00",
+    "end": "17:30",
+    "rooms": [
+      "40"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Projektovanje informacionih sistema",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "15:00",
+    "end": "18:00",
+    "rooms": [
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "21",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Projektovanje organizacije",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "10:00",
+    "end": "14:00",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Projektovanje proizvodnih i uslužnih sistema",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "Amfiteatar 1"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Projektovanje proizvodnih i uslužnih sistema",
+    "type": "U",
+    "date": "2026-03-09",
+    "start": "16:00",
+    "end": "17:30",
+    "rooms": [
+      "Amfiteatar 1"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Projektovanje softvera",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "13:15",
+    "end": "15:30",
+    "rooms": [
+      "06",
+      "07",
+      "40",
+      "50",
+      "60",
+      "61",
+      "4"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Projektovanje softvera",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "10:30",
+    "end": "12:45",
+    "rooms": [
+      "06",
+      "07",
+      "40",
+      "50",
+      "60",
+      "61"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Projektovanje softvera",
+    "type": "P",
+    "date": "2026-03-15",
+    "start": "09:00",
+    "end": "14:00",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09"
+    ],
+    "note": "odbrana sem."
+  },
+  {
+    "subject": "Projektovanje softvera",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "15:00",
+    "end": "17:15",
+    "rooms": [
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Računarske mreže i telekomunikacije",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "08:00",
+    "end": "09:30",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Računarske mreže i telekomunikacije",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "09:45",
+    "end": "11:15",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Računarski integrisana proizvodnja",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "08:00",
+    "end": "10:15",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Računarski integrisana proizvodnja",
+    "type": "U",
+    "date": "2026-03-12",
+    "start": "09:30",
+    "end": "13:30",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Računovodstvo",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "13:30",
+    "end": "15:30",
+    "rooms": [
+      "13",
+      "14",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Računovodstvo",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "09:00",
+    "end": "13:00",
+    "rooms": [
+      "Amfiteatar 1"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Sistem menadžmenta zdravlja i bezbednosti na radu i životne sredine",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "10:30",
+    "end": "12:30",
+    "rooms": [
+      "14"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Sistem menadžmenta zdravlja i bezbednosti na radu i životne sredine",
+    "type": "U",
+    "date": "2026-03-14",
+    "start": "09:00",
+    "end": "13:00",
+    "rooms": [
+      "13"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Softverska podrška upravljanju projektima",
+    "type": "P",
+    "date": "2026-03-11",
+    "start": "14:00",
+    "end": "18:00",
+    "rooms": [
+      "62"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Softverski paterni",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "15:00",
+    "end": "16:30",
+    "rooms": [
+      "50"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Softverski paterni",
+    "type": "P",
+    "date": "2026-03-05",
+    "start": "16:00",
+    "end": "17:30",
+    "rooms": [
+      "50"
+    ],
+    "note": "odbrana sem."
+  },
+  {
+    "subject": "Softverski paterni",
+    "type": "U",
+    "date": "2026-03-09",
+    "start": "11:00",
+    "end": "12:30",
+    "rooms": [
+      "21"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Strateški marketing",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "17:00",
+    "end": "18:00",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Tehnološko preduzetništvo",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "11:00",
+    "end": "12:00",
+    "rooms": [
+      "21"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija odlučivanja",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "16:00",
+    "end": "17:30",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija odlučivanja",
+    "type": "U",
+    "date": "2026-03-15",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "13",
+      "14",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija sistema",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "15:30",
+    "end": "17:45",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija sistema",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "17:00",
+    "end": "18:00",
+    "rooms": [
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija verovatnoće",
+    "type": "P",
+    "date": "2026-03-08",
+    "start": "12:00",
+    "end": "14:30",
+    "rooms": [
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "40",
+      "50",
+      "62",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Teorija verovatnoće",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "08:15",
+    "end": "08:45",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": "test"
+  },
+  {
+    "subject": "Teorija verovatnoće",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "09:15",
+    "end": "09:45",
+    "rooms": [
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "Amfiteatar 1",
+      "Amfiteatar 2",
+      "Amfiteatar 3",
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "Čitaonica"
+    ],
+    "note": "test"
+  },
+  {
+    "subject": "Upravljački sistemi",
+    "type": "P",
+    "date": "2026-03-08",
+    "start": "15:00",
+    "end": "18:00",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljački sistemi",
+    "type": "U",
+    "date": "2026-03-14",
+    "start": "08:00",
+    "end": "16:00",
+    "rooms": [
+      "11"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje inovacionim projektima",
+    "type": "P",
+    "date": "2026-03-04",
+    "start": "16:00",
+    "end": "18:00",
+    "rooms": [
+      "Amfiteatar 4",
+      "Amfiteatar 5",
+      "5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje inovacionim projektima",
+    "type": "U",
+    "date": "2026-03-12",
+    "start": "11:00",
+    "end": "15:00",
+    "rooms": [
+      "Amfiteatar 4"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje kvalitetom",
+    "type": "P",
+    "date": "2026-03-03",
+    "start": "13:00",
+    "end": "15:00",
+    "rooms": [
+      "13"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje kvalitetom",
+    "type": "U",
+    "date": "2026-03-14",
+    "start": "11:00",
+    "end": "13:00",
+    "rooms": [
+      "Amfiteatar 5"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje performansama i zaradama",
+    "type": "P",
+    "date": "2026-03-06",
+    "start": "14:00",
+    "end": "15:00",
+    "rooms": [
+      "Amfiteatar 3"
+    ],
+    "note": ""
+  },
+  {
+    "subject": "Upravljanje projektima",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "08:00",
+    "end": "09:05",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "I smena"
+  },
+  {
+    "subject": "Upravljanje projektima",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "09:15",
+    "end": "10:20",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "II smena"
+  },
+  {
+    "subject": "Upravljanje projektima",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "10:30",
+    "end": "11:35",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "III smena"
+  },
+  {
+    "subject": "Upravljanje projektima",
+    "type": "P",
+    "date": "2026-03-10",
+    "start": "11:45",
+    "end": "13:45",
+    "rooms": [
+      "06",
+      "07",
+      "08",
+      "09",
+      "11",
+      "19",
+      "40",
+      "50",
+      "60",
+      "61",
+      "62"
+    ],
+    "note": "IV smena"
+  },
+  {
+    "subject": "Uvod u softverske arhitekture IS",
+    "type": "U",
+    "date": "2026-03-13",
+    "start": "14:00",
+    "end": "15:30",
+    "rooms": [
+      "14",
+      "6"
+    ],
+    "note": ""
+  }
+]

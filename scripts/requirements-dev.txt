@@ -1,0 +1,4 @@
+# Dev/test zavisnosti za Python skripte (parseri). Runtime zavisnosti se i dalje
+# instaliraju ad-hoc u workflow-ima (vidi .github/workflows/*.yml).
+pytest>=8,<9
+pdfplumber>=0.11,<0.12

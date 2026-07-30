@@ -59,7 +59,10 @@ scripts/
   send_push.mjs         # Slanje Web Push notifikacija (novi rokovi + podsetnici za prijavu)
   known_pdfs.json       # Lista već viđenih PDF URL-ova
 
+  tests/                # pytest testovi parsera + PDF fixtures (golden + strukturne provere)
+
 .github/workflows/
+  ci.yml                # CI — lint/typecheck/build (Node) + pytest (Python) na PR/push
   check-fon.yml         # Dnevna automatizacija ispita/kolokvijuma (scraping + notifikacije)
   update-nastava.yml    # Ručni workflow — regeneriše raspored nastave (god.json)
 ```
@@ -72,6 +75,28 @@ npm run dev
 ```
 
 Aplikacija se otvara na [http://localhost:3000](http://localhost:3000).
+
+## Testovi i CI
+
+Na svaki push i Pull Request pokreće se `ci.yml` sa dva job-a:
+
+- **build** — `npm run lint`, `tsc --noEmit` i `next build` (da se ne merge-uje kod koji ne prolazi lint/typecheck/build)
+- **python-tests** — `pytest` nad parserima (raspored nastave + ispiti/kolokvijumi)
+
+Python testovi (`scripts/tests/`) rade nad realnim FON PDF-ovima sačuvanim kao fixtures:
+
+```bash
+cd scripts
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Testovi kombinuju **golden** poređenje (izlaz parsera vs. sačuvani `*.expected.json`) i **strukturne** provere (ISO datumi, `HH:MM` vremena, P/U samo kod ispita itd.). Kad je promena u parseru namerna, regeneriši golden fajlove pa pregledaj diff:
+
+```bash
+cd scripts && python tests/update_golden.py
+```
 
 ## Automatizacija rasporeda ispita
 
@@ -145,4 +170,5 @@ Septembarski i oktobarski rok mešaju predmete oba semestra. Aplikacija akumulir
 - [pdfplumber](https://github.com/jsvine/pdfplumber) — parsiranje PDF rasporeda
 - [web-push](https://github.com/web-push-libs/web-push) + VAPID — Web Push notifikacije
 - [Upstash Redis](https://upstash.com) — čuvanje push pretplata
-- GitHub Actions — automatsko ažuriranje podataka i slanje notifikacija
+- GitHub Actions — CI (lint/typecheck/build + pytest) i automatsko ažuriranje podataka
+- [pytest](https://pytest.org) — testovi parsera (golden + strukturne provere)
