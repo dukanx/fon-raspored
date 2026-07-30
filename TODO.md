@@ -173,7 +173,7 @@ Gde se šta čuva:
 
 ## Funkcionalnosti
 
-- [ ] **Deljenje rasporeda putem linka** — URL sa enkodiranim parametrima (godina, program, grupa, izborni predmeti) kako bi student mogao da podeli tačno svoj raspored
+- [x] **Deljenje rasporeda putem linka** — dugme „Podeli" na `/raspored` generiše `/deli?s=` stateless link (godina/grupa/izbor predmeta u base64url); primalac dobija ekran potvrde. Obim v1: samo predmeti (extras/beleške se ne dele)
 - [x] **Napomene po predmetima** — beleška po predmetu u panelu na `/raspored` (localStorage `fon_note_<predmet>`, auto-expand textarea)
 
 

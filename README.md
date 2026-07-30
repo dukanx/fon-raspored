@@ -18,6 +18,7 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Onboarding** — pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
 - **Dark/light mode**
 - **Export u iCal** — raspored se može uvesti u Google Calendar, Apple Calendar i sl.
+- **Deljenje putem linka** — dugme „Podeli" pravi link (`/deli`) sa enkodiranom grupom i izborom predmeta; ko ga otvori dobija taj raspored posle potvrde, bez onboardinga
 - **Automatsko ažuriranje** — GitHub Actions svaki dan proverava FON sajt za nove PDF rasporede i automatski ih parsira i upisuje
 
 ## Struktura projekta
