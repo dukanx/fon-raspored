@@ -5,6 +5,7 @@ import {
   getScheduleForGroup,
   getProgramsForYear,
   getElectivesForGroup,
+  uniqueSubjectsForGroup,
 } from './schedule'
 
 // Sintetički semestar: dva IST opsega + jedna MiO grupa "Svi".
@@ -72,6 +73,13 @@ describe('getScheduleForGroup', () => {
 describe('getProgramsForYear', () => {
   it('vraća jedinstvene programe, sortirane', () => {
     expect(getProgramsForYear(DATA)).toEqual(['Finansijski menadžment', 'Informacioni sistemi'])
+  })
+})
+
+describe('uniqueSubjectsForGroup', () => {
+  it('vraća sortiranu listu jedinstvenih predmeta grupe', () => {
+    expect(uniqueSubjectsForGroup(DATA, 'B1')).toEqual(['Baze podataka', 'Numerička analiza'])
+    expect(uniqueSubjectsForGroup(DATA, 'B9')).toEqual(['Finansije'])
   })
 })
 

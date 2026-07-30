@@ -104,6 +104,16 @@ export function getScheduleForGroup(
   return data.entries.filter(e => e.groups.includes(groupId))
 }
 
+// Sortirana lista jedinstvenih predmeta grupe. Kanonski poredak koji koriste
+// izbor predmeta (/izborni) i deljenje putem linka (lib/share) — obe strane
+// moraju da mapiraju iste indekse na iste predmete.
+export function uniqueSubjectsForGroup(
+  data: SemesterData,
+  groupId: string
+): string[] {
+  return [...new Set(getScheduleForGroup(data, groupId).map(e => e.subject))].sort()
+}
+
 // Vraća listu jedinstvenih programa za datu godinu
 // (za dropdown u onboardingu)
 export function getProgramsForYear(data: SemesterData): string[] {
