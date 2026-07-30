@@ -174,7 +174,7 @@ Gde se šta čuva:
 ## Funkcionalnosti
 
 - [ ] **Deljenje rasporeda putem linka** — URL sa enkodiranim parametrima (godina, program, grupa, izborni predmeti) kako bi student mogao da podeli tačno svoj raspored
-- [ ] **Napomene po predmetima** — mogućnost dodavanja kratkih beleški na svaki predmet u rasporedu (npr. "doneti laptop", "ispit u januaru")
+- [x] **Napomene po predmetima** — beleška po predmetu u panelu na `/raspored` (localStorage `fon_note_<predmet>`, auto-expand textarea)
 
 
 ---
@@ -187,10 +187,10 @@ Gde se šta čuva:
 
 ## Tehničko
 
-- [ ] Unit testovi za `lib/schedule.ts` — pokriti logiku normalizacije ćirilice, range matching i detekciju izbornih predmeta
+- [x] Unit testovi za `lib/schedule.ts` — normalizacija ćirilice, range matching, detekcija izbornih (+ `lib/subjects.ts`, `lib/storage.ts`); Vitest u CI (`npm test`)
 - [ ] Skeleton loading stanja na `/raspored` i `/preneseni` za sporije konekcije
 - [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi — jasna poruka korisniku sa sugestijom
-- [ ] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — dokumentovati šta se čuva i kada se briše. *(Delimično urađeno: ključevi vezani za semestar + reset na promenu semestra dokumentovani u `docs/rokovi-semestar-flip.md`; ostaje pun audit svih ključeva.)*
+- [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
 - [ ] Poboljšati tipove — smanjiti `any` i neeksplicitne tipove tamo gde postoje
 
 ---
