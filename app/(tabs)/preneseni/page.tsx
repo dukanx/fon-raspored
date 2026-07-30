@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
-import { session, app, byGroup } from '@/lib/storage'
+import { session, byGroup } from '@/lib/storage'
+import { toggleTheme } from '@/lib/theme'
 
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15–10:00', '10:15': '10:15–12:00',
@@ -60,12 +61,6 @@ export default function PreneseniPage() {
   const [predmetSearch, setPredmetSearch] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
 
-  function toggleTheme() {
-    const root = document.documentElement
-    const willBeDark = !root.classList.contains('dark')
-    root.classList.toggle('dark', willBeDark)
-    app.theme.set(willBeDark ? 'dark' : 'light')
-  }
 
   async function refreshTrenutniRaspored(nextExtra: ScheduleEntry[]) {
     const group = session.group.get()

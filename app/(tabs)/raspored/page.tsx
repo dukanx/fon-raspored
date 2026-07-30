@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
@@ -8,7 +8,9 @@ import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
-import { session, saved as savedStore, app, byGroup, note as noteStore } from '@/lib/storage'
+import { session, saved as savedStore, byGroup, note as noteStore } from '@/lib/storage'
+import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
+import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -115,11 +117,6 @@ function mergeSameSlot(list: ScheduleEntry[]): ScheduleEntry[] {
   return [...byKey.values()]
 }
 
-const SR_MONTHS_SHORT = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec']
-function formatRokDate(iso: string) {
-  const d = new Date(iso + 'T00:00:00')
-  return `${d.getDate()}. ${SR_MONTHS_SHORT[d.getMonth()]}`
-}
 
 function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -185,21 +182,8 @@ export default function RasporedPage() {
   const [note, setNote] = useState('')
   const noteRef = useRef<HTMLTextAreaElement>(null)
 
-  const isDark = useSyncExternalStore(
-    (onStoreChange) => {
-      if (typeof window === 'undefined') return () => { }
-      const observer = new MutationObserver(onStoreChange)
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-      return () => observer.disconnect()
-    },
-    () => document.documentElement.classList.contains('dark'),
-    () => false
-  )
-  const isHydrated = useSyncExternalStore(
-    () => () => { },
-    () => true,
-    () => false
-  )
+  const isDark = useIsDark()
+  const isHydrated = useIsHydrated()
 
   // Default je uvek "Sedmica" (grid) — i na telefonu i na desktopu; korisnik
   // može ručno na "Lista".
@@ -300,13 +284,6 @@ export default function RasporedPage() {
   function saveNote(value: string) {
     setNote(value)
     if (selectedSubject) noteStore(selectedSubject).set(value)
-  }
-
-  function toggleTheme() {
-    const root = document.documentElement
-    const willBeDark = !root.classList.contains('dark')
-    root.classList.toggle('dark', willBeDark)
-    app.theme.set(willBeDark ? 'dark' : 'light')
   }
 
   // Napravi /deli link sa trenutnim izborom predmeta i podeli ga (native share
@@ -909,7 +886,7 @@ export default function RasporedPage() {
                 <div className="space-y-1.5">
                   {subjectRokovi.map((e, i) => (
                     <div key={i} className="flex items-center gap-2.5 text-sm">
-                      <span className="w-14 shrink-0 text-xs font-medium text-gray-700 dark:text-gray-200">{formatRokDate(e.date)}</span>
+                      <span className="w-14 shrink-0 text-xs font-medium text-gray-700 dark:text-gray-200">{formatDateSr(e.date)}</span>
                       <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{e.start}</span>
                       <span className="truncate text-xs text-gray-500 dark:text-gray-400">
                         {e.tip === 'ispit' ? 'Ispit' : 'Kolokvijum'} · {e.rok}{e.rooms.length ? ` · ${e.rooms.join(', ')}` : ''}

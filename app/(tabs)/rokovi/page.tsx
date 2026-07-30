@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry } from '@/lib/types'
 import { session, app, byGroup } from '@/lib/storage'
+import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
+import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
 
 const COLORS = [
@@ -20,10 +22,6 @@ const COLORS = [
 const SR_MONTHS = [
   'januar', 'februar', 'mart', 'april', 'maj', 'jun',
   'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar',
-]
-const SR_MONTHS_SHORT = [
-  'jan', 'feb', 'mar', 'apr', 'maj', 'jun',
-  'jul', 'avg', 'sep', 'okt', 'nov', 'dec',
 ]
 const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
 
@@ -62,11 +60,6 @@ const IconList = (p: IconProps) => (
 const IconHidden = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
 )
-
-function formatDateSr(isoDate: string) {
-  const d = new Date(isoDate + 'T00:00:00')
-  return `${d.getDate()}. ${SR_MONTHS_SHORT[d.getMonth()]}`
-}
 
 function getDaySr(isoDate: string) {
   return SR_DAYS_FULL[new Date(isoDate + 'T00:00:00').getDay()]
@@ -151,21 +144,8 @@ export default function RokoviPage() {
   const [showHidden, setShowHidden] = useState(false)
   const [downloadToast, setDownloadToast] = useState(false)
 
-  const isDark = useSyncExternalStore(
-    (cb) => {
-      if (typeof window === 'undefined') return () => {}
-      const obs = new MutationObserver(cb)
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-      return () => obs.disconnect()
-    },
-    () => document.documentElement.classList.contains('dark'),
-    () => false
-  )
-  const isHydrated = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  )
+  const isDark = useIsDark()
+  const isHydrated = useIsHydrated()
 
   // Default je uvek "Kalendar" — i na telefonu i na desktopu; korisnik može
   // ručno na "Lista".
@@ -357,13 +337,6 @@ export default function RokoviPage() {
     }
     return map
   }, [allFilteredEntries])
-
-  function toggleTheme() {
-    const root = document.documentElement
-    const willBeDark = !root.classList.contains('dark')
-    root.classList.toggle('dark', willBeDark)
-    app.theme.set(willBeDark ? 'dark' : 'light')
-  }
 
   const isEmpty = activeRokovi.length === 0
 
