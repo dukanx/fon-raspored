@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
+import { session, saved } from '@/lib/storage'
 import BlurText from '@/components/BlurText'
 
 const GLASS = 'liquid-glass'
@@ -26,7 +27,7 @@ export default function OnboardingPage() {
 
   const storedYear = isHydrated
     ? (() => {
-      const raw = localStorage.getItem('fon_saved_year')
+      const raw = saved.year.get()
       if (!raw) return null
       const parsed = Number(raw)
       return Number.isFinite(parsed) ? parsed : null
@@ -34,27 +35,27 @@ export default function OnboardingPage() {
     : null
 
   const selectedYear = year ?? storedYear
-  const selectedProgram = program ?? (isHydrated ? (localStorage.getItem('fon_saved_program') ?? '') : '')
-  const enteredLastName = lastName ?? (isHydrated ? (localStorage.getItem('fon_saved_lastName') ?? '') : '')
+  const selectedProgram = program ?? (isHydrated ? (saved.program.get() ?? '') : '')
+  const enteredLastName = lastName ?? (isHydrated ? (saved.lastName.get() ?? '') : '')
 
   useEffect(() => {
     if (!isHydrated) return
     // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") — ne preusmeravaj.
     if (new URLSearchParams(window.location.search).get('edit') === '1') return
     // Isti tab — sessionStorage ima grupu
-    if (sessionStorage.getItem('fon_group')) { router.replace('/raspored'); return }
+    if (session.group.get()) { router.replace('/raspored'); return }
     // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
-    const savedGroup = localStorage.getItem('fon_saved_group')
-    const savedYear = localStorage.getItem('fon_saved_year')
+    const savedGroup = saved.group.get()
+    const savedYear = saved.year.get()
     if (savedGroup && savedYear) {
-      sessionStorage.setItem('fon_group', savedGroup)
-      sessionStorage.setItem('fon_year', savedYear)
-      const prog = localStorage.getItem('fon_saved_program')
-      const name = localStorage.getItem('fon_saved_lastName')
-      const sem = localStorage.getItem('fon_saved_semester')
-      if (prog) sessionStorage.setItem('fon_program', prog)
-      if (name) sessionStorage.setItem('fon_lastName', name)
-      if (sem) sessionStorage.setItem('fon_semester', sem)
+      session.group.set(savedGroup)
+      session.year.set(savedYear)
+      const prog = saved.program.get()
+      const name = saved.lastName.get()
+      const sem = saved.semester.get()
+      if (prog) session.program.set(prog)
+      if (name) session.lastName.set(name)
+      if (sem) session.semester.set(sem)
       router.replace('/raspored')
     }
   }, [isHydrated, router])
@@ -82,6 +83,26 @@ export default function OnboardingPage() {
     setData(null)
   }
 
+  // Upisuje izbor u session (aktivni tab) + saved (trajno) i vodi na /izborni.
+  // sessionLastName dozvoljava fallback na grupu kad prezime nije uneto.
+  function commitSelection(
+    groupId: string,
+    opts: { year: number; program: string; lastName: string; semester: string; sessionLastName?: string }
+  ) {
+    const yr = String(opts.year)
+    session.group.set(groupId)
+    session.year.set(yr)
+    session.lastName.set(opts.sessionLastName ?? opts.lastName)
+    session.semester.set(opts.semester)
+    if (opts.program) session.program.set(opts.program)
+
+    saved.group.set(groupId)
+    saved.year.set(yr)
+    saved.program.set(opts.program)
+    saved.lastName.set(opts.lastName)
+    saved.semester.set(opts.semester)
+  }
+
   function handleSubmit() {
     if (!data || !enteredLastName.trim() || selectedYear === null) return
     setError(null)
@@ -97,18 +118,13 @@ export default function OnboardingPage() {
       return
     }
 
-    // Sačuvaj u sessionStorage pa redirectuj
-    sessionStorage.setItem('fon_group', groupId)
-    sessionStorage.setItem('fon_year', String(selectedYear))
-    sessionStorage.setItem('fon_lastName', enteredLastName.trim())
-    sessionStorage.setItem('fon_semester', data.semester)
-    if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
-
-    localStorage.setItem('fon_saved_group', groupId)
-    localStorage.setItem('fon_saved_year', String(selectedYear))
-    localStorage.setItem('fon_saved_program', selectedProgram)
-    localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
-    localStorage.setItem('fon_saved_semester', data.semester)
+    // Sačuvaj izbor pa redirectuj
+    commitSelection(groupId, {
+      year: selectedYear,
+      program: selectedProgram,
+      lastName: enteredLastName.trim(),
+      semester: data.semester,
+    })
     router.push('/izborni')
   }
 
@@ -235,17 +251,13 @@ export default function OnboardingPage() {
               onChange={e => {
                 if (!e.target.value || selectedYear === null) return
                 const groupId = e.target.value
-                sessionStorage.setItem('fon_group', groupId)
-                sessionStorage.setItem('fon_year', String(selectedYear))
-                sessionStorage.setItem('fon_lastName', enteredLastName.trim() || groupId)
-                sessionStorage.setItem('fon_semester', data.semester)
-                if (selectedProgram) sessionStorage.setItem('fon_program', selectedProgram)
-
-                localStorage.setItem('fon_saved_group', groupId)
-                localStorage.setItem('fon_saved_year', String(selectedYear))
-                localStorage.setItem('fon_saved_program', selectedProgram)
-                localStorage.setItem('fon_saved_lastName', enteredLastName.trim())
-                localStorage.setItem('fon_saved_semester', data.semester)
+                commitSelection(groupId, {
+                  year: selectedYear,
+                  program: selectedProgram,
+                  lastName: enteredLastName.trim(),
+                  sessionLastName: enteredLastName.trim() || groupId,
+                  semester: data.semester,
+                })
                 router.push('/izborni')
               }}
               className="w-full h-10 px-3 rounded-xl border border-[#024c7d]/15 dark:border-white/20

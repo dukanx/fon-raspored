@@ -6,6 +6,7 @@ import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
+import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
 
 const GLASS = 'liquid-glass'
 
@@ -16,9 +17,9 @@ export default function IzbornoPage() {
     () => true,
     () => false
   )
-  const group = isHydrated ? (sessionStorage.getItem('fon_group') ?? '') : ''
-  const year = isHydrated ? (sessionStorage.getItem('fon_year') ?? '') : ''
-  const program = isHydrated ? (sessionStorage.getItem('fon_program') ?? '') : ''
+  const group = isHydrated ? (session.group.get() ?? '') : ''
+  const year = isHydrated ? (session.year.get() ?? '') : ''
+  const program = isHydrated ? (session.program.get() ?? '') : ''
   const track: Track = programToTrack(program)
   const [subjects, setSubjects] = useState<string[]>([])
   const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
@@ -50,8 +51,9 @@ export default function IzbornoPage() {
 
     // Sinhrono čitanje — persist-efekat za otherSelected piše pre nego što
     // fetch stigne, pa bi async čitanje videlo već pregaženu vrednost.
-    const savedSubjectsRaw = localStorage.getItem(`fon_subjects_${group}`)
-    const savedOtherRaw = localStorage.getItem(`fon_other_sem_${group}`)
+    const savedSubjects = byGroup.subjects(group).get()
+    const hadSavedSubjects = Object.keys(savedSubjects).length > 0
+    const savedOther = byGroup.otherSem(group).get()
 
     Promise.all([
       fetch(`/data/${year}god.json`).then(r => r.json()),
@@ -69,9 +71,8 @@ export default function IzbornoPage() {
         // nove predmete. (Isti helper koristi i raspored za "Nov semestar" popup.)
         const flipped = reconcileSemester(data.semester, group)
 
-        const saved = flipped ? null : savedSubjectsRaw
-        if (saved) {
-          setChecked(JSON.parse(saved))
+        if (!flipped && hadSavedSubjects) {
+          setChecked(savedSubjects)
         } else {
           // Pametan default: obavezni čekirani, izborni odčekirani (student sam
           // bira koje izborne sluša). Dvosmisleni/nepoznati -> čekirani (bezbedno).
@@ -91,32 +92,29 @@ export default function IzbornoPage() {
           }
         }
 
-        const savedOther = flipped ? null : savedOtherRaw
-        if (savedOther) {
-          const parsed = JSON.parse(savedOther)
-          setOtherSelected(parsed)
-          if (parsed.length > 0) setOtherOpen(true)
+        if (!flipped && savedOther.length > 0) {
+          setOtherSelected(savedOther)
+          setOtherOpen(true)
         }
       })
 
-    const savedPrev = localStorage.getItem(`fon_prev_subjects_${group}`)
-    if (savedPrev) {
-      const parsed = JSON.parse(savedPrev)
+    const savedPrev = byGroup.prevSubjects(group).get()
+    if (savedPrev.length > 0) {
       queueMicrotask(() => {
-        setPrevSelected(parsed)
-        if (parsed.length > 0) setPrevOpen(true)
+        setPrevSelected(savedPrev)
+        setPrevOpen(true)
       })
     }
   }, [group, isHydrated, router, year, program])
 
   useEffect(() => {
     if (!isHydrated || !group) return
-    localStorage.setItem(`fon_prev_subjects_${group}`, JSON.stringify(prevSelected))
+    byGroup.prevSubjects(group).set(prevSelected)
   }, [prevSelected, isHydrated, group])
 
   useEffect(() => {
     if (!isHydrated || !group) return
-    localStorage.setItem(`fon_other_sem_${group}`, JSON.stringify(otherSelected))
+    byGroup.otherSem(group).set(otherSelected)
   }, [otherSelected, isHydrated, group])
 
   // Lenjivo učitaj predmete drugog semestra kad se sekcija prvi put otvori
@@ -148,11 +146,10 @@ export default function IzbornoPage() {
   function handleConfirm() {
     // Potvrda izbora = korisnik je odradio "Nov semestar" korak.
     acknowledgeFlip()
-    localStorage.setItem(`fon_subjects_${group}`, JSON.stringify(checked))
+    byGroup.subjects(group).set(checked)
     // Akumuliraj izbor po semestru — mešani Sep/Okt rokovi uniraju oba semestra.
     if (semester) {
-      const raw = localStorage.getItem('fon_subjects_history')
-      const hist: Record<string, string[]> = raw ? JSON.parse(raw) : {}
+      const hist = app.subjectsHistory.get()
       hist[semester] = Object.entries(checked).filter(([, v]) => v).map(([k]) => k)
       // Orezivanje: čuvaj samo tekuću i prošlu školsku godinu ("Letnji 2025/26" -> 2025).
       // Prošla mora da ostane — Sep/Okt rok pripada staroj školskoj godini.
@@ -164,7 +161,7 @@ export default function IzbornoPage() {
           if (Number.isNaN(y) || y < current - 1) delete hist[key]
         }
       }
-      localStorage.setItem('fon_subjects_history', JSON.stringify(hist))
+      app.subjectsHistory.set(hist)
     }
     router.push('/raspored')
   }
@@ -441,7 +438,7 @@ export default function IzbornoPage() {
           </span>
           <div className="flex w-full sm:w-auto items-stretch gap-2">
             <button
-              onClick={() => { localStorage.removeItem('fon_saved_group'); sessionStorage.removeItem('fon_group'); router.push('/') }}
+              onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
               className={`flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
             >
               ← Nazad
