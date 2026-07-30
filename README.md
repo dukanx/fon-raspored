@@ -80,8 +80,15 @@ Aplikacija se otvara na [http://localhost:3000](http://localhost:3000).
 
 Na svaki push i Pull Request pokreće se `ci.yml` sa dva job-a:
 
-- **build** — `npm run lint`, `tsc --noEmit` i `next build` (da se ne merge-uje kod koji ne prolazi lint/typecheck/build)
+- **build** — `npm run lint`, `tsc --noEmit`, `npm test` (Vitest) i `next build` (da se ne merge-uje kod koji ne prolazi lint/typecheck/test/build)
 - **python-tests** — `pytest` nad parserima (raspored nastave + ispiti/kolokvijumi)
+
+Vitest pokriva čistu logiku u `lib/` (kolokacija predmeta po smeru, opsezi prezimena / srpska kolacija, detekcija izbornih). Testovi su kolocirani kao `lib/*.test.ts`:
+
+```bash
+npm test          # jednokratno
+npm run test:watch
+```
 
 Python testovi (`scripts/tests/`) rade nad realnim FON PDF-ovima sačuvanim kao fixtures:
 
@@ -170,5 +177,6 @@ Septembarski i oktobarski rok mešaju predmete oba semestra. Aplikacija akumulir
 - [pdfplumber](https://github.com/jsvine/pdfplumber) — parsiranje PDF rasporeda
 - [web-push](https://github.com/web-push-libs/web-push) + VAPID — Web Push notifikacije
 - [Upstash Redis](https://upstash.com) — čuvanje push pretplata
-- GitHub Actions — CI (lint/typecheck/build + pytest) i automatsko ažuriranje podataka
+- GitHub Actions — CI (lint/typecheck/test/build + pytest) i automatsko ažuriranje podataka
+- [Vitest](https://vitest.dev) — unit testovi za `lib/` logiku
 - [pytest](https://pytest.org) — testovi parsera (golden + strukturne provere)
