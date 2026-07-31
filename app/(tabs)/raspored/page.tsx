@@ -676,11 +676,38 @@ export default function RasporedPage() {
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
 
         {isLoading ? (
-          <div className="space-y-2.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className={`h-[78px] rounded-2xl ${GLASS} animate-pulse`} />
-            ))}
-          </div>
+          view === 'grid' ? (
+            <div className="overflow-hidden">
+              {/* Day headers (statični okvir dok se učitava) */}
+              <div className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1">
+                <div />
+                {DAYS.map(d => (
+                  <div key={d} className="text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 py-1 sm:text-xs">
+                    {DAY_SHORT[d]}
+                  </div>
+                ))}
+              </div>
+              {SLOTS.map(slot => (
+                <div
+                  key={slot}
+                  className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1"
+                >
+                  <div className="text-right pr-1 pt-1 text-[9px] text-gray-400 dark:text-gray-500 leading-tight sm:pr-2 sm:pt-1.5 sm:text-xs">
+                    {slot}
+                  </div>
+                  {DAYS.map(day => (
+                    <div key={day} className="min-h-11 rounded-lg bg-gray-100/70 dark:bg-gray-800/60 animate-pulse sm:min-h-20" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className={`h-[78px] rounded-2xl ${GLASS} animate-pulse`} />
+              ))}
+            </div>
+          )
         ) : isEmpty ? (
           <div className={`mx-auto mt-10 max-w-sm rounded-2xl border-dashed p-8 text-center ${GLASS}`}>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Nema termina za prikaz</p>
