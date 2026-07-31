@@ -102,6 +102,8 @@ export const app = {
   theme: str('local', 'fon_theme'),
   flipPending: str('local', 'fon_flip_pending'),
   subjectsHistory: json<Record<string, string[]>>('local', 'fon_subjects_history', {}),
+  // Prvi-put modal za notifikacije prikazan (upisuje se čim se pokaže, jednom).
+  notifIntroSeen: flag('local', 'fon_notif_intro_seen'),
 }
 
 // Stanje vezano za konkretnu grupu (izbor predmeta, izmene, skriveni termini…).

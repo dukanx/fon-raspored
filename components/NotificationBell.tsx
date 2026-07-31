@@ -1,24 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { subscribeUser, unsubscribeUser } from '@/app/actions'
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
-  const rawData = window.atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i)
-  return outputArray
-}
-
-function isLocalNotificationPreview() {
-  return (
-    typeof window !== 'undefined' &&
-    process.env.NODE_ENV === 'development' &&
-    ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  )
-}
+import {
+  isIOS as detectIOS,
+  isStandalone as detectStandalone,
+  pushSupported,
+  isLocalNotificationPreview,
+  getPushSubscription,
+  enablePush,
+  disablePush,
+} from '@/lib/push'
 
 export default function NotificationBell({ className = 'mt-3' }: { className?: string }) {
   const [supported, setSupported] = useState<boolean | null>(null)
@@ -31,90 +22,41 @@ export default function NotificationBell({ className = 'mt-3' }: { className?: s
   const [showInfo, setShowInfo] = useState(false)
 
   useEffect(() => {
-    const ua = navigator.userAgent
-    const platform = navigator.platform
-    const maxTouchPoints = navigator.maxTouchPoints ?? 0
     const localPreview = isLocalNotificationPreview()
-    const iosUA = /iPad|iPhone|iPod/.test(ua)
-    const ipadOS = platform === 'MacIntel' && maxTouchPoints > 1
-    const ios = (iosUA || ipadOS) && maxTouchPoints > 0
-    const standalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      // iOS Safari koristi navigator.standalone
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true
-    setIsIOS(ios)
-    setIsStandalone(standalone)
+    const ios = detectIOS()
+    const standalone = detectStandalone()
+    const supported = pushSupported()
+    // queueMicrotask: izbegava setState sinhrono u efektu (react-hooks pravilo).
+    queueMicrotask(() => {
+      setIsIOS(ios)
+      setIsStandalone(standalone)
+      setSupported(supported)
+    })
 
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setSupported(true)
-      navigator.serviceWorker
-        .register('/sw.js', { scope: '/', updateViaCache: 'none' })
-        .then((reg) => reg.pushManager.getSubscription())
-        .then((sub) => setSubscribed(localPreview || !!sub))
-        .catch(() => setSupported(false))
-    } else {
-      setSupported(false)
+    if (supported) {
+      getPushSubscription().then((sub) => setSubscribed(localPreview || !!sub))
     }
   }, [])
 
   async function enable() {
     setBusy(true)
     setError(null)
-    try {
-      if (isLocalNotificationPreview()) {
-        setSubscribed(true)
-        return
-      }
-
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-      if (!vapidKey) {
-        setError('VAPID ključ nije podešen (NEXT_PUBLIC_VAPID_PUBLIC_KEY).')
-        return
-      }
-      const permission = await Notification.requestPermission()
-      if (permission !== 'granted') {
-        setError('Dozvola za notifikacije je odbijena.')
-        return
-      }
-      const reg = await navigator.serviceWorker.ready
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey),
-      })
-      const res = await subscribeUser(JSON.parse(JSON.stringify(sub)))
-      if (!res.success) throw new Error(res.error || 'Greška')
-      setSubscribed(true)
-    } catch (e) {
-      console.error(e)
-      setError('Nije uspelo uključivanje notifikacija.')
-    } finally {
-      setBusy(false)
-    }
+    const res = await enablePush()
+    setBusy(false)
+    if (res.ok) setSubscribed(true)
+    else setError(res.error)
   }
 
   async function disable() {
     setBusy(true)
     setError(null)
-    try {
-      if (isLocalNotificationPreview()) {
-        setSubscribed(false)
-        setShowInfo(false)
-        return
-      }
-
-      const reg = await navigator.serviceWorker.ready
-      const sub = await reg.pushManager.getSubscription()
-      if (sub) {
-        await unsubscribeUser(sub.endpoint)
-        await sub.unsubscribe()
-      }
+    const res = await disablePush()
+    setBusy(false)
+    if (res.ok) {
       setSubscribed(false)
       setShowInfo(false)
-    } catch (e) {
-      console.error(e)
-      setError('Nije uspelo isključivanje.')
-    } finally {
-      setBusy(false)
+    } else {
+      setError(res.error)
     }
   }
 
