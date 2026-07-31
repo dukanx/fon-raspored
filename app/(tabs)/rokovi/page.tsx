@@ -27,6 +27,18 @@ const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
 
 const SR_DAYS_FULL = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
 
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+// Inicijali predmeta za kalendar: "Upravljanje projektima" -> "UP",
+// "Matematika 2" -> "M2". Preskače vezničke reči (za, na, i…).
+const INITIALS_STOP = new Set(['i', 'za', 'na', 'u', 'o', 'sa', 'od', 'do', 'iz'])
+function subjectInitials(subject: string) {
+  const words = subject.split(/\s+/).filter(Boolean)
+  const meaningful = words.filter(w => !INITIALS_STOP.has(w.toLowerCase()))
+  const src = meaningful.length ? meaningful : words
+  return src.map(w => w[0]).join('').toUpperCase().slice(0, 3)
+}
+
 const GLASS = 'liquid-glass'
 
 type IconProps = React.SVGProps<SVGSVGElement>
@@ -56,6 +68,9 @@ const IconCalendar = (p: IconProps) => (
 )
 const IconList = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+)
+const IconImage = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-4.5-4.5L5 21" /></svg>
 )
 const IconHidden = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
@@ -143,6 +158,8 @@ export default function RokoviPage() {
   const [hiddenEntries, setHiddenEntries] = useState<RokEntry[]>([])
   const [showHidden, setShowHidden] = useState(false)
   const [downloadToast, setDownloadToast] = useState(false)
+  const [imageToast, setImageToast] = useState(false)
+  const [showImageMenu, setShowImageMenu] = useState(false)
 
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
@@ -307,7 +324,247 @@ export default function RokoviPage() {
     setTimeout(() => setDownloadToast(false), 3500)
   }
 
+  // Izvoz aktivnog taba kao PNG. sel = 'all' (svi meseci u kolonama) ili
+  // { year, month } (jedan mesec: veliki kalendar levo + agenda desno).
+  function downloadRokImage(sel: 'all' | { year: number; month: number }) {
+    if (!allFilteredEntries.length) return
+    const sorted = [...allFilteredEntries].sort(
+      (a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)
+    )
+    const monthsMap = new Map<string, { year: number; month: number; exams: RokEntry[] }>()
+    for (const e of sorted) {
+      const d = new Date(e.date + 'T00:00:00')
+      const key = `${d.getFullYear()}-${d.getMonth()}`
+      if (!monthsMap.has(key)) monthsMap.set(key, { year: d.getFullYear(), month: d.getMonth(), exams: [] })
+      monthsMap.get(key)!.exams.push(e)
+    }
+    const allMonths = [...monthsMap.values()]
+    const selected =
+      sel === 'all' ? allMonths : allMonths.filter(m => m.year === sel.year && m.month === sel.month)
+    if (!selected.length) return
+
+    const dpr = 2
+    const dayNames = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub', 'Ned']
+
+    const monthWeeks = (mo: { year: number; month: number }) => {
+      const firstOffset = (new Date(mo.year, mo.month, 1).getDay() + 6) % 7
+      return Math.ceil((firstOffset + new Date(mo.year, mo.month + 1, 0).getDate()) / 7)
+    }
+
+    // Visina agende: red po ispitu + 6px razmak/crta između različitih dana.
+    const listHeight = (exams: RokEntry[], rowH: number) =>
+      exams.length * rowH + (new Set(exams.map(e => e.date)).size - 1) * 6
+
+    const setup = (w: number, h: number) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = w * dpr
+      canvas.height = h * dpr
+      const ctx = canvas.getContext('2d')!
+      ctx.scale(dpr, dpr)
+      ctx.fillStyle = '#f9fafb'
+      ctx.fillRect(0, 0, w, h)
+      return { canvas, ctx }
+    }
+
+    const truncate = (ctx: CanvasRenderingContext2D, text: string, maxW: number) => {
+      if (ctx.measureText(text).width <= maxW) return text
+      let t = text
+      while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1)
+      return t + '…'
+    }
+
+    // Kalendar jednog meseca na (ox, oy). Vraća visinu (header + mreža).
+    const drawGrid = (
+      ctx: CanvasRenderingContext2D, ox: number, oy: number,
+      mo: { year: number; month: number; exams: RokEntry[] },
+      cw: number, ch: number, numSize: number, daySize: number, initialsSize: number
+    ) => {
+      const firstOffset = (new Date(mo.year, mo.month, 1).getDay() + 6) % 7
+      const daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate()
+      ctx.textAlign = 'center'
+      ctx.font = `500 ${daySize}px system-ui, sans-serif`
+      ctx.fillStyle = '#9ca3af'
+      dayNames.forEach((d, i) => ctx.fillText(d, ox + cw * i + cw / 2, oy + daySize))
+      const top = oy + daySize + 10
+      const cornerSize = Math.max(8, daySize - 2)
+      for (let day = 1; day <= daysInMonth; day++) {
+        const idx = firstOffset + (day - 1)
+        const cx = ox + (idx % 7) * cw
+        const cy = top + Math.floor(idx / 7) * ch
+        const dayExams = mo.exams.filter(e => new Date(e.date + 'T00:00:00').getDate() === day)
+        if (dayExams.length) {
+          const c = COLORS[colorMap[dayExams[0].subject] ?? 0]
+          ctx.fillStyle = c.bg
+          ctx.beginPath(); ctx.roundRect(cx + 2, cy + 2, cw - 4, ch - 4, 8); ctx.fill()
+          // broj dana u gornjem levom ćošku
+          ctx.fillStyle = c.text
+          ctx.globalAlpha = 0.7
+          ctx.font = `600 ${cornerSize}px system-ui, sans-serif`
+          ctx.textAlign = 'left'
+          ctx.fillText(String(day), cx + 6, cy + cornerSize + 5)
+          ctx.globalAlpha = 1
+          // inicijali svih predmeta tog dana (zarezom), uz auto-smanjenje da stanu
+          const label = [...new Set(dayExams.map(e => subjectInitials(e.subject)))].join(', ')
+          const maxW = cw - 10
+          let size = initialsSize
+          ctx.font = `700 ${size}px system-ui, sans-serif`
+          while (size > 7 && ctx.measureText(label).width > maxW) {
+            size -= 1
+            ctx.font = `700 ${size}px system-ui, sans-serif`
+          }
+          ctx.fillStyle = c.text
+          ctx.textAlign = 'center'
+          ctx.fillText(truncate(ctx, label, maxW), cx + cw / 2, cy + ch / 2 + size / 2 + 3)
+        } else {
+          ctx.fillStyle = '#9ca3af'
+          ctx.font = `${numSize}px system-ui, sans-serif`
+          ctx.textAlign = 'center'
+          ctx.fillText(String(day), cx + cw / 2, cy + ch / 2 + numSize / 3)
+        }
+      }
+      return daySize + 10 + monthWeeks(mo) * ch
+    }
+
+    // Agenda, grupisana po danu: datum levo (jednom), ispiti desno, crta
+    // razdvaja različite dane (isti dan → bez crte, vizuelno zajedno).
+    const drawList = (
+      ctx: CanvasRenderingContext2D, ox: number, oy: number, width: number,
+      exams: RokEntry[], rowH: number, dateSize: number, subjSize: number,
+      detailSize: number, dateColW: number
+    ) => {
+      const groups: RokEntry[][] = []
+      for (const e of exams) {
+        const last = groups[groups.length - 1]
+        if (last && last[0].date === e.date) last.push(e)
+        else groups.push([e])
+      }
+      const textW = width - dateColW - 14
+      let ly = oy
+      groups.forEach((grp, gi) => {
+        if (gi > 0) {
+          ly += 6
+          ctx.strokeStyle = '#e5e7eb'
+          ctx.lineWidth = 1
+          ctx.beginPath(); ctx.moveTo(ox, ly - 3); ctx.lineTo(ox + width, ly - 3); ctx.stroke()
+        }
+        const d = new Date(grp[0].date + 'T00:00:00')
+        ctx.textAlign = 'left'
+        ctx.fillStyle = '#111827'
+        ctx.font = `600 ${dateSize}px system-ui, sans-serif`
+        ctx.fillText(`${SR_DAYS_SHORT[(d.getDay() + 6) % 7]} ${d.getDate()}.`, ox, ly + 10)
+        grp.forEach(e => {
+          const c = COLORS[colorMap[e.subject] ?? 0]
+          const rx = ox + dateColW
+          ctx.fillStyle = c.bar
+          ctx.beginPath(); ctx.arc(rx + 4, ly + 6, 3.5, 0, Math.PI * 2); ctx.fill()
+          ctx.textAlign = 'left'
+          ctx.fillStyle = '#1f2937'
+          ctx.font = `600 ${subjSize}px system-ui, sans-serif`
+          ctx.fillText(truncate(ctx, e.subject, textW), rx + 14, ly + 10)
+          const typeLabel = e.type === 'P' ? 'pismeni' : e.type === 'U' ? 'usmeni' : ''
+          const details = [e.start, e.rooms.join(', '), typeLabel].filter(Boolean).join(' · ')
+          ctx.fillStyle = '#6b7280'
+          ctx.font = `${detailSize}px system-ui, sans-serif`
+          ctx.fillText(truncate(ctx, details, textW), rx + 14, ly + 10 + detailSize + 5)
+          ly += rowH
+        })
+      })
+    }
+
+    const tabLabel = tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'
+    const ident = `${meta.program ? `${meta.program} · ` : ''}Grupa ${meta.group}`
+
+    let canvas: HTMLCanvasElement
+
+    if (sel === 'all' && selected.length > 1) {
+      // Svi meseci kao kolone jedan pored drugog.
+      const pad = 24
+      const cw = 40, ch = 40, gridW = cw * 7
+      const daySize = 11, numSize = 13, initialsSize = 10
+      const rowH = 32, dateSize = 11, subjSize = 12, detailSize = 11, dateColW = 44
+      const gap = 30
+      const colTop = pad + 34
+
+      const measure = selected.map(mo => {
+        const calH = daySize + 10 + monthWeeks(mo) * ch
+        return { mo, calH, colH: 24 + calH + 12 + listHeight(mo.exams, rowH) }
+      })
+      const bodyH = Math.max(...measure.map(m => m.colH))
+      const W = pad + selected.length * gridW + (selected.length - 1) * gap + pad
+      const H = colTop + bodyH + pad
+
+      const s = setup(W, H)
+      canvas = s.canvas
+      const ctx = s.ctx
+      ctx.textAlign = 'left'
+      ctx.fillStyle = '#111827'
+      ctx.font = '600 16px system-ui, sans-serif'
+      ctx.fillText(tabLabel, pad, pad + 16)
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '12px system-ui, sans-serif'
+      ctx.fillText(ident, pad + ctx.measureText(tabLabel).width + 10, pad + 16)
+
+      measure.forEach(({ mo, calH }, i) => {
+        const ox = pad + i * (gridW + gap)
+        ctx.fillStyle = '#111827'
+        ctx.font = '600 14px system-ui, sans-serif'
+        ctx.textAlign = 'left'
+        ctx.fillText(`${cap(SR_MONTHS[mo.month])} ${mo.year}`, ox, colTop + 12)
+        const gy = colTop + 24
+        drawGrid(ctx, ox, gy, mo, cw, ch, numSize, daySize, initialsSize)
+        drawList(ctx, ox, gy + calH + 12, gridW, mo.exams, rowH, dateSize, subjSize, detailSize, dateColW)
+      })
+    } else {
+      // Jedan mesec: veliki kalendar levo + agenda desno.
+      const mo = selected[0]
+      const pad = 26
+      const cw = 54, ch = 48, gridW = cw * 7
+      const daySize = 12, numSize = 15, initialsSize = 13
+      const agendaW = 320, gap = 32
+      const rowH = 40, dateSize = 13, subjSize = 13, detailSize = 12, dateColW = 58
+      const titleH = 50
+
+      const calH = daySize + 10 + monthWeeks(mo) * ch
+      const bodyH = Math.max(calH, listHeight(mo.exams, rowH))
+      const W = pad + gridW + gap + agendaW + pad
+      const H = pad + titleH + bodyH + pad
+
+      const s = setup(W, H)
+      canvas = s.canvas
+      const ctx = s.ctx
+      ctx.textAlign = 'left'
+      ctx.fillStyle = '#111827'
+      ctx.font = '600 20px system-ui, sans-serif'
+      ctx.fillText(`${cap(SR_MONTHS[mo.month])} ${mo.year}`, pad, pad + 18)
+      ctx.fillStyle = '#6b7280'
+      ctx.font = '13px system-ui, sans-serif'
+      ctx.fillText(`${tabLabel} · ${ident}`, pad, pad + 40)
+
+      const bodyY = pad + titleH
+      drawGrid(ctx, pad, bodyY, mo, cw, ch, numSize, daySize, initialsSize)
+      drawList(ctx, pad + gridW + gap, bodyY, agendaW, mo.exams, rowH, dateSize, subjSize, detailSize, dateColW)
+    }
+
+    const link = document.createElement('a')
+    const namePart = sel === 'all' ? 'ceo-rok' : `${SR_MONTHS[selected[0].month]}-${selected[0].year}`
+    link.download = `${tab}-${namePart}-${meta.group}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+    setImageToast(true)
+    setTimeout(() => setImageToast(false), 3500)
+  }
+
   const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
+
+  // Meseci sa ispitima (za picker slike), hronološki.
+  const imageMonths = useMemo(() => {
+    const m = new Map<string, { year: number; month: number }>()
+    for (const e of allFilteredEntries) {
+      const d = new Date(e.date + 'T00:00:00')
+      m.set(`${d.getFullYear()}-${d.getMonth()}`, { year: d.getFullYear(), month: d.getMonth() })
+    }
+    return [...m.values()].sort((a, b) => a.year - b.year || a.month - b.month)
+  }, [allFilteredEntries])
 
   const prijavaNotice = useMemo(() => {
     const today = new Date()
@@ -343,6 +600,16 @@ export default function RokoviPage() {
   function ActionButtons() {
     return (
       <>
+        <button
+          onClick={() => setShowImageMenu(true)}
+          disabled={allFilteredEntries.length === 0}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70
+            disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+        >
+          <IconImage className="h-4 w-4 opacity-80" />
+          Slika
+        </button>
         <button
           onClick={downloadICS}
           disabled={allFilteredEntries.length === 0}
@@ -809,6 +1076,54 @@ export default function RokoviPage() {
               ✓
             </span>
             Kalendar (.ics) preuzet — otvori fajl da dodaš termine.
+          </div>
+        </div>
+      )}
+
+      {imageToast && (
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-100 sm:bottom-6">
+          <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
+            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:text-green-600 flex items-center justify-center shrink-0">
+              ✓
+            </span>
+            Slika rokova je preuzeta!
+          </div>
+        </div>
+      )}
+
+      {showImageMenu && (
+        <div
+          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+          onClick={() => setShowImageMenu(false)}
+        >
+          <div
+            className={`w-full max-w-xs rounded-2xl p-4 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+            onClick={e => e.stopPropagation()}
+          >
+            <p className="mb-1 px-1 text-sm font-semibold text-gray-900 dark:text-gray-100">Skini kao sliku</p>
+            <p className="mb-3 px-1 text-xs text-gray-500 dark:text-gray-400">
+              {tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'} · izaberi mesec ili ceo rok
+            </p>
+            <div className="space-y-1">
+              {imageMonths.length > 1 && (
+                <button
+                  onClick={() => { setShowImageMenu(false); downloadRokImage('all') }}
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#024c7d] hover:bg-white/70 dark:text-[#60c3ad] dark:hover:bg-gray-800/60 transition-colors"
+                >
+                  <IconImage className="h-4 w-4 opacity-80" />
+                  Ceo rok (svi meseci)
+                </button>
+              )}
+              {imageMonths.map(m => (
+                <button
+                  key={`${m.year}-${m.month}`}
+                  onClick={() => { setShowImageMenu(false); downloadRokImage(m) }}
+                  className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-white/70 dark:text-gray-200 dark:hover:bg-gray-800/60 transition-colors"
+                >
+                  {cap(SR_MONTHS[m.month])} {m.year}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
