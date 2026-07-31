@@ -132,7 +132,7 @@ a[href]:hover {
 /* Jača, prozirnija varijanta liquid-glass-a za donji navbar — bliža iOS
    tab bar materijalu (jači blur/saturate, tanka svetla ivica na vrhu). */
 .liquid-glass-nav {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.48));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.78));
   backdrop-filter: blur(30px) saturate(1.7);
   -webkit-backdrop-filter: blur(30px) saturate(1.7);
   border-color: rgba(255, 255, 255, 0.6);
@@ -144,7 +144,7 @@ a[href]:hover {
 }
 
 .dark .liquid-glass-nav {
-  background: linear-gradient(180deg, rgba(30, 30, 32, 0.6), rgba(18, 18, 20, 0.55));
+  background: linear-gradient(180deg, rgba(30, 30, 32, 0.86), rgba(18, 18, 20, 0.82));
   backdrop-filter: blur(30px) saturate(1.8);
   -webkit-backdrop-filter: blur(30px) saturate(1.8);
   border-color: rgba(255, 255, 255, 0.16);
