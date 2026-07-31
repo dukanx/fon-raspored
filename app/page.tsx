@@ -121,14 +121,25 @@ export default function OnboardingPage() {
     if (!data || !enteredLastName.trim() || selectedYear === null) return
     setError(null)
 
-    const groupId = findGroup(
-      data,
-      enteredLastName.trim(),
-      selectedProgram || null
-    )
+    const raw = enteredLastName.trim()
+    const program = selectedProgram || null
+    let groupId = findGroup(data, raw, program)
+    let usedName = raw
+
+    // Čest slučaj: uneto "Ime Prezime" — probaj samo poslednju reč (prezime).
+    if (!groupId && /\s/.test(raw)) {
+      const surnameOnly = raw.split(/\s+/).pop() ?? ''
+      const retry = surnameOnly ? findGroup(data, surnameOnly, program) : null
+      if (retry) {
+        groupId = retry
+        usedName = surnameOnly
+      }
+    }
 
     if (!groupId) {
-      setError('Nije pronađena grupa za unesene podatke. Proveri prezime i smer.')
+      setError(
+        `Nismo našli grupu za „${raw}". Unesi samo prezime (bez imena), probaj sa kvačicama (č, ć, š, ž, đ) ili bez njih, a možeš i da odabereš grupu direktno ispod.`
+      )
       return
     }
 
@@ -136,7 +147,7 @@ export default function OnboardingPage() {
     commitSelection(groupId, {
       year: selectedYear,
       program: selectedProgram,
-      lastName: enteredLastName.trim(),
+      lastName: usedName,
       semester: data.semester,
     })
     router.push('/izborni')
