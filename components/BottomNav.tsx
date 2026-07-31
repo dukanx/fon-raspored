@@ -73,9 +73,9 @@ export default function BottomNav() {
       }`}
     >
       <div
-        className={`liquid-glass pointer-events-auto mx-auto flex items-stretch transition-all duration-300 ${
+        className={`liquid-glass liquid-glass-nav pointer-events-auto mx-auto flex items-stretch transition-all duration-300 ${
           isCompact
-            ? 'max-w-64 gap-0.5 rounded-[1.65rem] px-1.5 py-1'
+            ? 'max-w-64 gap-0.5 rounded-[1.65rem] px-1.5 py-1.5'
             : 'max-w-md gap-1 rounded-[2rem] px-2 py-1.5'
         }`}
       >
@@ -90,7 +90,7 @@ export default function BottomNav() {
                   : router.push(href)
               }
               className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
-                isCompact ? 'gap-0 py-1' : 'gap-0.5 py-1.5'
+                isCompact ? 'gap-0 py-1.5' : 'gap-0.5 py-1.5'
               } ${
                 isCompact ? 'px-1.5' : 'px-2'
               } ${
