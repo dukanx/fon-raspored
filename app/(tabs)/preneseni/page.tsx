@@ -6,6 +6,7 @@ import type { SemesterData, ScheduleEntry } from '@/lib/types'
 import { getScheduleForGroup } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
 import { toggleTheme } from '@/lib/theme'
+import FeedbackButton from '@/components/FeedbackButton'
 
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15–10:00', '10:15': '10:15–12:00',
@@ -280,6 +281,7 @@ export default function PreneseniPage() {
               <IconMoon className="h-[18px] w-[18px] dark:hidden" />
               <IconSun className="hidden h-[18px] w-[18px] dark:block" />
             </button>
+            <FeedbackButton />
             <button
               onClick={() => router.push('/raspored')}
               className={`hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 sm:inline-flex ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}

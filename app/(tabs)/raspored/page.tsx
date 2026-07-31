@@ -12,6 +12,7 @@ import { session, saved as savedStore, byGroup, note as noteStore } from '@/lib/
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
+import FeedbackButton from '@/components/FeedbackButton'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -593,6 +594,7 @@ export default function RasporedPage() {
                 <IconMoon className="h-[18px] w-[18px] dark:hidden" />
                 <IconSun className="hidden h-[18px] w-[18px] dark:block" />
               </button>
+              <FeedbackButton />
               <a
                 href="https://oas.fon.bg.ac.rs/raspored-nastave/"
                 target="_blank"

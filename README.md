@@ -140,6 +140,16 @@ Potrebne promenljive okruženja:
 
 VAPID ključevi se generišu sa `npx web-push generate-vapid-keys`.
 
+## Feedback
+
+Plutajuće dugme u aplikaciji šalje poruku na mejl preko [Resend](https://resend.com).
+
+| Promenljiva | Gde | Opis |
+|---|---|---|
+| `RESEND_API_KEY` | Vercel | API ključ sa resend.com |
+| `FEEDBACK_EMAIL` | Vercel | Mejl na koji stiže feedback |
+| `RESEND_FROM_EMAIL` | Vercel (opciono) | Pošiljalac, npr. `FON Raspored <feedback@tvojdomen.com>`. Bez ovoga koristi se Resend-ov sandbox pošiljalac (`onboarding@resend.dev`), koji radi bez verifikacije domena. |
+
 ## Verzije
 
 ### v1.0 — Raspored nastave

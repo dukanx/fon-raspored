@@ -9,6 +9,7 @@ import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
+import FeedbackButton from '@/components/FeedbackButton'
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -936,6 +937,7 @@ export default function RokoviPage() {
                 <IconMoon className="h-[18px] w-[18px] dark:hidden" />
                 <IconSun className="hidden h-[18px] w-[18px] dark:block" />
               </button>
+              <FeedbackButton />
               <a
                 href={tab === 'kolokvijumi'
                   ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
