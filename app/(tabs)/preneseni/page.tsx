@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry } from '@/lib/types'
-import { getScheduleForGroup } from '@/lib/schedule'
+import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
 import { toggleTheme } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
@@ -152,8 +152,11 @@ export default function PreneseniPage() {
     if (!data) {
       setLoadingData(true)
       try {
-        data = await fetch(`/data/${g}god.json`).then(r => r.json())
-        setGodineData(prev => ({ ...prev, [g]: data }))
+        // Oba semestra (zimski + letnji), ne samo trenutno "živi" ${g}god.json —
+        // inače predmet iz semestra koji trenutno nije aktivan ne može da se nađe.
+        const entries = await fetchYearBothSemesters(g)
+        data = { semester: '', year: g, groups: {}, entries }
+        setGodineData(prev => ({ ...prev, [g]: data as SemesterData }))
       } finally {
         setLoadingData(false)
       }

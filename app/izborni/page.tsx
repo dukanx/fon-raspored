@@ -3,7 +3,7 @@
 import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
-import { getScheduleForGroup } from '@/lib/schedule'
+import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
@@ -188,10 +188,9 @@ export default function IzbornoPage() {
     setPrevSearch('')
     setPrevPredmeti([])
     setPrevLoading(true)
-    fetch(`/data/${g}god.json`)
-      .then(r => r.json())
-      .then((data: SemesterData) => {
-        const unique = [...new Set(data.entries.map(e => e.subject))].sort()
+    fetchYearBothSemesters(g)
+      .then(entries => {
+        const unique = [...new Set(entries.map(e => e.subject))].sort()
         setPrevPredmeti(unique)
       })
       .finally(() => setPrevLoading(false))
@@ -207,6 +206,10 @@ export default function IzbornoPage() {
   }
 
   const checkedCount = Object.values(checked).filter(Boolean).length
+  // Predmet iz prošlih/drugog semestra se broji kao validan izbor i bez
+  // ijednog čekiranog tekućeg predmeta (npr. sve položio, ostao mu samo
+  // predmet iz zimskog za septembarski rok).
+  const hasAnySelection = checkedCount > 0 || prevSelected.length > 0 || otherSelected.length > 0
   const filteredPrev = prevPredmeti.filter(p =>
     p.toLowerCase().includes(prevSearch.toLowerCase())
   )
@@ -463,9 +466,9 @@ export default function IzbornoPage() {
             </button>
             <button
               onClick={handleConfirm}
-              disabled={checkedCount === 0}
+              disabled={!hasAnySelection}
               className={`flex-[2] sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97]
-                ${checkedCount > 0
+                ${hasAnySelection
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                   : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}
             >

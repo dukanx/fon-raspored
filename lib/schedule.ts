@@ -96,6 +96,20 @@ export function findGroup(
   return null
 }
 
+// Učitava termine za godinu iz OBA arhiviranih semestra (zimski + letnji), ne
+// samo iz trenutno "živog" ${g}god.json — inače predmeti iz semestra koji
+// trenutno nije aktivan (npr. zimski dok traje letnji) ne mogu da se nađu ni
+// u "Predmeti iz prethodnih godina" ni u "Izmena termina" ručnom pretragom.
+export async function fetchYearBothSemesters(g: number): Promise<ScheduleEntry[]> {
+  const load = (sem: 'zimski' | 'letnji') =>
+    fetch(`/data/${g}god-${sem}.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .catch(() => null) as Promise<SemesterData | null>
+
+  const [zimski, letnji] = await Promise.all([load('zimski'), load('letnji')])
+  return [...(zimski?.entries ?? []), ...(letnji?.entries ?? [])]
+}
+
 // Vraća raspored filtriran po grupi
 export function getScheduleForGroup(
   data: SemesterData,
