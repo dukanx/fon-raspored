@@ -761,7 +761,7 @@ export default function RasporedPage() {
                               onClick={() => openSubject(e.subject)}
                               style={{ background: isDark ? c.darkBg : c.bg }}
                               className={`group/card flex-1 cursor-pointer rounded-lg p-1.5 min-h-11 relative transition-shadow sm:min-h-20 sm:p-2.5
-                                ${selectedSubject === e.subject ? 'ring-2 ring-[#024c7d]/50 dark:ring-[#60c3ad]/50' : ''}`}
+                                ${selectedSubject === e.subject ? 'ring-2 ring-inset ring-[#024c7d]/50 dark:ring-[#60c3ad]/50' : ''}`}
                             >
                               <button
                                 onClick={ev => { ev.stopPropagation(); hideEntry(e) }}
