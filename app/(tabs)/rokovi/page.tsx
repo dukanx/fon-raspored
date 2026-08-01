@@ -10,6 +10,7 @@ import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
+import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -327,7 +328,7 @@ export default function RokoviPage() {
 
   // Izvoz aktivnog taba kao PNG. sel = 'all' (svi meseci u kolonama) ili
   // { year, month } (jedan mesec: veliki kalendar levo + agenda desno).
-  function downloadRokImage(sel: 'all' | { year: number; month: number }) {
+  async function downloadRokImage(sel: 'all' | { year: number; month: number }) {
     if (!allFilteredEntries.length) return
     const sorted = [...allFilteredEntries].sort(
       (a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)
@@ -546,11 +547,9 @@ export default function RokoviPage() {
       drawList(ctx, pad + gridW + gap, bodyY, agendaW, mo.exams, rowH, dateSize, subjSize, detailSize, dateColW)
     }
 
-    const link = document.createElement('a')
     const namePart = sel === 'all' ? 'ceo-rok' : `${SR_MONTHS[selected[0].month]}-${selected[0].year}`
-    link.download = `${tab}-${namePart}-${meta.group}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
+    const file = await canvasToFile(canvas, `${tab}-${namePart}-${meta.group}.png`)
+    await shareOrDownloadFile(file, tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi')
     setImageToast(true)
     setTimeout(() => setImageToast(false), 3500)
   }
@@ -1109,7 +1108,7 @@ export default function RokoviPage() {
             <div className="space-y-1">
               {imageMonths.length > 1 && (
                 <button
-                  onClick={() => { setShowImageMenu(false); downloadRokImage('all') }}
+                  onClick={() => { setShowImageMenu(false); void downloadRokImage('all') }}
                   className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#024c7d] hover:bg-white/70 dark:text-[#60c3ad] dark:hover:bg-gray-800/60 transition-colors"
                 >
                   <IconImage className="h-4 w-4 opacity-80" />
@@ -1119,7 +1118,7 @@ export default function RokoviPage() {
               {imageMonths.map(m => (
                 <button
                   key={`${m.year}-${m.month}`}
-                  onClick={() => { setShowImageMenu(false); downloadRokImage(m) }}
+                  onClick={() => { setShowImageMenu(false); void downloadRokImage(m) }}
                   className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-white/70 dark:text-gray-200 dark:hover:bg-gray-800/60 transition-colors"
                 >
                   {cap(SR_MONTHS[m.month])} {m.year}

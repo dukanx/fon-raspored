@@ -13,6 +13,7 @@ import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
+import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -359,7 +360,7 @@ export default function RasporedPage() {
     byGroup.hidden(meta.group).set(next)
   }
 
-  function downloadPNG() {
+  async function downloadPNG() {
     const canvas = document.createElement('canvas')
     const dpr = 2
     const colW = 160
@@ -480,10 +481,8 @@ export default function RasporedPage() {
     ctx.textAlign = 'left'
     ctx.fillText(`${meta.lastName} · Grupa ${meta.group} · ${meta.semester}`, padding + timeW, padding - 4)
 
-    const link = document.createElement('a')
-    link.download = `raspored-${meta.group}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
+    const file = await canvasToFile(canvas, `raspored-${meta.group}.png`)
+    await shareOrDownloadFile(file, 'Raspored')
     setShowDownloadToast(true)
     setTimeout(() => setShowDownloadToast(false), 3000)
   }
@@ -548,7 +547,7 @@ export default function RasporedPage() {
   // Export akcije (skidanje slike / kalendar) — NISU navigacija, stoje uz kontrole
   const exportActions = [
     { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: () => { void shareSchedule() } },
-    { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: downloadPNG },
+    { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
     { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
   // Navigacija — donji tab-bar na mobilnom
