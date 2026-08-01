@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { RokData, RokEntry } from '@/lib/types'
+import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
 import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
@@ -80,6 +80,12 @@ const IconImage = (p: IconProps) => (
 const IconHidden = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
 )
+const IconPlus = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
+)
+const IconEdit = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+)
 
 function getDaySr(isoDate: string) {
   return SR_DAYS_FULL[new Date(isoDate + 'T00:00:00').getDay()]
@@ -149,6 +155,13 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
 
 type Tab = 'kolokvijumi' | 'ispiti'
 
+type EventModalState =
+  | { mode: 'add'; date?: string }
+  | { mode: 'edit'; entry: CustomRokEntry }
+
+const EVENT_TYPES = ['P', 'U', 'Kolokvijum', 'Ostalo'] as const
+const eventTypeLabel = (t: string) => (t === 'P' ? 'Pismeni' : t === 'U' ? 'Usmeni' : t)
+
 export default function RokoviPage() {
   const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
@@ -165,6 +178,8 @@ export default function RokoviPage() {
   const [downloadToast, setDownloadToast] = useState(false)
   const [imageToast, setImageToast] = useState(false)
   const [showImageMenu, setShowImageMenu] = useState(false)
+  const [customEntries, setCustomEntries] = useState<CustomRokEntry[]>([])
+  const [eventModal, setEventModal] = useState<EventModalState | null>(null)
 
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
@@ -246,12 +261,19 @@ export default function RokoviPage() {
 
   const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(rokEntryKey)), [hiddenEntries])
 
-  // Skriveni termini se čuvaju odvojeno po tabu i grupi
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+
+  // Skriveni termini se čuvaju odvojeno po tabu i grupi. Kad rok prođe više
+  // nema šta da se sakriva — izbaci ga i iz prikaza i iz storage-a (inače bi
+  // se gomilali zauvek).
   useEffect(() => {
     if (!isHydrated || !meta.group) { setHiddenEntries([]); return }
-    setHiddenEntries(byGroup.rokHidden(tab, meta.group).get())
+    const stored = byGroup.rokHidden(tab, meta.group).get()
+    const active = stored.filter(e => e.date >= todayStr)
+    if (active.length !== stored.length) byGroup.rokHidden(tab, meta.group).set(active)
+    setHiddenEntries(active)
     setShowHidden(false)
-  }, [isHydrated, tab, meta.group])
+  }, [isHydrated, tab, meta.group, todayStr])
 
   function hideEntry(e: RokEntry) {
     if (hiddenKeys.has(rokEntryKey(e))) return
@@ -267,6 +289,27 @@ export default function RokoviPage() {
     byGroup.rokHidden(tab, meta.group).set(next)
   }
 
+  // Korisnikovi sopstveni unosi (nisu sa FON sajta) — učitaju se po grupi.
+  useEffect(() => {
+    if (!isHydrated || !meta.group) { setCustomEntries([]); return }
+    setCustomEntries(byGroup.customRokovi(meta.group).get())
+  }, [isHydrated, meta.group])
+
+  function saveCustomEntry(entry: CustomRokEntry) {
+    const exists = customEntries.some(e => e.id === entry.id)
+    const next = exists ? customEntries.map(e => (e.id === entry.id ? entry : e)) : [...customEntries, entry]
+    setCustomEntries(next)
+    byGroup.customRokovi(meta.group).set(next)
+    setEventModal(null)
+  }
+
+  function deleteCustomEntry(id: string) {
+    const next = customEntries.filter(e => e.id !== id)
+    setCustomEntries(next)
+    byGroup.customRokovi(meta.group).set(next)
+    setEventModal(null)
+  }
+
   function filterEntries(entries: RokEntry[]): RokEntry[] {
     return entries.filter(e => {
       if (e.date < todayStr) return false
@@ -276,17 +319,21 @@ export default function RokoviPage() {
     })
   }
 
-  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
-
   const activeRokovi = useMemo(() => allRokovi.filter(r => {
     if (tab === 'ispiti' ? r.tip !== 'ispit' : r.tip !== 'kolokvijum') return false
     if (r.entries.length === 0) return false
     return r.entries.some(e => e.date >= todayStr)
   }), [allRokovi, tab, todayStr])
 
+  // Tab je fiksiran pri dodavanju (vidi CustomRokEntry.tab) — ne zavisi od tipa.
+  const customForTab = useMemo(
+    () => customEntries.filter(e => e.date >= todayStr && e.tab === tab),
+    [customEntries, tab, todayStr]
+  )
+
   const allFilteredEntries = useMemo(
-    () => activeRokovi.flatMap(r => filterEntries(r.entries)),
-    [activeRokovi, userSubjects, hiddenKeys] // eslint-disable-line react-hooks/exhaustive-deps
+    () => [...activeRokovi.flatMap(r => filterEntries(r.entries)), ...customForTab],
+    [activeRokovi, userSubjects, hiddenKeys, customForTab] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   function downloadICS() {
@@ -305,7 +352,7 @@ export default function RokoviPage() {
       const dateStr = e.date.replace(/-/g, '')
       const [sh, sm] = e.start.split(':')
       const [eh, em] = e.end.split(':')
-      const typeLabel = e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : ''
+      const typeLabel = e.type ? eventTypeLabel(e.type) : ''
       const desc = [tab === 'ispiti' ? 'Ispit' : 'Kolokvijum', e.note].filter(Boolean).join(' · ')
       lines.push('BEGIN:VEVENT')
       lines.push(`UID:${dateStr}-${sh}${sm}-${e.subject.replace(/\s/g, '')}-${e.type ?? ''}@fonraspored`)
@@ -466,7 +513,7 @@ export default function RokoviPage() {
           ctx.fillStyle = '#1f2937'
           ctx.font = `600 ${subjSize}px system-ui, sans-serif`
           ctx.fillText(truncate(ctx, e.subject, textW), rx + 14, ly + 10)
-          const typeLabel = e.type === 'P' ? 'pismeni' : e.type === 'U' ? 'usmeni' : ''
+          const typeLabel = e.type ? eventTypeLabel(e.type).toLowerCase() : ''
           const details = [e.start, e.rooms.join(', '), typeLabel].filter(Boolean).join(' · ')
           ctx.fillStyle = '#6b7280'
           ctx.font = `${detailSize}px system-ui, sans-serif`
@@ -598,11 +645,19 @@ export default function RokoviPage() {
     return map
   }, [allFilteredEntries])
 
-  const isEmpty = activeRokovi.length === 0
+  const isEmpty = activeRokovi.length === 0 && customForTab.length === 0
 
   function ActionButtons() {
     return (
       <>
+        <button
+          onClick={() => setEventModal({ mode: 'add' })}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+        >
+          <IconPlus className="h-4 w-4 opacity-80" />
+          Dodaj
+        </button>
         <button
           onClick={() => setShowImageMenu(true)}
           disabled={allFilteredEntries.length === 0}
@@ -639,9 +694,10 @@ export default function RokoviPage() {
 
   // --- Lista view ---
   function ListView() {
-    const groups = activeRokovi
-      .map(r => ({ label: r.rok, entries: filterEntries(r.entries).sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)) }))
-      .filter(g => g.entries.length > 0)
+    const groups = [
+      ...activeRokovi.map(r => ({ label: r.rok, entries: filterEntries(r.entries).sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)) as RokEntry[] })),
+      { label: 'Moji događaji', entries: [...customForTab].sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)) as RokEntry[] },
+    ].filter(g => g.entries.length > 0)
 
     if (!groups.length) {
       return <EmptyState />
@@ -675,36 +731,48 @@ export default function RokoviPage() {
                   </div>
                   {dateEntries.map((e, i) => {
                     const c = COLORS[colorMap[e.subject]]
-                    return (
-                      <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
-                        <div className="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                          <span className="text-xs text-gray-400 dark:text-gray-500 w-10 text-right shrink-0">{e.start}</span>
-                          <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: c.bar }} />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">
-                              {e.rooms.join(', ')}
-                              {e.note ? ` · ${e.note}` : ''}
-                            </span>
-                          </div>
-                          {e.type && (
-                            <span
-                              style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
-                              className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
-                            >
-                              {e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}
-                            </span>
-                          )}
-                          <button
-                            onClick={() => hideEntry(e)}
-                            className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
-                            aria-label="Sakrij termin"
-                          >
-                            ✕
-                          </button>
+                    const isCustom = 'custom' in e && e.custom
+                    const row = (
+                      <div
+                        onClick={isCustom ? () => setEventModal({ mode: 'edit', entry: e as CustomRokEntry }) : undefined}
+                        className={`flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-800 last:border-0 ${isCustom ? 'cursor-pointer' : ''}`}
+                      >
+                        <span className="text-xs text-gray-400 dark:text-gray-500 w-10 text-right shrink-0">{e.start}</span>
+                        <div className="w-1 self-stretch rounded-full shrink-0" style={{ background: c.bar }} />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm text-gray-900 dark:text-gray-100 block truncate">{e.subject}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                            {e.rooms.join(', ')}
+                            {e.note ? ` · ${e.note}` : ''}
+                          </span>
                         </div>
-                      </SwipeableListItem>
+                        {e.type && (
+                          <span
+                            style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
+                            className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
+                          >
+                            {eventTypeLabel(e.type)}
+                          </span>
+                        )}
+                        <button
+                          onClick={ev => {
+                            if (isCustom) {
+                              ev.stopPropagation()
+                              setEventModal({ mode: 'edit', entry: e as CustomRokEntry })
+                            } else {
+                              hideEntry(e)
+                            }
+                          }}
+                          className={`${isCustom ? 'flex' : 'hidden sm:flex'} w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs`}
+                          aria-label={isCustom ? 'Izmeni događaj' : 'Sakrij termin'}
+                        >
+                          {isCustom ? <IconEdit className="h-3.5 w-3.5" /> : '✕'}
+                        </button>
+                      </div>
                     )
+                    return isCustom
+                      ? <div key={i}>{row}</div>
+                      : <SwipeableListItem key={i} onHide={() => hideEntry(e)}>{row}</SwipeableListItem>
                   })}
                 </div>
               ))}
@@ -731,8 +799,8 @@ export default function RokoviPage() {
     const weeks: (number | null)[][] = []
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7))
 
-    if (isEmpty) return <EmptyState />
-
+    // Kalendar ostaje interaktivan i kad nema rokova — klik na prazan dan
+    // dodaje sopstveni događaj, pa nema razloga da se zameni EmptyState-om.
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -757,6 +825,12 @@ export default function RokoviPage() {
           ><IconForward className="h-4 w-4" /></button>
         </div>
 
+        {isEmpty && (
+          <p className="mb-3 text-center text-xs text-gray-400 dark:text-gray-500">
+            Nema rokova za prikaz — klikni na datum da dodaš svoj događaj.
+          </p>
+        )}
+
         <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5">
           {SR_DAYS_SHORT.map(d => (
             <div key={d} className="text-center text-xs text-gray-400 dark:text-gray-500 py-1 font-medium">{d}</div>
@@ -771,13 +845,18 @@ export default function RokoviPage() {
               const dayEntries = byDate[isoDate] ?? []
               const isToday = isoDate === todayStr
               const hasEvents = dayEntries.length > 0
+              const isPast = isoDate < todayStr
+              const isClickable = hasEvents || !isPast
 
               return (
                 <div
                   key={di}
-                  onClick={() => hasEvents && setTooltip(t => t?.date === isoDate ? null : { date: isoDate })}
+                  onClick={() => {
+                    if (hasEvents) setTooltip(t => t?.date === isoDate ? null : { date: isoDate })
+                    else if (!isPast) setEventModal({ mode: 'add', date: isoDate })
+                  }}
                   className={`relative min-h-13 rounded-lg p-1.5 transition-colors sm:min-h-20 sm:p-2
-                    ${hasEvents ? 'cursor-pointer' : ''}
+                    ${isClickable ? 'cursor-pointer' : ''}
                     ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
                     ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
                     ${tooltip?.date === isoDate ? 'ring-2 ring-[#024c7d]/30 dark:ring-[#60c3ad]/30' : ''}
@@ -820,17 +899,27 @@ export default function RokoviPage() {
               <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 {getDaySr(tooltip.date)}, {formatDateSr(tooltip.date)}
               </h4>
-              <button
-                onClick={() => setTooltip(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-base leading-none text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
-                aria-label="Zatvori detalje"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setEventModal({ mode: 'add', date: tooltip.date })}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
+                  aria-label="Dodaj događaj ovog dana"
+                >
+                  <IconPlus className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setTooltip(null)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-base leading-none text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
+                  aria-label="Zatvori detalje"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             <div className="space-y-3">
               {(byDate[tooltip.date] ?? []).map((e, i) => {
                 const c = COLORS[colorMap[e.subject]]
+                const isCustom = 'custom' in e && e.custom
                 return (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-1 h-8 rounded-full shrink-0 mt-0.5" style={{ background: c.bar }} />
@@ -838,16 +927,16 @@ export default function RokoviPage() {
                       <p className="text-sm text-gray-900 dark:text-gray-100">{e.subject}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">
                         {e.start}–{e.end} · {e.rooms.join(', ')}
-                        {e.type && ` · ${e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}`}
+                        {e.type && ` · ${eventTypeLabel(e.type)}`}
                       </p>
                       {e.note && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.note}</p>}
                     </div>
                     <button
-                      onClick={() => hideEntry(e)}
+                      onClick={() => isCustom ? setEventModal({ mode: 'edit', entry: e as CustomRokEntry }) : hideEntry(e)}
                       className="w-6 h-6 flex items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
-                      aria-label="Sakrij termin"
+                      aria-label={isCustom ? 'Izmeni događaj' : 'Sakrij termin'}
                     >
-                      ✕
+                      {isCustom ? <IconEdit className="h-3.5 w-3.5" /> : '✕'}
                     </button>
                   </div>
                 )
@@ -875,6 +964,166 @@ export default function RokoviPage() {
     return (
       <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">
         Nema podataka za prikaz.
+      </div>
+    )
+  }
+
+  // Dodaj/izmeni sopstveni događaj. `key` na pozivnom mestu (ispod) menja se
+  // po cilju (koji entry / koji datum), pa React montira svež state umesto
+  // da ručno sinhronizuje formu preko efekta kad se promeni cilj.
+  function EventModal({ state }: { state: EventModalState }) {
+    const existing = state.mode === 'edit' ? state.entry : null
+    const [subject, setSubject] = useState(existing?.subject ?? '')
+    const [type, setType] = useState<string>(existing?.type ?? 'P')
+    const [date, setDate] = useState(existing?.date ?? (state.mode === 'add' ? state.date : undefined) ?? todayStr)
+    const [start, setStart] = useState(existing?.start ?? '')
+    const [end, setEnd] = useState(existing?.end ?? '')
+    const [rooms, setRooms] = useState(existing?.rooms.join(', ') ?? '')
+    const [note, setNote] = useState(existing?.note ?? '')
+    const [error, setError] = useState<string | null>(null)
+
+    const knownSubjects = useMemo(
+      () => [...new Set(allRokovi.flatMap(r => r.entries.map(e => e.subject)))].sort(),
+      []
+    )
+
+    function handleSave() {
+      if (!subject.trim() || !date || !start || !end) {
+        setError('Popuni predmet, datum i vreme.')
+        return
+      }
+      saveCustomEntry({
+        id: existing?.id ?? crypto.randomUUID(),
+        custom: true,
+        tab: existing?.tab ?? tab,
+        subject: subject.trim(),
+        type,
+        date,
+        start,
+        end,
+        rooms: rooms.split(',').map(r => r.trim()).filter(Boolean),
+        note: note.trim(),
+      })
+    }
+
+    const fieldClass = 'w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad] placeholder:text-gray-400 dark:placeholder:text-gray-500'
+    const labelClass = 'mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400'
+
+    return (
+      <div
+        className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        onClick={() => setEventModal(null)}
+      >
+        <div
+          className={`w-full max-w-sm max-h-full overflow-y-auto rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {existing ? 'Izmeni događaj' : 'Dodaj događaj'}
+            </h3>
+            <button
+              onClick={() => setEventModal(null)}
+              aria-label="Zatvori"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className={labelClass}>Predmet</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={e => setSubject(e.target.value)}
+                list="rok-subjects"
+                placeholder="Naziv predmeta"
+                className={fieldClass}
+              />
+              <datalist id="rok-subjects">
+                {knownSubjects.map(s => <option key={s} value={s} />)}
+              </datalist>
+            </div>
+
+            <div>
+              <label className={labelClass}>Tip</label>
+              <div className="grid grid-cols-4 gap-1.5">
+                {EVENT_TYPES.map(t => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setType(t)}
+                    className={`py-1.5 rounded-full text-xs font-medium border transition-colors
+                      ${type === t
+                        ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                        : 'bg-white/70 text-gray-600 border-[#024c7d]/25 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/25'}`}
+                  >
+                    {eventTypeLabel(t)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Datum</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className={labelClass}>Od</label>
+                <input type="time" value={start} onChange={e => setStart(e.target.value)} className={fieldClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Do</label>
+                <input type="time" value={end} onChange={e => setEnd(e.target.value)} className={fieldClass} />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Sala</label>
+              <input
+                type="text"
+                value={rooms}
+                onChange={e => setRooms(e.target.value)}
+                placeholder="npr. 012 (više sala odvoji zarezom)"
+                className={fieldClass}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Napomena (opciono)</label>
+              <input
+                type="text"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                placeholder="npr. dogovoreno mejlom sa profesorom"
+                className={fieldClass}
+              />
+            </div>
+          </div>
+
+          {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+
+          <div className="mt-5 space-y-2">
+            <button
+              onClick={handleSave}
+              className="w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
+            >
+              Sačuvaj
+            </button>
+            {existing && (
+              <button
+                onClick={() => deleteCustomEntry(existing.id)}
+                className="w-full rounded-xl py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+              >
+                Obriši
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     )
   }
@@ -976,48 +1225,54 @@ export default function RokoviPage() {
             </div>
 
             {/* Export (mobilni): male staklene ikonice, isto kao raspored */}
-            {isHydrated && !isEmpty && (
+            {isHydrated && (
               <div className="flex items-center gap-2 sm:hidden">
+                {hiddenEntries.length > 0 && (
+                  <button
+                    onClick={() => setShowHidden(s => !s)}
+                    aria-label={`Skriveni (${hiddenEntries.length})`}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                  >
+                    <IconHidden className="h-[18px] w-[18px]" />
+                  </button>
+                )}
                 <button
-                  onClick={() => setShowImageMenu(true)}
-                  disabled={allFilteredEntries.length === 0}
-                  aria-label="Slika"
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+                  onClick={() => setEventModal({ mode: 'add' })}
+                  aria-label="Dodaj događaj"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
                 >
-                  <IconImage className="h-[18px] w-[18px]" />
+                  <IconPlus className="h-[18px] w-[18px]" />
                 </button>
-                <button
-                  onClick={downloadICS}
-                  disabled={allFilteredEntries.length === 0}
-                  aria-label="Izvezi u kalendar"
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
-                >
-                  <IconCalendar className="h-[18px] w-[18px]" />
-                </button>
+                {!isEmpty && (
+                  <>
+                    <button
+                      onClick={() => setShowImageMenu(true)}
+                      disabled={allFilteredEntries.length === 0}
+                      aria-label="Slika"
+                      className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+                    >
+                      <IconImage className="h-[18px] w-[18px]" />
+                    </button>
+                    <button
+                      onClick={downloadICS}
+                      disabled={allFilteredEntries.length === 0}
+                      aria-label="Izvezi u kalendar"
+                      className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+                    >
+                      <IconCalendar className="h-[18px] w-[18px]" />
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
-            {isHydrated && !isEmpty && (
+            {isHydrated && (
               <div className="hidden items-center gap-2 sm:flex">
                 <ActionButtons />
               </div>
             )}
           </div>
         </header>
-
-        {/* Akcije (mobilni): skriveni termini */}
-        {isHydrated && !isEmpty && hiddenEntries.length > 0 && (
-          <div className="mb-5 flex flex-wrap items-center gap-2 sm:hidden">
-            <button
-              onClick={() => setShowHidden(s => !s)}
-              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
-                text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-            >
-              <IconHidden className="h-4 w-4 opacity-80" />
-              Skriveni ({hiddenEntries.length})
-            </button>
-          </div>
-        )}
 
         <div className="mb-6 flex items-center justify-between gap-3 border-b border-gray-200/70 dark:border-gray-800/80">
           <div className="flex items-end gap-6">
@@ -1078,7 +1333,7 @@ export default function RokoviPage() {
                     <span className="text-sm text-gray-700 dark:text-gray-300 block truncate">{e.subject}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                       {getDaySr(e.date)}, {formatDateSr(e.date)} · {e.start}
-                      {e.type && ` · ${e.type === 'P' ? 'Pismeni' : e.type === 'U' ? 'Usmeni' : e.type}`}
+                      {e.type && ` · ${eventTypeLabel(e.type)}`}
                     </span>
                   </div>
                   <button
@@ -1162,6 +1417,13 @@ export default function RokoviPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {eventModal && (
+        <EventModal
+          key={eventModal.mode === 'edit' ? eventModal.entry.id : `add-${eventModal.date ?? ''}`}
+          state={eventModal}
+        />
       )}
     </main>
   )

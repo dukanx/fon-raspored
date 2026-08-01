@@ -45,3 +45,17 @@ export interface RokData {
   prijava_datumi?: string[]      // ["05.04.2026.", "06.04.2026."]
   reklamacija_datum?: string     // "07.04.2026."
 }
+
+// Korisnikov sopstveni unos u rokovi kalendar (nije sa FON sajta) — npr.
+// dogovoreni usmeni sa profesorom koji nije na zvaničnom rasporedu.
+// type: 'P' | 'U' (isto kao RokEntry) ili slobodni label 'Kolokvijum' / 'Ostalo' —
+// postojeći render kod već ispisuje e.type sirovo kad nije 'P'/'U', pa nema
+// potrebe da se dira nijedno mesto koje prikazuje RokEntry.
+// tab: fiksira se pri dodavanju na tab u kom si tad bio (Ispiti/Kolokvijumi) —
+// NE izvodi se iz `type`, jer bi promena tipa (npr. u "Kolokvijum") inače
+// tiho preselila event u drugi tab.
+export interface CustomRokEntry extends RokEntry {
+  id: string
+  custom: true
+  tab: 'ispiti' | 'kolokvijumi'
+}

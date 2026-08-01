@@ -10,7 +10,7 @@
 //   - saved.*    -> localStorage (preživljava zatvaranje taba)
 //   - byGroup.*  -> localStorage, ključ sufiksovan grupom
 //   - note()     -> localStorage, ključ sufiksovan predmetom
-import type { ScheduleEntry, RokEntry } from './types'
+import type { ScheduleEntry, RokEntry, CustomRokEntry } from './types'
 
 type Kind = 'local' | 'session'
 
@@ -118,6 +118,9 @@ export const byGroup = {
     json<{ year: number; subject: string }[]>('local', `fon_prev_subjects_${g}`, []),
   rokHidden: (tab: string, g: string) =>
     json<RokEntry[]>('local', `fon_rok_hidden_${tab}_${g}`, []),
+  // Korisnikovi sopstveni unosi u rokovi kalendar (nisu sa FON sajta).
+  customRokovi: (g: string) =>
+    json<CustomRokEntry[]>('local', `fon_custom_rok_${g}`, []),
 }
 
 // Lična beleška po predmetu.
