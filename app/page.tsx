@@ -278,42 +278,6 @@ export default function OnboardingPage() {
           Izaberi predmete
         </button>
 
-        {/* Nalepi deljeni link — koristi se npr. posle instalacije PWA (iOS home
-            screen app ima odvojen storage od Safarija) */}
-        <div className="mt-6 border-t border-[#024c7d]/15 pt-6 dark:border-white/20">
-          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
-            Imaš link od kolege? Nalepi ga
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={shareInput}
-              onChange={e => { setShareInput(e.target.value); setShareError(null) }}
-              onKeyDown={e => e.key === 'Enter' && shareInput.trim() && openSharedLink()}
-              placeholder="Nalepi link…"
-              className="flex-1 h-10 px-3 rounded-xl border border-[#024c7d]/15 text-sm
-                         text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
-                         dark:border-white/20 placeholder-gray-400 dark:placeholder-gray-500
-                         focus:outline-none focus:ring-2 focus:ring-[#024c7d]
-                         dark:focus:ring-[#60c3ad] focus:border-transparent"
-            />
-            <button
-              onClick={openSharedLink}
-              disabled={!shareInput.trim()}
-              className={`shrink-0 rounded-xl px-4 text-sm font-medium transition-colors
-                ${shareInput.trim()
-                  ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-                  : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
-                }`}
-            >
-              Otvori
-            </button>
-          </div>
-          {shareError && (
-            <p className="mt-2 text-xs text-red-500 dark:text-red-400 text-center">{shareError}</p>
-          )}
-        </div>
-
         {/* Fallback - ručni odabir grupe */}
         {selectedYear && data && (
           <div className="mt-6 border-t border-[#024c7d]/15 pt-6 dark:border-white/20">
@@ -350,6 +314,42 @@ export default function OnboardingPage() {
           </div>
         )}
 
+        </div>
+
+        {/* Nalepi deljeni link — odvojeno od kartice; koristi se npr. posle
+            instalacije PWA (iOS home screen app ima odvojen storage od Safarija) */}
+        <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 p-4 ${GLASS}`}>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
+            Imaš link od kolege? Nalepi ga
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={shareInput}
+              onChange={e => { setShareInput(e.target.value); setShareError(null) }}
+              onKeyDown={e => e.key === 'Enter' && shareInput.trim() && openSharedLink()}
+              placeholder="Nalepi link…"
+              className="flex-1 h-10 px-3 rounded-xl border border-[#024c7d]/15 text-sm
+                         text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
+                         dark:border-white/20 placeholder-gray-400 dark:placeholder-gray-500
+                         focus:outline-none focus:ring-2 focus:ring-[#024c7d]
+                         dark:focus:ring-[#60c3ad] focus:border-transparent"
+            />
+            <button
+              onClick={openSharedLink}
+              disabled={!shareInput.trim()}
+              className={`shrink-0 rounded-xl px-4 text-sm font-medium transition-colors
+                ${shareInput.trim()
+                  ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+                  : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
+                }`}
+            >
+              Otvori
+            </button>
+          </div>
+          {shareError && (
+            <p className="mt-2 text-xs text-red-500 dark:text-red-400 text-center">{shareError}</p>
+          )}
         </div>
 
         <InstallPrompt />
