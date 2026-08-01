@@ -104,6 +104,8 @@ export const app = {
   subjectsHistory: json<Record<string, string[]>>('local', 'fon_subjects_history', {}),
   // Prvi-put modal za notifikacije prikazan (upisuje se čim se pokaže, jednom).
   notifIntroSeen: flag('local', 'fon_notif_intro_seen'),
+  // Prvi-put tutorial (feature walkthrough) prikazan ili preskočen, jednom.
+  tutorialSeen: flag('local', 'fon_tutorial_seen'),
 }
 
 // Stanje vezano za konkretnu grupu (izbor predmeta, izmene, skriveni termini…).

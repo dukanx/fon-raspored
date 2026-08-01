@@ -1,5 +1,5 @@
 import BottomNav from '@/components/BottomNav'
-import NotificationIntro from '@/components/NotificationIntro'
+import FirstRunOverlays from '@/components/FirstRunOverlays'
 
 export default function TabsLayout({
   children,
@@ -10,7 +10,7 @@ export default function TabsLayout({
     <>
       {children}
       <BottomNav />
-      <NotificationIntro />
+      <FirstRunOverlays />
     </>
   )
 }
