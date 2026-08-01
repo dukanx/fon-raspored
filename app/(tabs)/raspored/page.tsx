@@ -176,6 +176,7 @@ export default function RasporedPage() {
   const [showIcsHelp, setShowIcsHelp] = useState(false)
   const [showDownloadToast, setShowDownloadToast] = useState(false)
   const [showShareToast, setShowShareToast] = useState(false)
+  const [showShareChoice, setShowShareChoice] = useState(false)
   const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
@@ -288,9 +289,30 @@ export default function RasporedPage() {
     if (selectedSubject) noteStore(selectedSubject).set(value)
   }
 
-  // Napravi /deli link sa trenutnim izborom predmeta i podeli ga (native share
-  // na mobilnom, inače kopiraj u clipboard + toast).
-  async function shareSchedule() {
+  // Ima li išta van "Tvoji predmeti" da se ponudi za deljenje (preneseni
+  // termini, predmeti iz prethodnih godina, predmeti drugog semestra).
+  function hasShareExtras(): boolean {
+    if (!meta.group) return false
+    return (
+      byGroup.extra(meta.group).get().length > 0 ||
+      byGroup.prevSubjects(meta.group).get().length > 0 ||
+      byGroup.otherSem(meta.group).get().length > 0
+    )
+  }
+
+  // Klik na "Podeli" — ako ima šta van tekućih predmeta, pitaj šta da uključi
+  // (bez toga bi link mogao da stigne prazan, npr. ako ceo raspored zavisi od
+  // prenesenog predmeta). Ako nema ništa extra, ne gnjavi pitanjem.
+  function openShareFlow() {
+    if (hasShareExtras()) setShowShareChoice(true)
+    else void shareSchedule(false)
+  }
+
+  // Napravi /deli link i podeli ga (native share na mobilnom, inače kopiraj u
+  // clipboard + toast). includeExtras: uključuje i prenesene/prethodne/drugi
+  // semestar, ne samo čekirane tekuće predmete.
+  async function shareSchedule(includeExtras: boolean) {
+    setShowShareChoice(false)
     if (!meta.group || !meta.year || allSubjects.length === 0) return
     const checked = byGroup.subjects(meta.group).get()
     const s = allSubjects
@@ -302,6 +324,13 @@ export default function RasporedPage() {
       g: meta.group,
       n: allSubjects.length,
       s,
+      ...(includeExtras
+        ? {
+            x: byGroup.extra(meta.group).get(),
+            p: byGroup.prevSubjects(meta.group).get(),
+            o: byGroup.otherSem(meta.group).get(),
+          }
+        : {}),
     })
     const url = `${window.location.origin}/deli?s=${encoded}`
 
@@ -546,7 +575,7 @@ export default function RasporedPage() {
 
   // Export akcije (skidanje slike / kalendar) — NISU navigacija, stoje uz kontrole
   const exportActions = [
-    { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: () => { void shareSchedule() } },
+    { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: openShareFlow },
     { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
     { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
@@ -1023,6 +1052,35 @@ export default function RasporedPage() {
             >
               Razumem
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Šta uključiti u link za deljenje */}
+      {showShareChoice && (
+        <div
+          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+          onClick={() => setShowShareChoice(false)}
+        >
+          <div
+            className={`w-full max-w-sm rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Uključiti i prenesene predmete?</h3>
+            <div className="mt-4 space-y-2">
+              <button
+                onClick={() => { void shareSchedule(true) }}
+                className="w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
+              >
+                Da, svi predmeti
+              </button>
+              <button
+                onClick={() => { void shareSchedule(false) }}
+                className={`w-full rounded-xl py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              >
+                Ne, samo ovosemestralni
+              </button>
+            </div>
           </div>
         </div>
       )}

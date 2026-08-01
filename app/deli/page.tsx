@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SemesterData } from '@/lib/types'
+import type { SemesterData, ScheduleEntry } from '@/lib/types'
 import { uniqueSubjectsForGroup } from '@/lib/schedule'
 import { decodeShare } from '@/lib/share'
 import { session, saved, byGroup } from '@/lib/storage'
@@ -19,6 +19,9 @@ type Ready = {
   subjects: string[]
   checkedList: string[]
   drift: boolean // raspored se promenio od kad je link napravljen
+  extra?: ScheduleEntry[]
+  prevSubjects?: { year: number; subject: string }[]
+  otherSem?: string[]
 }
 
 type State = { kind: 'loading' } | { kind: 'invalid' } | Ready
@@ -55,6 +58,9 @@ export default function DeliPage() {
           subjects,
           checkedList,
           drift,
+          extra: payload.x,
+          prevSubjects: payload.p,
+          otherSem: payload.o,
         })
       })
       .catch(() => setState({ kind: 'invalid' }))
@@ -75,7 +81,9 @@ export default function DeliPage() {
     saved.semester.set(s.semester)
   }
 
-  // Primeni deljeni izbor predmeta i otvori raspored.
+  // Primeni deljeni izbor predmeta i otvori raspored. extra/prevSubjects/
+  // otherSem su prisutni samo ako ih je pošiljalac uključio — ako ih nema,
+  // ne diramo ono što primalac možda već ima podešeno.
   function apply(s: Ready) {
     const checked: Record<string, boolean> = {}
     for (const subj of s.subjects) checked[subj] = false
@@ -83,6 +91,9 @@ export default function DeliPage() {
 
     commitIdentity(s)
     byGroup.subjects(s.g).set(checked)
+    if (s.extra) byGroup.extra(s.g).set(s.extra)
+    if (s.prevSubjects) byGroup.prevSubjects(s.g).set(s.prevSubjects)
+    if (s.otherSem) byGroup.otherSem(s.g).set(s.otherSem)
     router.push('/raspored')
   }
 
@@ -138,6 +149,12 @@ export default function DeliPage() {
                 <div className="flex justify-between py-1">
                   <span className="text-gray-500 dark:text-gray-400">Predmeti</span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">{state.checkedList.length}</span>
+                </div>
+              )}
+              {!!state.extra?.length && (
+                <div className="flex justify-between py-1">
+                  <span className="text-gray-500 dark:text-gray-400">Preneseni termini</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{state.extra.length}</span>
                 </div>
               )}
             </div>
