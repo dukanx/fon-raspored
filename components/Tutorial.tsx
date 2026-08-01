@@ -137,7 +137,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           </button>
         </div>
 
-        <div className="relative mx-4 aspect-2/3 shrink-0 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
+        <div className="relative mx-4 min-h-55 flex-1 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
           {slide.images.length > 1 && (
             <>
               {/* Scrim iza trake — traka ostaje čitljiva bez obzira na sadržaj screenshot-a. */}
@@ -156,10 +156,12 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           )}
 
           {!broken.has(imgKey) ? (
+            // object-contain: cela slika uvek vidljiva, bez sečenja (screenshot-ovi
+            // su prirodno mnogo izduženiji od kontejnera).
             <img
               src={slide.images[imgIndex]}
               alt={slide.title}
-              className="h-full w-full object-cover object-top"
+              className="absolute inset-0 h-full w-full object-contain"
               onError={() => setBroken(prev => new Set(prev).add(imgKey))}
             />
           ) : (
@@ -169,22 +171,21 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           )}
 
           {slide.images.length > 1 && (
-            <>
-              {/* Tap-zone: bez ikakvog vizuelnog stila (border/bg/outline/tap-highlight
-                  isključeni) — samo klik-oblast, ne sme da ostavi vidljivu ivicu na iOS-u. */}
-              <button
-                type="button"
-                aria-label="Prethodna slika"
-                onClick={() => setImgIndex(i => Math.max(0, i - 1))}
-                className="absolute inset-y-0 left-0 z-20 w-1/3 border-0 bg-transparent p-0 outline-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus-visible:outline-none"
-              />
-              <button
-                type="button"
-                aria-label="Sledeća slika"
-                onClick={() => setImgIndex(i => Math.min(slide.images.length - 1, i + 1))}
-                className="absolute inset-y-0 right-0 z-20 w-1/3 border-0 bg-transparent p-0 outline-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus-visible:outline-none"
-              />
-            </>
+            // Jedno dugme preko cele slike (levo/desno polovina po X koordinati klika) —
+            // dva susedna dugmeta ostavljala su vidljiv šav na granici, ovo ga uklanja.
+            <button
+              type="button"
+              aria-label="Sledeća/prethodna slika"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                const isLeftHalf = e.clientX - rect.left < rect.width / 2
+                setImgIndex(i =>
+                  isLeftHalf ? Math.max(0, i - 1) : Math.min(slide.images.length - 1, i + 1)
+                )
+              }}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
+              className="absolute inset-0 z-20 h-full w-full border-0 bg-transparent p-0 outline-none focus:outline-none focus-visible:outline-none"
+            />
           )}
         </div>
 
