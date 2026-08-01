@@ -10,6 +10,23 @@ import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
 
 const GLASS = 'liquid-glass'
 
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (p: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...p,
+})
+const IconBack = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+)
+const IconForward = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+)
+
 export default function IzbornoPage() {
   const router = useRouter()
   const isHydrated = useSyncExternalStore(
@@ -439,19 +456,21 @@ export default function IzbornoPage() {
           <div className="flex w-full sm:w-auto items-stretch gap-2">
             <button
               onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
-              className={`flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+              className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
             >
-              ← Nazad
+              <IconBack className="h-4 w-4 opacity-80" />
+              Nazad
             </button>
             <button
               onClick={handleConfirm}
               disabled={checkedCount === 0}
-              className={`flex-[2] sm:flex-none flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97]
+              className={`flex-[2] sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97]
                 ${checkedCount > 0
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                   : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}
             >
-              Prikaži raspored →
+              Prikaži raspored
+              <IconForward className="h-4 w-4 opacity-80" />
             </button>
           </div>
         </div>
