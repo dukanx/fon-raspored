@@ -4,7 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
-import { session, saved } from '@/lib/storage'
+import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
 import BlurText from '@/components/BlurText'
 import InstallPrompt from '@/components/InstallPrompt'
@@ -70,6 +70,8 @@ export default function OnboardingPage() {
       if (prog) session.program.set(prog)
       if (name) session.lastName.set(name)
       if (sem) session.semester.set(sem)
+      // Postojeći korisnik (već ima sačuvan identitet) — tutorial je samo za nove.
+      app.tutorialSeen.set()
       router.replace('/raspored')
     }
   }, [isHydrated, router])

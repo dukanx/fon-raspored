@@ -123,12 +123,12 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
   })
 
   return (
-    <div className="fixed inset-0 z-70 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 px-4 py-4 backdrop-blur-sm">
       <div
         {...handlers}
-        className={`w-full max-w-sm overflow-hidden rounded-[1.75rem] ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+        className={`flex max-h-full w-full max-w-sm flex-col overflow-y-auto overflow-x-hidden rounded-[1.75rem] ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
       >
-        <div className="flex items-center justify-end px-4 pt-4">
+        <div className="flex shrink-0 items-center justify-end px-4 pt-3">
           <button
             onClick={onDone}
             className="rounded-full px-2.5 py-1 text-xs font-medium text-gray-400 hover:bg-white/70 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800/60 dark:hover:text-gray-300 transition-colors"
@@ -137,7 +137,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           </button>
         </div>
 
-        <div className="relative mx-4 aspect-3/5 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
+        <div className="relative mx-4 aspect-4/5 shrink-0 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
           {slide.images.length > 1 && (
             <>
               {/* Scrim iza trake — traka ostaje čitljiva bez obzira na sadržaj screenshot-a. */}
@@ -167,28 +167,13 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
               <slide.Icon className="h-14 w-14 text-[#024c7d]/40 dark:text-[#60c3ad]/40" />
             </div>
           )}
-
-          {slide.images.length > 1 && (
-            <>
-              <button
-                aria-label="Prethodna slika"
-                onClick={() => setImgIndex(i => Math.max(0, i - 1))}
-                className="absolute inset-y-0 left-0 z-10 w-1/3"
-              />
-              <button
-                aria-label="Sledeća slika"
-                onClick={() => setImgIndex(i => Math.min(slide.images.length - 1, i + 1))}
-                className="absolute inset-y-0 right-0 z-10 w-1/3"
-              />
-            </>
-          )}
         </div>
 
-        <div className="px-6 pb-6 pt-5">
+        <div className="shrink-0 px-6 pb-5 pt-4">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{slide.title}</h2>
           <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">{slide.description}</p>
 
-          <div className="mt-5 flex items-center justify-center gap-1.5">
+          <div className="mt-4 flex items-center justify-center gap-1.5">
             {SLIDES.map((s, i) => (
               <span
                 key={s.key}
@@ -201,7 +186,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
 
           <button
             onClick={next}
-            className="mt-5 w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
+            className="mt-4 w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
           >
             {last ? 'Počni' : 'Dalje'}
           </button>
