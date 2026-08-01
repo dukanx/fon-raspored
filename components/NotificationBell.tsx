@@ -11,7 +11,47 @@ import {
   disablePush,
 } from '@/lib/push'
 
-export default function NotificationBell({ className = 'mt-3' }: { className?: string }) {
+const GLASS = 'liquid-glass'
+
+type IconProps = React.SVGProps<SVGSVGElement>
+const baseIcon = (p: IconProps) => ({
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.75,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  ...p,
+})
+const IconBellOutline = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M6 9a6 6 0 0 1 12 0v.75a8.97 8.97 0 0 0 2.31 6.02c.3.33.06.86-.38.98A23.85 23.85 0 0 1 12 18a23.85 23.85 0 0 1-7.93-1.25c-.44-.12-.68-.65-.38-.98A8.97 8.97 0 0 0 6 9.75Z" />
+    <path d="M9.5 20a2.5 2.5 0 0 0 5 0" />
+  </svg>
+)
+const IconBellFilled = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
+    <path d="M6 9a6 6 0 0 1 12 0v.75a8.97 8.97 0 0 0 2.31 6.02c.3.33.06.86-.38.98A23.85 23.85 0 0 1 12 18a23.85 23.85 0 0 1-7.93-1.25c-.44-.12-.68-.65-.38-.98A8.97 8.97 0 0 0 6 9.75Z" />
+    <path d="M9.5 20a2.5 2.5 0 0 0 5 0" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" fill="none" />
+  </svg>
+)
+const IconCalendar = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <rect x="3" y="5" width="18" height="16" rx="2.5" />
+    <path d="M3 10h18M8 3v4M16 3v4" />
+  </svg>
+)
+const IconClock = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+)
+
+// Kompaktno ikonica-dugme. Klik ne (od)prijavljuje odmah — otvara popup sa
+// istim objašnjenjem kao NotificationIntro (prvi-put modal) plus dugme za
+// uključi/isključi, tako da objašnjenje ostaje dostupno i posle prvog puta.
+export default function NotificationBell({ className = '' }: { className?: string }) {
   const [supported, setSupported] = useState<boolean | null>(null)
   const [subscribed, setSubscribed] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -43,8 +83,12 @@ export default function NotificationBell({ className = 'mt-3' }: { className?: s
     setError(null)
     const res = await enablePush()
     setBusy(false)
-    if (res.ok) setSubscribed(true)
-    else setError(res.error)
+    if (res.ok) {
+      setSubscribed(true)
+      setShowInfo(false)
+    } else {
+      setError(res.error)
+    }
   }
 
   async function disable() {
@@ -60,35 +104,19 @@ export default function NotificationBell({ className = 'mt-3' }: { className?: s
     }
   }
 
-  if (supported === null) return null
+  if (supported === null || supported === false) return null
 
-  const bellOutline = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-    </svg>
-  )
-  const bellFilled = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 2a6 6 0 0 0-6 6v.75a8.967 8.967 0 0 1-2.312 6.022.75.75 0 0 0 .37 1.244 23.85 23.85 0 0 0 4.412.927 3.5 3.5 0 0 0 6.86 0 23.85 23.85 0 0 0 4.412-.927.75.75 0 0 0 .37-1.244A8.967 8.967 0 0 1 18 8.75V8a6 6 0 0 0-6-6Zm0 19a2 2 0 0 1-1.94-1.515 24.3 24.3 0 0 0 3.88 0A2 2 0 0 1 12 21Z" />
-    </svg>
-  )
-  const infoIcon = (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 11v5" />
-      <path d="M12 8h.01" />
-    </svg>
-  )
-  const offBtnClass =
-    'liquid-glass inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-white/80 dark:text-gray-300 dark:hover:bg-gray-800/70 sm:px-3'
+  const btnClass = (active: boolean) =>
+    `flex h-9 w-9 items-center justify-center rounded-full transition-colors ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 ${
+      active ? 'text-[#024c7d] dark:text-[#60c3ad]' : 'text-gray-600 dark:text-gray-300'
+    }`
 
   // iOS pre instalacije: dugme otvara uputstvo (Web Push radi tek iz home screen-a).
   if (isIOS && !isStandalone) {
     return (
       <div className={className}>
-        <button onClick={() => setShowIOSModal(true)} className={offBtnClass}>
-          {bellOutline}
-          Uključi notifikacije
+        <button onClick={() => setShowIOSModal(true)} aria-label="Uključi notifikacije" className={btnClass(false)}>
+          <IconBellOutline className="h-[18px] w-[18px]" />
         </button>
 
         {showIOSModal && (
@@ -101,7 +129,7 @@ export default function NotificationBell({ className = 'mt-3' }: { className?: s
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1.5">
-                {bellOutline} Notifikacije na iPhone-u
+                <IconBellOutline className="h-4 w-4" /> Notifikacije na iPhone-u
               </h3>
               <ol className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-decimal list-inside">
                 <li>Klikni <span className="font-medium">Share</span> u Safariju.</li>
@@ -122,57 +150,89 @@ export default function NotificationBell({ className = 'mt-3' }: { className?: s
     )
   }
 
-  if (!supported) {
-    return (
-      <p className={`${className} text-xs text-gray-400 dark:text-gray-500`}>
-        Notifikacije nisu podržane u ovom browseru.
-      </p>
-    )
-  }
-
   return (
     <div className={className}>
-      <div className="relative inline-flex items-center gap-1.5">
-        <button
-          onClick={subscribed ? disable : enable}
-          disabled={busy}
-          className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3
-            ${subscribed
-              ? 'text-[#024c7d] dark:text-[#60c3ad] border-[#024c7d]/30 dark:border-[#60c3ad]/30 bg-[#024c7d]/5 dark:bg-[#60c3ad]/10 hover:bg-[#024c7d]/10'
-              : 'liquid-glass text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/70'}
-            ${busy ? 'opacity-60 cursor-wait' : ''}`}
+      <button
+        onClick={() => setShowInfo(true)}
+        aria-label={subscribed ? 'Notifikacije uključene — detalji' : 'Uključi notifikacije'}
+        aria-pressed={subscribed}
+        className={btnClass(subscribed)}
+      >
+        {subscribed ? <IconBellFilled className="h-[18px] w-[18px]" /> : <IconBellOutline className="h-[18px] w-[18px]" />}
+      </button>
+
+      {showInfo && (
+        <div
+          className="fixed inset-0 z-60 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+          onClick={() => setShowInfo(false)}
         >
-          {subscribed ? bellFilled : bellOutline}
-          {subscribed ? 'Notifikacije uključene' : 'Uključi notifikacije'}
-        </button>
+          <div
+            className={`${GLASS} w-full max-w-sm rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center text-center">
+              <span className="flex h-9 w-9 items-center justify-center text-[#024c7d] dark:text-[#60c3ad]">
+                {subscribed ? <IconBellFilled className="h-8 w-8" /> : <IconBellOutline className="h-8 w-8" />}
+              </span>
+              <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {subscribed ? 'Notifikacije uključene' : 'Uključi notifikacije'}
+              </h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Da ne propustiš rok ili prijavu ispita.
+              </p>
+            </div>
 
-        {subscribed && (
-          <span className="relative inline-flex">
-            <button
-              type="button"
-              onClick={() => setShowInfo(v => !v)}
-              aria-label="Detalji o notifikacijama"
-              aria-expanded={showInfo}
-              className="no-hover-lift flex h-6 w-6 items-center justify-center text-[#024c7d] dark:text-[#60c3ad]"
-            >
-              {infoIcon}
-            </button>
-
-            {showInfo && (
-              <div className="absolute left-1/2 top-full z-40 mt-2 w-56 max-w-[calc(100vw-2rem)] -translate-x-[42%] rounded-xl border border-[#024c7d]/15 bg-white/95 px-3 py-2 text-[11px] leading-relaxed text-gray-500 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-gray-900/95 dark:text-gray-300 sm:left-auto sm:right-0 sm:w-64 sm:translate-x-0">
-                <span className="absolute -top-1.5 left-[42%] h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-[#024c7d]/15 bg-white/95 dark:border-white/15 dark:bg-gray-900/95 sm:left-auto sm:right-2.5 sm:translate-x-0" />
-                Obaveštavamo te o novim rokovima i na dan kad počne i kad se završava prijava.
+            <div className="mt-5 space-y-2.5">
+              <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                  <IconCalendar className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Novi rokovi</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Čim izađu ispitni rokovi i kolokvijumi.
+                  </p>
+                </div>
               </div>
-            )}
-          </span>
-        )}
-      </div>
-      {subscribed && (
-        <p className="sr-only">
-          Obaveštavamo te o novim rokovima i na dan kad počne i kad se završava prijava.
-        </p>
+
+              <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                  <IconClock className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Prijava ispita</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Na dan kad počne i kad se završava prijava.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {error && <p className="mt-3 text-center text-xs text-red-500">{error}</p>}
+
+            <div className="mt-5 space-y-2">
+              <button
+                onClick={subscribed ? disable : enable}
+                disabled={busy}
+                className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors ${
+                  subscribed
+                    ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10'
+                    : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+                } ${busy ? 'cursor-wait opacity-60' : ''}`}
+              >
+                {busy ? 'Sačekaj…' : subscribed ? 'Isključi notifikacije' : 'Uključi notifikacije'}
+              </button>
+              <button
+                onClick={() => setShowInfo(false)}
+                disabled={busy}
+                className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-white/70 dark:text-gray-400 dark:hover:bg-gray-800/60"
+              >
+                Zatvori
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-      {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}
     </div>
   )
 }
