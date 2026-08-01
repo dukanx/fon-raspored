@@ -27,7 +27,10 @@ export function isIOS(): boolean {
   const ua = navigator.userAgent
   const maxTouch = navigator.maxTouchPoints ?? 0
   const iosUA = /iPad|iPhone|iPod/.test(ua)
-  const ipadOS = navigator.platform === 'MacIntel' && maxTouch > 1
+  // Neki Chrome na Mac-u (pogotovo Apple Silicon) vraća maxTouchPoints > 1 iako
+  // nema ekran na dodir — trackpad ima "fine" pointer, pravi iPad "coarse".
+  const coarsePointer = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  const ipadOS = navigator.platform === 'MacIntel' && maxTouch > 1 && coarsePointer
   return (iosUA || ipadOS) && maxTouch > 0
 }
 
