@@ -73,7 +73,7 @@ export default function BottomNav() {
       }`}
     >
       <div
-        className={`liquid-glass liquid-glass-nav pointer-events-auto mx-auto flex items-stretch transition-[padding,gap,border-radius] duration-300 ${
+        className={`liquid-glass liquid-glass-nav pointer-events-auto mx-auto flex items-stretch transition-all duration-300 ${
           isCompact
             ? 'max-w-64 gap-0.5 rounded-[1.65rem] px-1.5 py-1.5'
             : 'max-w-md gap-1 rounded-[2rem] px-2 py-1.5'
@@ -89,7 +89,7 @@ export default function BottomNav() {
                   ? window.scrollTo({ top: 0, behavior: 'smooth' })
                   : router.push(href)
               }
-              className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-[padding,gap] duration-300 ${
+              className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
                 isCompact ? 'gap-0 py-1.5' : 'gap-0.5 py-1.5'
               } ${
                 isCompact ? 'px-1.5' : 'px-2'
@@ -107,12 +107,12 @@ export default function BottomNav() {
                 />
               )}
               <Icon
-                className={`relative transition-[width,height] duration-300 ${
+                className={`relative transition-all duration-300 ${
                   isCompact ? 'h-5 w-5' : 'h-[22px] w-[22px]'
                 }`}
               />
               <span
-                className={`relative overflow-hidden text-[10px] transition-[max-height,opacity] duration-300 ${
+                className={`relative overflow-hidden text-[10px] transition-all duration-300 ${
                   isCompact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100'
                 } ${active ? 'font-semibold' : 'font-medium'}`}
               >

@@ -137,7 +137,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           </button>
         </div>
 
-        <div className="relative mx-4 aspect-4/5 shrink-0 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
+        <div className="relative mx-4 aspect-2/3 shrink-0 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
           {slide.images.length > 1 && (
             <>
               {/* Scrim iza trake — traka ostaje čitljiva bez obzira na sadržaj screenshot-a. */}
@@ -166,6 +166,25 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
             <div className="flex h-full w-full items-center justify-center">
               <slide.Icon className="h-14 w-14 text-[#024c7d]/40 dark:text-[#60c3ad]/40" />
             </div>
+          )}
+
+          {slide.images.length > 1 && (
+            <>
+              {/* Tap-zone: bez ikakvog vizuelnog stila (border/bg/outline/tap-highlight
+                  isključeni) — samo klik-oblast, ne sme da ostavi vidljivu ivicu na iOS-u. */}
+              <button
+                type="button"
+                aria-label="Prethodna slika"
+                onClick={() => setImgIndex(i => Math.max(0, i - 1))}
+                className="absolute inset-y-0 left-0 z-20 w-1/3 border-0 bg-transparent p-0 outline-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus-visible:outline-none"
+              />
+              <button
+                type="button"
+                aria-label="Sledeća slika"
+                onClick={() => setImgIndex(i => Math.min(slide.images.length - 1, i + 1))}
+                className="absolute inset-y-0 right-0 z-20 w-1/3 border-0 bg-transparent p-0 outline-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus-visible:outline-none"
+              />
+            </>
           )}
         </div>
 
