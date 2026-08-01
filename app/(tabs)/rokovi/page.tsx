@@ -56,6 +56,9 @@ const baseIcon = (props: IconProps) => ({
 const IconBack = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
 )
+const IconForward = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+)
 const IconMoon = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
 )
@@ -738,8 +741,9 @@ export default function RokoviPage() {
               const d = new Date(prev.year, prev.month - 1)
               return { year: d.getFullYear(), month: d.getMonth() }
             })}
-            className={`rounded-lg px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-          >←</button>
+            aria-label="Prethodni mesec"
+            className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          ><IconBack className="h-4 w-4" /></button>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 capitalize">
             {SR_MONTHS[month]} {year}
           </h3>
@@ -748,8 +752,9 @@ export default function RokoviPage() {
               const d = new Date(prev.year, prev.month + 1)
               return { year: d.getFullYear(), month: d.getMonth() }
             })}
-            className={`rounded-lg px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-          >→</button>
+            aria-label="Sledeći mesec"
+            className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          ><IconForward className="h-4 w-4" /></button>
         </div>
 
         <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5">
@@ -884,11 +889,12 @@ export default function RokoviPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium
               bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
               dark:hover:bg-[#4db3a0] transition-colors"
           >
-            Idi na početak →
+            Idi na početak
+            <IconForward className="h-4 w-4 opacity-80" />
           </Link>
         </div>
       </main>
@@ -906,16 +912,16 @@ export default function RokoviPage() {
               <p className="mt-0.5 truncate text-sm text-gray-500 dark:text-gray-400">
                 {meta.program && `${meta.program} · `}{meta.year && `${meta.year}. godina`}
               </p>
-              <div className="mt-2 flex w-full flex-col items-start gap-2 sm:w-auto sm:flex-row sm:items-start sm:gap-3">
+              <div className="mt-2 flex w-full flex-wrap items-center gap-2 sm:w-auto sm:gap-3">
                 <NotificationBell className="min-w-0" />
                 <a
                   href="https://student.fon.bg.ac.rs/security/login.jsf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center rounded-lg bg-[#024c7d]/10 px-3 py-1.5 text-xs font-semibold text-[#024c7d]
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#024c7d]/10 px-3 py-1.5 text-xs font-semibold text-[#024c7d]
                              hover:bg-[#024c7d]/15 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15 transition-colors"
                 >
-                  eStudent →
+                  eStudent <IconExternal className="h-3.5 w-3.5" />
                 </a>
               </div>
             </div>
@@ -969,6 +975,28 @@ export default function RokoviPage() {
               ))}
             </div>
 
+            {/* Export (mobilni): male staklene ikonice, isto kao raspored */}
+            {isHydrated && !isEmpty && (
+              <div className="flex items-center gap-2 sm:hidden">
+                <button
+                  onClick={() => setShowImageMenu(true)}
+                  disabled={allFilteredEntries.length === 0}
+                  aria-label="Slika"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+                >
+                  <IconImage className="h-[18px] w-[18px]" />
+                </button>
+                <button
+                  onClick={downloadICS}
+                  disabled={allFilteredEntries.length === 0}
+                  aria-label="Izvezi u kalendar"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
+                >
+                  <IconCalendar className="h-[18px] w-[18px]" />
+                </button>
+              </div>
+            )}
+
             {isHydrated && !isEmpty && (
               <div className="hidden items-center gap-2 sm:flex">
                 <ActionButtons />
@@ -977,10 +1005,17 @@ export default function RokoviPage() {
           </div>
         </header>
 
-        {/* Akcije (mobilni): izvoz u kalendar + skriveni termini */}
-        {isHydrated && !isEmpty && (
+        {/* Akcije (mobilni): skriveni termini */}
+        {isHydrated && !isEmpty && hiddenEntries.length > 0 && (
           <div className="mb-5 flex flex-wrap items-center gap-2 sm:hidden">
-            <ActionButtons />
+            <button
+              onClick={() => setShowHidden(s => !s)}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
+                text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+            >
+              <IconHidden className="h-4 w-4 opacity-80" />
+              Skriveni ({hiddenEntries.length})
+            </button>
           </div>
         )}
 
