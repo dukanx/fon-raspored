@@ -130,12 +130,19 @@ a[href]:hover {
 }
 
 /* Jača, prozirnija varijanta liquid-glass-a za donji navbar — bliža iOS
-   tab bar materijalu (jači blur/saturate, tanka svetla ivica na vrhu). */
+   tab bar materijalu (tanka svetla ivica na vrhu). Blur je namerno umeren
+   (ne 30px+) — pozadina je već skoro neprozirna (alpha ~0.86), pa blur
+   samo daje teksturu; visok blur na position:fixed elementu je poznato
+   skup za Safari da re-renderuje na svaki scroll/resize frame.
+   transform: translateZ(0) forsira sopstveni compositor layer — pomaže
+   Safariju da ne re-računa backdrop-filter zajedno sa ostatkom stranice. */
 .liquid-glass-nav {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.78));
-  backdrop-filter: blur(30px) saturate(1.7);
-  -webkit-backdrop-filter: blur(30px) saturate(1.7);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
   border-color: rgba(255, 255, 255, 0.6);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     inset 0 -1px 0 rgba(255, 255, 255, 0.15),
@@ -145,8 +152,8 @@ a[href]:hover {
 
 .dark .liquid-glass-nav {
   background: linear-gradient(180deg, rgba(30, 30, 32, 0.86), rgba(18, 18, 20, 0.82));
-  backdrop-filter: blur(30px) saturate(1.8);
-  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-color: rgba(255, 255, 255, 0.16);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
