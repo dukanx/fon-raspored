@@ -41,6 +41,12 @@ const IconChevronDown = (p: IconProps) => (
 const IconChevronUp = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m18 15-6-6-6 6" /></svg>
 )
+const IconForward = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+)
+const IconPlus = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
+)
 
 export default function PreneseniPage() {
   const router = useRouter()
@@ -297,6 +303,27 @@ export default function PreneseniPage() {
 
         <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
+          {/* Moji predmeti (izborni) */}
+          <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
+            <button
+              type="button"
+              onClick={() => router.push('/izborni')}
+              className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
+            >
+              <div>
+                <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
+                  Moji predmeti
+                </p>
+                <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
+                  Promeni koje izborne predmete pratiš.
+                </p>
+              </div>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
+                <IconForward className="h-4 w-4" />
+              </span>
+            </button>
+          </div>
+
           {/* Dodati termini */}
           {extraTermini.length > 0 && (
             <div>
@@ -382,19 +409,23 @@ export default function PreneseniPage() {
                 Preneseni predmeti
               </label>
               <div className="flex flex-wrap gap-1.5">
-                {prevSubjects.map((p, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePrevSubjectClick(p)}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors
-                      ${odabraniPredmet === p.subject && godina === p.year
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                        : 'bg-white/70 text-gray-600 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20'}`}
-                  >
-                    <span className="text-gray-400 dark:text-gray-500 font-normal">{p.year}.</span>
-                    {p.subject}
-                  </button>
-                ))}
+                {prevSubjects.map((p, i) => {
+                  const active = odabraniPredmet === p.subject && godina === p.year
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handlePrevSubjectClick(p)}
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors
+                        ${active
+                          ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                          : 'bg-white/70 text-gray-600 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20'}`}
+                    >
+                      <span className="text-gray-400 dark:text-gray-500 font-normal">{p.year}.</span>
+                      {p.subject}
+                      {!active && <IconPlus className="h-3 w-3 shrink-0 opacity-50" />}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}

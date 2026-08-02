@@ -5,7 +5,7 @@ import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
-import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
+import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
@@ -1193,8 +1193,8 @@ export default function RokoviPage() {
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <button
-                onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
-                aria-label="Nazad"
+                onClick={() => router.push('/izborni')}
+                aria-label="Predmeti"
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
               >
                 <IconBack className="h-4 w-4 opacity-80" />

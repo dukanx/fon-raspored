@@ -8,7 +8,7 @@ import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
-import { session, saved as savedStore, byGroup, note as noteStore } from '@/lib/storage'
+import { session, byGroup, note as noteStore } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
@@ -630,9 +630,9 @@ export default function RasporedPage() {
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <button
-                onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
+                onClick={() => router.push('/izborni')}
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                aria-label="Nazad"
+                aria-label="Predmeti"
               >
                 <IconBack className="h-4 w-4 opacity-80" />
               </button>
