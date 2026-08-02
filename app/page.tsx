@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SemesterData } from '@/lib/types'
+import type { SemesterData, RokData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
+import { pickDefaultTab } from '@/lib/rokDefault'
 import BlurText from '@/components/BlurText'
 import InstallPrompt from '@/components/InstallPrompt'
 
@@ -56,8 +57,21 @@ export default function OnboardingPage() {
     if (!isHydrated) return
     // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") — ne preusmeravaj.
     if (new URLSearchParams(window.location.search).get('edit') === '1') return
+
+    // Raspored ili Rokovi — zavisi da li je blizu/u toku ispitni rok (stvarni
+    // datumi iz rokovi.json, ne pretpostavljeni akademski kalendar).
+    async function defaultTab(): Promise<'/raspored' | '/rokovi'> {
+      try {
+        const rokovi: RokData[] = await fetch('/data/rokovi.json').then(r => r.json())
+        const todayStr = new Date().toISOString().split('T')[0]
+        return pickDefaultTab(rokovi, todayStr)
+      } catch {
+        return '/raspored'
+      }
+    }
+
     // Isti tab — sessionStorage ima grupu
-    if (session.group.get()) { router.replace('/raspored'); return }
+    if (session.group.get()) { void defaultTab().then(dest => router.replace(dest)); return }
     // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
     const savedGroup = saved.group.get()
     const savedYear = saved.year.get()
@@ -72,7 +86,7 @@ export default function OnboardingPage() {
       if (sem) session.semester.set(sem)
       // Postojeći korisnik (već ima sačuvan identitet) — tutorial je samo za nove.
       app.tutorialSeen.set()
-      router.replace('/raspored')
+      void defaultTab().then(dest => router.replace(dest))
     }
   }, [isHydrated, router])
 
