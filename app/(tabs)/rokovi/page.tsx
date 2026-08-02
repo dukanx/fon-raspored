@@ -5,7 +5,7 @@ import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
-import { session, app, byGroup } from '@/lib/storage'
+import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
@@ -85,6 +85,12 @@ const IconPlus = (p: IconProps) => (
 )
 const IconEdit = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+)
+const IconSchedule = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
+)
+const IconExam = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
 )
 
 function getDaySr(isoDate: string) {
@@ -647,6 +653,12 @@ export default function RokoviPage() {
 
   const isEmpty = activeRokovi.length === 0 && customForTab.length === 0
 
+  // Raspored/Rokovi — ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
+  const pageSwitch = [
+    { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: false, onClick: () => router.push('/raspored') },
+    { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: true, onClick: () => {} },
+  ] as const
+
   function ActionButtons() {
     return (
       <>
@@ -1155,33 +1167,37 @@ export default function RokoviPage() {
       <div className="mx-auto max-w-4xl px-3 py-3 sm:px-4 sm:py-8">
 
         <header className="mb-6">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
             <div className="min-w-0">
               <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Rokovi</h1>
               <p className="mt-0.5 truncate text-sm text-gray-500 dark:text-gray-400">
                 {meta.program && `${meta.program} · `}{meta.year && `${meta.year}. godina`}
               </p>
-              <div className="mt-2 flex w-full flex-wrap items-center gap-2 sm:w-auto sm:gap-3">
-                <NotificationBell className="min-w-0" />
-                <a
-                  href="https://student.fon.bg.ac.rs/security/login.jsf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#024c7d]/10 px-3 py-1.5 text-xs font-semibold text-[#024c7d]
-                             hover:bg-[#024c7d]/15 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15 transition-colors"
-                >
-                  eStudent <IconExternal className="h-3.5 w-3.5" />
-                </a>
-              </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className={`hidden rounded-full p-1 sm:flex sm:justify-self-center ${GLASS}`}>
+              {pageSwitch.map(({ key, label, Icon, active, onClick }) => (
+                <button
+                  key={key}
+                  onClick={onClick}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                    ${active
+                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <button
-                onClick={() => router.push('/raspored')}
-                className={`hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 sm:inline-flex ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
+                aria-label="Nazad"
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
               >
                 <IconBack className="h-4 w-4 opacity-80" />
-                Nazad
               </button>
               <button
                 onClick={toggleTheme}
@@ -1205,6 +1221,19 @@ export default function RokoviPage() {
                 FON <IconExternal className="h-3.5 w-3.5" />
               </a>
             </div>
+          </div>
+
+          <div className="mt-2 flex w-full flex-wrap items-center gap-2">
+            <NotificationBell className="min-w-0" />
+            <a
+              href="https://student.fon.bg.ac.rs/security/login.jsf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#024c7d]/10 px-3 py-1.5 text-xs font-semibold text-[#024c7d]
+                         hover:bg-[#024c7d]/15 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15 transition-colors"
+            >
+              eStudent <IconExternal className="h-3.5 w-3.5" />
+            </a>
           </div>
 
           <div className="mt-3 flex items-center justify-between gap-2">

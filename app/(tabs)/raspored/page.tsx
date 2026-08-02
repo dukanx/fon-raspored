@@ -72,6 +72,9 @@ const IconEdit = (p: IconProps) => (
 const IconExam = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
 )
+const IconSchedule = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
+)
 const IconBack = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
 )
@@ -579,11 +582,15 @@ export default function RasporedPage() {
     { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
     { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
-  // Navigacija — donji tab-bar na mobilnom
+  // Navigacija (desktop toolbar) — Rokovi ide kroz pageSwitch ispod, ne odavde
   const navActions = [
     { key: 'izmena', short: 'Izmena', long: 'Izmena termina', Icon: IconEdit, onClick: () => router.push('/preneseni') },
-    { key: 'ispiti', short: 'Rokovi', long: 'Rokovi', Icon: IconExam, onClick: () => router.push('/rokovi') },
   ]
+  // Raspored/Rokovi — ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
+  const pageSwitch = [
+    { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: true, onClick: () => {} },
+    { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: false, onClick: () => router.push('/rokovi') },
+  ] as const
 
   const isLoading = !isHydrated || !loaded
   const isEmpty = loaded && visibleEntries.length === 0
@@ -592,10 +599,10 @@ export default function RasporedPage() {
     <>
       {/* ---------- Sticky header ---------- */}
       <header>
-        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6">
+        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6 sm:pt-8">
 
           {/* Naslov + tema + FON */}
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
             <div className="min-w-0">
               <h1 className="truncate text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
                 Grupa {meta.group || '—'}
@@ -605,14 +612,29 @@ export default function RasporedPage() {
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className={`hidden rounded-full p-1 sm:flex sm:justify-self-center ${GLASS}`}>
+              {pageSwitch.map(({ key, label, Icon, active, onClick }) => (
+                <button
+                  key={key}
+                  onClick={onClick}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                    ${active
+                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <button
                 onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-medium text-gray-600 dark:text-gray-300 sm:w-auto sm:px-3 sm:py-2 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
                 aria-label="Nazad"
               >
                 <IconBack className="h-4 w-4 opacity-80" />
-                <span className="hidden sm:inline">Nazad</span>
               </button>
               <button
                 onClick={toggleTheme}
@@ -688,9 +710,7 @@ export default function RasporedPage() {
                   <button
                     key={key}
                     onClick={onClick}
-                    className={key === 'ispiti'
-                      ? 'inline-flex items-center gap-1.5 rounded-lg border border-[#024c7d]/20 bg-[#024c7d]/10 px-3.5 py-1.5 text-xs font-semibold text-[#024c7d] shadow-sm transition-colors hover:bg-[#024c7d]/15 dark:border-[#60c3ad]/25 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15'
-                      : `inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
                   >
                     <Icon className="h-4 w-4 opacity-80" />
                     {long}
