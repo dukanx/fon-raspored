@@ -30,6 +30,11 @@ export type TourSlide = {
   // "Dalje" — klik odmah zatvara ceo tur (ne samo ovaj slajd).
   primaryLabel?: string
   onPrimary?: () => void
+  // Zamena za "Preskoči" (npr. "Kasnije") kad slajd ima sopstvenu akciju.
+  secondaryLabel?: string
+  // Bitan slajd — "Preskoči" na RANIJEM slajdu skoči direktno na njega umesto
+  // da zatvori ceo tur (npr. "Podesi termine" ne sme da se preskoči nezapaženo).
+  important?: boolean
 }
 
 // Generički multi-slajd popup — isti vizuelni obrazac kao NotificationIntro
@@ -50,6 +55,13 @@ export default function AppTour({
   function next() {
     if (isLast) onClose()
     else setIndex(i => i + 1)
+  }
+
+  // "Preskoči" ne sme da preskoči bitan slajd koji tek dolazi — skoči na njega.
+  function skip() {
+    const nextImportant = slides.findIndex((s, i) => i > index && s.important)
+    if (nextImportant !== -1) setIndex(nextImportant)
+    else onClose()
   }
 
   return (
@@ -131,10 +143,10 @@ export default function AppTour({
             </button>
             {(slide.onPrimary || !isLast) && (
               <button
-                onClick={onClose}
+                onClick={skip}
                 className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-white/70 dark:text-gray-400 dark:hover:bg-gray-800/60"
               >
-                Preskoči
+                {slide.secondaryLabel ?? 'Preskoči'}
               </button>
             )}
           </div>

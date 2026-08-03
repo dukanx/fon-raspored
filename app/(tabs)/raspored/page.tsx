@@ -276,27 +276,24 @@ export default function RasporedPage() {
       })
   }, [isHydrated, meta.group, meta.year, router])
 
+  // Samo predmeti iz prethodnih godina (prevSubjects) traže ručan izbor
+  // termina u Izmeni — drugosemestralni (otherSem) su samo za filtriranje
+  // rokova (već imaju svoje termine iz semestra kad su slušani).
   function hasTransferredSubjects(): boolean {
     if (!meta.group) return false
-    return (
-      byGroup.prevSubjects(meta.group).get().length > 0 ||
-      byGroup.otherSem(meta.group).get().length > 0
-    )
+    return byGroup.prevSubjects(meta.group).get().length > 0
   }
 
   // Popup — prvi put opšti tur (deljenje/slika/kalendar/rokovi/notifikacije),
-  // sa "Podesi termine" slajdom na početku SAMO ako već ima prenesene/druge
-  // semestralne predmete. Ako ih tada nema, taj slajd se preskače u turu — ali
-  // ako se kasnije dodaju (npr. preko "Moji predmeti"), prikaže se sam za sebe
-  // sledeći put kad se stigne na Raspored. Uvek sa malim zakašnjenjem posle
-  // promene taba, ne odmah.
+  // sa "Podesi termine" slajdom na kraju SAMO ako već ima prenesene predmete.
+  // Ako ih tada nema, taj slajd se preskače u turu — ali ako se kasnije dodaju
+  // (npr. preko "Moji predmeti"), prikaže se sam za sebe sledeći put kad se
+  // stigne na Raspored. Uvek sa malim zakašnjenjem posle promene taba, ne odmah.
   useEffect(() => {
     if (!isHydrated || !meta.group) return
     const tourSeen = app.appTourSeen.get()
     const transferredSeen = app.prevSubjectsIntroSeen.get()
-    const hasTransferred =
-      byGroup.prevSubjects(meta.group).get().length > 0 ||
-      byGroup.otherSem(meta.group).get().length > 0
+    const hasTransferred = byGroup.prevSubjects(meta.group).get().length > 0
     const shouldShow = !tourSeen || (hasTransferred && !transferredSeen)
     if (!shouldShow) return
     const t = setTimeout(() => setShowTour(true), 1500)
@@ -315,12 +312,14 @@ export default function RasporedPage() {
     key: 'prenesene',
     icon: IconLayers,
     title: 'Podesi termine',
-    desc: 'Za prenesene i drugosemestralne predmete termin biraš ručno.',
+    desc: 'Za prenesene predmete iz prethodnih godina termin biraš ručno.',
     features: [
       { icon: IconEdit, title: 'Izmena tab', desc: 'Tu biraš termin za svaki takav predmet.' },
     ],
     primaryLabel: 'Idi na Izmenu',
     onPrimary: () => { closeTour(); router.push('/preneseni') },
+    secondaryLabel: 'Kasnije',
+    important: true,
   }
 
   const generalSlides: TourSlide[] = [
@@ -384,12 +383,13 @@ export default function RasporedPage() {
   ]
 
   // Tur već viđen -> ako se prenesen predmet naknadno pojavio, taj jedan
-  // slajd samostalno; inače (prvi put) ceo tur, sa tim slajdom na početku
-  // samo ako je relevantan.
+  // slajd samostalno; inače (prvi put) ceo tur, sa tim slajdom NA KRAJU (ne na
+  // početku) — inače bi "Idi na Izmenu" (umesto "Dalje") odmah prekinuo tur
+  // pre nego što korisnik stigne do ostalih slajdova.
   const tourSlides: TourSlide[] = app.appTourSeen.get()
     ? [transferredSlide]
     : tourHasTransferredSlide
-      ? [transferredSlide, ...generalSlides]
+      ? [...generalSlides, transferredSlide]
       : generalSlides
 
   // Rokovi (ispiti/kolokvijumi) — za sekciju "Vezani rokovi" u panelu predmeta.

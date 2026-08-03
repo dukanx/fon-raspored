@@ -1083,7 +1083,7 @@ export default function RokoviPage() {
               <input type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               <div className="min-w-0">
                 <label className={labelClass}>Od</label>
                 <input type="time" value={start} onChange={e => setStart(e.target.value)} className={fieldClass} />
