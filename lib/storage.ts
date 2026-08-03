@@ -106,6 +106,11 @@ export const app = {
   notifIntroSeen: flag('local', 'fon_notif_intro_seen'),
   // Prvi-put tutorial (feature walkthrough) prikazan ili preskočen, jednom.
   tutorialSeen: flag('local', 'fon_tutorial_seen'),
+  // Opšti feature-tur (deljenje/slika/kalendar/rokovi/notifikacije) na Rasporedu, jednom.
+  appTourSeen: flag('local', 'fon_app_tour_seen'),
+  // Slajd "idi u Izmenu da izabereš termin" — prikazan (kao deo tura ili
+  // samostalno, ako su preneseni/drugosemestralni predmeti dodati kasnije), jednom.
+  prevSubjectsIntroSeen: flag('local', 'fon_prev_subjects_intro_seen'),
 }
 
 // Stanje vezano za konkretnu grupu (izbor predmeta, izmene, skriveni termini…).

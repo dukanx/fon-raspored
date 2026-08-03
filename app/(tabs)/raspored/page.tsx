@@ -3,16 +3,18 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
+import { AnimatePresence } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
 import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
-import { session, byGroup, note as noteStore } from '@/lib/storage'
+import { session, app, byGroup, note as noteStore } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
+import AppTour, { type TourSlide } from '@/components/AppTour'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -74,6 +76,24 @@ const IconExam = (p: IconProps) => (
 )
 const IconSchedule = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
+)
+const IconLayers = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 13 9 5 9-5" /></svg>
+)
+const IconBell = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M6 9a6 6 0 0 1 12 0v.75a8.97 8.97 0 0 0 2.31 6.02c.3.33.06.86-.38.98A23.85 23.85 0 0 1 12 18a23.85 23.85 0 0 1-7.93-1.25c-.44-.12-.68-.65-.38-.98A8.97 8.97 0 0 0 6 9.75Z" />
+    <path d="M9.5 20a2.5 2.5 0 0 0 5 0" />
+  </svg>
+)
+const IconHidden = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
+)
+const IconInfo = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 11h1v5h1" /></svg>
+)
+const IconPlus = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
 )
 const IconBack = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
@@ -182,6 +202,7 @@ export default function RasporedPage() {
   const [showShareChoice, setShowShareChoice] = useState(false)
   const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
+  const [showTour, setShowTour] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
   const [rokovi, setRokovi] = useState<RokData[]>([])
   const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
@@ -254,6 +275,122 @@ export default function RasporedPage() {
         setHiddenEntries(byGroup.hidden(meta.group).get())
       })
   }, [isHydrated, meta.group, meta.year, router])
+
+  function hasTransferredSubjects(): boolean {
+    if (!meta.group) return false
+    return (
+      byGroup.prevSubjects(meta.group).get().length > 0 ||
+      byGroup.otherSem(meta.group).get().length > 0
+    )
+  }
+
+  // Popup — prvi put opšti tur (deljenje/slika/kalendar/rokovi/notifikacije),
+  // sa "Podesi termine" slajdom na početku SAMO ako već ima prenesene/druge
+  // semestralne predmete. Ako ih tada nema, taj slajd se preskače u turu — ali
+  // ako se kasnije dodaju (npr. preko "Moji predmeti"), prikaže se sam za sebe
+  // sledeći put kad se stigne na Raspored. Uvek sa malim zakašnjenjem posle
+  // promene taba, ne odmah.
+  useEffect(() => {
+    if (!isHydrated || !meta.group) return
+    const tourSeen = app.appTourSeen.get()
+    const transferredSeen = app.prevSubjectsIntroSeen.get()
+    const hasTransferred =
+      byGroup.prevSubjects(meta.group).get().length > 0 ||
+      byGroup.otherSem(meta.group).get().length > 0
+    const shouldShow = !tourSeen || (hasTransferred && !transferredSeen)
+    if (!shouldShow) return
+    const t = setTimeout(() => setShowTour(true), 1500)
+    return () => clearTimeout(t)
+  }, [isHydrated, meta.group])
+
+  const tourHasTransferredSlide = hasTransferredSubjects()
+
+  function closeTour() {
+    app.appTourSeen.set()
+    if (tourHasTransferredSlide) app.prevSubjectsIntroSeen.set()
+    setShowTour(false)
+  }
+
+  const transferredSlide: TourSlide = {
+    key: 'prenesene',
+    icon: IconLayers,
+    title: 'Podesi termine',
+    desc: 'Za prenesene i drugosemestralne predmete termin biraš ručno.',
+    features: [
+      { icon: IconEdit, title: 'Izmena tab', desc: 'Tu biraš termin za svaki takav predmet.' },
+    ],
+    primaryLabel: 'Idi na Izmenu',
+    onPrimary: () => { closeTour(); router.push('/preneseni') },
+  }
+
+  const generalSlides: TourSlide[] = [
+    {
+      key: 'izmena',
+      icon: IconEdit,
+      title: 'Izmena tab',
+      desc: 'Promeni predmete, dodaj termin ili vrati sakrivene.',
+      features: [
+        { icon: IconList, title: 'Promeni predmete', desc: 'Uključi/isključi izborne, u bilo kom trenutku.' },
+        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni — uz AI predlog.' },
+        { icon: IconHidden, title: 'Vrati skrivene', desc: 'Termine koje si ranije sakrio/la.' },
+      ],
+    },
+    {
+      key: 'skrivanje',
+      icon: IconHidden,
+      title: 'Sakrij termine',
+      desc: 'Ne odgovara ti nešto? Sakrij ga — vraćaš ga kad hoćeš.',
+      features: [
+        { icon: IconClose, title: 'Raspored', desc: 'X na terminu ga sakriva.' },
+        { icon: IconHidden, title: 'Rokovi', desc: 'Isto, uz spisak skrivenih za vraćanje.' },
+      ],
+    },
+    {
+      key: 'info',
+      icon: IconInfo,
+      title: 'Info o predmetu',
+      desc: 'Klikni na termin predemta u rasporedu za katedru, ESPB, napomene i vezane rokove.',
+    },
+    {
+      key: 'deljenje',
+      icon: IconShare,
+      title: 'Izvezi raspored',
+      desc: 'Podeli raspored, sačuvaj ga kao sliku ili izvezi u kalendar telefona.',
+      features: [
+        { icon: IconShare, title: 'Podeli', desc: 'Dugme u alatkama iznad rasporeda.' },
+        { icon: IconImage, title: 'Slika', desc: 'Cela nedelja kao PNG za brzo deljenje.' },
+        { icon: IconCalendar, title: 'Kalendar', desc: 'Uvezi termine u Google/Apple kalendar.' },
+      ],
+    },
+    {
+      key: 'rokovi',
+      icon: IconExam,
+      title: 'Rokovi',
+      desc: 'Prati ispite i kolokvijume, ili dodaj sopstvene događaje.',
+      features: [
+        { icon: IconExam, title: 'Rokovi tab', desc: 'Datumi sa FON sajta, plus tvoji dogovori.' },
+        { icon: IconPlus, title: 'Dodaj svoj', desc: 'Ispit, kolokvijum ili dogovor sa profesorom.' },
+      ],
+    },
+    {
+      key: 'notifikacije',
+      icon: IconBell,
+      title: 'Notifikacije',
+      desc: 'Da ne propustiš rok ili prijavu ispita.',
+      features: [
+        { icon: IconBell, title: 'Uključi ih', desc: 'Zvonce u Rokovi tabu.' },
+      ],
+    },
+  ]
+
+  // Tur već viđen -> ako se prenesen predmet naknadno pojavio, taj jedan
+  // slajd samostalno; inače (prvi put) ceo tur, sa tim slajdom na početku
+  // samo ako je relevantan.
+  const tourSlides: TourSlide[] = app.appTourSeen.get()
+    ? [transferredSlide]
+    : tourHasTransferredSlide
+      ? [transferredSlide, ...generalSlides]
+      : generalSlides
 
   // Rokovi (ispiti/kolokvijumi) — za sekciju "Vezani rokovi" u panelu predmeta.
   useEffect(() => {
@@ -1126,6 +1263,10 @@ export default function RasporedPage() {
           </div>
         </div>
       )}
+
+      <AnimatePresence>
+        {showTour && <AppTour slides={tourSlides} onClose={closeTour} />}
+      </AnimatePresence>
     </>
   )
 }
