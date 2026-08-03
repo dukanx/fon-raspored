@@ -462,7 +462,7 @@ export default function IzbornoPage() {
               className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
             >
               <IconBack className="h-4 w-4 opacity-80" />
-              Nazad
+              Podaci
             </button>
             <button
               onClick={handleConfirm}
@@ -472,7 +472,7 @@ export default function IzbornoPage() {
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                   : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}
             >
-              Prikaži raspored
+              Gotovo
               <IconForward className="h-4 w-4 opacity-80" />
             </button>
           </div>

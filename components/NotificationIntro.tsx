@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { app } from '@/lib/storage'
 import {
   isStandalone,
@@ -88,11 +89,23 @@ export default function NotificationIntro() {
     setOpen(false)
   }
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-60 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center">
-      <div className="liquid-glass w-full max-w-sm rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15">
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-60 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+            className="liquid-glass w-full max-w-sm rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15"
+          >
         <div className="flex flex-col items-center text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
             <IconBell className="h-7 w-7" />
@@ -151,7 +164,9 @@ export default function NotificationIntro() {
             Možda kasnije
           </button>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
