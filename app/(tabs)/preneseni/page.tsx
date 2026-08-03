@@ -215,6 +215,7 @@ export default function PreneseniPage() {
       clearSelectedSubject()
       return
     }
+    setManualOpen(false)
     void handleGodinaSelect(item.year, item.subject)
   }
 
@@ -438,10 +439,10 @@ export default function PreneseniPage() {
             >
               <div>
                 <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
-                  Ne vidiš predmet gore?
+                  Dodatni termini
                 </p>
                 <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                  Ručno izaberi godinu i pronađi predmet ako ga nisi dodao u prenesene.
+                  Ručno izaberi godinu i pronađi termin.
                 </p>
               </div>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">

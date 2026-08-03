@@ -1018,7 +1018,7 @@ export default function RokoviPage() {
       })
     }
 
-    const fieldClass = 'w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad] placeholder:text-gray-400 dark:placeholder:text-gray-500'
+    const fieldClass = 'w-full min-w-0 h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad] placeholder:text-gray-400 dark:placeholder:text-gray-500'
     const labelClass = 'mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400'
 
     return (
@@ -1078,17 +1078,17 @@ export default function RokoviPage() {
               </div>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <label className={labelClass}>Datum</label>
               <input type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <div>
+              <div className="min-w-0">
                 <label className={labelClass}>Od</label>
                 <input type="time" value={start} onChange={e => setStart(e.target.value)} className={fieldClass} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={labelClass}>Do</label>
                 <input type="time" value={end} onChange={e => setEnd(e.target.value)} className={fieldClass} />
               </div>
