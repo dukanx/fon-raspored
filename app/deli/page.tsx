@@ -157,6 +157,18 @@ export default function DeliPage() {
                   <span className="font-medium text-gray-900 dark:text-gray-100">{state.extra.length}</span>
                 </div>
               )}
+              {!!state.prevSubjects?.length && (
+                <div className="flex justify-between py-1">
+                  <span className="text-gray-500 dark:text-gray-400">Preneseni predmeti</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{state.prevSubjects.length}</span>
+                </div>
+              )}
+              {!!state.otherSem?.length && (
+                <div className="flex justify-between py-1">
+                  <span className="text-gray-500 dark:text-gray-400">Drugi semestar</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{state.otherSem.length}</span>
+                </div>
+              )}
             </div>
 
             {state.drift && (
