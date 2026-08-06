@@ -162,3 +162,47 @@ a[href]:active {
   transform: scale(0.97);
   box-shadow: none;
 }
+
+/* Datum/vreme polja (modal "Dodaj događaj") na iOS-u.
+   WebKit ih renderuje kao native kontrolu sa sopstvenom intrinzičnom širinom i
+   unutrašnjim elementom (`::-webkit-date-and-time-value`) koji ima svoj
+   min-width — pa vrednost izlazi van okvira bez obzira na `w-full`/`min-w-0`.
+   Blink (Chrome/Android) ovaj bug nema; provereno da ga ovo ne menja. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+}
+
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value,
+input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: left;
+  min-width: 0;
+  margin: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit,
+input[type="datetime-local"]::-webkit-datetime-edit {
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Samo Safari: iOS sadržaj polja poravna po vrhu uz sopstveni padding, pa uz
+   fiksnu visinu (`h-9`) ispadne iskrivljeno — `display:flex` to centrira.
+   NE sme globalno: u Blink-u pomeri ikonicu kalendara/sata iz desnog ugla uz
+   sam tekst. `-webkit-touch-callout` podržava samo Safari (provereno: Chrome
+   vraća `CSS.supports(...) === false`), pa je ovo pouzdana kapija. */
+@supports (-webkit-touch-callout: none) {
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    display: flex;
+    align-items: center;
+  }
+}
