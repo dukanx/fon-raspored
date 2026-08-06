@@ -56,6 +56,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Postavi temu PRE prvog iscrtavanja. Bez ovoga se `dark` klasa dodaje
+            tek u useEffect-u (providers.tsx), pa svaki pun reload bljesne belo.
+            Offline je to posebno vidljivo jer tada svaka navigacija postaje
+            hard reload (RSC fetch padne -> Next radi MPA navigaciju).
+            Mora da preslikava applyTheme() iz providers.tsx: samo localStorage,
+            bez prefers-color-scheme (CSS tamu vozi isključivo `.dark` klasa). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('fon_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
+          }}
+        />
         <Providers>
           {children}
         </Providers>
