@@ -57,6 +57,7 @@ export default function NotificationBell({ className = '' }: { className?: strin
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isIOS, setIsIOS] = useState(false)
+  const [isAndroid, setIsAndroid] = useState(false)
   const [isStandalone, setIsStandalone] = useState(true)
   const [showIOSModal, setShowIOSModal] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
@@ -64,11 +65,13 @@ export default function NotificationBell({ className = '' }: { className?: strin
   useEffect(() => {
     const localPreview = isLocalNotificationPreview()
     const ios = detectIOS()
+    const android = /Android/i.test(navigator.userAgent)
     const standalone = detectStandalone()
     const supported = pushSupported()
     // queueMicrotask: izbegava setState sinhrono u efektu (react-hooks pravilo).
     queueMicrotask(() => {
       setIsIOS(ios)
+      setIsAndroid(android)
       setIsStandalone(standalone)
       setSupported(supported)
     })
@@ -104,7 +107,8 @@ export default function NotificationBell({ className = '' }: { className?: strin
     }
   }
 
-  if (supported === null || supported === false) return null
+  // Samo dok se ne utvrdi platforma (pre hidracije) — da ne bljesne pogrešan UI.
+  if (supported === null) return null
 
   const btnClass = (active: boolean) =>
     `flex h-9 w-9 items-center justify-center rounded-full transition-colors ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 ${
@@ -112,6 +116,8 @@ export default function NotificationBell({ className = '' }: { className?: strin
     }`
 
   // iOS pre instalacije: dugme otvara uputstvo (Web Push radi tek iz home screen-a).
+  // Provera ide PRE pushSupported() jer iOS van standalone moda ne izlaže
+  // PushManager — inače bi uputstvo bilo skriveno baš onima kojima treba.
   if (isIOS && !isStandalone) {
     return (
       <div className={className}>
@@ -137,6 +143,45 @@ export default function NotificationBell({ className = '' }: { className?: strin
                 <li>Otvori aplikaciju sa home screen-a.</li>
                 <li>Tu ponovo klikni <span className="font-medium">{'„Uključi notifikacije”'}</span>.</li>
               </ol>
+              <button
+                onClick={() => setShowIOSModal(false)}
+                className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
+              >
+                Razumem
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Bez podrške za push (star pregledač, in-app webview iz Instagrama/Facebooka…).
+  // Zvonce ipak stoji — inače korisnik nema gde da sazna zašto notifikacija nema.
+  if (!supported) {
+    return (
+      <div className={className}>
+        <button onClick={() => setShowIOSModal(true)} aria-label="Notifikacije" className={btnClass(false)}>
+          <IconBellOutline className="h-[18px] w-[18px]" />
+        </button>
+
+        {showIOSModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+            onClick={() => setShowIOSModal(false)}
+          >
+            <div
+              className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-1.5">
+                <IconBellOutline className="h-4 w-4" /> Notifikacije
+              </h3>
+              <p className="text-xs text-gray-600 dark:text-gray-300">
+                {isAndroid
+                  ? 'Ovaj pregledač ih ne podržava. Otvori aplikaciju u Chrome-u, pa je dodaj na početni ekran.'
+                  : 'Ovaj pregledač ih ne podržava. Probaj Chrome, Firefox ili Safari 16+.'}
+              </p>
               <button
                 onClick={() => setShowIOSModal(false)}
                 className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
