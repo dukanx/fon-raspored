@@ -67,6 +67,7 @@ flowchart TB
 | **Data store** | Static JSON in `public/data/` versioned in Git | Per-year schedule (`{year}god.json`), exam dates (`rokovi.json`), subject metadata (`subjects-meta.json`) |
 | **Ingestion pipeline** | Python (`check_fon.py`, `fon_parser`, `update_nastava.py`) run in GitHub Actions | Scrape FON PDFs/pages → parse → validate → commit JSON |
 | **Notifications** | Web Push (VAPID) + Service Worker + `send_push.mjs` + Upstash Redis | Subscribe on the client, fan-out delivery from CI, prune dead endpoints |
+| **Offline** | Service Worker cache (`public/sw.js`) registered for every visitor | Precaches the app shell, hashed assets and `public/data/*.json`; serves them when the network fails |
 | **AI helper** | `/api/preneseni` → Groq (LLM) | Recommends the best lecture/lab slots for a carried-over course under strict constraints |
 | **CI/CD** | GitHub Actions (`ci.yml`) + Vercel | Lint, typecheck, unit tests (Vitest + pytest), build, deploy |
 
@@ -201,6 +202,25 @@ within an explicit rule set, returning a fixed format.
 **Consequences:** the model can't hallucinate invalid slots (it only sees legal
 ones), output is parseable, and the feature degrades gracefully. Trade-off:
 dependence on an external LLM for a non-critical convenience feature.
+
+### ADR-8 — Hand-rolled Service Worker cache, network-first for data
+**Context:** students check the schedule on campus where connectivity is poor, so
+the app should survive going offline. Next's PWA guide puts offline caching out of
+scope and points at Serwist, which needs webpack config — this build uses Turbopack.
+**Decision:** hand-roll the cache in the existing `public/sw.js`. App shell and
+hashed `/_next/static` assets are cache-first and versioned together; `public/data/*.json`
+is **network-first**, falling back to cache only when the request actually fails.
+RSC/flight requests are not intercepted at all — Next already falls back to an MPA
+navigation on network error, and a URL-keyed cache would be wrong because flight
+responses vary by `next-router-state-tree`.
+**Consequences:** the app works offline after one visit, and online behaviour for
+data is byte-identical to having no worker — which matters because
+`reconcileSemester` clears the user's subject selection whenever the `semester`
+string differs, so serving a stale `god.json` would silently destroy user data.
+Trade-off: a Service Worker is hard for ordinary users to undo, so recovery is
+explicit — a tombstone worker (`docs/sw-tombstone.js`) that drops the fetch handler
+without calling `unregister()` (which would kill push subscriptions), plus a
+`?nosw=1` escape hatch.
 
 ---
 

@@ -18,6 +18,7 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Glass dizajn** — responzivni "liquid glass" UI, mobilni donji navbar i jasnije razdvojene akcije za raspored, rokove i izmenu termina
 - **Notifikacija o prijavi** — baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
 - **Push notifikacije (PWA)** — aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, i na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu)
+- **Offline rad** — posle prve posete raspored i rokovi se učitavaju i bez interneta; service worker čuva ljusku aplikacije i podatke, a sveže podatke uvek prvo traži sa mreže kad je veza dostupna
 - **Onboarding** — pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
 - **Dark/light mode**
 - **Export u sliku i iCal** — raspored ili rokovi se mogu sačuvati kao PNG slika ili uvesti u Google Calendar, Apple Calendar i sl.
@@ -42,6 +43,7 @@ app/
     preneseni/page.tsx # Izmena rasporeda — dodavanje termina, skriveni termini, "Moji predmeti"
 
 components/
+  OfflineNotice.tsx       # Kartica kad podaci nisu keširani, a nema veze
   BottomNav.tsx           # Mobilni donji navbar za glavne tabove
   NotificationBell.tsx    # Dugme za uključivanje notifikacija + iOS uputstvo
   NotificationIntro.tsx   # Prvi-put modal koji pita za notifikacije u instaliranoj PWA
@@ -219,6 +221,9 @@ Aplikacija se pri otvaranju sama postavlja na Raspored ili Rokove, u zavisnosti 
 
 ### v2.11 — Ravnopravna desktop navigacija i Moji predmeti
 Na desktopu, Raspored i Rokovi sad imaju ravnopravan prekidač umesto asimetrične "nazad" hijerarhije. Izbor izbornih predmeta više nije samo jednokratni onboarding korak — dostupan je i kasnije, kao "Moji predmeti" u Izmena tabu.
+
+### v2.13 — Offline rad
+Service worker sada kešira ljusku aplikacije, hashovane resurse i `public/data/*.json`, pa raspored i rokovi rade i bez interneta posle prve posete. Podaci idu network-first (keš samo kad veza padne) da izbor predmeta ne bi bio pogrešno resetovan zastarelim `god.json`-om. Uz to: kartica „Nema interneta" umesto beskonačnog učitavanja kad podaci nikad nisu keširani, i tema se postavlja pre prvog iscrtavanja pa nema belog bljeska pri učitavanju.
 
 ### v2.12 — Onboarding tur
 Posle prvog izbora predmeta, kratak multi-slajd vodič (isti vizuelni stil kao popup za notifikacije, bez screenshotova) kroz Izmenu, skrivanje termina, info o predmetu, deljenje, izvoz, rokove i notifikacije. Ako korisnik ima prenesene predmete kojima treba ručno podesiti termin, dodatni slajd ga upućuje na Izmenu — bitan je pa se ne može slučajno preskočiti.
