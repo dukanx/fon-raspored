@@ -15,6 +15,7 @@ import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
 import AppTour, { type TourSlide } from '@/components/AppTour'
+import OfflineNotice from '@/components/OfflineNotice'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -203,6 +204,9 @@ export default function RasporedPage() {
   const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
   const [showTour, setShowTour] = useState(false)
+  // Podaci se nisu učitali (offline i nikad keširano) — razlikuje se od praznog
+  // rasporeda, pa se ne sme mešati sa `isEmpty`.
+  const [loadError, setLoadError] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
   const [rokovi, setRokovi] = useState<RokData[]>([])
   const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
@@ -234,8 +238,9 @@ export default function RasporedPage() {
     }
 
     fetch(`/data/${meta.year}god.json`)
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('http'); return r.json() })
       .then((data: SemesterData) => {
+        setLoadError(false)
         // Prevrtanje semestra: resetuj stari izbor predmeta i digni "Nov
         // semestar" popup. Mora pre čitanja fon_subjects (reset ga briše).
         reconcileSemester(data.semester, meta.group)
@@ -274,6 +279,9 @@ export default function RasporedPage() {
 
         setHiddenEntries(byGroup.hidden(meta.group).get())
       })
+      // NE zovemo setLoaded(true) — to bi okinulo `isEmpty` i prikazalo
+      // "Nema termina za prikaz", što je netačna poruka kad je uzrok offline.
+      .catch(() => setLoadError(true))
   }, [isHydrated, meta.group, meta.year, router])
 
   // Samo predmeti iz prethodnih godina (prevSubjects) traže ručan izbor
@@ -862,7 +870,9 @@ export default function RasporedPage() {
       {/* ---------- Sadržaj ---------- */}
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
 
-        {isLoading ? (
+        {loadError ? (
+          <OfflineNotice />
+        ) : isLoading ? (
           view === 'grid' ? (
             <div className="overflow-hidden">
               {/* Day headers (statični okvir dok se učitava) */}

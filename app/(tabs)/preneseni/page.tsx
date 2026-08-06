@@ -7,6 +7,7 @@ import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
 import { toggleTheme } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
+import OfflineNotice from '@/components/OfflineNotice'
 
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15–10:00', '10:15': '10:15–12:00',
@@ -67,6 +68,7 @@ export default function PreneseniPage() {
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
+  const [loadError, setLoadError] = useState(false)
 
 
   async function refreshTrenutniRaspored(nextExtra: ScheduleEntry[]) {
@@ -74,7 +76,17 @@ export default function PreneseniPage() {
     const year = session.year.get()
     if (!group || !year) return
 
-    const data: SemesterData = await fetch(`/data/${year}god.json`).then(r => r.json())
+    // Offline bi ovde bacio unhandled rejection usred event handlera i tiho
+    // preskočio setTrenutniRaspored — zato try/catch.
+    let data: SemesterData
+    try {
+      const res = await fetch(`/data/${year}god.json`)
+      if (!res.ok) return
+      data = await res.json()
+    } catch {
+      return
+    }
+
     const all = getScheduleForGroup(data, group)
     const savedSubjects = byGroup.subjects(group).get()
     const hasSaved = Object.keys(savedSubjects).length > 0
@@ -97,7 +109,7 @@ export default function PreneseniPage() {
     if (!group || !year) { router.replace('/'); return }
 
     fetch(`/data/${year}god.json`)
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('http'); return r.json() })
       .then((data: SemesterData) => {
         const all = getScheduleForGroup(data, group)
         const savedSubjects = byGroup.subjects(group).get()
@@ -119,6 +131,7 @@ export default function PreneseniPage() {
         }
         setTrenutniRaspored(baseFiltered)
       })
+      .catch(() => setLoadError(true))
 
     setExtraTermini(byGroup.extra(group).get())
     setHiddenTermini(byGroup.hidden(group).get())
@@ -302,7 +315,9 @@ export default function PreneseniPage() {
           </div>
         </header>
 
-        <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
+        {loadError && <OfflineNotice />}
+
+        <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS} ${loadError ? 'hidden' : ''}`}>
 
           {/* Moji predmeti (izborni) */}
           <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">

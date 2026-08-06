@@ -7,6 +7,7 @@ import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
+import OfflineNotice from '@/components/OfflineNotice'
 
 const GLASS = 'liquid-glass'
 
@@ -42,6 +43,7 @@ export default function IzbornoPage() {
   const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const [semester, setSemester] = useState<string>('')
+  const [loadError, setLoadError] = useState(false)
 
   const [prevOpen, setPrevOpen] = useState(false)
   const [prevGodina, setPrevGodina] = useState<number | null>(null)
@@ -73,7 +75,7 @@ export default function IzbornoPage() {
     const savedOther = byGroup.otherSem(group).get()
 
     Promise.all([
-      fetch(`/data/${year}god.json`).then(r => r.json()),
+      fetch(`/data/${year}god.json`).then(r => { if (!r.ok) throw new Error('http'); return r.json() }),
       fetch('/data/subjects-meta.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
     ])
       .then(([data, meta]: [SemesterData, Record<string, SubjectMeta>]) => {
@@ -114,6 +116,8 @@ export default function IzbornoPage() {
           setOtherOpen(true)
         }
       })
+      // Bez ovoga offline ostavlja stranicu trajno u skeleton stanju.
+      .catch(() => setLoadError(true))
 
     const savedPrev = byGroup.prevSubjects(group).get()
     if (savedPrev.length > 0) {
@@ -218,6 +222,14 @@ export default function IzbornoPage() {
   // za ovaj smer. Kod finih modula (4. god) gde je sve "izborno" -> isključen,
   // pa ne prikazujemo "izborni" tagove ni izmenjen tekst (sve je čekirano).
   const smartMode = subjects.some(s => defaultChecked(subjectsMeta[s]?.status, track))
+
+  if (loadError) {
+    return (
+      <main className="min-h-screen flex items-center justify-center px-4 py-8">
+        <OfflineNotice />
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">

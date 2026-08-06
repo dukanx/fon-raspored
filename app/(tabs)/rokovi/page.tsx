@@ -10,6 +10,7 @@ import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
+import OfflineNotice from '@/components/OfflineNotice'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const COLORS = [
@@ -171,6 +172,9 @@ const eventTypeLabel = (t: string) => (t === 'P' ? 'Pismeni' : t === 'U' ? 'Usme
 export default function RokoviPage() {
   const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
+  // Podaci se nisu učitali (offline i nikad keširano) — razlikuje se od
+  // "nema zakazanih rokova", pa ne sme da deli isti prazan prikaz.
+  const [loadError, setLoadError] = useState(false)
   const [tab, setTab] = useState<Tab>('kolokvijumi')
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
   const [calendarMonth, setCalendarMonth] = useState(() => {
@@ -207,10 +211,11 @@ export default function RokoviPage() {
     if (!isHydrated) return
     const today = new Date().toISOString().split('T')[0]
     fetch('/data/rokovi.json')
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('http'); return r.json() })
       .then((d: RokData[]) => {
         const data = Array.isArray(d) ? d : []
         setAllRokovi(data)
+        setLoadError(false)
         const savedSubjects = meta.group ? byGroup.subjects(meta.group).get() : {}
         const subjectSet: Set<string> | null = Object.keys(savedSubjects).length > 0
           ? new Set(Object.entries(savedSubjects).filter(([, v]) => v !== false).map(([k]) => k))
@@ -247,7 +252,9 @@ export default function RokoviPage() {
         )
         setDismissedBanners(dismissed)
       })
-      .catch(() => setAllRokovi([]))
+      // Prazan niz sam po sebi renderuje "Nema podataka za prikaz", što se ne
+      // razlikuje od "nema zakazanih ispita" — zato zaseban loadError.
+      .catch(() => { setAllRokovi([]); setLoadError(true) })
   }, [isHydrated, meta.group])
 
   // Skup predmeta koje student sluša (regularni + preneseni iz prošlih godina)
@@ -1381,6 +1388,8 @@ export default function RokoviPage() {
 
         {!isHydrated ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">Učitavanje...</div>
+        ) : loadError ? (
+          <OfflineNotice />
         ) : view === 'list' ? (
           <ListView />
         ) : (
