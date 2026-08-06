@@ -193,6 +193,24 @@ input[type="datetime-local"]::-webkit-datetime-edit {
   overflow: hidden;
 }
 
+/* iOS zumira celu stranicu kad se fokusira polje sa računatim font-size < 16px,
+   i posle toga se ne vraća — u instaliranoj PWA to izgleda kao da app "skoči",
+   za razliku od native aplikacije. Sva polja su `text-sm` (14px), pa ih na iOS-u
+   dižemo na 16px; kutije su `h-9` (36px) pa to lepo staje.
+   Alternativa je `user-scalable=no` u viewport-u, ali ona ubija pinch-zoom svima
+   (pristupačnost), a Safari je van standalone režima ionako ignoriše.
+   Kapija je Safari (`-webkit-touch-callout`) + dodir (`pointer: coarse`), da
+   macOS Safari i Android ostanu na dizajniranih 14px. */
+@supports (-webkit-touch-callout: none) {
+  @media (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+}
+
 /* Samo Safari: iOS sadržaj polja poravna po vrhu uz sopstveni padding, pa uz
    fiksnu visinu (`h-9`) ispadne iskrivljeno — `display:flex` to centrira.
    NE sme globalno: u Blink-u pomeri ikonicu kalendara/sata iz desnog ugla uz
