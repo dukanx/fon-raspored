@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 
 export type IconProps = React.SVGProps<SVGSVGElement>
@@ -24,7 +24,8 @@ export type TourSlide = {
   key: string
   icon: (p: IconProps) => React.JSX.Element
   title: string
-  desc: string
+  // Opciono — na slajdu koji je samo spisak stavki podnaslov je vata.
+  desc?: string
   features?: TourFeature[]
   // Kad slajd ima sopstvenu akciju (npr. "Idi na Izmenu") umesto generičkog
   // "Dalje" — klik odmah zatvara ceo tur (ne samo ovaj slajd).
@@ -64,6 +65,17 @@ export default function AppTour({
     else onClose()
   }
 
+  // Enter = glavno dugme (Dalje / Gotovo / sopstvena akcija slajda), Esc = zatvori.
+  const primary = slide.onPrimary ?? next
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') { e.preventDefault(); primary() }
+      else if (e.key === 'Escape') { e.preventDefault(); onClose() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -79,7 +91,11 @@ export default function AppTour({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -16 }}
           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-          className="liquid-glass w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15"
+          // Na desktopu je modal centriran, pa bi različite visine slajdova
+          // pomerale dugmad pri svakom "Dalje". Fiksna minimalna visina + mt-auto
+          // na podnožju drže tačkice i dugmad na istom mestu kroz ceo tur.
+          // Na mobilnom je modal prilepljen za dno pa problem ne postoji.
+          className="liquid-glass w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 sm:flex sm:min-h-152 sm:flex-col"
         >
           <div className="flex flex-col items-center text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
@@ -88,9 +104,11 @@ export default function AppTour({
             <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
               {slide.title}
             </h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {slide.desc}
-            </p>
+            {slide.desc && (
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {slide.desc}
+              </p>
+            )}
           </div>
 
           {slide.features && slide.features.length > 0 && (
@@ -112,6 +130,9 @@ export default function AppTour({
             </div>
           )}
 
+          {/* Podnožje: sm:mt-auto ga lepi za dno kartice, pa tačkice i dugmad
+              stoje na istom mestu bez obzira na dužinu slajda. */}
+          <div className="sm:mt-auto">
           {slides.length > 1 && (
             <div className="mt-5 flex items-center justify-center gap-1.5">
               {slides.map((s, i) => (
@@ -149,6 +170,7 @@ export default function AppTour({
                 {slide.secondaryLabel ?? 'Preskoči'}
               </button>
             )}
+          </div>
           </div>
         </motion.div>
       </AnimatePresence>

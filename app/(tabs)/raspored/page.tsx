@@ -16,6 +16,7 @@ import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
 import AppTour, { type TourSlide } from '@/components/AppTour'
 import OfflineNotice from '@/components/OfflineNotice'
+import { isStandalone, pushSupported } from '@/lib/push'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
@@ -95,6 +96,15 @@ const IconInfo = (p: IconProps) => (
 )
 const IconPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
+)
+const IconClock = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></svg>
+)
+const IconBulb = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 0 0-3.5 10.9c.3.3.5.7.5 1.1h6c0-.4.2-.8.5-1.1A6 6 0 0 0 12 3Z" /></svg>
+)
+const IconOffline = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M5 12.5a10 10 0 0 1 4-2.4" /><path d="M1.4 8.8a15 15 0 0 1 5-3.3" /><path d="M17.6 13.4A10 10 0 0 0 12 10" /><path d="M22.6 8.8a15 15 0 0 0-8.7-4.2" /><path d="M8.8 16.3a5 5 0 0 1 6.4 0" /><path d="M12 20h.01" /></svg>
 )
 const IconBack = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
@@ -304,8 +314,26 @@ export default function RasporedPage() {
     const hasTransferred = byGroup.prevSubjects(meta.group).get().length > 0
     const shouldShow = !tourSeen || (hasTransferred && !transferredSeen)
     if (!shouldShow) return
-    const t = setTimeout(() => setShowTour(true), 1500)
-    return () => clearTimeout(t)
+
+    let t: ReturnType<typeof setTimeout>
+    let poll: ReturnType<typeof setInterval>
+    const start = () => { t = setTimeout(() => setShowTour(true), 1500) }
+
+    // U instaliranoj PWA prvo ide popup za notifikacije (NotificationIntro).
+    // Bez ovoga tur iskoči preko njega, pa se korisnik po završetku tura vrati
+    // na notifikacije. Čekamo da NotificationIntro zaključi svoj posao — on u
+    // SVAKOM ishodu upiše fon_notif_intro_seen (uključeno, "kasnije", odbijeno
+    // na nivou browsera, ili već pretplaćen). Anketiramo flag umesto da slušamo
+    // event, jer deo tih ishoda nastupa asinhrono i lako bi se propustio.
+    if (!app.notifIntroSeen.get() && isStandalone() && pushSupported()) {
+      poll = setInterval(() => {
+        if (app.notifIntroSeen.get()) { clearInterval(poll); start() }
+      }, 400)
+    } else {
+      start()
+    }
+
+    return () => { clearTimeout(t); clearInterval(poll) }
   }, [isHydrated, meta.group])
 
   const tourHasTransferredSlide = hasTransferredSubjects()
@@ -343,22 +371,6 @@ export default function RasporedPage() {
       ],
     },
     {
-      key: 'skrivanje',
-      icon: IconHidden,
-      title: 'Sakrij termine',
-      desc: 'Ne odgovara ti nešto? Sakrij ga — vraćaš ga kad hoćeš.',
-      features: [
-        { icon: IconClose, title: 'Raspored', desc: 'X na terminu ga sakriva.' },
-        { icon: IconHidden, title: 'Rokovi', desc: 'Isto, uz spisak skrivenih za vraćanje.' },
-      ],
-    },
-    {
-      key: 'info',
-      icon: IconInfo,
-      title: 'Info o predmetu',
-      desc: 'Klikni na termin predemta u rasporedu za katedru, ESPB, napomene i vezane rokove.',
-    },
-    {
       key: 'deljenje',
       icon: IconShare,
       title: 'Izvezi raspored',
@@ -370,22 +382,24 @@ export default function RasporedPage() {
       ],
     },
     {
-      key: 'rokovi',
-      icon: IconExam,
-      title: 'Rokovi',
-      desc: 'Prati ispite i kolokvijume, ili dodaj sopstvene događaje.',
-      features: [
-        { icon: IconExam, title: 'Rokovi tab', desc: 'Datumi sa FON sajta, plus tvoji dogovori.' },
-        { icon: IconPlus, title: 'Dodaj svoj', desc: 'Ispit, kolokvijum ili dogovor sa profesorom.' },
-      ],
-    },
-    {
       key: 'notifikacije',
       icon: IconBell,
       title: 'Notifikacije',
-      desc: 'Da ne propustiš rok ili prijavu ispita.',
+      desc: 'Uključi ih na zvonce u Rokovi tabu.',
       features: [
-        { icon: IconBell, title: 'Uključi ih', desc: 'Zvonce u Rokovi tabu.' },
+        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Čim izađu ispitni rokovi i kolokvijumi.' },
+        { icon: IconClock, title: 'Prijava ispita', desc: 'Na dan kad počne i kad se završava prijava.' },
+      ],
+    },
+    {
+      key: 'korisno',
+      icon: IconBulb,
+      title: 'Dobro je znati',
+      features: [
+        { icon: IconInfo, title: 'Info o predmetu', desc: 'Klikni na termin za katedru, ESPB i vezane rokove.' },
+        { icon: IconHidden, title: 'Sakrij termine', desc: 'X na terminu, u Rasporedu i u Rokovima.' },
+        { icon: IconPlus, title: 'Sopstveni rokovi', desc: 'Dodaj svoj ispit ili dogovor u Rokovi tabu.' },
+        { icon: IconOffline, title: 'Offline mod', desc: 'Instalirana aplikacija radi i bez interneta.' },
       ],
     },
   ]
