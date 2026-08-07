@@ -163,6 +163,20 @@ a[href]:active {
   box-shadow: none;
 }
 
+/* Treptanje kursora u TextType-u. Ranije je to radio gsap (opacity yoyo,
+   power2.inOut) — jedina njegova upotreba u celom projektu, a nosio je 30 KB
+   gzipovano na ulaznoj ruti `/`. CSS animacija daje isti efekat: `alternate`
+   je yoyo, `ease-in-out` je približno power2.inOut. Trajanje postavlja sama
+   komponenta inline (`cursorBlinkDuration` × 2 = pun ciklus). */
+@keyframes text-type-caret {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.text-type-caret {
+  animation: text-type-caret 1s ease-in-out infinite alternate;
+}
+
 /* Povratni korisnik na `/`: onboarding se ne sme iscrtati pre preusmerenja na
    Raspored/Rokove. Klasu podiže inline skripta u layout.tsx pre prvog
    iscrtavanja, a skida je app/page.tsx (i kad preusmerenja nema, i na izlasku).

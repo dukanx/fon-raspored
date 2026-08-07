@@ -7,7 +7,7 @@ import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
 import { pickDefaultTab } from '@/lib/rokDefault'
-import BlurText from '@/components/BlurText'
+import TextType from '@/components/TextType'
 import InstallPrompt from '@/components/InstallPrompt'
 
 const GLASS = 'liquid-glass'
@@ -231,18 +231,39 @@ export default function OnboardingPage() {
       <div className="flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
-        <div className="mb-8">
-          <BlurText
+        {/* Naslov i reč koja se menja stoje u istom redu ("FON Raspored
+            predavanja"), poravnati po osnovnoj liniji. Flex je tu namerno —
+            TextType sebi hardkoduje `inline-block`, pa se na oslanjanje na
+            prirodan inline tok ne može računati. */}
+        <div className="mb-8 flex flex-wrap items-baseline gap-x-2">
+          <TextType
+            as="h1"
             text="FON Raspored"
-            animateBy="letters"
-            direction="top"
-            delay={60}
-            stepDuration={0.3}
-            className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+            typingSpeed={70}
+            initialDelay={150}
+            loop={false}
+            showCursor={false}
+            className="shrink-0 text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
           />
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Tvoj raspored, ispiti i kolokvijumi na jednom mestu
-          </p>
+          {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
+              (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva
+              kucanja preklapaju i deluje nervozno. */}
+          <TextType
+            as="span"
+            text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
+            typingSpeed={55}
+            deletingSpeed={30}
+            pauseDuration={1800}
+            initialDelay={1100}
+            loop
+            cursorCharacter="|"
+            /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
+               Bez nje odluka o prelomu reda zavisi od reči koja se trenutno
+               kuca, pa na uskim ekranima (320px) sadržaj ispod poskakuje na
+               svakom ciklusu. Ovako je red ili uvek jedan, ili uvek dva. */
+            className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
+            cursorClassName="text-gray-400 dark:text-gray-500"
+          />
         </div>
 
         {/* Godina */}
@@ -376,7 +397,7 @@ export default function OnboardingPage() {
             instalacije PWA (iOS home screen app ima odvojen storage od Safarija) */}
         <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 p-4 ${GLASS}`}>
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
-            Imaš link od kolege? Nalepi ga
+            Link deljenog rasporeda
           </p>
           <div className="flex gap-2">
             <input
