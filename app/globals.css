@@ -163,6 +163,15 @@ a[href]:active {
   box-shadow: none;
 }
 
+/* Povratni korisnik na `/`: onboarding se ne sme iscrtati pre preusmerenja na
+   Raspored/Rokove. Klasu podiže inline skripta u layout.tsx pre prvog
+   iscrtavanja, a skida je app/page.tsx (i kad preusmerenja nema, i na izlasku).
+   `display:none` umesto `visibility:hidden` da se ne rezerviše prazan prostor
+   ekrana. */
+.fon-booting [data-onboarding] {
+  display: none;
+}
+
 /* Datum/vreme polja (modal "Dodaj događaj") na iOS-u.
    WebKit ih renderuje kao native kontrolu sa sopstvenom intrinzičnom širinom i
    unutrašnjim elementom (`::-webkit-date-and-time-value`) koji ima svoj

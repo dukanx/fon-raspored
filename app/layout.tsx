@@ -67,6 +67,18 @@ export default function RootLayout({
             __html: `try{if(localStorage.getItem('fon_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
           }}
         />
+        {/* Ista tehnika, drugi problem: `/` je prerenderovana kao onboarding, pa
+            se korisniku koji već ima identitet onboarding iscrta i tek onda
+            zameni Rasporedom/Rokovima (preusmerenje čeka hidraciju). Ovde
+            sinhrono, pre prvog iscrtavanja, utvrđujemo da preusmerenje sledi i
+            sakrivamo onboarding — vidi se samo pozadina.
+            Uslov mora da preslikava app/page.tsx (session pa saved identitet, uz
+            izuzetak za ?edit=1); on je i taj koji skida klasu. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(location.pathname==='/'&&new URLSearchParams(location.search).get('edit')!=='1'&&(sessionStorage.getItem('fon_group')||(localStorage.getItem('fon_saved_group')&&localStorage.getItem('fon_saved_year'))))document.documentElement.classList.add('fon-booting')}catch(e){}`,
+          }}
+        />
         <Providers>
           {children}
         </Providers>

@@ -12,6 +12,11 @@ import InstallPrompt from '@/components/InstallPrompt'
 
 const GLASS = 'liquid-glass'
 
+// Koliko najduže čekamo odluku Raspored/Rokovi pre nego što odemo na poslednju
+// poznatu stranu. Dovoljno da normalna mreža stigne, prekratko da se primeti
+// kao zaglavljivanje.
+const BOOT_DEADLINE_MS = 1500
+
 // Izvuče share kod iz nalepljenog teksta — bilo pun URL (.../deli?s=KOD) bilo
 // sam kod. Omogućava da se deljeni raspored primeni i unutar sveže instalirane
 // PWA (na iOS-u home-screen app ima odvojen storage od Safarija).
@@ -55,23 +60,54 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (!isHydrated) return
+
+    // Onboarding je do ovog trenutka sakriven (klasa `fon-booting`, v. skriptu u
+    // layout.tsx). Otkrivamo ga čim se zna da preusmerenja nema, i na izlasku sa
+    // strane — inače bi klijentska navigacija nazad na `/` zatekla klasu i
+    // ostavila prazan ekran.
+    const showOnboarding = () => document.documentElement.classList.remove('fon-booting')
+
     // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") — ne preusmeravaj.
-    if (new URLSearchParams(window.location.search).get('edit') === '1') return
+    if (new URLSearchParams(window.location.search).get('edit') === '1') {
+      showOnboarding()
+      return
+    }
 
     // Raspored ili Rokovi — zavisi da li je blizu/u toku ispitni rok (stvarni
     // datumi iz rokovi.json, ne pretpostavljeni akademski kalendar).
     async function defaultTab(): Promise<'/raspored' | '/rokovi'> {
+      const todayStr = new Date().toISOString().split('T')[0]
+      // Ista odluka za ceo dan — ako je već doneta danas, ne diramo mrežu.
+      const cached = app.defaultTab.get()
+      if (cached && cached.date === todayStr) return cached.dest
       try {
         const rokovi: RokData[] = await fetch('/data/rokovi.json').then(r => r.json())
-        const todayStr = new Date().toISOString().split('T')[0]
-        return pickDefaultTab(rokovi, todayStr)
+        const dest = pickDefaultTab(rokovi, todayStr)
+        app.defaultTab.set({ date: todayStr, dest })
+        return dest
       } catch {
-        return '/raspored'
+        return cached?.dest ?? '/raspored'
       }
     }
 
+    // Do preusmerenja se vidi samo pozadina, a `/data/*.json` je u service
+    // workeru network-first — na lošoj vezi bi se čekalo dok mreža ne odustane.
+    // Posle ovog roka idemo na poslednju poznatu stranu; svež odgovor tada samo
+    // osveži keš za sledeći put, bez drugog (nervoznog) skoka.
+    function destination(): Promise<'/raspored' | '/rokovi'> {
+      return Promise.race([
+        defaultTab(),
+        new Promise<'/raspored' | '/rokovi'>(resolve =>
+          setTimeout(() => resolve(app.defaultTab.get()?.dest ?? '/raspored'), BOOT_DEADLINE_MS)
+        ),
+      ])
+    }
+
     // Isti tab — sessionStorage ima grupu
-    if (session.group.get()) { void defaultTab().then(dest => router.replace(dest)); return }
+    if (session.group.get()) {
+      void destination().then(dest => router.replace(dest))
+      return showOnboarding
+    }
     // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
     const savedGroup = saved.group.get()
     const savedYear = saved.year.get()
@@ -86,8 +122,12 @@ export default function OnboardingPage() {
       if (sem) session.semester.set(sem)
       // Postojeći korisnik (već ima sačuvan identitet) — tutorial je samo za nove.
       app.tutorialSeen.set()
-      void defaultTab().then(dest => router.replace(dest))
+      void destination().then(dest => router.replace(dest))
+      return showOnboarding
     }
+
+    // Nov korisnik — nema identiteta, nema preusmerenja, onboarding se prikazuje.
+    showOnboarding()
   }, [isHydrated, router])
 
   // Učitaj JSON kad se odabere godina
@@ -187,7 +227,7 @@ export default function OnboardingPage() {
     !loading
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-4 py-10">
+    <main data-onboarding className="relative min-h-screen flex items-center justify-center px-4 py-10">
       <div className="flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
