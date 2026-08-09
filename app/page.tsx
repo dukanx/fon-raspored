@@ -7,6 +7,7 @@ import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
 import { pickDefaultTab } from '@/lib/rokDefault'
+import BlurText from '@/components/BlurText'
 import TextType from '@/components/TextType'
 import InstallPrompt from '@/components/InstallPrompt'
 
@@ -16,6 +17,70 @@ const GLASS = 'liquid-glass'
 // poznatu stranu. Dovoljno da normalna mreža stigne, prekratko da se primeti
 // kao zaglavljivanje.
 const BOOT_DEADLINE_MS = 1500
+
+// Izgled naslova na početnoj. 'blur' je originalni (BlurText, slova se stapaju
+// jednom pri ulasku), 'type' je varijanta sa kucanjem gde se reč pored naslova
+// vrti u krug. Menja se samo ovde — obe varijante su ispod, žive u repou.
+// `as HeadingStyle` je namerno: bez toga TypeScript suzi tip konstante na
+// 'blur' i onda poređenje sa 'type' prijavi kao nemoguće (ts2367).
+type HeadingStyle = 'blur' | 'type'
+const HEADING_STYLE = 'blur' as HeadingStyle
+
+function BlurHeading() {
+  return (
+    <div className="mb-8">
+      <BlurText
+        text="FON Raspored"
+        animateBy="letters"
+        direction="top"
+        delay={60}
+        stepDuration={0.3}
+        className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+      />
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        Tvoj raspored, ispiti i kolokvijumi na jednom mestu
+      </p>
+    </div>
+  )
+}
+
+function TypedHeading() {
+  return (
+    // Naslov i reč koja se menja stoje u istom redu ("FON Raspored predavanja"),
+    // poravnati po osnovnoj liniji. Flex je tu namerno — TextType sebi hardkoduje
+    // `inline-block`, pa se na prirodan inline tok ne može računati.
+    <div className="mb-8 flex flex-wrap items-baseline gap-x-2">
+      <TextType
+        as="h1"
+        text="FON Raspored"
+        typingSpeed={70}
+        initialDelay={150}
+        loop={false}
+        showCursor={false}
+        className="shrink-0 text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+      />
+      {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
+          (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva kucanja
+          preklapaju i deluje nervozno. */}
+      <TextType
+        as="span"
+        text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
+        typingSpeed={55}
+        deletingSpeed={30}
+        pauseDuration={1800}
+        initialDelay={1100}
+        loop
+        cursorCharacter="|"
+        /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
+           Bez nje odluka o prelomu reda zavisi od reči koja se trenutno kuca, pa
+           na uskim ekranima (320px) sadržaj ispod poskakuje na svakom ciklusu.
+           Ovako je red ili uvek jedan, ili uvek dva. */
+        className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
+        cursorClassName="text-gray-400 dark:text-gray-500"
+      />
+    </div>
+  )
+}
 
 // Izvuče share kod iz nalepljenog teksta — bilo pun URL (.../deli?s=KOD) bilo
 // sam kod. Omogućava da se deljeni raspored primeni i unutar sveže instalirane
@@ -231,40 +296,7 @@ export default function OnboardingPage() {
       <div className="flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
-        {/* Naslov i reč koja se menja stoje u istom redu ("FON Raspored
-            predavanja"), poravnati po osnovnoj liniji. Flex je tu namerno —
-            TextType sebi hardkoduje `inline-block`, pa se na oslanjanje na
-            prirodan inline tok ne može računati. */}
-        <div className="mb-8 flex flex-wrap items-baseline gap-x-2">
-          <TextType
-            as="h1"
-            text="FON Raspored"
-            typingSpeed={70}
-            initialDelay={150}
-            loop={false}
-            showCursor={false}
-            className="shrink-0 text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
-          />
-          {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
-              (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva
-              kucanja preklapaju i deluje nervozno. */}
-          <TextType
-            as="span"
-            text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
-            typingSpeed={55}
-            deletingSpeed={30}
-            pauseDuration={1800}
-            initialDelay={1100}
-            loop
-            cursorCharacter="|"
-            /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
-               Bez nje odluka o prelomu reda zavisi od reči koja se trenutno
-               kuca, pa na uskim ekranima (320px) sadržaj ispod poskakuje na
-               svakom ciklusu. Ovako je red ili uvek jedan, ili uvek dva. */
-            className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
-            cursorClassName="text-gray-400 dark:text-gray-500"
-          />
-        </div>
+        {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
 
         {/* Godina */}
         <div className="mb-5">
