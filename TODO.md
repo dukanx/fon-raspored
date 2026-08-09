@@ -192,6 +192,26 @@ Gde se šta čuva:
 - [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi — jasna poruka korisniku sa sugestijom
 - [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
 - [ ] Poboljšati tipove — smanjiti `any` i neeksplicitne tipove tamo gde postoje
+- [ ] **Scraper pada tiho — mora glasno.** `check_fon.py` nema nijedan `sys.exit` ni `raise`
+  (provereno grepom), pa svaki otkaz završi kao zelen GitHub Actions run:
+  - sajt se ne otvori → `check_fon.py:67-69` odštampa grešku i uradi `continue`
+  - FON promeni sajt pa linkovi ne odgovaraju obrascu → nula PDF-ova → poruka
+    „Nema novih PDF-ova." — ista ona koju daje i uredan prolaz kad stvarno nema ništa novo
+  - greške se skupe u listu `errors` i samo se odštampaju
+
+  Testovi ovo ne hvataju i ne mogu: `scripts/tests/fixtures/` su dva sačuvana PDF-a sa
+  golden JSON-om, pa provera odgovara na pitanje „da li parser i dalje ume ono što je umeo".
+  Čuvaju od toga da MI pokvarimo parser; ništa ne čuva od toga da FON promeni svoj sajt.
+
+  Plan:
+  1. nenulti izlaz kad nijedna stranica iz `PAGES` nije dohvaćena, i kad se na stranici
+     nađe nula PDF linkova (a `known_pdfs.json` nije prazan — dakle ranije ih je bilo)
+  2. „mrtvi čovek": ako duže od N dana nema uspešnog prolaza, javi (notifikacija ili
+     issue), jer izostanak run-a niko ne primeti — v. otkaz runner-a 2026-08-06/07
+
+  Postojeća delimična zaštita: `check_fon.py:124` — PDF koji se isparsira u nula unosa
+  ne upisuje se kao poznat, pa se pokušava ponovo. Pokriva promenu formata PDF-a, ne i
+  promenu sajta.
 
 ---
 
