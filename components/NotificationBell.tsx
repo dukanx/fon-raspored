@@ -199,7 +199,7 @@ export default function NotificationBell({ className = '' }: { className?: strin
     <div className={className}>
       <button
         onClick={() => setShowInfo(true)}
-        aria-label={subscribed ? 'Notifikacije uključene — detalji' : 'Uključi notifikacije'}
+        aria-label={subscribed ? 'Notifikacije uključene - detalji' : 'Uključi notifikacije'}
         aria-pressed={subscribed}
         className={btnClass(subscribed)}
       >

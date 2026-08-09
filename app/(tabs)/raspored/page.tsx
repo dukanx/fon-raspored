@@ -30,12 +30,12 @@ const DAY_OFFSET: Record<DayOfWeek, number> = {
 
 const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
 const SLOT_LABEL: Record<string, string> = {
-  '08:15': '08:15–10:00',
-  '10:15': '10:15–12:00',
-  '12:15': '12:15–14:00',
-  '14:15': '14:15–16:00',
-  '16:15': '16:15–18:00',
-  '18:15': '18:15–20:00',
+  '08:15': '08:15-10:00',
+  '10:15': '10:15-12:00',
+  '12:15': '12:15-14:00',
+  '14:15': '14:15-16:00',
+  '16:15': '16:15-18:00',
+  '18:15': '18:15-20:00',
 }
 
 const COLORS = [
@@ -375,7 +375,7 @@ export default function RasporedPage() {
       desc: 'Promeni predmete, dodaj termin ili vrati sakrivene.',
       features: [
         { icon: IconList, title: 'Promeni predmete', desc: 'Uključi/isključi izborne, u bilo kom trenutku.' },
-        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni — uz AI predlog.' },
+        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni - uz AI predlog.' },
         { icon: IconHidden, title: 'Vrati skrivene', desc: 'Termine koje si ranije sakrio/la.' },
       ],
     },
@@ -507,7 +507,7 @@ export default function RasporedPage() {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'FON Raspored', text: `Raspored — grupa ${meta.group}`, url })
+        await navigator.share({ title: 'FON Raspored', text: `Raspored - grupa ${meta.group}`, url })
         return
       } catch {
         return // korisnik otkazao share sheet — ne kopiraj
@@ -773,7 +773,7 @@ export default function RasporedPage() {
           <div className="flex items-start justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
             <div className="min-w-0">
               <h1 className="truncate text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                Grupa {meta.group || '—'}
+                Grupa {meta.group || '-'}
               </h1>
               <p className="mt-0.5 truncate text-sm text-gray-500 dark:text-gray-400">
                 {meta.program && `${meta.program} · `}{meta.semester}
@@ -1108,7 +1108,7 @@ export default function RasporedPage() {
                 {subjectTermine.map((e, i) => (
                   <div key={i} className="flex items-center gap-2.5 text-sm">
                     <span className="w-8 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">{DAY_SHORT[e.day]}</span>
-                    <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}–${e.end}`}</span>
+                    <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}</span>
                     <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{e.type_short}</span>
                     <span className="flex-1 truncate text-xs text-gray-500 dark:text-gray-400">{e.room}</span>
                     <button
@@ -1230,7 +1230,7 @@ export default function RasporedPage() {
               </div>
               <div className="flex gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">4</span>
-                <p>Na telefonu: pronađi fajl u Downloads i klikni na njega — kalendar će se otvoriti automatski.</p>
+                <p>Na telefonu: pronađi fajl u Downloads i klikni na njega - kalendar će se otvoriti automatski.</p>
               </div>
             </div>
 

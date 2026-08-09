@@ -10,9 +10,9 @@ import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
 
 const SLOT_LABEL: Record<string, string> = {
-  '08:15': '08:15–10:00', '10:15': '10:15–12:00',
-  '12:15': '12:15–14:00', '14:15': '14:15–16:00',
-  '16:15': '16:15–18:00', '18:15': '18:15–20:00',
+  '08:15': '08:15-10:00', '10:15': '10:15-12:00',
+  '12:15': '12:15-14:00', '14:15': '14:15-16:00',
+  '16:15': '16:15-18:00', '18:15': '18:15-20:00',
 }
 
 const GLASS = 'liquid-glass'

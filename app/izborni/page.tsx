@@ -239,7 +239,7 @@ export default function IzbornoPage() {
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {smartMode
-              ? 'Obavezni su već čekirani — čekiraj izborne koje slušaš'
+              ? 'Obavezni su već čekirani - čekiraj izborne koje slušaš'
               : 'Odčekiraj predmete koje ne slušaš'}
           </p>
         </div>
