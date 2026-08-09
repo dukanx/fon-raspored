@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 // Next-specifična integracija (usePathname/useSearchParams) — NE patchuje
 // history.pushState kao /react, koji je lomio navigaciju u Next 16.
@@ -17,9 +18,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://fon-raspored-five.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: "FON Raspored",
-  description: "Lični raspored nastave za studente FON-a",
+  description:
+    "Lični raspored nastave, ispitni rokovi i kolokvijumi za studente Fakulteta organizacionih nauka (FON).",
+  // Izričito govori pretraživaču koja je prava adresa stranice. Bez ovoga isti
+  // sadržaj na `.vercel.app` i na fonraspored.rs izgleda kao dva sajta, pa se
+  // signali (posete, linkovi) dele između njih umesto da se sabiraju.
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-icon2.png',
@@ -32,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'FON Raspored',
     description: 'Unesi prezime i dobij lični raspored nastave',
-    url: 'https://fon-raspored-five.vercel.app',
+    url: SITE_URL,
     siteName: 'FON Raspored',
     images: [{ url: '/linkPic.png', width: 1536, height: 1024, alt: 'FON Raspored' }],
   },
