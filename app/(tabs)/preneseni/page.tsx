@@ -48,6 +48,11 @@ const IconForward = (p: IconProps) => (
 const IconPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
 )
+const IconSparkle = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+  </svg>
+)
 
 export default function PreneseniPage() {
   const router = useRouter()
@@ -640,12 +645,14 @@ export default function PreneseniPage() {
             <button
               onClick={getPreporuka}
               disabled={loading}
-              className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors
+              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-colors
                 ${loading
                   ? 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
                   : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
             >
-              {loading ? 'Traženje termina...' : '✨ Predloži najbolje termine (P + V)'}
+              
+              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}
+              <IconSparkle className="h-4 w-4" />
             </button>
           )}
 
