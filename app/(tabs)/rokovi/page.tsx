@@ -72,6 +72,16 @@ const IconExternal = (p: IconProps) => (
 const IconCalendar = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
 )
+// Izvoz u kalendar — isti okvir kao IconCalendar, ali sa strelicom nadole.
+// Namerno različita od IconCalendar (koja je prikaz „Kalendar"), jer su stajale
+// jedna do druge i izgledale kao isto dugme.
+const IconCalendarExport = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M21 11V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+    <path d="M17 14v6M14.5 17.5 17 20l2.5-2.5" />
+  </svg>
+)
 const IconList = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
 )
@@ -694,7 +704,7 @@ export default function RokoviPage() {
             text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70
             disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
         >
-          <IconCalendar className="h-4 w-4 opacity-80" />
+          <IconCalendarExport className="h-4 w-4 opacity-80" />
           Izvezi u kalendar
         </button>
         {hiddenEntries.length > 0 && (
@@ -1295,7 +1305,7 @@ export default function RokoviPage() {
                       aria-label="Izvezi u kalendar"
                       className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
                     >
-                      <IconCalendar className="h-[18px] w-[18px]" />
+                      <IconCalendarExport className="h-[18px] w-[18px]" />
                     </button>
                   </>
                 )}

@@ -64,6 +64,15 @@ const baseIcon = (props: IconProps) => ({
 const IconCalendar = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
 )
+// Izvoz u kalendar — kalendar sa strelicom nadole. Ista ikonica kao u Rokovima,
+// da ista radnja svuda izgleda isto.
+const IconCalendarExport = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M21 11V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+    <path d="M17 14v6M14.5 17.5 17 20l2.5-2.5" />
+  </svg>
+)
 const IconImage = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-4.5-4.5L5 22" /></svg>
 )
@@ -739,7 +748,7 @@ export default function RasporedPage() {
   const exportActions = [
     { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: openShareFlow },
     { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
-    { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendar, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
+    { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendarExport, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
   // Navigacija (desktop toolbar) — Rokovi ide kroz pageSwitch ispod, ne odavde
   const navActions = [
