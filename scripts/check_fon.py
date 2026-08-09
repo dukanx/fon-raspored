@@ -58,6 +58,9 @@ def main():
     total_entries = 0
     new_roks = []
     errors = []
+    # Za razlikovanje "nema ničeg novog" (uredno) od "sajt se promenio" (kvar).
+    stranica_ok = 0
+    pdf_linkova = 0
 
     for tip, url in PAGES.items():
         print(f'Checking {url}...')
@@ -68,11 +71,17 @@ def main():
             print(f'  GREŠKA pri dohvatanju stranice: {e}')
             continue
 
+        stranica_ok += 1
         soup = BeautifulSoup(resp.text, 'html.parser')
 
         for a in soup.find_all('a', href=True):
             href = a['href']
-            if not href.lower().endswith('.pdf') or href in known:
+            if not href.lower().endswith('.pdf'):
+                continue
+            # Broji se SVAKI PDF link, ne samo nov. Ako ovih odjednom nema, a
+            # ranije ih je bilo, promenio se sajt — v. proveru posle petlje.
+            pdf_linkova += 1
+            if href in known:
                 continue
             # Aplikacija prati aktuelni program (akreditacija 2022); ispiti po staroj
             # akreditaciji 2014 dolaze kao zaseban PDF i preskaču se. Kolokvijumi nemaju
@@ -128,6 +137,24 @@ def main():
             new_roks.append({'rok': rok_name or pdf_name, 'tip': tip})
             new_known.append(href)
             new_pdfs += 1
+
+    # --- Da otkaz ne bi prošao kao uredan prolaz -------------------------------
+    # Bez ovoga oba kvara ispod završe kao zelen GitHub Actions run sa porukom
+    # "Nema novih PDF-ova.", identičnom onoj koju daje i uredan prolaz. Nenulti
+    # izlaz obara workflow, a GitHub na pao zakazani workflow šalje mejl — to je
+    # ceo mehanizam uzbune.
+    kvar = None
+    if stranica_ok == 0:
+        kvar = 'nijedna stranica sa FON-a nije dohvaćena'
+    elif pdf_linkova == 0 and known:
+        kvar = (f'nula PDF linkova na {stranica_ok} dohvaćenoj/ih stranici/a, '
+                f'a ranije ih je bilo {len(known)} — verovatno je promenjen sajt')
+    if kvar:
+        print(f'\nGREŠKA: {kvar}.')
+        print('Ništa nije upisano. Proveri da li su se stranice FON-a promenile:')
+        for url in PAGES.values():
+            print(f'  {url}')
+        sys.exit(1)
 
     if new_known != known:
         KNOWN_FILE.write_text(json.dumps(new_known, indent=2, ensure_ascii=False), encoding='utf-8')

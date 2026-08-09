@@ -203,13 +203,19 @@ Gde se šta čuva:
   golden JSON-om, pa provera odgovara na pitanje „da li parser i dalje ume ono što je umeo".
   Čuvaju od toga da MI pokvarimo parser; ništa ne čuva od toga da FON promeni svoj sajt.
 
-  Plan:
-  1. nenulti izlaz kad nijedna stranica iz `PAGES` nije dohvaćena, i kad se na stranici
-     nađe nula PDF linkova (a `known_pdfs.json` nije prazan — dakle ranije ih je bilo)
-  2. „mrtvi čovek": ako duže od N dana nema uspešnog prolaza, javi (notifikacija ili
-     issue), jer izostanak run-a niko ne primeti — v. otkaz runner-a 2026-08-06/07
+  - [x] **Nenulti izlaz** kad nijedna stranica iz `PAGES` nije dohvaćena, i kad se nađe
+    nula PDF linkova a `known_pdfs.json` nije prazan (dakle ranije ih je bilo).
+    Workflow tad pada, a GitHub na pao zakazani workflow šalje mejl — to je uzbuna.
+    Prvi prolaz ikad (prazan `known_pdfs.json`) i uredan prolaz bez novih PDF-ova
+    namerno NE pucaju.
+  - [ ] **„Mrtvi čovek"** — javi ako duže od N dana nema uspešnog prolaza. Namerno
+    odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
+    **commit i Vercel redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.
+    Pravo mesto za ovo je spoljni pinger (`cron-job.org`, v. „Sledeći korak" gore) koji
+    okida workflow i sam se žali kad izostane odgovor — jer izostanak run-a se iznutra
+    ionako ne može detektovati (v. otkaz runner-a 2026-08-06/07).
 
-  Postojeća delimična zaštita: `check_fon.py:124` — PDF koji se isparsira u nula unosa
+  Postojeća delimična zaštita: `check_fon.py` — PDF koji se isparsira u nula unosa
   ne upisuje se kao poznat, pa se pokušava ponovo. Pokriva promenu formata PDF-a, ne i
   promenu sajta.
 
