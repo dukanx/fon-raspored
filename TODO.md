@@ -165,8 +165,8 @@ Gde se šta čuva:
   - **Pametni predlog (bez AI):** opcioni unos težine / dana pripreme po predmetu → deterministički algoritam predlaže koje u prvi a koje u drugi rok, maksimalno razmaknuto. Uvek mora postojati i opcija za potpuno samostalno poređanje.
   - **AI sloj (kasnije, opciono):** Groq objašnjava predlog / hvata neodređene želje. Matematika datuma OSTAJE u kodu (LLM je nepouzdan za to).
   - Aktivira se tek kad scraper povuče i junski i julski rok.
-- [ ] **Export ispita/kolokvijuma u iCal** — kao za raspored nastave
-- [ ] **Export ispita/kolokvijuma kao slika** — kao za raspored nastave
+- [x] **Export ispita/kolokvijuma u iCal** — `downloadICS()` u rokovi/page.tsx
+- [x] **Export ispita/kolokvijuma kao slika** — `downloadPNG()`, PNG sa pickerom (mesec/ceo rok)
 
 
 # TODO — FON Raspored
@@ -180,7 +180,7 @@ Gde se šta čuva:
 ---
 
 ## Poboljsanje rokova
-- [ ] Export ispitnog roka u ICS (Google Calendar, Outlook)
+- [x] Export ispitnog roka u ICS (Google Calendar, Outlook) — v. „Planirano" gore
 
 
 ---
