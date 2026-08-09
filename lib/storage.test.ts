@@ -45,11 +45,18 @@ describe('str accessor (session)', () => {
 
 describe('flag accessor (dismissedPrijava)', () => {
   it('true tek kad je postavljen', () => {
-    const feb = session.dismissedPrijava('Februarski')
+    const feb = app.dismissedPrijava('Februarski', 'pocinje')
     expect(feb.get()).toBe(false)
     feb.set()
     expect(feb.get()).toBe(true)
-    expect(session.dismissedPrijava('Junski').get()).toBe(false) // različit rok
+    expect(app.dismissedPrijava('Junski', 'pocinje').get()).toBe(false) // različit rok
+  })
+
+  it('odbacivanje jednog povoda ne guta ostale za isti rok', () => {
+    app.dismissedPrijava('Septembarski', 'uskoro').set()
+    expect(app.dismissedPrijava('Septembarski', 'uskoro').get()).toBe(true)
+    // Poslednji dan prijave je bitniji podsetnik i mora da se pojavi svejedno.
+    expect(app.dismissedPrijava('Septembarski', 'poslednji').get()).toBe(false)
   })
 })
 

@@ -85,7 +85,6 @@ export const session = {
   lastName: str('session', 'fon_lastName'),
   program: str('session', 'fon_program'),
   semester: str('session', 'fon_semester'),
-  dismissedPrijava: (rok: string) => flag('session', `fon_dismissed_prijava_${rok}`),
 }
 
 // Trajni „zapamćeni" podaci — vraćaju korisnika u raspored bez ponovnog onboardinga.
@@ -118,6 +117,15 @@ export const app = {
   defaultTab: json<{ date: string; dest: '/raspored' | '/rokovi' } | null>(
     'local', 'fon_default_tab', null
   ),
+  // Kad je koji rok prvi put viđen ({ 'Junski rok': '2026-06-01' }). Služi samo
+  // da se baner prijave prikaže na dan kad rok osvane, a ne zauvek posle toga.
+  rokFirstSeen: json<Record<string, string>>('local', 'fon_rok_first_seen', {}),
+  // Baner prijave odbačen za taj rok i taj povod ('novo' | 'uskoro' | 'pocinje'
+  // | 'poslednji'). U localStorage, ne u sesiji: odbaci jednom pa da se ne
+  // vraća pri svakom otvaranju aplikacije — a naredni povod je zaseban ključ,
+  // pa se bitniji podsetnik (poslednji dan) svejedno pojavi.
+  dismissedPrijava: (rok: string, povod: string) =>
+    flag('local', `fon_dismissed_prijava_${rok}_${povod}`),
 }
 
 // Stanje vezano za konkretnu grupu (izbor predmeta, izmene, skriveni termini…).

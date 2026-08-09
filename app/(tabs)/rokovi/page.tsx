@@ -8,6 +8,7 @@ import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
 import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
+import { pickPrijavaPovod, SVI_POVODI, POVOD_NASLOV, type PrijavaPovod } from '@/lib/prijavaBanner'
 import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
@@ -192,7 +193,12 @@ export default function RokoviPage() {
     return { year: now.getFullYear(), month: now.getMonth() }
   })
   const [tooltip, setTooltip] = useState<{ date: string } | null>(null)
+  // Ključevi su `rok|povod`.
   const [dismissedBanners, setDismissedBanners] = useState<Set<string>>(new Set())
+  // Snimak "prvi put viđeno" u trenutku montiranja. Mora da bude zamrznut: efekat
+  // ispod odmah upiše zatečene rokove, pa bi svako naredno čitanje reklo da nema
+  // ničeg novog i baner "novo" se ne bi prikazao nijednom.
+  const [seenSnapshot] = useState<Record<string, string>>(() => app.rokFirstSeen.get())
   const [hiddenEntries, setHiddenEntries] = useState<RokEntry[]>([])
   const [showHidden, setShowHidden] = useState(false)
   const [downloadToast, setDownloadToast] = useState(false)
@@ -255,11 +261,14 @@ export default function RokoviPage() {
         } else {
           setTab(nearestIsp <= nearestKol ? 'ispiti' : 'kolokvijumi')
         }
-        const dismissed = new Set(
-          data
-            .filter(r => session.dismissedPrijava(r.rok).get())
-            .map(r => r.rok)
-        )
+        // Ključ je rok + povod, pa odbacivanje jednog podsetnika ne guta i one
+        // kasnije (npr. "poslednji dan prijave").
+        const dismissed = new Set<string>()
+        for (const r of data) {
+          for (const povod of SVI_POVODI) {
+            if (app.dismissedPrijava(r.rok, povod).get()) dismissed.add(`${r.rok}|${povod}`)
+          }
+        }
         setDismissedBanners(dismissed)
       })
       // Prazan niz sam po sebi renderuje "Nema podataka za prikaz", što se ne
@@ -639,23 +648,45 @@ export default function RokoviPage() {
     return [...m.values()].sort((a, b) => a.year - b.year || a.month - b.month)
   }, [allFilteredEntries])
 
+  // Baner prijave se ranije prikazivao sve dok prijava ne prođe, pa je iskakao
+  // pri svakom otvaranju aplikacije. Sad ima četiri povoda i van njih ćuti.
   const prijavaNotice = useMemo(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
     const tipFilter = tab === 'kolokvijumi' ? 'kolokvijum' : 'ispit'
-    return allRokovi.find(r => {
-      if (r.tip !== tipFilter || !r.prijava_datumi?.length) return false
-      if (dismissedBanners.has(r.rok)) return false
-      const last = r.prijava_datumi.at(-1)!
-      const [d, m, y] = last.replace(/\.$/, '').split('.')
-      const deadline = new Date(+y, +m - 1, +d)
-      return deadline >= today
-    }) ?? null
-  }, [allRokovi, tab, dismissedBanners])
+    // Prazan snimak = korisnik koji je aplikaciju koristio i pre ove logike.
+    // Njemu svi zatečeni rokovi nisu "novi", inače bi mu baner iskočio za sve odjednom.
+    const prviPut = Object.keys(seenSnapshot).length === 0
 
-  function dismissBanner(rok: string) {
-    setDismissedBanners(prev => new Set([...prev, rok]))
-    session.dismissedPrijava(rok).set()
+    for (const r of allRokovi) {
+      if (r.tip !== tipFilter) continue
+      const povod = pickPrijavaPovod({
+        prijavaDatumi: r.prijava_datumi,
+        todayStr,
+        jeNov: !(r.rok in seenSnapshot) && !prviPut,
+      })
+      if (!povod) continue
+      if (dismissedBanners.has(`${r.rok}|${povod}`)) continue
+
+      return { rok: r, povod }
+    }
+    return null
+  }, [allRokovi, tab, todayStr, seenSnapshot, dismissedBanners])
+
+  // Upis "prvi put viđeno" ide u efekat, ne u memo — memo sme samo da čita.
+  useEffect(() => {
+    if (!allRokovi.length) return
+    const seen = app.rokFirstSeen.get()
+    let promenjeno = false
+    for (const r of allRokovi) {
+      if (!r.prijava_datumi?.length || r.rok in seen) continue
+      seen[r.rok] = todayStr
+      promenjeno = true
+    }
+    if (promenjeno) app.rokFirstSeen.set(seen)
+  }, [allRokovi, todayStr])
+
+  function dismissBanner(rok: string, povod: PrijavaPovod) {
+    setDismissedBanners(prev => new Set([...prev, `${rok}|${povod}`]))
+    app.dismissedPrijava(rok, povod).set()
   }
 
   const byDate = useMemo(() => {
@@ -1350,15 +1381,15 @@ export default function RokoviPage() {
             </svg>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                {tab === 'kolokvijumi' ? 'Prijava predispitnih obaveza' : 'Prijava ispita'}
+                {POVOD_NASLOV[prijavaNotice.povod]}
               </p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                {prijavaNotice.rok} · {prijavaNotice.prijava_datumi!.join(' - ')}
-                {prijavaNotice.reklamacija_datum && ` · Reklamacije: ${prijavaNotice.reklamacija_datum}`}
+                {tab === 'kolokvijumi' ? 'Predispitne obaveze' : 'Ispiti'} · {prijavaNotice.rok.rok} · {prijavaNotice.rok.prijava_datumi!.join(' - ')}
+                {prijavaNotice.rok.reklamacija_datum && ` · Reklamacije: ${prijavaNotice.rok.reklamacija_datum}`}
               </p>
             </div>
             <button
-              onClick={() => dismissBanner(prijavaNotice.rok)}
+              onClick={() => dismissBanner(prijavaNotice.rok.rok, prijavaNotice.povod)}
               className="text-amber-400 dark:text-amber-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors shrink-0 text-sm leading-none mt-0.5"
               aria-label="Zatvori"
             >
