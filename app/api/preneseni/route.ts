@@ -20,10 +20,15 @@ PRAVILA:
 3. Nakon rangiranja slobodnih termina tako da nema pauza izmedju, rangiraj ih po vremenu: 10:15-12:00 je bolje od 08:15-10:00, a 12:15-14:00 je bolje od 14:15-16:00. i tako dalje, ali ovo je sekundarno u odnosu na izbegavanje pauza.
 4. Ako nema slobodnih termina, odaberi termin sa oznakom (PREKLAPANJE), ali pazi da žrtvuješ predavanja umesto vežbi ako je moguće, ili biraj logično.
 
+5. Razlog piši bezlično, o terminima, ne o sebi. Zabranjeno je prvo lice i
+obraćanje ("izabrao sam", "preporučujem", "predlažem ti", "odlučio sam").
+Umesto "Izabrao sam ovaj termin jer nema pauze" piši "Ovaj termin nema pauzu do
+sledećeg časa". Bez uvoda i bez pozdrava.
+
 Odgovori TAČNO u ovom formatu, bez ikakvih dodatnih reči ili objašnjenja u prvim dvema linijama:
 Predavanje: [kopiraj termin tačno iz liste iznad]
 Vežbe: [kopiraj termin tačno iz liste iznad]
-Razlog: [jedna rečenica objašnjenja zašto je to najbolji izbor i, ako postoji preklapanje, jasno navedi koji predmet se menja]`
+Razlog: [jedna bezlična rečenica zašto je to najbolji izbor i, ako postoji preklapanje, jasno navedi koji predmet se menja]`
 
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',

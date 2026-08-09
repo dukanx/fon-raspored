@@ -645,14 +645,14 @@ export default function PreneseniPage() {
                   ? 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
                   : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
             >
-              {loading ? 'Analiziram...' : '✨ Predloži najbolje termine (P + V)'}
+              {loading ? 'Traženje termina...' : '✨ Predloži najbolje termine (P + V)'}
             </button>
           )}
 
           {/* Preporuka */}
           {preporuka && (
             <div className={`rounded-xl p-4 ${GLASS}`}>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">AI preporuka</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Predlog termina</p>
               <div className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed space-y-2">
                 {preporuka.split('\n').map((line, i) => (
                   <p key={i} className={line.startsWith('Razlog:') ? 'text-gray-500 dark:text-gray-400 text-xs pt-1 border-t border-gray-100 dark:border-gray-700' : 'font-medium'}>

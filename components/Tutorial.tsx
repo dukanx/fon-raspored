@@ -60,8 +60,8 @@ const SLIDES: Slide[] = [
   },
   {
     key: 'izmena',
-    title: 'Dodatni termini? AI bira termin',
-    description: 'U tabu „Izmena" dodaješ predmete iz prethodnih godina ili menjaš termin postojećeg. Jedan klik i AI predlaže predavanja i vežbe bez preklapanja i bez nepotrebnih pauza.',
+    title: 'Dodatni termini',
+    description: 'U tabu „Izmena" dodaješ predmete iz prethodnih godina ili menjaš termin postojećeg. Jedan klik i dobijaš predlog predavanja i vežbi bez preklapanja i bez nepotrebnih pauza.',
     images: ['/tutorial/izmena-1.png', '/tutorial/izmena-2.png'],
     Icon: IconSparkle,
   },

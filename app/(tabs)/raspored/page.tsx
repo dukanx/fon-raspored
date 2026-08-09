@@ -375,7 +375,7 @@ export default function RasporedPage() {
       desc: 'Promeni predmete, dodaj termin ili vrati sakrivene.',
       features: [
         { icon: IconList, title: 'Promeni predmete', desc: 'Uključi/isključi izborne, u bilo kom trenutku.' },
-        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni - uz AI predlog.' },
+        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni, uz predlog bez preklapanja.' },
         { icon: IconHidden, title: 'Vrati skrivene', desc: 'Termine koje si ranije sakrio/la.' },
       ],
     },
