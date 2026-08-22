@@ -4,21 +4,29 @@
 // aplikacije i postao šum. Sad se javlja samo na četiri povoda, a van njih ćuti:
 //
 //   novo      — rok je tek osvanuo (prvi put viđen kod korisnika)
-//   uskoro    — PRIJAVA_NAJAVA_DANA pre početka prijave
 //   pocinje   — na dan kad prijava počinje
+//   uskoro    — PRIJAVA_NAJAVA_DANA pre KRAJA prijave (dan pred istek — "sutra")
 //   poslednji — na poslednji dan prijave
+//
+// Funkcija vraća TAČNO JEDAN povod (ili nijedan), nikad više njih odjednom —
+// kad se dva poklope istog dana (npr. dvodnevna prijava, gde je "dan pred
+// istek" isti datum kao početak), pobeđuje raniji u nizu SVI_POVODI.
 //
 // Posle isteka prijave baner nestaje, kao i pre.
 
 export type PrijavaPovod = 'novo' | 'uskoro' | 'pocinje' | 'poslednji'
 
 export const SVI_POVODI: PrijavaPovod[] = ['novo', 'uskoro', 'pocinje', 'poslednji']
-export const PRIJAVA_NAJAVA_DANA = 2
+// Dan pred istek prijave ("sutra ističe"). Bio 2 — vraćeno na 1 na izričit
+// zahtev, umesto ranijeg "2 dana pre kraja".
+export const PRIJAVA_NAJAVA_DANA = 1
 
 export const POVOD_NASLOV: Record<PrijavaPovod, string> = {
   novo: 'Objavljen je nov rok',
-  uskoro: `Prijava počinje za ${PRIJAVA_NAJAVA_DANA} dana`,
   pocinje: 'Prijava počinje danas',
+  // Fiksan tekst, ne templated "za N dana" — sa najavaDana=1 je uvek "sutra",
+  // a "za 1 dan" bi bilo gramatički pogrešno (treba "1 dan", ne "1 dana").
+  uskoro: 'Sutra je poslednji dan prijave',
   poslednji: 'Danas je poslednji dan prijave',
 }
 
@@ -57,11 +65,13 @@ export function pickPrijavaPovod(opts: {
   // Prijava prošla — baner nestaje.
   if (todayStr > kraj) return null
 
-  // "Novo" ima prednost: na dan kad rok osvane to je najvažnija vest, čak i ako
-  // se tog dana slučajno poklopi sa nekim od datuma prijave.
+  // Redosled prioriteta kad se dva povoda poklope istog dana (npr. dvodnevna
+  // prijava, gde je "dan pred istek" isti datum kao "prijava počinje"):
+  // "novo" > "pocinje" > "uskoro" > "poslednji" — sigurnija/preciznija vest
+  // pobeđuje nejasniju najavu.
   if (jeNov) return 'novo'
-  if (todayStr === isoMinusDana(pocetak, najavaDana)) return 'uskoro'
   if (todayStr === pocetak) return 'pocinje'
+  if (todayStr === isoMinusDana(kraj, najavaDana)) return 'uskoro'
   if (todayStr === kraj) return 'poslednji'
   return null
 }
