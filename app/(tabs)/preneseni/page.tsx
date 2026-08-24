@@ -651,7 +651,7 @@ export default function PreneseniPage() {
                   : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
             >
               
-              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}
+              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}    
               <IconSparkle className="h-4 w-4" />
             </button>
           )}
