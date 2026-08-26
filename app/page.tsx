@@ -29,14 +29,18 @@ const HEADING_STYLE = 'blur' as HeadingStyle
 function BlurHeading() {
   return (
     <div className="mb-8">
-      <BlurText
-        text="FON Raspored"
-        animateBy="letters"
-        direction="top"
-        delay={60}
-        stepDuration={0.3}
-        className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
-      />
+      {/* aria-hidden: čitačima bi slovo-po-slovo spanovi bili salata, a pravi
+          naslov je sr-only <h1> u OnboardingPage. */}
+      <div aria-hidden="true">
+        <BlurText
+          text="FON Raspored"
+          animateBy="letters"
+          direction="top"
+          delay={60}
+          stepDuration={0.3}
+          className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+        />
+      </div>
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
         Tvoj raspored, ispiti i kolokvijumi na jednom mestu
       </p>
@@ -49,9 +53,11 @@ function TypedHeading() {
     // Naslov i reč koja se menja stoje u istom redu ("FON Raspored predavanja"),
     // poravnati po osnovnoj liniji. Flex je tu namerno — TextType sebi hardkoduje
     // `inline-block`, pa se na prirodan inline tok ne može računati.
-    <div className="mb-8 flex flex-wrap items-baseline gap-x-2">
+    // aria-hidden + as="p": pravi <h1> je sr-only u OnboardingPage, a kucanje
+    // je dekoracija (čitač bi ga slušao slovo po slovo).
+    <div aria-hidden="true" className="mb-8 flex flex-wrap items-baseline gap-x-2">
       <TextType
-        as="h1"
+        as="p"
         text="FON Raspored"
         typingSpeed={70}
         initialDelay={150}
@@ -296,6 +302,15 @@ export default function OnboardingPage() {
       <div className="flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
+        {/* Pravi <h1> za Google i čitače ekrana. Vizuelni naslov ispod je
+            animacija koja tekst seče na slova (zasebni spanovi), pa fraza
+            "FON Raspored" u HTML-u ne postoji kao celina — a stranica bez
+            <h1> nema šta da ponudi pretrazi. Zato semantika živi ovde
+            (sr-only), a animacije su aria-hidden dekoracija. */}
+        <h1 className="sr-only">
+          FON Raspored - lični raspored nastave, ispitni rokovi i kolokvijumi
+          za studente Fakulteta organizacionih nauka
+        </h1>
         {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
 
         {/* Godina */}
@@ -462,6 +477,29 @@ export default function OnboardingPage() {
         </div>
 
         <InstallPrompt />
+
+        {/* Opis aplikacije. Postoji radi pretrage: stranica je inače skoro bez
+            teksta (naslov je izrezan na slova radi animacije, ostalo su dugmad),
+            pa Google nema šta da poveže sa upitima tipa "raspored časova FON".
+            Ruta je prerenderovana u statički HTML, dakle ovo se vidi i bez JS-a. */}
+        <section className="px-2 pb-2 text-xs leading-relaxed text-gray-400 dark:text-gray-600">
+          <h2 className="mb-1 font-medium text-gray-500 dark:text-gray-500">
+            Raspored časova i ispita za studente FON-a
+          </h2>
+          <p>
+            FON Raspored pravi lični raspored nastave za studente osnovnih studija
+            Fakulteta organizacionih nauka u Beogradu. Uneseš prezime i godinu,
+            aplikacija nađe tvoju grupu i prikaže predavanja i vežbe za tekući
+            semestar, zajedno sa ispitnim rokovima i kolokvijumima.
+          </p>
+          <p className="mt-1.5">
+            Fakultet organizacionih nauka raspored časova objavljuje u PDF-u, a
+            ovde je pretvoren u pregled po danima, sa terminima samo za tvoje
+            predmete. Raspored možeš da izvezeš u kalendar ili kao sliku, podeliš
+            kolegama linkom, i uključiš obaveštenja kad izađe nov ispitni rok ili
+            kad počne prijava ispita.
+          </p>
+        </section>
       </div>
 
       <footer className="absolute inset-x-0 bottom-0 py-4 text-center text-xs text-gray-400 dark:text-gray-600">
