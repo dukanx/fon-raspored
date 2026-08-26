@@ -19,7 +19,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "FON Raspored",
+  // Title je najjači pojedinačni signal na strani, pa uz brend nosi i dva
+  // upita koja studenti stvarno kucaju ("raspored nastave", "ispitni rokovi").
+  // "nastava", a ne "časovi" — ovo je fakultet, i tako piše svuda u aplikaciji.
+  // Ime na home screen-u NE zavisi od ovoga — njega diktiraju `appleWebApp.title`
+  // (iOS) i `name`/`short_name` iz app/manifest.ts (Android), koji ostaju kratki.
+  title: "FON Raspored - raspored nastave i ispitni rokovi",
   description:
     "Lični raspored nastave, ispitni rokovi i kolokvijumi za studente Fakulteta organizacionih nauka (FON).",
   // Izričito govori pretraživaču koja je prava adresa stranice. Bez ovoga isti
