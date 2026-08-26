@@ -305,8 +305,12 @@ export default function OnboardingPage() {
     !loading
 
   return (
-    <main data-onboarding className="relative min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="flex w-full max-w-md flex-col gap-4">
+    // Kolona sa `my-auto` na sadržaju umesto `justify-center` + apsolutni footer:
+    // footer je ranije bio van toka, pa je na niskim ekranima (320x568) legao
+    // preko "Instaliraj" kartice. Ovako sadržaj i dalje stoji centrirano dok ima
+    // mesta, a kad ga nema, footer se prirodno spusti ispod njega.
+    <main data-onboarding className="relative flex min-h-screen flex-col items-center px-4 py-10">
+      <div className="my-auto flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         {/* <h1> nosi sama varijanta naslova — vidljiv u BlurHeading-u, sr-only
@@ -478,41 +482,31 @@ export default function OnboardingPage() {
         </div>
 
         <InstallPrompt />
-
-        {/* Opis aplikacije. Postoji radi pretrage: stranica je inače skoro bez
-            teksta (naslov je izrezan na slova radi animacije, ostalo su dugmad),
-            pa Google nema šta da poveže sa upitima tipa "raspored časova FON".
-            Ruta je prerenderovana u statički HTML, dakle ovo se vidi i bez JS-a. */}
-        <section className="px-2 pb-2 text-xs leading-relaxed text-gray-400 dark:text-gray-600">
-          <h2 className="mb-1 font-medium text-gray-500 dark:text-gray-500">
-            Raspored časova i ispita za studente FON-a
-          </h2>
-          <p>
-            FON Raspored pravi lični raspored nastave za studente osnovnih studija
-            Fakulteta organizacionih nauka u Beogradu. Uneseš prezime i godinu,
-            aplikacija nađe tvoju grupu i prikaže predavanja i vežbe za tekući
-            semestar, zajedno sa ispitnim rokovima i kolokvijumima.
-          </p>
-          <p className="mt-1.5">
-            Fakultet organizacionih nauka raspored časova objavljuje u PDF-u, a
-            ovde je pretvoren u pregled po danima, sa terminima samo za tvoje
-            predmete. Raspored možeš da izvezeš u kalendar ili kao sliku, podeliš
-            kolegama linkom, i uključiš obaveštenja kad izađe nov ispitni rok ili
-            kad počne prijava ispita.
-          </p>
-        </section>
       </div>
 
-      <footer className="absolute inset-x-0 bottom-0 py-4 text-center text-xs text-gray-400 dark:text-gray-600">
-        Made by{' '}
-        <a
-          href="https://github.com/dukanx"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[#024c7d] dark:text-[#60c3ad] hover:underline font-medium"
-        >
-          dukanx
-        </a>
+      <footer className="w-full space-y-1.5 pt-6 text-center text-xs text-gray-400 dark:text-gray-600">
+        {/* Bezličan opis, jedina prava rečenica na stranici. Postoji radi pretrage:
+            osim <h1> i ove rečenice sve ostalo su dugmad i polja, pa Google
+            inače nema šta da poveže sa upitom tipa "raspored nastave FON".
+            Ruta je prerenderovana u statički HTML, dakle vidi se i bez JS-a.
+            Formulacija prati ostatak aplikacije: "nastava", ne "časovi" —
+            ovo je fakultet, ne škola. */}
+        <p className="mx-auto max-w-sm leading-relaxed text-balance">
+          <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
+          {' '}- raspored nastave, ispitni rokovi i kolokvijumi za studente
+          Fakulteta organizacionih nauka u Beogradu.
+        </p>
+        <p>
+          Made by{' '}
+          <a
+            href="https://github.com/dukanx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#024c7d] dark:text-[#60c3ad] hover:underline font-medium"
+          >
+            dukanx
+          </a>
+        </p>
       </footer>
     </main>
   )
