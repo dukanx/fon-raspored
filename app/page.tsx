@@ -29,18 +29,20 @@ const HEADING_STYLE = 'blur' as HeadingStyle
 function BlurHeading() {
   return (
     <div className="mb-8">
-      {/* aria-hidden: čitačima bi slovo-po-slovo spanovi bili salata, a pravi
-          naslov je sr-only <h1> u OnboardingPage. */}
-      <div aria-hidden="true">
-        <BlurText
-          text="FON Raspored"
-          animateBy="letters"
-          direction="top"
-          delay={60}
-          stepDuration={0.3}
-          className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
-        />
-      </div>
+      {/* Ovo je pravi <h1> strane, ne dekoracija. Animacija je i dalje slovo po
+          slovo, ali su spanovi u normalnom inline toku (v. BlurText), pa i
+          čitač i pretraživač vide frazu "FON Raspored", a `ariaLabel` skida
+          rizik da je neki čitač ipak izgovori slovkajući. */}
+      <BlurText
+        as="h1"
+        ariaLabel="FON Raspored"
+        text="FON Raspored"
+        animateBy="letters"
+        direction="top"
+        delay={60}
+        stepDuration={0.3}
+        className="text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+      />
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
         Tvoj raspored, ispiti i kolokvijumi na jednom mestu
       </p>
@@ -53,38 +55,43 @@ function TypedHeading() {
     // Naslov i reč koja se menja stoje u istom redu ("FON Raspored predavanja"),
     // poravnati po osnovnoj liniji. Flex je tu namerno — TextType sebi hardkoduje
     // `inline-block`, pa se na prirodan inline tok ne može računati.
-    // aria-hidden + as="p": pravi <h1> je sr-only u OnboardingPage, a kucanje
-    // je dekoracija (čitač bi ga slušao slovo po slovo).
-    <div aria-hidden="true" className="mb-8 flex flex-wrap items-baseline gap-x-2">
-      <TextType
-        as="p"
-        text="FON Raspored"
-        typingSpeed={70}
-        initialDelay={150}
-        loop={false}
-        showCursor={false}
-        className="shrink-0 text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
-      />
-      {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
-          (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva kucanja
-          preklapaju i deluje nervozno. */}
-      <TextType
-        as="span"
-        text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
-        typingSpeed={55}
-        deletingSpeed={30}
-        pauseDuration={1800}
-        initialDelay={1100}
-        loop
-        cursorCharacter="|"
-        /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
-           Bez nje odluka o prelomu reda zavisi od reči koja se trenutno kuca, pa
-           na uskim ekranima (320px) sadržaj ispod poskakuje na svakom ciklusu.
-           Ovako je red ili uvek jedan, ili uvek dva. */
-        className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
-        cursorClassName="text-gray-400 dark:text-gray-500"
-      />
-    </div>
+    <>
+      {/* Za razliku od BlurHeading-a, ovde <h1> mora da bude sr-only: tekst se
+          kuca, pa u HTML-u pri prvom iscrtavanju ne postoji cela fraza, a flex
+          bi ga svejedno razlomio na stavke. Kucanje ostaje aria-hidden
+          dekoracija. */}
+      <h1 className="sr-only">FON Raspored</h1>
+      <div aria-hidden="true" className="mb-8 flex flex-wrap items-baseline gap-x-2">
+        <TextType
+          as="p"
+          text="FON Raspored"
+          typingSpeed={70}
+          initialDelay={150}
+          loop={false}
+          showCursor={false}
+          className="shrink-0 text-2xl font-semibold text-[#024c7d] dark:text-[#60c3ad]"
+        />
+        {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
+            (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva kucanja
+            preklapaju i deluje nervozno. */}
+        <TextType
+          as="span"
+          text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
+          typingSpeed={55}
+          deletingSpeed={30}
+          pauseDuration={1800}
+          initialDelay={1100}
+          loop
+          cursorCharacter="|"
+          /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
+             Bez nje odluka o prelomu reda zavisi od reči koja se trenutno kuca, pa
+             na uskim ekranima (320px) sadržaj ispod poskakuje na svakom ciklusu.
+             Ovako je red ili uvek jedan, ili uvek dva. */
+          className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
+          cursorClassName="text-gray-400 dark:text-gray-500"
+        />
+      </div>
+    </>
   )
 }
 
@@ -302,15 +309,9 @@ export default function OnboardingPage() {
       <div className="flex w-full max-w-md flex-col gap-4">
       <div className={`rounded-[1.75rem] p-8 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
-        {/* Pravi <h1> za Google i čitače ekrana. Vizuelni naslov ispod je
-            animacija koja tekst seče na slova (zasebni spanovi), pa fraza
-            "FON Raspored" u HTML-u ne postoji kao celina — a stranica bez
-            <h1> nema šta da ponudi pretrazi. Zato semantika živi ovde
-            (sr-only), a animacije su aria-hidden dekoracija. */}
-        <h1 className="sr-only">
-          FON Raspored - lični raspored nastave, ispitni rokovi i kolokvijumi
-          za studente Fakulteta organizacionih nauka
-        </h1>
+        {/* <h1> nosi sama varijanta naslova — vidljiv u BlurHeading-u, sr-only
+            u TypedHeading-u (v. komentare tamo). Ovde ga namerno nema da strana
+            ne bi imala dva h1. */}
         {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
 
         {/* Godina */}

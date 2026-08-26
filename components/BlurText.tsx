@@ -16,6 +16,15 @@ type BlurTextProps = {
   easing?: Easing | Easing[]
   onAnimationComplete?: () => void
   stepDuration?: number
+  /** Tag korenskog elementa. `h1` kad je ovo pravi naslov strane, ne dekoracija. */
+  as?: 'p' | 'h1' | 'h2' | 'h3' | 'div' | 'span'
+  /**
+   * Pristupačno ime celog bloka. Sadržaj su spanovi slovo-po-slovo — neki
+   * čitači ekrana ih izgovaraju sa pauzama ili slovkaju. `aria-label` ih
+   * preskače i daje jednu frazu, dok vidljiv tekst (i ono što pretraživač
+   * čita) ostaje netaknut.
+   */
+  ariaLabel?: string
 }
 
 const buildKeyframes = (
@@ -43,10 +52,13 @@ const BlurText: React.FC<BlurTextProps> = ({
   easing = (t: number) => t,
   onAnimationComplete,
   stepDuration = 0.35,
+  as = 'p',
+  ariaLabel,
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('')
   const [inView, setInView] = useState(false)
-  const ref = useRef<HTMLParagraphElement>(null)
+  const ref = useRef<HTMLElement>(null)
+  const Tag = as as React.ElementType
 
   useEffect(() => {
     if (!ref.current) return
@@ -88,8 +100,13 @@ const BlurText: React.FC<BlurTextProps> = ({
     stepCount === 1 ? 0 : i / (stepCount - 1)
   )
 
+  // Bez `flex`: spanovi su već `inline-block`, pa se u normalnom inline toku
+  // ponašaju isto (i dalje se prelamaju), ali se tekst čita kao jedna fraza.
+  // Kao flex stavke svako slovo je zasebna stavka, pa i `innerText` i ono što
+  // pretraživač indeksira postaje "F O N R a s p o r e d" — brend nam je
+  // bukvalno bio razložen na slova.
   return (
-    <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
+    <Tag ref={ref} aria-label={ariaLabel} className={`blur-text ${className}`}>
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots)
         const spanTransition: Transition = {
@@ -114,7 +131,7 @@ const BlurText: React.FC<BlurTextProps> = ({
           </motion.span>
         )
       })}
-    </p>
+    </Tag>
   )
 }
 
