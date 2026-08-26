@@ -57,6 +57,74 @@ export const metadata: Metadata = {
   },
 }
 
+// Strukturisani podaci (schema.org). Vidljivom sadržaju ne dodaje ništa —
+// mašinama kaže ono što se iz dve rečenice teksta ne da zaključiti: da je ovo
+// besplatna web aplikacija, na srpskom, za studente, i o kom fakultetu je reč.
+//
+// `about` (a ne `publisher`/`provider`) je namerno: aplikacija je O FON-u,
+// nije FON-ova. Suprotno bi bilo lažno predstavljanje institucije.
+//
+// `WebSite` je tu zbog jedne konkretne stvari: Google iz njega čita "site name"
+// pa u rezultatima pretrage umesto golog domena piše FON Raspored.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: 'FON Raspored',
+      alternateName: 'fonraspored.rs',
+      inLanguage: 'sr-RS',
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${SITE_URL}/#app`,
+      name: 'FON Raspored',
+      url: SITE_URL,
+      applicationCategory: 'EducationalApplication',
+      // PWA — radi u svakom modernom browseru, instalira se na telefon.
+      operatingSystem: 'Web, Android, iOS',
+      inLanguage: 'sr-RS',
+      description:
+        'Lični raspored nastave, ispitni rokovi i kolokvijumi za studente ' +
+        'Fakulteta organizacionih nauka u Beogradu. Student izabere godinu, ' +
+        'smer i predmete, pa dobije samo svoje termine.',
+      isAccessibleForFree: true,
+      // Google traži `offers` da bi besplatnu aplikaciju i prikazao kao besplatnu.
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'RSD' },
+      featureList: [
+        'Raspored nastave po godini, smeru i grupi',
+        'Ispitni rokovi i kolokvijumi',
+        'Izvoz u kalendar (ICS)',
+        'Podsetnici za prijavu ispita',
+        'Deljenje rasporeda linkom',
+      ],
+      audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
+      about: {
+        '@type': 'CollegeOrUniversity',
+        name: 'Fakultet organizacionih nauka',
+        alternateName: 'FON',
+        url: 'https://fon.bg.ac.rs',
+        parentOrganization: {
+          '@type': 'CollegeOrUniversity',
+          name: 'Univerzitet u Beogradu',
+        },
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Beograd',
+          addressCountry: 'RS',
+        },
+      },
+      author: {
+        '@type': 'Person',
+        name: 'dukanx',
+        url: 'https://github.com/dukanx',
+      },
+    },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -90,6 +158,15 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `try{if(location.pathname==='/'&&new URLSearchParams(location.search).get('edit')!=='1'&&(sessionStorage.getItem('fon_group')||(localStorage.getItem('fon_saved_group')&&localStorage.getItem('fon_saved_year'))))document.documentElement.classList.add('fon-booting')}catch(e){}`,
+          }}
+        />
+        {/* Zamena `<` unicode escape-om: JSON.stringify ne beži HTML, pa bi
+            zatvarajući script tag u nekom stringu prekinuo ovaj blok.
+            Preporuka iz next/dist/docs/01-app/02-guides/json-ld.md. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
           }}
         />
         <Providers>
