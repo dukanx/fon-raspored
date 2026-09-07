@@ -3885,7 +3885,7 @@
           "61",
           "62"
         ],
-        "note": ""
+        "note": "integralni zad"
       },
       {
         "subject": "Cloud infrastruktura i servisi",
@@ -3919,7 +3919,7 @@
           "61",
           "62"
         ],
-        "note": ""
+        "note": "integralni zad"
       },
       {
         "subject": "Cloud infrastruktura i servisi",
@@ -4319,7 +4319,8 @@
         "start": "14:45",
         "end": "16:45",
         "rooms": [
-          "06"
+          "06",
+          "2"
         ],
         "note": ""
       },
@@ -4352,8 +4353,7 @@
         "start": "10:15",
         "end": "13:55",
         "rooms": [
-          "Amfiteatar 1",
-          "2"
+          "Amfiteatar 1"
         ],
         "note": ""
       },
@@ -4748,7 +4748,8 @@
         "end": "10:00",
         "rooms": [
           "Amfiteatar 4",
-          "Amfiteatar 5"
+          "Amfiteatar 5",
+          "3"
         ],
         "note": ""
       },
@@ -4790,8 +4791,7 @@
           "50",
           "60",
           "61",
-          "62",
-          "3"
+          "62"
         ],
         "note": ""
       },
@@ -5174,7 +5174,8 @@
         "rooms": [
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "Čitaonica"
+          "Čitaonica",
+          "4"
         ],
         "note": ""
       },
@@ -5212,8 +5213,7 @@
         "end": "16:30",
         "rooms": [
           "06",
-          "07",
-          "4"
+          "07"
         ],
         "note": ""
       },
@@ -5394,7 +5394,7 @@
           "61",
           "62"
         ],
-        "note": "3. godina MIO"
+        "note": ""
       },
       {
         "subject": "Osnove finansijskog menadžmenta",
@@ -5598,7 +5598,8 @@
         "start": "13:30",
         "end": "15:30",
         "rooms": [
-          "07"
+          "07",
+          "5"
         ],
         "note": ""
       },
@@ -5631,8 +5632,7 @@
         "start": "12:15",
         "end": "14:15",
         "rooms": [
-          "20",
-          "5"
+          "20"
         ],
         "note": ""
       },
@@ -6039,7 +6039,8 @@
         "start": "10:30",
         "end": "14:30",
         "rooms": [
-          "Amfiteatar 2"
+          "Amfiteatar 2",
+          "6"
         ],
         "note": ""
       },
@@ -6061,8 +6062,7 @@
         "start": "10:00",
         "end": "12:00",
         "rooms": [
-          "Amfiteatar 1",
-          "6"
+          "Amfiteatar 1"
         ],
         "note": ""
       },
@@ -6389,7 +6389,8 @@
         "end": "13:00",
         "rooms": [
           "60",
-          "61"
+          "61",
+          "7"
         ],
         "note": ""
       },
@@ -6423,8 +6424,7 @@
         "start": "14:30",
         "end": "16:30",
         "rooms": [
-          "18",
-          "7"
+          "18"
         ],
         "note": ""
       },
@@ -6831,7 +6831,8 @@
         "end": "16:30",
         "rooms": [
           "Amfiteatar 2",
-          "Amfiteatar 3"
+          "Amfiteatar 3",
+          "8"
         ],
         "note": ""
       },
@@ -6864,8 +6865,7 @@
         "start": "10:15",
         "end": "11:15",
         "rooms": [
-          "30",
-          "8"
+          "30"
         ],
         "note": ""
       },
@@ -6955,7 +6955,7 @@
         "rooms": [
           "Amfiteatar 4"
         ],
-        "note": "drugi deo"
+        "note": ""
       },
       {
         "subject": "Utvrđivanje normativa rada i učinka",
@@ -7018,7 +7018,7 @@
           "Amfiteatar 5",
           "Čitaonica"
         ],
-        "note": ""
+        "note": "U. 1.smena"
       },
       {
         "subject": "Uvod u informacione sisteme",
@@ -7040,7 +7040,7 @@
           "Amfiteatar 5",
           "Čitaonica"
         ],
-        "note": ""
+        "note": "Pis. 1.smena"
       },
       {
         "subject": "Uvod u menadžment elektronskog poslovanja",
