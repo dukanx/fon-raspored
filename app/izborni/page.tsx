@@ -7,7 +7,10 @@ import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
+import { AnimatePresence, motion } from 'motion/react'
 import OfflineNotice from '@/components/OfflineNotice'
+import Collapsible from '@/components/Collapsible'
+import CheckRow from '@/components/CheckRow'
 import { stagger } from '@/lib/stagger'
 
 const GLASS = 'liquid-glass'
@@ -28,6 +31,91 @@ const IconBack = (p: IconProps) => (
 const IconForward = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
 )
+const IconSearch = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+)
+const IconClose = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M18 6 6 18M6 6l12 12" /></svg>
+)
+
+/* ---------- Delovi sekcija sa dodatnim predmetima ---------- */
+
+function SearchField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="relative">
+      <IconSearch className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder="Pretraži predmet..."
+        aria-label="Pretraži predmet"
+        className="h-9 w-full rounded-xl border border-[#024c7d]/15 bg-white/70 pr-3 pl-9 text-sm text-gray-900
+                   placeholder:text-gray-400 focus:ring-2 focus:ring-[#024c7d] focus:outline-none
+                   dark:border-white/15 dark:bg-gray-900/65 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:ring-[#60c3ad]"
+      />
+    </div>
+  )
+}
+
+function SubjectList({
+  items,
+  query,
+  isChecked,
+  onToggle,
+}: {
+  items: string[]
+  query: string
+  isChecked: (subject: string) => boolean
+  onToggle: (subject: string) => void
+}) {
+  if (!items.length) {
+    return (
+      <p className="py-3 text-center text-xs text-gray-400 dark:text-gray-500">
+        {query ? `Nema predmeta za „${query}“` : 'Nema predmeta'}
+      </p>
+    )
+  }
+  return (
+    <div className="max-h-52 space-y-0.5 overflow-y-auto">
+      {items.map(p => (
+        <CheckRow key={p} label={p} checked={isChecked(p)} onChange={() => onToggle(p)} />
+      ))}
+    </div>
+  )
+}
+
+// Izabrani predmeti kao čipovi; ulaze i izlaze sa malim "pop" efektom, a
+// ostali se glatko pomere na novo mesto (layout).
+function SelectedChips({ items }: { items: { key: string; label: string; onRemove: () => void }[] }) {
+  return (
+    <div className="flex flex-wrap gap-1.5 empty:hidden">
+      <AnimatePresence initial={false}>
+        {items.map(it => (
+          <motion.span
+            key={it.key}
+            layout
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+            className="inline-flex items-center gap-0.5 rounded-full bg-[#024c7d]/8 py-0.5 pr-0.5 pl-2.5 text-[11px] font-medium text-[#024c7d] dark:bg-[#60c3ad]/12 dark:text-[#60c3ad]"
+          >
+            {it.label}
+            <button
+              type="button"
+              onClick={it.onRemove}
+              aria-label={`Ukloni ${it.label}`}
+              className="no-hover-lift flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-[#024c7d]/12 dark:hover:bg-white/10"
+            >
+              <IconClose className="h-3 w-3" />
+            </button>
+          </motion.span>
+        ))}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 export default function IzbornoPage() {
   const router = useRouter()
@@ -112,20 +200,14 @@ export default function IzbornoPage() {
           }
         }
 
-        if (!flipped && savedOther.length > 0) {
-          setOtherSelected(savedOther)
-          setOtherOpen(true)
-        }
+        if (!flipped && savedOther.length > 0) setOtherSelected(savedOther)
       })
       // Bez ovoga offline ostavlja stranicu trajno u skeleton stanju.
       .catch(() => setLoadError(true))
 
     const savedPrev = byGroup.prevSubjects(group).get()
     if (savedPrev.length > 0) {
-      queueMicrotask(() => {
-        setPrevSelected(savedPrev)
-        setPrevOpen(true)
-      })
+      queueMicrotask(() => setPrevSelected(savedPrev))
     }
   }, [group, isHydrated, router, year, program])
 
@@ -273,200 +355,117 @@ export default function IzbornoPage() {
           ))}
         </div>
 
-        {/* Predmeti iz prošlih godina */}
-        <div className="mb-6 border-t border-white/75 pt-4 dark:border-white/15">
-          <button
-            type="button"
-            onClick={() => setPrevOpen(v => !v)}
-            className="no-hover-lift flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left"
+        {/* Dodatni predmeti: iz prošlih godina i iz drugog semestra */}
+        <div className="mb-6 space-y-2.5">
+          <Collapsible
+            open={prevOpen}
+            onToggle={() => setPrevOpen(v => !v)}
+            title="Predmeti iz prošlih godina"
+            count={prevSelected.length}
           >
-            <span className="text-xs w-2">{prevOpen ? '▾' : '▸'}</span>
-            <span>Predmeti iz prošlih godina</span>
-            {prevSelected.length > 0 && (
-                <span className="ml-1 rounded-full bg-[#024c7d] px-1.5 py-0.5 text-[10px] font-medium leading-none text-white dark:bg-[#60c3ad] dark:text-[#024c7d]">
-                {prevSelected.length}
-              </span>
-            )}
-          </button>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Termine za predmete iz prethodnih godina dodaješ u tabu{' '}
+              <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>.
+            </p>
 
-          {prevOpen && (
-            <div className="mt-3 space-y-3">
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Termine za predmete iz prethodnih godina dodaješ u tabu{' '}
-                <span className="font-medium text-gray-600 dark:text-gray-300">Izmena termina</span>.
-              </p>
-
-              <div className="grid grid-cols-4 gap-1.5">
-                {[1, 2, 3, 4].map(g => (
-                  <button
-                    key={g}
-                    onClick={() => handlePrevGodina(g)}
-                    className={`py-1.5 rounded-full text-xs font-medium border transition-colors
-                      ${prevGodina === g
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm ring-1 ring-[#024c7d]/25 dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad] dark:ring-[#60c3ad]/25'
-                        : 'bg-white/70 text-gray-600 border-[#024c7d]/25 ring-1 ring-[#024c7d]/10 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/25 dark:ring-white/10'}`}
-                  >
-                    {g}. god
-                  </button>
-                ))}
-              </div>
-
-              {prevGodina && (
-                <>
-                  <input
-                    type="text"
-                    value={prevSearch}
-                    onChange={e => setPrevSearch(e.target.value)}
-                    placeholder="Pretraži predmet..."
-                    className="w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm
-                               text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
-                               focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
-                               placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                  />
-                  {prevLoading ? (
-                    <div className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
-                  ) : (
-                    <div className="max-h-40 overflow-y-auto space-y-0.5">
-                      {filteredPrev.map(p => {
-                        const isSelected = prevSelected.some(s => s.year === prevGodina && s.subject === p)
-                        return (
-                          <label
-                            key={p}
-                            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => togglePrevSubject(prevGodina, p)}
-                              className="w-3.5 h-3.5 rounded accent-[#024c7d] dark:accent-[#60c3ad] shrink-0"
-                            />
-                            <span className={`text-xs ${isSelected ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
-                              {p}
-                            </span>
-                          </label>
-                        )
-                      })}
-                    </div>
+            {/* Segmentirani izbor godine; bela podloga klizi do izabrane. */}
+            <div role="group" aria-label="Godina" className="grid grid-cols-4 gap-1 rounded-xl bg-gray-900/5 p-1 dark:bg-white/5">
+              {[1, 2, 3, 4].map(g => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => handlePrevGodina(g)}
+                  aria-pressed={prevGodina === g}
+                  className={`no-hover-lift relative rounded-lg py-1.5 text-xs font-medium transition-colors ${
+                    prevGodina === g
+                      ? 'text-[#024c7d] dark:text-[#60c3ad]'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                  }`}
+                >
+                  {prevGodina === g && (
+                    <motion.span
+                      layoutId="prev-godina"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      className="absolute inset-0 rounded-lg bg-white shadow-sm dark:bg-gray-700/80"
+                    />
                   )}
-                </>
-              )}
-
-              {prevSelected.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {prevSelected.map((s, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium
-                                 bg-white/70 dark:bg-gray-800/65 text-gray-600 dark:text-gray-400"
-                    >
-                      {s.year}. · {s.subject}
-                      <button
-                        onClick={() => togglePrevSubject(s.year, s.subject)}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 leading-none"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
+                  <span className="relative">{g}. god</span>
+                </button>
+              ))}
             </div>
-          )}
-        </div>
 
-        {/* Predmeti iz drugog semestra — prikaži SAMO u letnjem semestru.
-            Mešani Sep/Okt rok uvek padne u letnjem i traži zimske predmete
-            (ponavljanja); u zimskom je picker suvišan i samo zbunjuje. */}
-        {semester.toLowerCase().startsWith('letnji') && (
-        <div className="mb-6 border-t border-white/75 pt-4 dark:border-white/15">
-          <button
-            type="button"
-            onClick={() => { setOtherOpen(v => !v); loadOtherSemester() }}
-            className="no-hover-lift flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left"
-          >
-            <span className="text-xs w-2">{otherOpen ? '▾' : '▸'}</span>
-            <span>Predmeti iz {otherSemLabel} semestra</span>
-            {otherSelected.length > 0 && (
-              <span className="ml-1 rounded-full bg-[#024c7d] px-1.5 py-0.5 text-[10px] font-medium leading-none text-white dark:bg-[#60c3ad] dark:text-[#024c7d]">
-                {otherSelected.length}
-              </span>
+            {prevGodina && (
+              <>
+                <SearchField value={prevSearch} onChange={setPrevSearch} />
+                {prevLoading ? (
+                  <div className="space-y-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                    ))}
+                  </div>
+                ) : (
+                  <SubjectList
+                    items={filteredPrev}
+                    query={prevSearch}
+                    isChecked={p => prevSelected.some(s => s.year === prevGodina && s.subject === p)}
+                    onToggle={p => togglePrevSubject(prevGodina, p)}
+                  />
+                )}
+              </>
             )}
-          </button>
 
-          {otherOpen && (
-            <div className="mt-3 space-y-3">
+            <SelectedChips
+              items={prevSelected.map(s => ({
+                key: `${s.year}-${s.subject}`,
+                label: `${s.year}. · ${s.subject}`,
+                onRemove: () => togglePrevSubject(s.year, s.subject),
+              }))}
+            />
+          </Collapsible>
+
+          {/* Predmeti iz drugog semestra — prikaži SAMO u letnjem semestru.
+              Mešani Sep/Okt rok uvek padne u letnjem i traži zimske predmete
+              (ponavljanja); u zimskom je picker suvišan i samo zbunjuje. */}
+          {semester.toLowerCase().startsWith('letnji') && (
+            <Collapsible
+              open={otherOpen}
+              onToggle={() => { setOtherOpen(v => !v); loadOtherSemester() }}
+              title={`Predmeti iz ${otherSemLabel} semestra`}
+              count={otherSelected.length}
+            >
               <p className="text-xs text-gray-400 dark:text-gray-500">
                 U septembarskom i oktobarskom roku ima predmeta iz oba semestra.
                 Štikliraj one iz {otherSemLabel} semestra koje polažeš da bi im video termine.
               </p>
 
               {otherLoading ? (
-                <div className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                <div className="space-y-1.5">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="h-8 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                  ))}
+                </div>
               ) : otherLoaded && otherSubjects.length === 0 ? (
                 <p className="text-xs text-gray-400 dark:text-gray-500 italic">
                   Raspored {otherSemLabel} semestra još nije dostupan.
                 </p>
               ) : (
                 <>
-                  <input
-                    type="text"
-                    value={otherSearch}
-                    onChange={e => setOtherSearch(e.target.value)}
-                    placeholder="Pretraži predmet..."
-                    className="w-full h-9 px-3 rounded-xl border border-white/70 dark:border-white/15 text-sm
-                               text-gray-900 dark:text-gray-100 bg-white/70 dark:bg-gray-900/65
-                               focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:focus:ring-[#60c3ad]
-                               placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  <SearchField value={otherSearch} onChange={setOtherSearch} />
+                  <SubjectList
+                    items={otherSubjects.filter(p => p.toLowerCase().includes(otherSearch.toLowerCase()))}
+                    query={otherSearch}
+                    isChecked={p => otherSelected.includes(p)}
+                    onToggle={toggleOtherSubject}
                   />
-                  <div className="max-h-40 overflow-y-auto space-y-0.5">
-                    {otherSubjects
-                      .filter(p => p.toLowerCase().includes(otherSearch.toLowerCase()))
-                      .map(p => {
-                        const isSelected = otherSelected.includes(p)
-                        return (
-                          <label
-                            key={p}
-                            className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => toggleOtherSubject(p)}
-                              className="w-3.5 h-3.5 rounded accent-[#024c7d] dark:accent-[#60c3ad] shrink-0"
-                            />
-                            <span className={`text-xs ${isSelected ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
-                              {p}
-                            </span>
-                          </label>
-                        )
-                      })}
-                  </div>
                 </>
               )}
 
-              {otherSelected.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {otherSelected.map(s => (
-                    <span
-                      key={s}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium
-                                 bg-white/70 dark:bg-gray-800/65 text-gray-600 dark:text-gray-400"
-                    >
-                      {s}
-                      <button
-                        onClick={() => toggleOtherSubject(s)}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 leading-none"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
+              <SelectedChips
+                items={otherSelected.map(s => ({ key: s, label: s, onRemove: () => toggleOtherSubject(s) }))}
+              />
+            </Collapsible>
           )}
         </div>
-        )}
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           <span className="text-xs text-gray-400 dark:text-gray-500 w-full sm:w-auto text-center sm:text-left">
