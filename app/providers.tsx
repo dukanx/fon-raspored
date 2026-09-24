@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { MotionConfig } from 'motion/react'
 import { app } from '@/lib/storage'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -75,5 +76,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  return <>{children}</>
+  // Uz "smanji pokrete" u sistemu motion preskače pomeranja (ostaje samo
+  // opacity), isto kao CSS animacije u globals.css.
+  return <MotionConfig reducedMotion="user">{children}</MotionConfig>
 }

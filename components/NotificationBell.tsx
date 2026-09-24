@@ -10,6 +10,7 @@ import {
   enablePush,
   disablePush,
 } from '@/lib/push'
+import Modal from './Modal'
 
 const GLASS = 'liquid-glass'
 
@@ -125,33 +126,28 @@ export default function NotificationBell({ className = '' }: { className?: strin
           <IconBellOutline className="h-[18px] w-[18px]" />
         </button>
 
-        {showIOSModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+        <Modal
+          open={showIOSModal}
+          onClose={() => setShowIOSModal(false)}
+          overlayClassName="z-50 flex items-center justify-center bg-black/40 px-4"
+          className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+        >
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1.5">
+            <IconBellOutline className="h-4 w-4" /> Notifikacije na iPhone-u
+          </h3>
+          <ol className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-decimal list-inside">
+            <li>Klikni <span className="font-medium">Share</span> u Safariju.</li>
+            <li>Izaberi <span className="font-medium">{'„Add to Home Screen”'}</span>.</li>
+            <li>Otvori aplikaciju sa home screen-a.</li>
+            <li>Tu ponovo klikni <span className="font-medium">{'„Uključi notifikacije”'}</span>.</li>
+          </ol>
+          <button
             onClick={() => setShowIOSModal(false)}
+            className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
           >
-            <div
-              className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1.5">
-                <IconBellOutline className="h-4 w-4" /> Notifikacije na iPhone-u
-              </h3>
-              <ol className="text-xs text-gray-600 dark:text-gray-300 space-y-1.5 list-decimal list-inside">
-                <li>Klikni <span className="font-medium">Share</span> u Safariju.</li>
-                <li>Izaberi <span className="font-medium">{'„Add to Home Screen”'}</span>.</li>
-                <li>Otvori aplikaciju sa home screen-a.</li>
-                <li>Tu ponovo klikni <span className="font-medium">{'„Uključi notifikacije”'}</span>.</li>
-              </ol>
-              <button
-                onClick={() => setShowIOSModal(false)}
-                className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
-              >
-                Razumem
-              </button>
-            </div>
-          </div>
-        )}
+            Razumem
+          </button>
+        </Modal>
       </div>
     )
   }
@@ -165,32 +161,27 @@ export default function NotificationBell({ className = '' }: { className?: strin
           <IconBellOutline className="h-[18px] w-[18px]" />
         </button>
 
-        {showIOSModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+        <Modal
+          open={showIOSModal}
+          onClose={() => setShowIOSModal(false)}
+          overlayClassName="z-50 flex items-center justify-center bg-black/40 px-4"
+          className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+        >
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-1.5">
+            <IconBellOutline className="h-4 w-4" /> Notifikacije
+          </h3>
+          <p className="text-xs text-gray-600 dark:text-gray-300">
+            {isAndroid
+              ? 'Ovaj pregledač ih ne podržava. Otvori aplikaciju u Chrome-u, pa je dodaj na početni ekran.'
+              : 'Ovaj pregledač ih ne podržava. Probaj Chrome, Firefox ili Safari 16+.'}
+          </p>
+          <button
             onClick={() => setShowIOSModal(false)}
+            className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
           >
-            <div
-              className="w-full max-w-xs rounded-2xl border border-white/75 bg-white/92 p-5 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-1.5">
-                <IconBellOutline className="h-4 w-4" /> Notifikacije
-              </h3>
-              <p className="text-xs text-gray-600 dark:text-gray-300">
-                {isAndroid
-                  ? 'Ovaj pregledač ih ne podržava. Otvori aplikaciju u Chrome-u, pa je dodaj na početni ekran.'
-                  : 'Ovaj pregledač ih ne podržava. Probaj Chrome, Firefox ili Safari 16+.'}
-              </p>
-              <button
-                onClick={() => setShowIOSModal(false)}
-                className="mt-4 w-full py-2 rounded-lg text-xs font-medium bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]"
-              >
-                Razumem
-              </button>
-            </div>
-          </div>
-        )}
+            Razumem
+          </button>
+        </Modal>
       </div>
     )
   }
@@ -206,78 +197,73 @@ export default function NotificationBell({ className = '' }: { className?: strin
         {subscribed ? <IconBellFilled className="h-[18px] w-[18px]" /> : <IconBellOutline className="h-[18px] w-[18px]" />}
       </button>
 
-      {showInfo && (
-        <div
-          className="fixed inset-0 z-60 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
-          onClick={() => setShowInfo(false)}
-        >
-          <div
-            className={`${GLASS} w-full max-w-sm rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex flex-col items-center text-center">
-              <span className="flex h-9 w-9 items-center justify-center text-[#024c7d] dark:text-[#60c3ad]">
-                {subscribed ? <IconBellFilled className="h-8 w-8" /> : <IconBellOutline className="h-8 w-8" />}
-              </span>
-              <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {subscribed ? 'Notifikacije uključene' : 'Uključi notifikacije'}
-              </h2>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Da ne propustiš rok ili prijavu ispita.
+      <Modal
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        overlayClassName="z-60 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        className={`${GLASS} w-full max-w-sm rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15`}
+      >
+        <div className="flex flex-col items-center text-center">
+          <span className="flex h-9 w-9 items-center justify-center text-[#024c7d] dark:text-[#60c3ad]">
+            {subscribed ? <IconBellFilled className="h-8 w-8" /> : <IconBellOutline className="h-8 w-8" />}
+          </span>
+          <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {subscribed ? 'Notifikacije uključene' : 'Uključi notifikacije'}
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Da ne propustiš rok ili prijavu ispita.
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-2.5">
+          <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+              <IconCalendar className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Novi rokovi</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Čim izađu ispitni rokovi i kolokvijumi.
               </p>
             </div>
+          </div>
 
-            <div className="mt-5 space-y-2.5">
-              <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-                  <IconCalendar className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Novi rokovi</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Čim izađu ispitni rokovi i kolokvijumi.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-                  <IconClock className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Prijava ispita</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Na dan kad počne i kad se završava prijava.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {error && <p className="mt-3 text-center text-xs text-red-500">{error}</p>}
-
-            <div className="mt-5 space-y-2">
-              <button
-                onClick={subscribed ? disable : enable}
-                disabled={busy}
-                className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors ${
-                  subscribed
-                    ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10'
-                    : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
-                } ${busy ? 'cursor-wait opacity-60' : ''}`}
-              >
-                {busy ? 'Sačekaj…' : subscribed ? 'Isključi notifikacije' : 'Uključi notifikacije'}
-              </button>
-              <button
-                onClick={() => setShowInfo(false)}
-                disabled={busy}
-                className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-white/70 dark:text-gray-400 dark:hover:bg-gray-800/60"
-              >
-                Zatvori
-              </button>
+          <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+              <IconClock className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Prijava ispita</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Na dan kad počne i kad se završava prijava.
+              </p>
             </div>
           </div>
         </div>
-      )}
+
+        {error && <p className="mt-3 text-center text-xs text-red-500">{error}</p>}
+
+        <div className="mt-5 space-y-2">
+          <button
+            onClick={subscribed ? disable : enable}
+            disabled={busy}
+            className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors ${
+              subscribed
+                ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10'
+                : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+            } ${busy ? 'cursor-wait opacity-60' : ''}`}
+          >
+            {busy ? 'Sačekaj…' : subscribed ? 'Isključi notifikacije' : 'Uključi notifikacije'}
+          </button>
+          <button
+            onClick={() => setShowInfo(false)}
+            disabled={busy}
+            className="w-full rounded-xl py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-white/70 dark:text-gray-400 dark:hover:bg-gray-800/60"
+          >
+            Zatvori
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

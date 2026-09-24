@@ -214,6 +214,28 @@ a[href]:active {
 .anim-pop { animation: anim-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .anim-left { animation: anim-left 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
+/* Kratak "skok" elementa koji je već na ekranu, npr. potvrda "Dodato". */
+@keyframes anim-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.anim-bump { animation: anim-bump 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+/* Ulaz strane pri navigaciji (v. components/PageTransition.tsx). Bez
+   fill-mode-a: posle animacije na omotaču ne ostaje nikakav transform. */
+@keyframes page-in-fade {
+  from { opacity: 0; }
+}
+
+@keyframes page-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+.page-in-fade { animation: page-in-fade 0.25s ease-out; }
+.page-in-up { animation: page-in-up 0.32s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
 /* Prelaz početna → /izborni: početna ode (kartica ulevo, pregled naniže),
    a kartica sa predmetima uđe zdesna. `forwards` drži početnu sakrivenom do
    navigacije. */
@@ -238,14 +260,39 @@ a[href]:active {
 .leave-fade { animation: leave-fade 0.2s ease-in forwards; }
 .enter-right { animation: enter-right 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
+/* Kalendar: novi mesec uđe iz smera strelice. */
+@keyframes month-in-next {
+  from { opacity: 0; transform: translateX(20px); }
+}
+
+@keyframes month-in-prev {
+  from { opacity: 0; transform: translateX(-20px); }
+}
+
+.month-in-next { animation: month-in-next 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.month-in-prev { animation: month-in-prev 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+/* Promena prikaza unutar strane (lista ↔ kalendar). */
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.view-in { animation: view-in 0.28s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
 @media (prefers-reduced-motion: reduce) {
+  .view-in,
+  .month-in-next,
+  .month-in-prev,
   .leave-left,
   .leave-down,
   .leave-fade,
   .enter-right,
+  .page-in-fade,
+  .page-in-up,
   .anim-up,
   .anim-pop,
-  .anim-left {
+  .anim-left,
+  .anim-bump {
     animation: none !important;
   }
 

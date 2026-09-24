@@ -13,6 +13,11 @@ import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
+import { motion } from 'motion/react'
+import Modal from '@/components/Modal'
+import Expand from '@/components/Expand'
+import Toast from '@/components/Toast'
+import { stagger } from '@/lib/stagger'
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -192,6 +197,15 @@ export default function RokoviPage() {
     const now = new Date()
     return { year: now.getFullYear(), month: now.getMonth() }
   })
+  // Smer poslednje promene meseca u kalendaru (-1 nazad, 1 napred, 0 bez
+  // animacije). Vraća se na 0 posle animacije: CalendarView se montira iznova
+  // na svaki render, pa bi inače svaki klik na dan ponovo pokrenuo klizanje.
+  const [monthDir, setMonthDir] = useState(0)
+  useEffect(() => {
+    if (!monthDir) return
+    const t = setTimeout(() => setMonthDir(0), 350)
+    return () => clearTimeout(t)
+  }, [monthDir, calendarMonth])
   const [tooltip, setTooltip] = useState<{ date: string } | null>(null)
   // Ključevi su `rok|povod`.
   const [dismissedBanners, setDismissedBanners] = useState<Set<string>>(new Set())
@@ -213,6 +227,16 @@ export default function RokoviPage() {
   // Default je uvek "Kalendar" — i na telefonu i na desktopu; korisnik može
   // ručno na "Lista".
   const view: 'list' | 'calendar' = manualView ?? 'calendar'
+
+  // Stavke liste ulaze jedna za drugom samo prvi put kad se lista prikaže.
+  // ListView je definisan unutar strane pa se montira iznova na svaki render,
+  // i bez ovog prekidača bi se animacija ponavljala na svaku promenu stanja.
+  const [listIntroDone, setListIntroDone] = useState(false)
+  useEffect(() => {
+    if (view !== 'list' || !isHydrated || listIntroDone) return
+    const t = setTimeout(() => setListIntroDone(true), 1000)
+    return () => clearTimeout(t)
+  }, [view, isHydrated, listIntroDone])
 
   const meta = isHydrated
     ? {
@@ -781,8 +805,12 @@ export default function RokoviPage() {
                   acc[e.date].push(e)
                   return acc
                 }, {} as Record<string, typeof g.entries>)
-              ).map(([date, dateEntries]) => (
-                <div key={date}>
+              ).map(([date, dateEntries], di) => (
+                <div
+                  key={date}
+                  className={listIntroDone ? undefined : 'anim-up'}
+                  style={listIntroDone ? undefined : stagger(di, 45)}
+                >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {getDaySr(date)}, {formatDateSr(date)}
@@ -865,10 +893,10 @@ export default function RokoviPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => setCalendarMonth(prev => {
+            onClick={() => { setMonthDir(-1); setCalendarMonth(prev => {
               const d = new Date(prev.year, prev.month - 1)
               return { year: d.getFullYear(), month: d.getMonth() }
-            })}
+            }) }}
             aria-label="Prethodni mesec"
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           ><IconBack className="h-4 w-4" /></button>
@@ -876,10 +904,10 @@ export default function RokoviPage() {
             {SR_MONTHS[month]} {year}
           </h3>
           <button
-            onClick={() => setCalendarMonth(prev => {
+            onClick={() => { setMonthDir(1); setCalendarMonth(prev => {
               const d = new Date(prev.year, prev.month + 1)
               return { year: d.getFullYear(), month: d.getMonth() }
-            })}
+            }) }}
             aria-label="Sledeći mesec"
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           ><IconForward className="h-4 w-4" /></button>
@@ -897,61 +925,67 @@ export default function RokoviPage() {
           ))}
         </div>
 
-        {weeks.map((week, wi) => (
-          <div key={wi} className="mb-1 grid grid-cols-7 gap-1 sm:mb-1.5 sm:gap-1.5">
-            {week.map((day, di) => {
-              if (!day) return <div key={di} />
-              const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-              const dayEntries = byDate[isoDate] ?? []
-              const isToday = isoDate === todayStr
-              const hasEvents = dayEntries.length > 0
-              const isPast = isoDate < todayStr
-              const isClickable = hasEvents || !isPast
+        {/* Novi mesec uđe iz smera strelice. */}
+        <div
+          key={`${year}-${month}`}
+          className={monthDir > 0 ? 'month-in-next' : monthDir < 0 ? 'month-in-prev' : undefined}
+        >
+          {weeks.map((week, wi) => (
+            <div key={wi} className="mb-1 grid grid-cols-7 gap-1 sm:mb-1.5 sm:gap-1.5">
+              {week.map((day, di) => {
+                if (!day) return <div key={di} />
+                const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                const dayEntries = byDate[isoDate] ?? []
+                const isToday = isoDate === todayStr
+                const hasEvents = dayEntries.length > 0
+                const isPast = isoDate < todayStr
+                const isClickable = hasEvents || !isPast
 
-              return (
-                <div
-                  key={di}
-                  onClick={() => {
-                    if (hasEvents) setTooltip(t => t?.date === isoDate ? null : { date: isoDate })
-                    else if (!isPast) setEventModal({ mode: 'add', date: isoDate })
-                  }}
-                  className={`relative min-h-13 rounded-lg p-1.5 transition-colors sm:min-h-20 sm:p-2
-                    ${isClickable ? 'cursor-pointer' : ''}
-                    ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
-                    ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
-                    ${tooltip?.date === isoDate ? 'ring-2 ring-[#024c7d]/30 dark:ring-[#60c3ad]/30' : ''}
-                  `}
-                >
-                  <span className={`text-xs font-medium block leading-none mb-1
-                    ${isToday ? 'text-[#024c7d] dark:text-[#60c3ad]' : hasEvents ? 'text-gray-900 dark:text-gray-100' : 'text-gray-300 dark:text-gray-700'}`}>
-                    {day}
-                  </span>
-                  {hasEvents && (
-                    <div className="flex flex-col gap-px mt-0.5">
-                      {dayEntries.slice(0, 3).map((e, i) => (
-                        <div
-                          key={i}
-                          className="rounded-sm px-0.5 overflow-hidden"
-                          style={{ background: isDark ? COLORS[colorMap[e.subject]].darkBg : COLORS[colorMap[e.subject]].bg }}
-                        >
-                          <span
-                            className="text-[9px] leading-tight truncate block font-medium"
-                            style={{ color: isDark ? COLORS[colorMap[e.subject]].darkText : COLORS[colorMap[e.subject]].text }}
+                return (
+                  <div
+                    key={di}
+                    onClick={() => {
+                      if (hasEvents) setTooltip(t => t?.date === isoDate ? null : { date: isoDate })
+                      else if (!isPast) setEventModal({ mode: 'add', date: isoDate })
+                    }}
+                    className={`relative min-h-13 rounded-lg p-1.5 transition-colors sm:min-h-20 sm:p-2
+                      ${isClickable ? 'cursor-pointer' : ''}
+                      ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
+                      ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
+                      ${tooltip?.date === isoDate ? 'ring-2 ring-[#024c7d]/30 dark:ring-[#60c3ad]/30' : ''}
+                    `}
+                  >
+                    <span className={`text-xs font-medium block leading-none mb-1
+                      ${isToday ? 'text-[#024c7d] dark:text-[#60c3ad]' : hasEvents ? 'text-gray-900 dark:text-gray-100' : 'text-gray-300 dark:text-gray-700'}`}>
+                      {day}
+                    </span>
+                    {hasEvents && (
+                      <div className="flex flex-col gap-px mt-0.5">
+                        {dayEntries.slice(0, 3).map((e, i) => (
+                          <div
+                            key={i}
+                            className="rounded-sm px-0.5 overflow-hidden"
+                            style={{ background: isDark ? COLORS[colorMap[e.subject]].darkBg : COLORS[colorMap[e.subject]].bg }}
                           >
-                            {e.subject}
-                          </span>
-                        </div>
-                      ))}
-                      {dayEntries.length > 3 && (
-                        <span className="text-[9px] text-gray-400 dark:text-gray-500 px-0.5">+{dayEntries.length - 3}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        ))}
+                            <span
+                              className="text-[9px] leading-tight truncate block font-medium"
+                              style={{ color: isDark ? COLORS[colorMap[e.subject]].darkText : COLORS[colorMap[e.subject]].text }}
+                            >
+                              {e.subject}
+                            </span>
+                          </div>
+                        ))}
+                        {dayEntries.length > 3 && (
+                          <span className="text-[9px] text-gray-400 dark:text-gray-500 px-0.5">+{dayEntries.length - 3}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </div>
 
         {tooltip && (byDate[tooltip.date]?.length ?? 0) > 0 && (
           <div className={`mt-4 rounded-xl p-4 ${GLASS}`}>
@@ -1070,121 +1104,113 @@ export default function RokoviPage() {
     const labelClass = 'mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400'
 
     return (
-      <div
-        className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
-        onClick={() => setEventModal(null)}
-      >
-        <div
-          className={`w-full max-w-sm max-h-full overflow-y-auto rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
-          onClick={e => e.stopPropagation()}
+      <>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          {existing ? 'Izmeni događaj' : 'Dodaj događaj'}
+        </h3>
+        <button
+          onClick={() => setEventModal(null)}
+          aria-label="Zatvori"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
         >
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              {existing ? 'Izmeni događaj' : 'Dodaj događaj'}
-            </h3>
-            <button
-              onClick={() => setEventModal(null)}
-              aria-label="Zatvori"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/70 hover:text-gray-700 dark:hover:bg-gray-800/70 dark:hover:text-gray-100"
-            >
-              ✕
-            </button>
-          </div>
+          ✕
+        </button>
+      </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className={labelClass}>Predmet</label>
-              <input
-                type="text"
-                value={subject}
-                onChange={e => setSubject(e.target.value)}
-                list="rok-subjects"
-                placeholder="Naziv predmeta"
-                className={fieldClass}
-              />
-              <datalist id="rok-subjects">
-                {knownSubjects.map(s => <option key={s} value={s} />)}
-              </datalist>
-            </div>
+      <div className="space-y-3">
+        <div>
+          <label className={labelClass}>Predmet</label>
+          <input
+            type="text"
+            value={subject}
+            onChange={e => setSubject(e.target.value)}
+            list="rok-subjects"
+            placeholder="Naziv predmeta"
+            className={fieldClass}
+          />
+          <datalist id="rok-subjects">
+            {knownSubjects.map(s => <option key={s} value={s} />)}
+          </datalist>
+        </div>
 
-            <div>
-              <label className={labelClass}>Tip</label>
-              <div className="grid grid-cols-4 gap-1.5">
-                {EVENT_TYPES.map(t => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setType(t)}
-                    className={`py-1.5 rounded-full text-xs font-medium border transition-colors
-                      ${type === t
-                        ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                        : 'bg-white/70 text-gray-600 border-[#024c7d]/25 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/25'}`}
-                  >
-                    {eventTypeLabel(t)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="min-w-0">
-              <label className={labelClass}>Datum</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
-            </div>
-
-            <div className="grid grid-cols-1 gap-2">
-              <div className="min-w-0">
-                <label className={labelClass}>Od</label>
-                <input type="time" value={start} onChange={e => setStart(e.target.value)} className={fieldClass} />
-              </div>
-              <div className="min-w-0">
-                <label className={labelClass}>Do</label>
-                <input type="time" value={end} onChange={e => setEnd(e.target.value)} className={fieldClass} />
-              </div>
-            </div>
-
-            <div>
-              <label className={labelClass}>Sala</label>
-              <input
-                type="text"
-                value={rooms}
-                onChange={e => setRooms(e.target.value)}
-                placeholder="npr. 012 (više sala odvoji zarezom)"
-                className={fieldClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Napomena (opciono)</label>
-              <input
-                type="text"
-                value={note}
-                onChange={e => setNote(e.target.value)}
-                placeholder="npr. dogovoreno mejlom sa profesorom"
-                className={fieldClass}
-              />
-            </div>
-          </div>
-
-          {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
-
-          <div className="mt-5 space-y-2">
-            <button
-              onClick={handleSave}
-              className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
-            >
-              Sačuvaj
-            </button>
-            {existing && (
+        <div>
+          <label className={labelClass}>Tip</label>
+          <div className="grid grid-cols-4 gap-1.5">
+            {EVENT_TYPES.map(t => (
               <button
-                onClick={() => deleteCustomEntry(existing.id)}
-                className="w-full rounded-xl py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                className={`py-1.5 rounded-full text-xs font-medium border transition-colors
+                  ${type === t
+                    ? 'bg-[#024c7d] text-white border-[#024c7d] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
+                    : 'bg-white/70 text-gray-600 border-[#024c7d]/25 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/25'}`}
               >
-                Obriši
+                {eventTypeLabel(t)}
               </button>
-            )}
+            ))}
           </div>
         </div>
+
+        <div className="min-w-0">
+          <label className={labelClass}>Datum</label>
+          <input type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
+        </div>
+
+        <div className="grid grid-cols-1 gap-2">
+          <div className="min-w-0">
+            <label className={labelClass}>Od</label>
+            <input type="time" value={start} onChange={e => setStart(e.target.value)} className={fieldClass} />
+          </div>
+          <div className="min-w-0">
+            <label className={labelClass}>Do</label>
+            <input type="time" value={end} onChange={e => setEnd(e.target.value)} className={fieldClass} />
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>Sala</label>
+          <input
+            type="text"
+            value={rooms}
+            onChange={e => setRooms(e.target.value)}
+            placeholder="npr. 012 (više sala odvoji zarezom)"
+            className={fieldClass}
+          />
+        </div>
+
+        <div>
+          <label className={labelClass}>Napomena (opciono)</label>
+          <input
+            type="text"
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder="npr. dogovoreno mejlom sa profesorom"
+            className={fieldClass}
+          />
+        </div>
       </div>
+
+      {error && <p className="mt-3 text-xs text-red-500">{error}</p>}
+
+      <div className="mt-5 space-y-2">
+        <button
+          onClick={handleSave}
+          className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
+        >
+          Sačuvaj
+        </button>
+        {existing && (
+          <button
+            onClick={() => deleteCustomEntry(existing.id)}
+            className="w-full rounded-xl py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+          >
+            Obriši
+          </button>
+        )}
+      </div>
+      </>
     )
   }
 
@@ -1290,13 +1316,21 @@ export default function RokoviPage() {
                 <button
                   key={v}
                   onClick={() => setManualView(v)}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                  className={`no-hover-lift relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
                     ${view === v
-                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      ? 'text-[#024c7d] dark:text-[#60c3ad]'
                       : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {label}
+                  {/* Bela podloga klizi do izabranog prikaza. */}
+                  {view === v && (
+                    <motion.span
+                      layoutId="rokovi-view"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      className="absolute inset-0 rounded-full bg-white shadow-sm dark:bg-gray-700"
+                    />
+                  )}
+                  <Icon className="relative h-4 w-4" />
+                  <span className="relative">{label}</span>
                 </button>
               ))}
             </div>
@@ -1364,7 +1398,11 @@ export default function RokoviPage() {
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
                 {tab === t && (
-                  <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#024c7d] dark:bg-[#60c3ad]" />
+                  <motion.span
+                    layoutId="rokovi-tab"
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#024c7d] dark:bg-[#60c3ad]"
+                  />
                 )}
               </button>
             ))}
@@ -1373,7 +1411,7 @@ export default function RokoviPage() {
 
         {/* Baner za prijavu kolokvijuma */}
         {prijavaNotice && (
-          <div className="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
+          <div className="anim-up mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
                           bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
             <svg className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -1398,7 +1436,7 @@ export default function RokoviPage() {
           </div>
         )}
 
-        {showHidden && hiddenEntries.length > 0 && (
+        <Expand open={showHidden && hiddenEntries.length > 0}>
           <div className={`mb-5 rounded-xl p-4 ${GLASS}`}>
             <h4 className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
               Skriveni termini
@@ -1425,85 +1463,71 @@ export default function RokoviPage() {
               ))}
             </div>
           </div>
-        )}
+        </Expand>
 
         {!isHydrated ? (
           <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">Učitavanje...</div>
         ) : loadError ? (
           <OfflineNotice />
-        ) : view === 'list' ? (
-          <ListView />
         ) : (
-          <CalendarView />
+          // Ključ je prikaz i tab, pa se omotač (i njegova animacija) menja
+          // samo pri promeni jednog od njih, ne na svaki render.
+          <div key={`${view}-${tab}`} className="view-in">
+            {view === 'list' ? <ListView /> : <CalendarView />}
+          </div>
         )}
 
       </div>
 
-      {downloadToast && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-100 sm:bottom-6">
-          <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
-            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:text-green-600 flex items-center justify-center shrink-0">
-              ✓
-            </span>
-            Kalendar (.ics) preuzet — otvori fajl da dodaš termine.
-          </div>
-        </div>
-      )}
+      <Toast show={downloadToast}>Kalendar (.ics) preuzet — otvori fajl da dodaš termine.</Toast>
 
-      {imageToast && (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-100 sm:bottom-6">
-          <div className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
-            <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 dark:text-green-600 flex items-center justify-center shrink-0">
-              ✓
-            </span>
-            Slika rokova je preuzeta!
-          </div>
-        </div>
-      )}
+      <Toast show={imageToast}>Slika rokova je preuzeta!</Toast>
 
-      {showImageMenu && (
-        <div
-          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
-          onClick={() => setShowImageMenu(false)}
-        >
-          <div
-            className={`w-full max-w-xs rounded-2xl p-4 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
-            onClick={e => e.stopPropagation()}
-          >
-            <p className="mb-1 px-1 text-sm font-semibold text-gray-900 dark:text-gray-100">Skini kao sliku</p>
-            <p className="mb-3 px-1 text-xs text-gray-500 dark:text-gray-400">
-              {tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'} · izaberi mesec ili ceo rok
-            </p>
-            <div className="space-y-1">
-              {imageMonths.length > 1 && (
-                <button
-                  onClick={() => { setShowImageMenu(false); void downloadRokImage('all') }}
-                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#024c7d] hover:bg-white/70 dark:text-[#60c3ad] dark:hover:bg-gray-800/60 transition-colors"
-                >
-                  <IconImage className="h-4 w-4 opacity-80" />
-                  Ceo rok (svi meseci)
-                </button>
-              )}
-              {imageMonths.map(m => (
-                <button
-                  key={`${m.year}-${m.month}`}
-                  onClick={() => { setShowImageMenu(false); void downloadRokImage(m) }}
-                  className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-white/70 dark:text-gray-200 dark:hover:bg-gray-800/60 transition-colors"
-                >
-                  {cap(SR_MONTHS[m.month])} {m.year}
-                </button>
-              ))}
-            </div>
-          </div>
+      <Modal
+        open={showImageMenu}
+        onClose={() => setShowImageMenu(false)}
+        overlayClassName="z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        className={`w-full max-w-xs rounded-2xl p-4 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+      >
+        <p className="mb-1 px-1 text-sm font-semibold text-gray-900 dark:text-gray-100">Skini kao sliku</p>
+        <p className="mb-3 px-1 text-xs text-gray-500 dark:text-gray-400">
+          {tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'} · izaberi mesec ili ceo rok
+        </p>
+        <div className="space-y-1">
+          {imageMonths.length > 1 && (
+            <button
+              onClick={() => { setShowImageMenu(false); void downloadRokImage('all') }}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#024c7d] hover:bg-white/70 dark:text-[#60c3ad] dark:hover:bg-gray-800/60 transition-colors"
+            >
+              <IconImage className="h-4 w-4 opacity-80" />
+              Ceo rok (svi meseci)
+            </button>
+          )}
+          {imageMonths.map(m => (
+            <button
+              key={`${m.year}-${m.month}`}
+              onClick={() => { setShowImageMenu(false); void downloadRokImage(m) }}
+              className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-white/70 dark:text-gray-200 dark:hover:bg-gray-800/60 transition-colors"
+            >
+              {cap(SR_MONTHS[m.month])} {m.year}
+            </button>
+          ))}
         </div>
-      )}
+      </Modal>
 
-      {eventModal && (
-        <EventModal
-          key={eventModal.mode === 'edit' ? eventModal.entry.id : `add-${eventModal.date ?? ''}`}
-          state={eventModal}
-        />
-      )}
+      <Modal
+        open={!!eventModal}
+        onClose={() => setEventModal(null)}
+        overlayClassName="z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        className={`w-full max-w-sm max-h-full overflow-y-auto rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+      >
+        {eventModal && (
+          <EventModal
+            key={eventModal.mode === 'edit' ? eventModal.entry.id : `add-${eventModal.date ?? ''}`}
+            state={eventModal}
+          />
+        )}
+      </Modal>
     </main>
   )
 }

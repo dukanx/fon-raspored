@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
-import { AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
 import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
@@ -18,6 +18,9 @@ import AppTour, { type TourSlide } from '@/components/AppTour'
 import OfflineNotice from '@/components/OfflineNotice'
 import { isStandalone, pushSupported } from '@/lib/push'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
+import Modal from '@/components/Modal'
+import Toast from '@/components/Toast'
+import { stagger } from '@/lib/stagger'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -833,13 +836,21 @@ export default function RasporedPage() {
                 <button
                   key={v}
                   onClick={() => setManualView(v)}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
+                  className={`no-hover-lift relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
                     ${view === v
-                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
+                      ? 'text-[#024c7d] dark:text-[#60c3ad]'
                       : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {label}
+                  {/* Bela podloga klizi do izabranog prikaza. */}
+                  {view === v && (
+                    <motion.span
+                      layoutId="raspored-view"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      className="absolute inset-0 rounded-full bg-white shadow-sm dark:bg-gray-700"
+                    />
+                  )}
+                  <Icon className="relative h-4 w-4" />
+                  <span className="relative">{label}</span>
                 </button>
               ))}
             </div>
@@ -947,7 +958,7 @@ export default function RasporedPage() {
             <div id="raspored-grid">
 
               {/* Day headers */}
-              <div className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1">
+              <div className="anim-up grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1">
                 <div />
                 {DAYS.map(d => (
                   <div key={d} className="text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 py-1 sm:text-xs">
@@ -956,11 +967,12 @@ export default function RasporedPage() {
                 ))}
               </div>
 
-              {/* Slots */}
-              {SLOTS.map(slot => (
+              {/* Slots — ulaze red po red pri prvom prikazu */}
+              {SLOTS.map((slot, si) => (
                 <div
                   key={slot}
-                  className="grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1"
+                  style={stagger(si + 1, 35)}
+                  className="anim-up grid grid-cols-[34px_repeat(5,minmax(0,1fr))] gap-0.5 mb-0.5 sm:grid-cols-[56px_repeat(5,minmax(0,1fr))] sm:gap-1 sm:mb-1"
                 >
                   <div className="text-right pr-1 pt-1 text-[9px] text-gray-400 dark:text-gray-500 leading-tight sm:pr-2 sm:pt-1.5 sm:text-xs">
                     {slot}
@@ -1008,7 +1020,7 @@ export default function RasporedPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {DAYS.map(day => {
+            {DAYS.map((day, di) => {
               const dayEntries = visibleEntries
                 .filter(e => e.day === day)
                 .sort((a, b) => a.start.localeCompare(b.start))
@@ -1016,7 +1028,7 @@ export default function RasporedPage() {
               if (!dayEntries.length) return null
 
               return (
-                <div key={day}>
+                <div key={day} className="anim-up" style={stagger(di, 50)}>
                   <h2 className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider
                                  mb-2 pb-2 border-b border-gray-200 dark:border-gray-800">
                     {day}
@@ -1161,141 +1173,108 @@ export default function RasporedPage() {
       </main>
 
       {/* "Nov semestar" — reset predmeta (kredencijali ostaju) */}
-      {showFlipPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
-          onClick={dismissFlip}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
-            onClick={e => e.stopPropagation()}
+      <Modal
+        open={showFlipPopup}
+        onClose={dismissFlip}
+        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+      >
+        <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+          Nov semestar - Proveri predmete
+        </h2>
+        <p className="mb-6 text-sm text-center text-gray-600 dark:text-gray-300">
+          Objavljen je raspored za novi semestar. 
+          </p>
+        <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
+          Ranije izabrani predmeti su
+          resetovani, izaberi svoje predmete ponovo da ti raspored i rokovi
+          budu tačni.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row-reverse">
+          <button
+            onClick={goPickSubjects}
+            className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
+                       bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                       dark:hover:bg-[#4db3a0]"
           >
-            <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
-              Nov semestar - Proveri predmete
-            </h2>
-            <p className="mb-6 text-sm text-center text-gray-600 dark:text-gray-300">
-              Objavljen je raspored za novi semestar. 
-              </p>
-            <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
-              Ranije izabrani predmeti su
-              resetovani, izaberi svoje predmete ponovo da ti raspored i rokovi
-              budu tačni.
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row-reverse">
-              <button
-                onClick={goPickSubjects}
-                className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
-                           bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-                           dark:hover:bg-[#4db3a0]"
-              >
-                Izaberi predmete
-              </button>
-              <button
-                onClick={dismissFlip}
-                className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-              >
-                Kasnije
-              </button>
-            </div>
-          </div>
+            Izaberi predmete
+          </button>
+          <button
+            onClick={dismissFlip}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          >
+            Kasnije
+          </button>
         </div>
-      )}
+      </Modal>
 
       {/* ICS tutorial modal */}
-      {showIcsHelp && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
-          onClick={() => setShowIcsHelp(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
-            onClick={e => e.stopPropagation()}
-          >
-            <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
-              Kako dodati u kalendar
-            </h2>
+      <Modal
+        open={showIcsHelp}
+        onClose={() => setShowIcsHelp(false)}
+        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+      >
+        <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
+          Kako dodati u kalendar
+        </h2>
 
-            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
-              <div className="flex gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">1</span>
-                <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">2</span>
-                <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">3</span>
-                <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
-              </div>
-              <div className="flex gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">4</span>
-                <p>Na telefonu: pronađi fajl u Downloads i klikni na njega - kalendar će se otvoriti automatski.</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowIcsHelp(false)}
-              className="btn-lift mt-6 w-full rounded-lg py-2.5 text-sm font-medium
-                         bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-                         dark:hover:bg-[#4db3a0]"
-            >
-              Razumem
-            </button>
+        <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">1</span>
+            <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">2</span>
+            <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">3</span>
+            <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">4</span>
+            <p>Na telefonu: pronađi fajl u Downloads i klikni na njega - kalendar će se otvoriti automatski.</p>
           </div>
         </div>
-      )}
+
+        <button
+          onClick={() => setShowIcsHelp(false)}
+          className="btn-lift mt-6 w-full rounded-lg py-2.5 text-sm font-medium
+                     bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                     dark:hover:bg-[#4db3a0]"
+        >
+          Razumem
+        </button>
+      </Modal>
 
       {/* Šta uključiti u link za deljenje */}
-      {showShareChoice && (
-        <div
-          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
-          onClick={() => setShowShareChoice(false)}
-        >
-          <div
-            className={`w-full max-w-sm rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
-            onClick={e => e.stopPropagation()}
+      <Modal
+        open={showShareChoice}
+        onClose={() => setShowShareChoice(false)}
+        overlayClassName="z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
+        className={`w-full max-w-sm rounded-2xl p-5 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
+      >
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Uključiti i prenesene predmete?</h3>
+        <div className="mt-4 space-y-2">
+          <button
+            onClick={() => { void shareSchedule(true) }}
+            className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
           >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Uključiti i prenesene predmete?</h3>
-            <div className="mt-4 space-y-2">
-              <button
-                onClick={() => { void shareSchedule(true) }}
-                className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
-              >
-                Da, svi predmeti
-              </button>
-              <button
-                onClick={() => { void shareSchedule(false) }}
-                className={`w-full rounded-xl py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-              >
-                Ne, samo ovosemestralni
-              </button>
-            </div>
-          </div>
+            Da, svi predmeti
+          </button>
+          <button
+            onClick={() => { void shareSchedule(false) }}
+            className={`w-full rounded-xl py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          >
+            Ne, samo ovosemestralni
+          </button>
         </div>
-      )}
+      </Modal>
 
-      {showDownloadToast && (
-        <div className="fixed bottom-28 left-1/2 z-[100] -translate-x-1/2 animate-bounce sm:bottom-6">
-          <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-xl dark:bg-gray-100 dark:text-gray-900">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/20 text-green-400 dark:text-green-600">
-              ✓
-            </span>
-            Slika rasporeda je uspešno preuzeta!
-          </div>
-        </div>
-      )}
+      <Toast show={showDownloadToast}>Slika rasporeda je uspešno preuzeta!</Toast>
 
-      {showShareToast && (
-        <div className="fixed bottom-28 left-1/2 z-[100] -translate-x-1/2 animate-bounce sm:bottom-6">
-          <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-xl dark:bg-gray-100 dark:text-gray-900">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/20 text-green-400 dark:text-green-600">
-              ✓
-            </span>
-            Link je kopiran!
-          </div>
-        </div>
-      )}
+      <Toast show={showShareToast}>Link je kopiran!</Toast>
 
       <AnimatePresence>
         {showTour && <AppTour slides={tourSlides} onClose={closeTour} />}

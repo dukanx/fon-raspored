@@ -8,6 +8,9 @@ import { session, byGroup } from '@/lib/storage'
 import { toggleTheme } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
+import Expand from '@/components/Expand'
+import { AnimatePresence, motion } from 'motion/react'
+import { stagger } from '@/lib/stagger'
 
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15-10:00', '10:15': '10:15-12:00',
@@ -39,9 +42,6 @@ const IconSun = (p: IconProps) => (
 const IconChevronDown = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
 )
-const IconChevronUp = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="m18 15-6-6-6 6" /></svg>
-)
 const IconForward = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
 )
@@ -53,6 +53,33 @@ const IconSparkle = (p: IconProps) => (
     <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
   </svg>
 )
+
+// Stabilan ključ za termin (bez indeksa), da bi animacija izlaska pogodila
+// baš obrisani red. Duplikati dobijaju redni broj.
+function terminKeys(list: ScheduleEntry[]): string[] {
+  const seen: Record<string, number> = {}
+  return list.map(e => {
+    const base = `${e.subject}|${e.day}|${e.start}|${e.type_short}|${e.room}`
+    seen[base] = (seen[base] ?? 0) + 1
+    return `${base}#${seen[base]}`
+  })
+}
+
+// Red liste koji se pri brisanju skupi i izbledi, a ostali se pomere na mesto.
+function AnimatedRow({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}
+      className="overflow-hidden"
+    >
+      <div className="pb-1">{children}</div>
+    </motion.div>
+  )
+}
 
 export default function PreneseniPage() {
   const router = useRouter()
@@ -285,6 +312,8 @@ export default function PreneseniPage() {
   const trebaPredavanje = terminiPredavanja.length > 0
   const trebaVezbe = terminiVezbi.length > 0
   const canAdd = odabranoPredavanje !== null || odabraneVezbe !== null
+  const extraKeys = terminKeys(extraTermini)
+  const hiddenKeys = terminKeys(hiddenTermini)
 
 
   return (
@@ -325,7 +354,7 @@ export default function PreneseniPage() {
         <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS} ${loadError ? 'hidden' : ''}`}>
 
           {/* Moji predmeti (izborni) */}
-          <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
+          <div style={stagger(0, 50)} className="anim-up rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
             <button
               type="button"
               onClick={() => router.push('/izborni')}
@@ -346,35 +375,39 @@ export default function PreneseniPage() {
           </div>
 
           {/* Dodati termini */}
-          {extraTermini.length > 0 && (
-            <div>
+          <Expand open={extraTermini.length > 0}>
+            <div style={stagger(1, 50)} className="anim-up">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Dodati termini
               </label>
-              <div className="space-y-1">
-                {extraTermini.map((e, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {e.subject}
-                      </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => obrisiTermin(i)}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg
-                       text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500
-                       transition-colors shrink-0"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+              <div>
+                <AnimatePresence initial={false}>
+                  {extraTermini.map((e, i) => (
+                    <AnimatedRow key={extraKeys[i]}>
+                      <div
+                        className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {e.subject}
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                            {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => obrisiTermin(i)}
+                          aria-label="Obriši termin"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg
+                           text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500
+                           transition-colors shrink-0"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </AnimatedRow>
+                  ))}
+                </AnimatePresence>
               </div>
               <div className="mt-2 border-t border-[#024c7d]/15 pt-2 dark:border-white/20">
                 <button
@@ -389,43 +422,46 @@ export default function PreneseniPage() {
                 </button>
               </div>
             </div>
-          )}
+          </Expand>
 
           {/* Skriveni termini */}
-          {hiddenTermini.length > 0 && (
-            <div>
+          <Expand open={hiddenTermini.length > 0}>
+            <div style={stagger(2, 50)} className="anim-up">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Skriveni termini
               </label>
-              <div className="space-y-1">
-                {hiddenTermini.map((e, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {e.subject}
-                      </p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => vratiTermin(i)}
-                      className="text-xs text-gray-400 hover:text-[#024c7d] dark:hover:text-[#60c3ad] transition-colors shrink-0"
-                    >
-                      Vrati
-                    </button>
-                  </div>
-                ))}
+              <div>
+                <AnimatePresence initial={false}>
+                  {hiddenTermini.map((e, i) => (
+                    <AnimatedRow key={hiddenKeys[i]}>
+                      <div
+                        className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {e.subject}
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                            {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => vratiTermin(i)}
+                          className="text-xs text-gray-400 hover:text-[#024c7d] dark:hover:text-[#60c3ad] transition-colors shrink-0"
+                        >
+                          Vrati
+                        </button>
+                      </div>
+                    </AnimatedRow>
+                  ))}
+                </AnimatePresence>
               </div>
             </div>
-          )}
+          </Expand>
 
           {/* Prethodno odabrani predmeti iz podešavanja */}
           {prevSubjects.length > 0 && (
-            <div>
+            <div style={stagger(3, 50)} className="anim-up">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Preneseni predmeti
               </label>
@@ -436,7 +472,7 @@ export default function PreneseniPage() {
                     <button
                       key={i}
                       onClick={() => handlePrevSubjectClick(p)}
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-colors
+                      className={`btn-lift inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium
                         ${active
                           ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
                           : 'bg-white/70 text-gray-600 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20'}`}
@@ -451,7 +487,7 @@ export default function PreneseniPage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
+          <div style={stagger(4, 50)} className="anim-up rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
             <button
               type="button"
               onClick={toggleManualOpen}
@@ -466,11 +502,11 @@ export default function PreneseniPage() {
                 </p>
               </div>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
-                {manualOpen ? <IconChevronUp className="h-4 w-4" /> : <IconChevronDown className="h-4 w-4" />}
+                <IconChevronDown className={`h-4 w-4 transition-transform duration-300 ${manualOpen ? 'rotate-180' : ''}`} />
               </span>
             </button>
 
-            {manualOpen && (
+            <Expand open={manualOpen}>
               <div className="mt-4 space-y-4 border-t border-[#024c7d]/10 pt-4 dark:border-white/10">
                 {/* Godina prenesenog predmeta */}
                 <div>
@@ -482,7 +518,7 @@ export default function PreneseniPage() {
                       <button
                         key={g}
                         onClick={() => handleGodinaSelect(g)}
-                        className={`py-2 rounded-full text-sm font-medium border transition-colors
+                        className={`btn-lift py-2 rounded-full text-sm font-medium border
                           ${godina === g
                             ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
                             : 'bg-white/70 text-gray-700 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20 dark:hover:bg-gray-800/70'
@@ -513,7 +549,7 @@ export default function PreneseniPage() {
                         </button>
                       </div>
                     ) : (
-                      <div className="space-y-1.5">
+                      <div className="anim-up space-y-1.5">
                         <input
                           type="text"
                           value={predmetSearch}
@@ -542,12 +578,13 @@ export default function PreneseniPage() {
                   </div>
                 )}
               </div>
-            )}
+            </Expand>
           </div>
 
           {/* Dostupni termini */}
           {dostupniTermini.length > 0 && (
-            <div className="space-y-4">
+            // Ključ je predmet: za svaki novi predmet termini ulaze iznova.
+            <div key={odabraniPredmet} className="anim-up space-y-4">
               {terminiPredavanja.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -559,7 +596,8 @@ export default function PreneseniPage() {
                       return (
                         <label
                           key={`p-${i}`}
-                          className={`flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
+                          style={stagger(i, 30, 8, 60)}
+                          className={`anim-up flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
                         ${odabranoPredavanje === e
                               ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
@@ -604,7 +642,8 @@ export default function PreneseniPage() {
                       return (
                         <label
                           key={`v-${i}`}
-                          className={`flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
+                          style={stagger(i, 30, 8, 60)}
+                          className={`anim-up flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
                         ${odabraneVezbe === e
                               ? 'bg-[#024c7d] border-[#024c7d] dark:bg-[#60c3ad] dark:border-[#60c3ad]'
@@ -658,7 +697,7 @@ export default function PreneseniPage() {
 
           {/* Preporuka */}
           {preporuka && (
-            <div className={`rounded-xl p-4 ${GLASS}`}>
+            <div key={preporuka} className={`anim-up rounded-xl p-4 ${GLASS}`}>
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Predlog termina</p>
               <div className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed space-y-2">
                 {preporuka.split('\n').map((line, i) => (
@@ -699,7 +738,7 @@ export default function PreneseniPage() {
                 setOdabraneVezbe(null)
               }}
               disabled={!canAdd}
-            className={`btn-lift w-full rounded-xl py-2.5 text-sm font-medium
+            className={`btn-lift w-full rounded-xl py-2.5 text-sm font-medium ${dodato ? 'anim-bump' : ''}
       ${dodato
                   ? 'bg-green-100 text-green-800 cursor-default dark:bg-green-950/50 dark:text-green-300'
                   : canAdd
