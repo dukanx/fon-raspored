@@ -119,7 +119,7 @@ export default function DeliPage() {
             </p>
             <button
               onClick={() => router.push('/')}
-              className="mt-6 w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
+              className="btn-lift mt-6 w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
             >
               Na početnu
             </button>
@@ -188,7 +188,7 @@ export default function DeliPage() {
               {!state.drift && (
                 <button
                   onClick={() => apply(state)}
-                  className="w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
+                  className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
                 >
                   Primeni raspored
                 </button>
@@ -197,7 +197,7 @@ export default function DeliPage() {
                 onClick={() => pickManually(state)}
                 className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors ${
                   state.drift
-                    ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
+                    ? 'btn-lift bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                     : 'text-[#024c7d] dark:text-[#60c3ad] hover:bg-white/70 dark:hover:bg-gray-800/60'
                 }`}
               >

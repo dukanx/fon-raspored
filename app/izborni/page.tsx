@@ -8,6 +8,7 @@ import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
 import OfflineNotice from '@/components/OfflineNotice'
+import { stagger } from '@/lib/stagger'
 
 const GLASS = 'liquid-glass'
 
@@ -233,7 +234,8 @@ export default function IzbornoPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">
-      <div className={`w-full max-w-md rounded-[1.75rem] p-8 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
+      {/* Ulazi zdesna, kao sledeći korak posle početne (koja odlazi ulevo). */}
+      <div className={`enter-right w-full max-w-md rounded-[1.75rem] p-8 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         <div className="mb-6">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
@@ -245,10 +247,12 @@ export default function IzbornoPage() {
         </div>
 
         <div className="space-y-1 mb-4 max-h-72 overflow-y-auto">
-          {subjects.map(subject => (
+          {subjects.map((subject, i) => (
+            // Predmeti se pojave jedan za drugim, pošto kartica skoro uđe.
             <label
               key={subject}
-              className="flex items-center gap-3 rounded-xl px-2 py-2.5
+              style={stagger(i, 35, 10, 150)}
+              className="anim-up flex items-center gap-3 rounded-xl px-2 py-2.5
                          hover:bg-white/70 dark:hover:bg-gray-800/60 cursor-pointer transition-colors"
             >
               <input
@@ -479,7 +483,7 @@ export default function IzbornoPage() {
             <button
               onClick={handleConfirm}
               disabled={!hasAnySelection}
-              className={`flex-[2] sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.97]
+              className={`btn-lift flex-[2] sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium
                 ${hasAnySelection
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                   : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}

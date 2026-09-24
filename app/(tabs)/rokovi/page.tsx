@@ -1170,7 +1170,7 @@ export default function RokoviPage() {
           <div className="mt-5 space-y-2">
             <button
               onClick={handleSave}
-              className="w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
+              className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
             >
               Sačuvaj
             </button>
@@ -1198,9 +1198,9 @@ export default function RokoviPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium
+            className="btn-lift inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium
               bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-              dark:hover:bg-[#4db3a0] transition-colors"
+              dark:hover:bg-[#4db3a0]"
           >
             Idi na početak
             <IconForward className="h-4 w-4 opacity-80" />

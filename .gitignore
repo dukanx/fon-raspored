@@ -45,3 +45,6 @@ __pycache__/
 
 # efemerni spisak novih rokova za push (generiše check_fon.py u CI-ju)
 /scripts/pending_notify.json
+
+# dizajn handoff za novu pocetnu, lokalna referenca
+/FON Raspored početna redizajn/

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Expand from './Expand'
 
 // Chrome/Android beforeinstallprompt (nije u standardnom TS lib-u).
 type BeforeInstallPromptEvent = Event & {
@@ -24,6 +25,9 @@ const baseIcon = (p: IconProps) => ({
 const IconInstall = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 3v11M8 10l4 4 4-4" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
 )
+const IconChevron = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
+)
 // Zaobljeni kvadrat sa plusom — iOS "Dodaj na početni ekran".
 const IconAddToHome = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="5" /><path d="M12 8v8M8 12h8" /></svg>
@@ -35,13 +39,19 @@ const IconAddToHome = (p: IconProps) => (
 // withLink: na /deli strani pokazuje i "kopiraj ovaj link" — jer na iOS-u
 // instalirana PWA ima odvojen storage od Safarija, pa se deljeni raspored
 // primenjuje tek kad se link nalepi UNUTAR aplikacije.
+//
+// compact: samo red sa naslovom, a uputstvo se raširi na tap. Za početnu, gde
+// kartica ne sme da gura ostatak prvog ekrana.
 export default function InstallPrompt({
   withLink = false,
+  compact = false,
   className = '',
 }: {
   withLink?: boolean
+  compact?: boolean
   className?: string
 }) {
+  const [open, setOpen] = useState(false)
   const [checked, setChecked] = useState(false)
   const [platform, setPlatform] = useState<'ios' | 'android' | 'other'>('other')
   const [standalone, setStandalone] = useState(true)
@@ -97,13 +107,9 @@ export default function InstallPrompt({
     }
   }
 
-  return (
-    <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 p-4 ${GLASS} ${className}`}>
-      <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100">
-        <IconInstall className="h-4 w-4 text-[#024c7d] dark:text-[#60c3ad]" />
-        Instaliraj aplikaciju
-      </p>
-      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+  const details = (
+    <>
+      <p className={`text-xs text-gray-500 dark:text-gray-400 ${compact ? '' : 'mt-1'}`}>
         Brže i lakše korišćenje, uz mogućnost notifikacija za rokove i prijave ispita.
       </p>
 
@@ -143,6 +149,41 @@ export default function InstallPrompt({
           </button>
         </div>
       )}
+    </>
+  )
+
+  const title = (
+    <>
+      <IconInstall className="h-4 w-4 text-[#024c7d] dark:text-[#60c3ad]" />
+      Instaliraj aplikaciju
+    </>
+  )
+
+  if (!compact) {
+    return (
+      <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 p-4 ${GLASS} ${className}`}>
+        <p className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100">{title}</p>
+        {details}
+      </div>
+    )
+  }
+
+  return (
+    <div className={`rounded-2xl border border-[#024c7d]/15 dark:border-white/15 ${GLASS} ${className}`}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="no-hover-lift flex w-full items-center gap-1.5 px-4 py-3 text-left text-sm font-medium text-gray-900 dark:text-gray-100"
+      >
+        {title}
+        <IconChevron
+          className={`ml-auto h-4 w-4 text-gray-400 transition-transform duration-300 dark:text-gray-500 ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <Expand open={open} className="px-4 pb-4">
+        {details}
+      </Expand>
     </div>
   )
 }

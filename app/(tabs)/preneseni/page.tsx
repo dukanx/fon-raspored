@@ -645,7 +645,7 @@ export default function PreneseniPage() {
             <button
               onClick={getPreporuka}
               disabled={loading}
-              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium transition-colors
+              className={`btn-lift inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium
                 ${loading
                   ? 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
                   : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
@@ -699,7 +699,7 @@ export default function PreneseniPage() {
                 setOdabraneVezbe(null)
               }}
               disabled={!canAdd}
-            className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors
+            className={`btn-lift w-full rounded-xl py-2.5 text-sm font-medium
       ${dodato
                   ? 'bg-green-100 text-green-800 cursor-default dark:bg-green-950/50 dark:text-green-300'
                   : canAdd

@@ -163,6 +163,97 @@ a[href]:active {
   box-shadow: none;
 }
 
+/* Glavna dugmad: na hover se blago podignu, na tap se stisnu. Selektori imaju
+   `:not([disabled])` da bi bili jači od globalnog `button:hover` pravila iznad.
+   Hover je samo za uređaje sa mišem, inače na telefonu ostane "zalepljen"
+   posle tapa. */
+:root {
+  --lift-shadow: 0 4px 12px rgba(2, 76, 125, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --lift-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-lift,
+.btn-lift:not([disabled]):hover {
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (hover: hover) {
+  .btn-lift:not([disabled]):hover {
+    transform: translateY(-1px);
+    box-shadow: var(--lift-shadow);
+  }
+}
+
+.btn-lift:not([disabled]):active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* Ulazne animacije koraka na početnoj. Trajanje i kašnjenje, po potrebi,
+   postavlja element inline (`animationDuration`, `animationDelay`). */
+@keyframes anim-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes anim-pop {
+  0% { opacity: 0; transform: translateY(14px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.03); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes anim-left {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.anim-up { animation: anim-up 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.anim-pop { animation: anim-pop 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.anim-left { animation: anim-left 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Prelaz početna → /izborni: početna ode (kartica ulevo, pregled naniže),
+   a kartica sa predmetima uđe zdesna. `forwards` drži početnu sakrivenom do
+   navigacije. */
+@keyframes leave-left {
+  to { opacity: 0; transform: translateX(-24px); }
+}
+
+@keyframes leave-down {
+  to { opacity: 0; transform: translateY(16px); }
+}
+
+@keyframes leave-fade {
+  to { opacity: 0; }
+}
+
+@keyframes enter-right {
+  from { opacity: 0; transform: translateX(28px); }
+}
+
+.leave-left { animation: leave-left 0.25s cubic-bezier(0.4, 0, 1, 1) forwards; }
+.leave-down { animation: leave-down 0.25s cubic-bezier(0.4, 0, 1, 1) forwards; }
+.leave-fade { animation: leave-fade 0.2s ease-in forwards; }
+.enter-right { animation: enter-right 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .leave-left,
+  .leave-down,
+  .leave-fade,
+  .enter-right,
+  .anim-up,
+  .anim-pop,
+  .anim-left {
+    animation: none !important;
+  }
+
+  .btn-lift:not([disabled]):hover {
+    transform: none;
+  }
+}
+
 /* Treptanje kursora u TextType-u. Ranije je to radio gsap (opacity yoyo,
    power2.inOut) — jedina njegova upotreba u celom projektu, a nosio je 30 KB
    gzipovano na ulaznoj ruti `/`. CSS animacija daje isti efekat: `alternate`

@@ -936,8 +936,8 @@ export default function RasporedPage() {
             </p>
             <Link
               href="/izborni"
-              className="mt-4 inline-flex rounded-lg bg-[#024c7d] px-4 py-2 text-xs font-medium text-white
-                         hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
+              className="btn-lift mt-4 inline-flex rounded-lg bg-[#024c7d] px-4 py-2 text-xs font-medium text-white
+                         hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
             >
               Izaberi predmete
             </Link>
@@ -1184,9 +1184,9 @@ export default function RasporedPage() {
             <div className="flex flex-col gap-2 sm:flex-row-reverse">
               <button
                 onClick={goPickSubjects}
-                className="flex-1 rounded-lg py-2.5 text-sm font-medium active:scale-[0.97]
+                className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
                            bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-                           dark:hover:bg-[#4db3a0] transition-colors"
+                           dark:hover:bg-[#4db3a0]"
               >
                 Izaberi predmete
               </button>
@@ -1236,9 +1236,9 @@ export default function RasporedPage() {
 
             <button
               onClick={() => setShowIcsHelp(false)}
-              className="mt-6 w-full rounded-lg py-2.5 text-sm font-medium active:scale-[0.97]
+              className="btn-lift mt-6 w-full rounded-lg py-2.5 text-sm font-medium
                          bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-                         dark:hover:bg-[#4db3a0] transition-colors"
+                         dark:hover:bg-[#4db3a0]"
             >
               Razumem
             </button>
@@ -1260,7 +1260,7 @@ export default function RasporedPage() {
             <div className="mt-4 space-y-2">
               <button
                 onClick={() => { void shareSchedule(true) }}
-                className="w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
+                className="btn-lift w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
               >
                 Da, svi predmeti
               </button>
