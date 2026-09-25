@@ -1,0 +1,83 @@
+name: Obavesti o novom rasporedu nastave
+
+# Kad se na main merge-uje god.json sa NOVIM semestrom (npr. PR iz
+# update-nastava.yml), pošalji push svim pretplatnicima. Re-objava istog
+# semestra (ispravke) ne šalje ništa — poredi se `semester` string.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/data/1god.json'
+      - 'public/data/2god.json'
+      - 'public/data/3god.json'
+      - 'public/data/4god.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      HAS_PUSH: ${{ secrets.VAPID_PRIVATE_KEY != '' }}
+      SITE_URL: https://www.fonraspored.rs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Da li je semestar nov?
+        id: sem
+        run: |
+          NEW=$(jq -r .semester public/data/1god.json)
+          BEFORE="${{ github.event.before }}"
+          OLD=""
+          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            OLD=$(git show "$BEFORE:public/data/1god.json" | jq -r .semester)
+          fi
+          echo "Staro: '$OLD' | novo: '$NEW'"
+          echo "semester=$NEW" >> "$GITHUB_OUTPUT"
+          # Ručno pokretanje uvek šalje (dedup u send_push.mjs ipak sprečava duplikat).
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$OLD" != "$NEW" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Push ne sme da stigne pre nego što Vercel objavi novi deploy — inače bi
+      # korisnik kliknuo i video stari raspored. Čekamo do 20 min.
+      - name: Sačekaj da sajt servira novi raspored
+        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        env:
+          SEM: ${{ steps.sem.outputs.semester }}
+        run: |
+          for i in $(seq 1 40); do
+            LIVE=$(curl -fsSL "$SITE_URL/data/1god.json?t=$(date +%s)" | jq -r .semester || true)
+            echo "Pokušaj $i: sajt servira '$LIVE'"
+            if [ "$LIVE" = "$SEM" ]; then exit 0; fi
+            sleep 30
+          done
+          echo "Sajt i dalje ne servira '$SEM' — ne šaljem." >&2
+          exit 1
+
+      - name: Set up Node
+        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        run: npm ci
+
+      - name: Pošalji push
+        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        env:
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+        run: node scripts/send_push.mjs nastava "${{ steps.sem.outputs.semester }}"

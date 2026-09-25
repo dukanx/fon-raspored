@@ -16,6 +16,8 @@ import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
 import AppTour, { type TourSlide } from '@/components/AppTour'
 import OfflineNotice from '@/components/OfflineNotice'
+import SchedulePendingCard from '@/components/SchedulePendingCard'
+import { pendingSemester, todayLocalIso, type PendingSemester } from '@/lib/season'
 import { isStandalone, pushSupported } from '@/lib/push'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
@@ -225,6 +227,11 @@ export default function RasporedPage() {
   const [showShareChoice, setShowShareChoice] = useState(false)
   const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
+  // Novi semestar je po kalendaru počeo, a FON još nije objavio raspored —
+  // stari raspored je tada skriven iza kartice (v. lib/season).
+  const [pending, setPending] = useState<PendingSemester | null>(null)
+  const [loadedSemester, setLoadedSemester] = useState('')
+  const [showOld, setShowOld] = useState(false)
   const [showTour, setShowTour] = useState(false)
   // Podaci se nisu učitali (offline i nikad keširano) — razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
@@ -267,6 +274,8 @@ export default function RasporedPage() {
         // semestar" popup. Mora pre čitanja fon_subjects (reset ga briše).
         reconcileSemester(data.semester, meta.group)
         if (isFlipPending(data.semester)) setShowFlipPopup(true)
+        setPending(pendingSemester(data.semester, todayLocalIso()))
+        setLoadedSemester(data.semester)
 
         const all = getScheduleForGroup(data, meta.group)
         setAllSubjects(uniqueSubjectsForGroup(data, meta.group))
@@ -320,7 +329,9 @@ export default function RasporedPage() {
   // (npr. preko "Moji predmeti"), prikaže se sam za sebe sledeći put kad se
   // stigne na Raspored. Uvek sa malim zakašnjenjem posle promene taba, ne odmah.
   useEffect(() => {
-    if (!isHydrated || !meta.group) return
+    // Dok čekamo novi raspored, tur o izvozu/deljenju nema smisla — prikaže se
+    // kad raspored izađe.
+    if (!isHydrated || !meta.group || pending) return
     const tourSeen = app.appTourSeen.get()
     const transferredSeen = app.prevSubjectsIntroSeen.get()
     const hasTransferred = byGroup.prevSubjects(meta.group).get().length > 0
@@ -346,7 +357,7 @@ export default function RasporedPage() {
     }
 
     return () => { clearTimeout(t); clearInterval(poll) }
-  }, [isHydrated, meta.group])
+  }, [isHydrated, meta.group, pending])
 
   const tourHasTransferredSlide = hasTransferredSubjects()
 
@@ -904,7 +915,16 @@ export default function RasporedPage() {
       {/* ---------- Sadržaj ---------- */}
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
 
-        {loadError ? (
+        {pending && !loadError && (
+          <SchedulePendingCard
+            pending={pending}
+            oldSemester={loadedSemester}
+            showingOld={showOld}
+            onToggleOld={() => setShowOld(v => !v)}
+          />
+        )}
+
+        {pending && !showOld && !loadError ? null : loadError ? (
           <OfflineNotice />
         ) : isLoading ? (
           view === 'grid' ? (
