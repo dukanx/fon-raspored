@@ -34,14 +34,12 @@ function subtractDaysUTC(dateStr: string, days: number): string {
   return dt.toISOString().split('T')[0]
 }
 
-export function pickDefaultTab(
+// Ispitni rokovi (bez kolokvijuma) kao opsezi datuma, spojeni u klastere kad
+// je razmak između susednih rokova mali. Sortirano hronološki.
+export function ispitClusters(
   rokovi: RokData[],
-  todayStr: string,
-  opts?: { leadDays?: number; mergeGapDays?: number }
-): '/raspored' | '/rokovi' {
-  const leadDays = opts?.leadDays ?? ROK_LEAD_DAYS
-  const mergeGapDays = opts?.mergeGapDays ?? ROK_MERGE_GAP_DAYS
-
+  mergeGapDays: number = ROK_MERGE_GAP_DAYS
+): { first: string; last: string }[] {
   const ranges = rokovi
     .filter(r => r.tip === 'ispit')
     .map(r => {
@@ -51,7 +49,6 @@ export function pickDefaultTab(
     .filter((r): r is { first: string; last: string } => r !== null)
     .sort((a, b) => a.first.localeCompare(b.first))
 
-  // Spoji susedne rokove u klastere kad je razmak između njih mali.
   const clusters: { first: string; last: string }[] = []
   for (const r of ranges) {
     const prev = clusters[clusters.length - 1]
@@ -61,6 +58,16 @@ export function pickDefaultTab(
       clusters.push({ ...r })
     }
   }
+  return clusters
+}
+
+export function pickDefaultTab(
+  rokovi: RokData[],
+  todayStr: string,
+  opts?: { leadDays?: number; mergeGapDays?: number }
+): '/raspored' | '/rokovi' {
+  const leadDays = opts?.leadDays ?? ROK_LEAD_DAYS
+  const clusters = ispitClusters(rokovi, opts?.mergeGapDays)
 
   return clusters.some(c => todayStr >= subtractDaysUTC(c.first, leadDays) && todayStr <= c.last)
     ? '/rokovi'

@@ -1,7 +1,12 @@
 name: Ažuriraj raspored nastave
 
-# Ručni okidač — pokreni kad FON objavi/updatuje raspored nastave (~4x godišnje).
+# Ručno, ili na svakih 30 min u mesecima kad FON objavljuje raspored (septembar
+# i oktobar za zimski, februar i mart za letnji). Zakazano pokretanje prvo brzo
+# proveri da li FON nudi semestar noviji od objavljenog (--check-new) i ako ne,
+# tu staje. Ako da, otvara PR, a merge pokreće push (notify-nastava.yml).
 on:
+  schedule:
+    - cron: '*/30 * * 9,10,2,3 *'
   workflow_dispatch:
     inputs:
       semester:
@@ -29,18 +34,34 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      # Kod zakazanog pokretanja `inputs` su prazni, pa podrazumevane vrednosti
+      # idu preko `||`. Semestar se ne pogađa po mesecu (auto bi u septembru
+      # rekao letnji), nego ga daje --check-new.
+      - name: Da li FON nudi novi semestar?
+        id: check
+        if: github.event_name == 'schedule'
+        run: |
+          pip install beautifulsoup4
+          SEM=$(python scripts/update_nastava.py --check-new --years "${{ inputs.years || '1,2,3,4' }}")
+          echo "semester=$SEM" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
         run: pip install pdfplumber beautifulsoup4
 
       - name: Regeneriši raspored nastave
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
         run: |
-          ARGS="--years ${{ inputs.years }}"
-          if [ "${{ inputs.semester }}" != "auto" ]; then
-            ARGS="$ARGS --semester ${{ inputs.semester }}"
+          ARGS="--years ${{ inputs.years || '1,2,3,4' }}"
+          SEM="${{ steps.check.outputs.semester || inputs.semester }}"
+          if [ -n "$SEM" ] && [ "$SEM" != "auto" ]; then
+            ARGS="$ARGS --semester $SEM"
           fi
           python scripts/update_nastava.py $ARGS
 
+      # Ako PR na grani auto/raspored-nastave već postoji, samo se osveži.
       - name: Napravi Pull Request
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
         uses: peter-evans/create-pull-request@v6
         with:
           branch: auto/raspored-nastave
@@ -53,9 +74,15 @@ jobs:
 
             Pregledaj diff pre merge-a — posebno proveri da nije nešto
             neočekivano nestalo. Sigurnosna provera već odbacuje regresiju
-            (manje predmeta/grupa nego ranije).
+            (manje predmeta/grupa nego u istom semestru ranije).
+
+            Merge novog semestra šalje push svim pretplatnicima.
+          # Arhive po semestru idu uz god.json: sa njima poredi sigurnosna
+          # provera, a mešani Sep/Okt rokovi iz njih nude predmete.
           add-paths: |
             public/data/1god.json
             public/data/2god.json
             public/data/3god.json
             public/data/4god.json
+            public/data/*god-letnji.json
+            public/data/*god-zimski.json

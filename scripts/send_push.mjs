@@ -4,6 +4,8 @@
 //
 //   node scripts/send_push.mjs new         -> "dodat je novi raspored ..." (čita pending_notify.json)
 //   node scripts/send_push.mjs reminders   -> podsetnici dan pred početak/kraj prijave (čita rokovi.json)
+//   node scripts/send_push.mjs nastava "Zimski 2026/27"
+//                                          -> "objavljen je raspored nastave" (jednom po semestru)
 //
 // Env: NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:),
 //      UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
@@ -118,6 +120,21 @@ function reminderPayloads() {
   return payloads
 }
 
+// Novi semestar u god.json (okida ga notify-nastava.yml posle merge-a).
+// Zimski = nova školska godina, pa podseti i na proveru godine/grupe.
+function nastavaPayloads(semester) {
+  if (!semester) return []
+  const isZimski = semester.toLowerCase().startsWith('zimski')
+  return [{
+    title: `Objavljen je raspored — ${semester}`,
+    body: isZimski
+      ? 'Nova školska godina: proveri godinu i grupu, pa izaberi predmete.'
+      : 'Izaberi predmete za novi semestar.',
+    url: '/raspored',
+    tag: `nastava-${semester}`,
+  }]
+}
+
 // --- slanje -----------------------------------------------------------------
 
 async function getSubscriptions() {
@@ -175,14 +192,28 @@ async function dedupeReminders(payloads) {
   return out
 }
 
+// Obaveštenje o novom rasporedu šaljemo samo jednom po semestru — FON ume da
+// re-objavi isti raspored sa ispravkama, a ni ponovljen workflow ne sme da
+// pošalje duplikat.
+async function dedupeNastava(payloads) {
+  const out = []
+  for (const p of payloads) {
+    const fresh = await redis.set(`sent:${p.tag}`, '1', { nx: true, ex: 60 * 60 * 24 * 200 })
+    if (fresh) out.push(p)
+    else console.log(`Preskočeno (već poslato): ${p.tag}`)
+  }
+  return out
+}
+
 // --- main -------------------------------------------------------------------
 
 const mode = process.argv[2]
 let payloads = []
 if (mode === 'new') payloads = newRokPayloads()
 else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads())
+else if (mode === 'nastava') payloads = await dedupeNastava(nastavaPayloads(process.argv[3]))
 else {
-  console.error("Upotreba: node scripts/send_push.mjs <new|reminders>")
+  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>">')
   process.exit(1)
 }
 

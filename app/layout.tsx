@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import { SITE_URL } from "@/lib/site";
@@ -16,6 +16,14 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// `cover`: stranica se crta preko celog ekrana, i ispod statusne trake i
+// trake sa adresom na iPhone-u. Bez toga Safari te pojaseve boji ravnom bojom,
+// pa pozadina (body::before) deluje odsečeno gore i dole. Da sadržaj ne bi
+// otišao ispod njih, body ima padding po safe-area-inset-* (globals.css).
+export const viewport: Viewport = {
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

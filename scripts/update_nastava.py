@@ -11,6 +11,7 @@ Pokretanje:
   python scripts/update_nastava.py                # auto semestar po mesecu
   python scripts/update_nastava.py --semester letnji
   python scripts/update_nastava.py --years 4 --force
+  python scripts/update_nastava.py --check-new    # samo: da li FON nudi novi semestar
 """
 
 import argparse
@@ -26,7 +27,6 @@ from bs4 import BeautifulSoup
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
-import fon_parser  # noqa: E402
 
 DATA_DIR = SCRIPTS_DIR.parent / "public" / "data"
 PAGE_URL = "https://oas.fon.bg.ac.rs/raspored-nastave/"
@@ -93,8 +93,58 @@ def resolve_pdfs(html, semester):
     }
 
 
+def next_semester(published):
+    """Semestar posle objavljenog: 'Letnji 2025/26' -> ('zimski', '2026/27'),
+    'Zimski 2026/27' -> ('letnji', '2026/27'). None za nepoznat format."""
+    m = re.match(r"^(Zimski|Letnji)\s+(\d{4})/\d{2}$", published.strip(), re.I)
+    if not m:
+        return None
+    start = int(m.group(2))
+    if m.group(1).lower() == "letnji":
+        return "zimski", f"{start + 1}/{(start + 2) % 100:02d}"
+    return "letnji", f"{start}/{(start + 1) % 100:02d}"
+
+
+def _upload_month(href):
+    """(godina, mesec) iz WordPress putanje .../uploads/YYYY/MM/..., ili None."""
+    m = re.search(r"/uploads/(\d{4})/(\d{2})/", href)
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
+def check_new(html, published, years):
+    """Da li FON nudi semestar noviji od objavljenog? Vraća 'zimski'/'letnji' ili None.
+
+    Nije dovoljno da stranica ima PDF-ove tog semestra: prošlogodišnji zimski
+    mogu da stoje na stranici i posle letnjeg, pa bi bili parsirani kao nov
+    semestar i otišao bi lažan push. Zato stranica mora da kaže da je školska
+    godina ona koju očekujemo, a PDF-ovi uploadovani u toj godini ne smeju biti
+    stari (kad putanja ima datum). Traže se rasporedi za sve tražene godine, da
+    se ne bi objavio samo deo.
+    """
+    nxt = next_semester(published)
+    if not nxt:
+        return None
+    kind, ay = nxt
+    if academic_year(html) != ay:
+        return None
+    start = int(ay[:4])
+    # Najraniji mesec kad može biti uploadovan PDF za taj semestar.
+    earliest = (start, 6) if kind == "zimski" else (start, 11)
+    pdfs = resolve_pdfs(html, kind)
+    for y in years:
+        if y not in pdfs:
+            return None
+        uploaded = _upload_month(pdfs[y]["raspored"])
+        if uploaded and uploaded < earliest:
+            return None
+    return kind
+
+
 def build_year(raspored_url, grupe_url, year, semester_str):
     """Skine PDF-ove i vrati parsiran dict (kao fon_parser)."""
+    # Ovde, ne na vrhu: --check-new ne treba pdfplumber, pa ga workflow
+    # instalira tek kad ima šta da se parsira.
+    import fon_parser
     with tempfile.TemporaryDirectory() as td:
         rp = Path(td) / "raspored.pdf"
         rp.write_bytes(fetch(raspored_url, binary=True))
@@ -115,7 +165,7 @@ def build_year(raspored_url, grupe_url, year, semester_str):
 
 def load_existing(path):
     import json
-    if path.exists():
+    if path and path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return None
 
@@ -140,6 +190,21 @@ def check_regression(new, compare_path):
                 f"manje grupa nego ranije ({len(new['groups'])} < {len(old['groups'])})"
             )
     return problems
+
+
+def compare_path_for(year, semester):
+    """Sa čim se poredi novi raspored u sigurnosnoj proveri: sa arhivom istog
+    semestra, ili sa god.json ako je u njemu taj semestar. Pri prelasku sa
+    letnjeg na zimski god.json je letnji, a zimski ima drugačiji broj predmeta,
+    pa bi poređenje sa njim odbilo ispravan raspored. None = nema s čim."""
+    archive = DATA_DIR / f"{year}god-{semester}.json"
+    if archive.exists():
+        return archive
+    current = DATA_DIR / f"{year}god.json"
+    old = load_existing(current)
+    if old and old.get("semester", "").lower().startswith(semester):
+        return current
+    return None
 
 
 def check_meta_coverage(results):
@@ -187,10 +252,23 @@ def main():
                     help="Upiši i pored regresije (preskače sigurnosnu proveru)")
     ap.add_argument("--archive-only", action="store_true",
                     help="Upiši samo god-{semestar}.json arhivu; ne diraj god.json (backfill)")
+    ap.add_argument("--check-new", action="store_true",
+                    help="Samo proveri da li FON nudi semestar noviji od objavljenog; "
+                         "ispiše 'zimski'/'letnji' na stdout ako da, ništa ako ne")
     args = ap.parse_args()
 
-    semester = args.semester or auto_semester()
     years = [int(y) for y in args.years.split(",") if y.strip()]
+
+    if args.check_new:
+        import json
+        published = json.loads((DATA_DIR / "1god.json").read_text(encoding="utf-8"))["semester"]
+        found = check_new(fetch(PAGE_URL), published, years)
+        print(f"Objavljen: {published} | novo na FON-u: {found or 'ništa'}", file=sys.stderr)
+        if found:
+            print(found)
+        return
+
+    semester = args.semester or auto_semester()
 
     print(f"Semestar: {semester} | godine: {years}", file=sys.stderr)
     html = fetch(PAGE_URL)
@@ -208,10 +286,7 @@ def main():
         print(f"  raspored: {pdfs[y]['raspored'].split('/')[-1]}", file=sys.stderr)
         print(f"  grupe:    {(pdfs[y]['grupe'] or '???').split('/')[-1]}", file=sys.stderr)
         res = build_year(pdfs[y]["raspored"], pdfs[y]["grupe"], y, semester_str)
-        compare_path = DATA_DIR / (
-            f"{y}god-{semester}.json" if args.archive_only else f"{y}god.json"
-        )
-        problems = check_regression(res, compare_path)
+        problems = check_regression(res, compare_path_for(y, semester))
         n_subj = len({e["subject"] for e in res["entries"]})
         print(f"  -> stavki={len(res['entries'])} grupa={len(res['groups'])} predmeta={n_subj}",
               file=sys.stderr)

@@ -239,6 +239,18 @@ export default function NotificationBell({ className = '' }: { className?: strin
               </p>
             </div>
           </div>
+
+          <div className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+              <IconCalendar className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Raspored nastave</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Čim FON objavi raspored za novi semestar.
+              </p>
+            </div>
+          </div>
         </div>
 
         {error && <p className="mt-3 text-center text-xs text-red-500">{error}</p>}

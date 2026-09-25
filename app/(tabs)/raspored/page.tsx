@@ -21,6 +21,7 @@ import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { stagger } from '@/lib/stagger'
+import { bootDecision, type BootDecision } from '@/lib/waiting'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -259,9 +260,17 @@ export default function RasporedPage() {
       return
     }
 
-    fetch(`/data/${meta.year}god.json`)
-      .then(r => { if (!r.ok) throw new Error('http'); return r.json() })
-      .then((data: SemesterData) => {
+    // U periodu čekanja (novi semestar još nije objavljen) Raspored bi pokazao
+    // stari raspored kao aktuelan, pa se vraća na početnu, koja to objašnjava.
+    Promise.all([
+      fetch(`/data/${meta.year}god.json`).then(r => { if (!r.ok) throw new Error('http'); return r.json() }),
+      bootDecision(),
+    ])
+      .then(([data, { pending }]: [SemesterData, BootDecision]) => {
+        if (pending) {
+          router.replace('/')
+          return
+        }
         setLoadError(false)
         // Prevrtanje semestra: resetuj stari izbor predmeta i digni "Nov
         // semestar" popup. Mora pre čitanja fon_subjects (reset ga briše).

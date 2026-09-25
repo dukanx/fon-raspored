@@ -113,8 +113,9 @@ export const app = {
   // Rezultat pickDefaultTab-a, zapamćen uz dan za koji je izračunat. Odluka
   // zavisi samo od datuma i rokovi.json-a, pa je u toku istog dana nepromenjena
   // — bez ovoga bi svaki ulazak u aplikaciju čekao mrežu pre preusmerenja
-  // (v. app/page.tsx).
-  defaultTab: json<{ date: string; dest: '/raspored' | '/rokovi' } | null>(
+  // (v. app/page.tsx). `awaited` je iz istog razloga tu: semestar koji po
+  // rokovima sledi (lib/season), undefined u zapisima od pre nego što je dodat.
+  defaultTab: json<{ date: string; dest: '/raspored' | '/rokovi'; awaited?: string | null } | null>(
     'local', 'fon_default_tab', null
   ),
   // Kad je koji rok prvi put viđen ({ 'Junski rok': '2026-06-01' }). Služi samo

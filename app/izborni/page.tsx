@@ -183,21 +183,13 @@ export default function IzbornoPage() {
           setChecked(savedSubjects)
         } else {
           // Pametan default: obavezni čekirani, izborni odčekirani (student sam
-          // bira koje izborne sluša). Dvosmisleni/nepoznati -> čekirani (bezbedno).
+          // bira koje izborne sluša). Dvosmisleni/nepoznati -> čekirani (bezbedno),
+          // pa bez subjects-meta.json ostaje sve čekirano. Na modulima gde je
+          // sve izborno (4. godina) ništa nije čekirano i student čekira šta sluša.
           const tr = programToTrack(program)
           const smart: Record<string, boolean> = {}
           unique.forEach(s => { smart[s] = defaultChecked(meta?.[s]?.status, tr) })
-          // Guard: kod finih modula (tip. 4. godina) grubi IST/MiO status označi
-          // sve kao izborno -> ništa ne bi bilo čekirano. Tada fallback na staro
-          // ponašanje (sve čekirano), pa student odčekira šta ne sluša.
-          const anyChecked = Object.values(smart).some(Boolean)
-          if (anyChecked) {
-            setChecked(smart)
-          } else {
-            const all: Record<string, boolean> = {}
-            unique.forEach(s => { all[s] = true })
-            setChecked(all)
-          }
+          setChecked(smart)
         }
 
         if (!flipped && savedOther.length > 0) setOtherSelected(savedOther)
@@ -301,10 +293,11 @@ export default function IzbornoPage() {
     p.toLowerCase().includes(prevSearch.toLowerCase())
   )
 
-  // Pametan default se primenjuje samo kad status razlikuje obavezne od izbornih
-  // za ovaj smer. Kod finih modula (4. god) gde je sve "izborno" -> isključen,
-  // pa ne prikazujemo "izborni" tagove ni izmenjen tekst (sve je čekirano).
+  // "izborni" tag ima smisla samo kad status razlikuje obavezne od izbornih za
+  // ovaj smer. Kad je sve izborno (fini moduli 4. godine), tag bi stajao na
+  // svakom predmetu, pa ga tada nema, a podnaslov to kaže.
   const smartMode = subjects.some(s => defaultChecked(subjectsMeta[s]?.status, track))
+  const allElective = subjects.length > 0 && !smartMode
 
   if (loadError) {
     return (
@@ -324,7 +317,9 @@ export default function IzbornoPage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {smartMode
               ? 'Obavezni su već čekirani - čekiraj izborne koje slušaš'
-              : 'Odčekiraj predmete koje ne slušaš'}
+              : allElective
+                ? 'Na ovom modulu su svi predmeti izborni - čekiraj one koje slušaš'
+                : 'Odčekiraj predmete koje ne slušaš'}
           </p>
         </div>
 

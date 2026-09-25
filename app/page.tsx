@@ -2,14 +2,16 @@
 
 import { Fragment, useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SemesterData, RokData } from '@/lib/types'
+import type { SemesterData } from '@/lib/types'
 import { findGroup, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
-import { pickDefaultTab } from '@/lib/rokDefault'
+import { bootDecision, type BootDecision } from '@/lib/waiting'
+import type { PendingSemester } from '@/lib/season'
 import BlurText from '@/components/BlurText'
 import TextType from '@/components/TextType'
 import InstallPrompt from '@/components/InstallPrompt'
+import WaitingForSchedule from '@/components/WaitingForSchedule'
 
 const GLASS = 'liquid-glass'
 
@@ -47,7 +49,7 @@ function BlurHeading() {
         className={TITLE_CLASS}
       />
       <p className="mt-2 text-[15px] leading-[22px] text-pretty text-gray-500 lg:mt-2.5 lg:text-base dark:text-gray-400">
-        Tvoj raspored, ispiti i kolokvijumi na jednom mestu
+        Tvoj raspored nastave, ispita i kolokvijuma
       </p>
     </div>
   )
@@ -190,7 +192,7 @@ const PREVIEW_DATA = {
   } as Record<number, PreviewSubject>,
 } as const
 
-// Telefon prikazuje isečak (dva dana liste, tri dana i tri termina sedmice),
+// Telefon prikazuje isečak (dva dana liste, tri dana i četiri termina sedmice),
 // desktop sve. Oba isečka su u HTML-u, a CSS bira koji se vidi, pa nema
 // razlike između serverskog i klijentskog iscrtavanja.
 function PreviewList({ desktop }: { desktop?: boolean }) {
@@ -227,7 +229,7 @@ function PreviewList({ desktop }: { desktop?: boolean }) {
 
 function PreviewWeek({ desktop }: { desktop?: boolean }) {
   const cols = desktop ? 5 : 3
-  const rows = desktop ? PREVIEW_DATA.week : PREVIEW_DATA.week.slice(0, 3)
+  const rows = desktop ? PREVIEW_DATA.week : PREVIEW_DATA.week.slice(0, 4)
   const empty =
     'min-h-[58px] rounded-[10px] border border-gray-200 bg-gray-100/60 lg:min-h-[84px] dark:border-gray-700/60 dark:bg-gray-800/40'
   return (
@@ -387,6 +389,8 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null)
   const [shareInput, setShareInput] = useState('')
   const [shareError, setShareError] = useState<string | null>(null)
+  // Period "čekamo raspored" (v. lib/season): umesto koraka ide WaitingForSchedule.
+  const [pending, setPending] = useState<PendingSemester | null>(null)
   const isHydrated = useSyncExternalStore(
     () => () => { },
     () => true,
@@ -421,39 +425,38 @@ export default function OnboardingPage() {
       return
     }
 
-    // Raspored ili Rokovi — zavisi da li je blizu/u toku ispitni rok (stvarni
-    // datumi iz rokovi.json, ne pretpostavljeni akademski kalendar).
-    async function defaultTab(): Promise<'/raspored' | '/rokovi'> {
-      const todayStr = new Date().toISOString().split('T')[0]
-      // Ista odluka za ceo dan — ako je već doneta danas, ne diramo mrežu.
-      const cached = app.defaultTab.get()
-      if (cached && cached.date === todayStr) return cached.dest
-      try {
-        const rokovi: RokData[] = await fetch('/data/rokovi.json').then(r => r.json())
-        const dest = pickDefaultTab(rokovi, todayStr)
-        app.defaultTab.set({ date: todayStr, dest })
-        return dest
-      } catch {
-        return cached?.dest ?? '/raspored'
-      }
-    }
-
-    // Do preusmerenja se vidi samo pozadina, a `/data/*.json` je u service
-    // workeru network-first — na lošoj vezi bi se čekalo dok mreža ne odustane.
-    // Posle ovog roka idemo na poslednju poznatu stranu; svež odgovor tada samo
-    // osveži keš za sledeći put, bez drugog (nervoznog) skoka.
-    function destination(): Promise<'/raspored' | '/rokovi'> {
+    // Raspored ili Rokovi (stvarni datumi iz rokovi.json, ne pretpostavljeni
+    // akademski kalendar), i da li je period "čekamo raspored" (v. lib/waiting).
+    // Do odluke se vidi samo pozadina, a `/data/*.json` je u service workeru
+    // network-first — na lošoj vezi bi se čekalo dok mreža ne odustane. Posle
+    // ovog roka idemo na poslednju poznatu stranu, kao da čekanja nema.
+    function decision(): Promise<BootDecision> {
       return Promise.race([
-        defaultTab(),
-        new Promise<'/raspored' | '/rokovi'>(resolve =>
-          setTimeout(() => resolve(app.defaultTab.get()?.dest ?? '/raspored'), BOOT_DEADLINE_MS)
+        bootDecision(),
+        new Promise<BootDecision>(resolve =>
+          setTimeout(() => resolve({ dest: app.defaultTab.get()?.dest ?? '/raspored', pending: null }), BOOT_DEADLINE_MS)
         ),
       ])
     }
 
+    // U periodu čekanja nema preusmerenja ni za stare korisnike: umesto
+    // izbora godine i prezimena, kartica kaže da raspored još nije objavljen.
+    function boot(redirect: boolean) {
+      void decision().then(({ dest, pending }) => {
+        if (pending) {
+          setPending(pending)
+          showOnboarding()
+        } else if (redirect) {
+          router.replace(dest)
+        } else {
+          showOnboarding()
+        }
+      })
+    }
+
     // Isti tab — sessionStorage ima grupu
     if (session.group.get()) {
-      void destination().then(dest => router.replace(dest))
+      boot(true)
       return showOnboarding
     }
     // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
@@ -470,12 +473,14 @@ export default function OnboardingPage() {
       if (sem) session.semester.set(sem)
       // Postojeći korisnik (već ima sačuvan identitet) — tutorial je samo za nove.
       app.tutorialSeen.set()
-      void destination().then(dest => router.replace(dest))
+      boot(true)
       return showOnboarding
     }
 
-    // Nov korisnik — nema identiteta, nema preusmerenja, onboarding se prikazuje.
+    // Nov korisnik — nema identiteta ni preusmerenja. Onboarding se odmah
+    // prikazuje, a ekran čekanja ga zameni ako je period čekanja.
     showOnboarding()
+    boot(false)
   }, [isHydrated, router])
 
   // Drugi korak vodi na /izborni — učitaj je unapred, da posle animacije
@@ -616,10 +621,11 @@ export default function OnboardingPage() {
   const primaryDisabled = 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
 
   return (
-    // Na telefonu kartica i pregled zajedno pune tačno prvi ekran (100dvh minus
-    // gornji padding), a footer je ispod. Na desktopu stoje jedno pored drugog.
-    <main data-onboarding className="relative flex min-h-dvh flex-col px-4 pt-5 pb-5 lg:px-14 lg:pt-0 lg:pb-6">
-      <div className="flex min-h-[calc(100dvh-20px)] flex-col gap-6 lg:mx-auto lg:grid lg:min-h-0 lg:w-full lg:max-w-[1360px] lg:flex-1 lg:grid-cols-[440px_minmax(0,1fr)] lg:items-center lg:gap-16 lg:pt-12">
+    // Na telefonu kartica i pregled zajedno pune tačno prvi ekran (100dvh bez
+    // safe-area pojaseva koje body oduzima paddingom, pa minus gornji padding),
+    // a footer je ispod. Na desktopu stoje jedno pored drugog.
+    <main data-onboarding className="relative flex min-h-[calc(100dvh-var(--safe-y))] flex-col px-4 pt-5 pb-5 lg:px-14 lg:pt-0 lg:pb-6">
+      <div className="flex min-h-[calc(100dvh-var(--safe-y)-20px)] flex-col gap-6 lg:mx-auto lg:grid lg:min-h-0 lg:w-full lg:max-w-[1360px] lg:flex-1 lg:grid-cols-[440px_minmax(0,1fr)] lg:items-center lg:gap-16 lg:pt-12">
         <div className={`flex shrink-0 flex-col gap-3 ${leaving ? 'leave-left' : ''}`}>
           <div className={`rounded-[28px] px-6 pt-8 pb-7 ring-1 ring-[#024c7d]/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] lg:px-10 lg:pt-11 lg:pb-10 dark:ring-white/15 dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
@@ -628,17 +634,23 @@ export default function OnboardingPage() {
                 ne bi imala dva h1. */}
             {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
 
-            <p className="mb-8 flex items-start gap-1.5 text-xs text-pretty text-gray-500 lg:mb-10 lg:gap-2 lg:text-[13px] lg:leading-[18px] dark:text-gray-400">
-              <svg {...ICON} aria-hidden="true" className="mt-px size-3.5 shrink-0 text-[#60c3ad] lg:size-[15px]">
-                <circle cx="12" cy="12" r="9" />
-                <path d="m8.5 12.5 2.5 2.5 4.5-5" />
-              </svg>
-              <span>Podaci su sa sajta FON-a. Raspored nastave, ispiti i kolokvijumi se redovno osvežavaju.</span>
-            </p>
+            {/* U periodu čekanja FON-ovog rasporeda još nema, pa bi ova
+                napomena samo gurala poruku o tome naniže. */}
+            {!pending && (
+              <p className="mb-8 flex items-start gap-1.5 text-xs text-pretty text-gray-500 lg:mb-10 lg:gap-2 lg:text-[13px] lg:leading-[18px] dark:text-gray-400">
+                <svg {...ICON} aria-hidden="true" className="mt-px size-3.5 shrink-0 text-[#60c3ad] lg:size-[15px]">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+                </svg>
+                <span>Podaci su sa sajta FON-a. Raspored nastave, ispiti i kolokvijumi se redovno osvežavaju.</span>
+              </p>
+            )}
 
             {/* Koraci se renderuju uslovno da bi se ulazne animacije pokrenule
                 pri svakoj promeni koraka (animacija ide na montiranje). */}
-            {selectedYear === null ? (
+            {pending ? (
+              <WaitingForSchedule pending={pending} savedGroup={isHydrated ? saved.group.get() : null} />
+            ) : selectedYear === null ? (
               // Pri prvom učitavanju bez animacije, samo pri povratku sa koraka 2.
               <div className={steppedBack ? 'anim-up' : undefined} style={{ animationDuration: '0.4s' }}>
                 <p id="godina-label" className="mb-3 text-sm font-medium text-gray-700 lg:text-[15px] lg:leading-[22px] dark:text-gray-300">
@@ -818,7 +830,8 @@ export default function OnboardingPage() {
             )}
           </div>
 
-          <InstallPrompt compact />
+          {/* U periodu čekanja instalacija je deo same kartice. */}
+          {!pending && <InstallPrompt compact />}
         </div>
 
         <LandingPreview leaving={leaving} />

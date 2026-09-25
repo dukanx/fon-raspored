@@ -13,6 +13,8 @@
   --wallpaper-accent-1: radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.09) 0px, transparent 55%);
   --wallpaper-accent-2: radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.075) 0px, transparent 50%);
   --wallpaper-accent-3: radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.06) 0px, transparent 50%);
+  /* Visina safe-area pojaseva koje body oduzima paddingom (v. body). */
+  --safe-y: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
 }
 
 @theme inline {
@@ -38,6 +40,10 @@ body {
   color-scheme: light;
   position: relative;
   isolation: isolate;
+  /* Uz viewport-fit=cover (layout.tsx): sadržaj ostaje van statusne trake i
+     home indikatora, a pozadina ide ispod njih. Gde tih zona nema, ovo je 0. */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 body::before {
