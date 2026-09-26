@@ -79,7 +79,7 @@ def main():
             if not href.lower().endswith('.pdf'):
                 continue
             # Broji se SVAKI PDF link, ne samo nov. Ako ovih odjednom nema, a
-            # ranije ih je bilo, promenio se sajt — v. proveru posle petlje.
+            # ranije ih je bilo, promenio se sajt - v. proveru posle petlje.
             pdf_linkova += 1
             if href in known:
                 continue
@@ -128,9 +128,9 @@ def main():
                         rok_name = line.split("'")[1]
 
             if count == 0:
-                # Parser nije izvukao ni jedan unos — PDF se ne beleži kao poznat
+                # Parser nije izvukao ni jedan unos - PDF se ne beleži kao poznat
                 # da bi bio pokušan ponovo pri sledećem pokretanju.
-                print(f'  UPOZORENJE: 0 unosa iz {pdf_name} — neće biti ubeležen kao poznat (retry sledeći put).')
+                print(f'  UPOZORENJE: 0 unosa iz {pdf_name} - neće biti ubeležen kao poznat (retry sledeći put).')
                 errors.append(href)
                 continue
 
@@ -141,14 +141,14 @@ def main():
     # --- Da otkaz ne bi prošao kao uredan prolaz -------------------------------
     # Bez ovoga oba kvara ispod završe kao zelen GitHub Actions run sa porukom
     # "Nema novih PDF-ova.", identičnom onoj koju daje i uredan prolaz. Nenulti
-    # izlaz obara workflow, a GitHub na pao zakazani workflow šalje mejl — to je
+    # izlaz obara workflow, a GitHub na pao zakazani workflow šalje mejl - to je
     # ceo mehanizam uzbune.
     kvar = None
     if stranica_ok == 0:
         kvar = 'nijedna stranica sa FON-a nije dohvaćena'
     elif pdf_linkova == 0 and known:
         kvar = (f'nula PDF linkova na {stranica_ok} dohvaćenoj/ih stranici/a, '
-                f'a ranije ih je bilo {len(known)} — verovatno je promenjen sajt')
+                f'a ranije ih je bilo {len(known)} - verovatno je promenjen sajt')
     if kvar:
         print(f'\nGREŠKA: {kvar}.')
         print('Ništa nije upisano. Proveri da li su se stranice FON-a promenile:')

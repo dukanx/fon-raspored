@@ -7,14 +7,14 @@ const entry = (date: string): RokEntry => ({
 })
 
 // Realni raspored (avgust 2026): julski -> septembarski -> oktobarski, sa
-// nedeljama pauze između — treba da se spoje u jedan "ispitni period".
+// nedeljama pauze između - treba da se spoje u jedan "ispitni period".
 const LETNJA_SEZONA: RokData[] = [
   { rok: 'Julski', tip: 'ispit', entries: [entry('2026-06-29'), entry('2026-07-11')] },
   { rok: 'Septembarski', tip: 'ispit', entries: [entry('2026-08-24'), entry('2026-09-05')] },
   { rok: 'Oktobarski', tip: 'ispit', entries: [entry('2026-09-07'), entry('2026-09-19')] },
 ]
 
-describe('pickDefaultTab — spajanje susednih rokova u sezonu', () => {
+describe('pickDefaultTab - spajanje susednih rokova u sezonu', () => {
   it('u pauzi između julskog i septembarskog (i dalje ista sezona) -> rokovi', () => {
     expect(pickDefaultTab(LETNJA_SEZONA, '2026-08-01')).toBe('/rokovi')
   })
@@ -32,7 +32,7 @@ describe('pickDefaultTab — spajanje susednih rokova u sezonu', () => {
   })
 })
 
-describe('pickDefaultTab — razdvojeni rokovi (velika pauza, nastava između)', () => {
+describe('pickDefaultTab - razdvojeni rokovi (velika pauza, nastava između)', () => {
   const ZIMSKA_PA_LETNJA: RokData[] = [
     { rok: 'Februarski', tip: 'ispit', entries: [entry('2026-01-26'), entry('2026-02-13')] },
     { rok: 'Junski', tip: 'ispit', entries: [entry('2026-06-15'), entry('2026-06-27')] },
@@ -48,7 +48,7 @@ describe('pickDefaultTab — razdvojeni rokovi (velika pauza, nastava između)',
   })
 })
 
-describe('pickDefaultTab — ivični slučajevi', () => {
+describe('pickDefaultTab - ivični slučajevi', () => {
   it('kolokvijumi se ignorišu (dešavaju se usred semestra)', () => {
     const samoKolokvijum: RokData[] = [
       { rok: 'Aprilski kolokvijum', tip: 'kolokvijum', entries: [entry('2026-04-15')] },

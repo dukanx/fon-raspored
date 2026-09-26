@@ -31,7 +31,7 @@ import fon_exam_parser as fep
 
 
 def normalize(s: str) -> str:
-    """Ukloni godinu, interpunkciju, lowercase — za fuzzy matching."""
+    """Ukloni godinu, interpunkciju, lowercase - za fuzzy matching."""
     s = re.sub(r"\d{4}/\d{2,4}", "", s)
     s = re.sub(r"[^a-zšđčćžA-ZŠĐČĆŽ ]", "", s)
     return " ".join(s.lower().split())
@@ -45,7 +45,7 @@ def _subject_key(s: str) -> str:
 
 
 def build_subject_map() -> dict:
-    """Mapa {ključ -> kanonski naziv} iz rasporeda nastave (1–4god.json).
+    """Mapa {ključ -> kanonski naziv} iz rasporeda nastave (1-4god.json).
 
     Nastava ima tačne nazive (sa razmacima), pa ih koristimo kao rečnik za
     ispravku slepljenih/varijantnih naziva iz ispitnih/kolokvijumskih PDF-ova."""
@@ -170,11 +170,11 @@ def main():
 
     if idx is not None:
         existing_rok = data[idx]["rok"]
-        print(f"  Match: '{existing_rok}' (index {idx}) — ažuriranje.", file=sys.stderr)
+        print(f"  Match: '{existing_rok}' (index {idx}) - ažuriranje.", file=sys.stderr)
         data[idx] = new_entry
         data[idx]["rok"] = existing_rok  # sačuvaj originalni naziv iz JSON-a
     else:
-        print(f"  Nije nađen match — kreiranje novog unosa '{rok_name}'.", file=sys.stderr)
+        print(f"  Nije nađen match - kreiranje novog unosa '{rok_name}'.", file=sys.stderr)
         data.append(new_entry)
 
     if args.dry_run:

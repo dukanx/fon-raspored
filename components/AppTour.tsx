@@ -24,21 +24,21 @@ export type TourSlide = {
   key: string
   icon: (p: IconProps) => React.JSX.Element
   title: string
-  // Opciono — na slajdu koji je samo spisak stavki podnaslov je vata.
+  // Opciono - na slajdu koji je samo spisak stavki podnaslov je vata.
   desc?: string
   features?: TourFeature[]
   // Kad slajd ima sopstvenu akciju (npr. "Idi na Izmenu") umesto generičkog
-  // "Dalje" — klik odmah zatvara ceo tur (ne samo ovaj slajd).
+  // "Dalje" - klik odmah zatvara ceo tur (ne samo ovaj slajd).
   primaryLabel?: string
   onPrimary?: () => void
   // Zamena za "Preskoči" (npr. "Kasnije") kad slajd ima sopstvenu akciju.
   secondaryLabel?: string
-  // Bitan slajd — "Preskoči" na RANIJEM slajdu skoči direktno na njega umesto
+  // Bitan slajd - "Preskoči" na RANIJEM slajdu skoči direktno na njega umesto
   // da zatvori ceo tur (npr. "Podesi termine" ne sme da se preskoči nezapaženo).
   important?: boolean
 }
 
-// Generički multi-slajd popup — isti vizuelni obrazac kao NotificationIntro
+// Generički multi-slajd popup - isti vizuelni obrazac kao NotificationIntro
 // (ikonica-bedž, naslov, feature-red), samo sa navigacijom kroz više slajdova.
 // Namerno bez screenshotova (vidi FirstRunOverlays.tsx za zašto je
 // Tutorial.tsx sa screenshotovima isključen).
@@ -58,7 +58,7 @@ export default function AppTour({
     else setIndex(i => i + 1)
   }
 
-  // "Preskoči" ne sme da preskoči bitan slajd koji tek dolazi — skoči na njega.
+  // "Preskoči" ne sme da preskoči bitan slajd koji tek dolazi - skoči na njega.
   function skip() {
     const nextImportant = slides.findIndex((s, i) => i > index && s.important)
     if (nextImportant !== -1) setIndex(nextImportant)

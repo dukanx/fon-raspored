@@ -87,7 +87,7 @@ export const session = {
   semester: str('session', 'fon_semester'),
 }
 
-// Trajni „zapamćeni" podaci — vraćaju korisnika u raspored bez ponovnog onboardinga.
+// Trajni „zapamćeni" podaci - vraćaju korisnika u raspored bez ponovnog onboardinga.
 export const saved = {
   group: str('local', 'fon_saved_group'),
   year: str('local', 'fon_saved_year'),
@@ -107,12 +107,12 @@ export const app = {
   tutorialSeen: flag('local', 'fon_tutorial_seen'),
   // Opšti feature-tur (deljenje/slika/kalendar/rokovi/notifikacije) na Rasporedu, jednom.
   appTourSeen: flag('local', 'fon_app_tour_seen'),
-  // Slajd "idi u Izmenu da izabereš termin" — prikazan (kao deo tura ili
+  // Slajd "idi u Izmenu da izabereš termin" - prikazan (kao deo tura ili
   // samostalno, ako su preneseni/drugosemestralni predmeti dodati kasnije), jednom.
   prevSubjectsIntroSeen: flag('local', 'fon_prev_subjects_intro_seen'),
   // Rezultat pickDefaultTab-a, zapamćen uz dan za koji je izračunat. Odluka
   // zavisi samo od datuma i rokovi.json-a, pa je u toku istog dana nepromenjena
-  // — bez ovoga bi svaki ulazak u aplikaciju čekao mrežu pre preusmerenja
+  // - bez ovoga bi svaki ulazak u aplikaciju čekao mrežu pre preusmerenja
   // (v. app/page.tsx). `awaited` je iz istog razloga tu: semestar koji po
   // rokovima sledi (lib/season), undefined u zapisima od pre nego što je dodat.
   defaultTab: json<{ date: string; dest: '/raspored' | '/rokovi'; awaited?: string | null } | null>(
@@ -123,7 +123,7 @@ export const app = {
   rokFirstSeen: json<Record<string, string>>('local', 'fon_rok_first_seen', {}),
   // Baner prijave odbačen za taj rok i taj povod ('novo' | 'uskoro' | 'pocinje'
   // | 'poslednji'). U localStorage, ne u sesiji: odbaci jednom pa da se ne
-  // vraća pri svakom otvaranju aplikacije — a naredni povod je zaseban ključ,
+  // vraća pri svakom otvaranju aplikacije - a naredni povod je zaseban ključ,
   // pa se bitniji podsetnik (poslednji dan) svejedno pojavi.
   dismissedPrijava: (rok: string, povod: string) =>
     flag('local', `fon_dismissed_prijava_${rok}_${povod}`),
@@ -147,7 +147,7 @@ export const byGroup = {
 // Lična beleška po predmetu.
 export const note = (subject: string): StrAccessor => str('local', `fon_note_${subject}`)
 
-// Reset izbora predmeta na promenu semestra — kredencijali (saved.*) ostaju.
+// Reset izbora predmeta na promenu semestra - kredencijali (saved.*) ostaju.
 // Isti skup ključeva koji briše lib/semester.ts pri prevrtanju semestra.
 export function resetSubjectsForNewSemester(group: string): void {
   byGroup.subjects(group).remove()

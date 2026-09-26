@@ -1,5 +1,5 @@
 """
-Parser za datume prijave iz PDF zaglavlja — kolokvijumi i ispiti.
+Parser za datume prijave iz PDF zaglavlja - kolokvijumi i ispiti.
 
 Ulaz:  PDF fajl (lokalni path ili URL)
 Izlaz: JSON sa tipom, imenom roka, datumima prijave i reklamacije

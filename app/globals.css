@@ -135,7 +135,7 @@ a[href]:hover {
     0 14px 38px rgba(0, 0, 0, 0.42);
 }
 
-/* Jača, prozirnija varijanta liquid-glass-a za donji navbar — bliža iOS
+/* Jača, prozirnija varijanta liquid-glass-a za donji navbar - bliža iOS
    tab bar materijalu (tanka svetla ivica na vrhu). Blur je sredina između
    originalnog (30px, previše skupo za Safari na position:fixed elementu
    koji menja geometriju tokom tranzicije) i minimalnog (16px, osetno manje
@@ -308,7 +308,7 @@ a[href]:active {
 }
 
 /* Treptanje kursora u TextType-u. Ranije je to radio gsap (opacity yoyo,
-   power2.inOut) — jedina njegova upotreba u celom projektu, a nosio je 30 KB
+   power2.inOut) - jedina njegova upotreba u celom projektu, a nosio je 30 KB
    gzipovano na ulaznoj ruti `/`. CSS animacija daje isti efekat: `alternate`
    je yoyo, `ease-in-out` je približno power2.inOut. Trajanje postavlja sama
    komponenta inline (`cursorBlinkDuration` × 2 = pun ciklus). */
@@ -333,7 +333,7 @@ a[href]:active {
 /* Datum/vreme polja (modal "Dodaj događaj") na iOS-u.
    WebKit ih renderuje kao native kontrolu sa sopstvenom intrinzičnom širinom i
    unutrašnjim elementom (`::-webkit-date-and-time-value`) koji ima svoj
-   min-width — pa vrednost izlazi van okvira bez obzira na `w-full`/`min-w-0`.
+   min-width - pa vrednost izlazi van okvira bez obzira na `w-full`/`min-w-0`.
    Blink (Chrome/Android) ovaj bug nema; provereno da ga ovo ne menja. */
 input[type="date"],
 input[type="time"],
@@ -361,7 +361,7 @@ input[type="datetime-local"]::-webkit-datetime-edit {
 }
 
 /* iOS zumira celu stranicu kad se fokusira polje sa računatim font-size < 16px,
-   i posle toga se ne vraća — u instaliranoj PWA to izgleda kao da app "skoči",
+   i posle toga se ne vraća - u instaliranoj PWA to izgleda kao da app "skoči",
    za razliku od native aplikacije. Sva polja su `text-sm` (14px), pa ih na iOS-u
    dižemo na 16px; kutije su `h-9` (36px) pa to lepo staje.
    Alternativa je `user-scalable=no` u viewport-u, ali ona ubija pinch-zoom svima
@@ -379,7 +379,7 @@ input[type="datetime-local"]::-webkit-datetime-edit {
 }
 
 /* Samo Safari: iOS sadržaj polja poravna po vrhu uz sopstveni padding, pa uz
-   fiksnu visinu (`h-9`) ispadne iskrivljeno — `display:flex` to centrira.
+   fiksnu visinu (`h-9`) ispadne iskrivljeno - `display:flex` to centrira.
    NE sme globalno: u Blink-u pomeri ikonicu kalendara/sata iz desnog ugla uz
    sam tekst. `-webkit-touch-callout` podržava samo Safari (provereno: Chrome
    vraća `CSS.supports(...) === false`), pa je ovo pouzdana kapija. */

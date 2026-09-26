@@ -49,7 +49,7 @@ export default function NotificationIntro() {
 
   useEffect(() => {
     if (app.notifIntroSeen.get()) return
-    // Samo u instaliranoj PWA — u browseru nema smisla (i iOS Web Push radi tek odatle).
+    // Samo u instaliranoj PWA - u browseru nema smisla (i iOS Web Push radi tek odatle).
     if (!isStandalone() || !pushSupported()) return
     // Ako je već odbijeno na nivou browsera, ne možemo ponovo da pitamo.
     if (notificationPermission() === 'denied') {
@@ -61,7 +61,7 @@ export default function NotificationIntro() {
     getPushSubscription().then((sub) => {
       if (cancelled) return
       if (sub) {
-        app.notifIntroSeen.set() // već uključeno — ne prikazuj
+        app.notifIntroSeen.set() // već uključeno - ne prikazuj
         return
       }
       setOpen(true)

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { app } from './storage'
 
-// Prati `dark` klasu na <html> reaktivno — za inline stilove zavisne od teme
+// Prati `dark` klasu na <html> reaktivno - za inline stilove zavisne od teme
 // (npr. boje kartica koje se ne mogu izraziti Tailwind klasama).
 export function useIsDark(): boolean {
   return useSyncExternalStore(
@@ -16,7 +16,7 @@ export function useIsDark(): boolean {
   )
 }
 
-// true tek posle hidracije (na serveru vraća false) — za uslovni klijentski
+// true tek posle hidracije (na serveru vraća false) - za uslovni klijentski
 // sadržaj bez hydration mismatch-a.
 export function useIsHydrated(): boolean {
   return useSyncExternalStore(() => () => {}, () => true, () => false)

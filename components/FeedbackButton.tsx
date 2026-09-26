@@ -103,7 +103,7 @@ export default function FeedbackButton({ className = '' }: { className?: string 
           <>
             <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predlog ili problem?</h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Piši slobodno — greška, ideja, bilo šta.
+              Piši slobodno - greška, ideja, bilo šta.
             </p>
 
             <textarea
@@ -125,7 +125,7 @@ export default function FeedbackButton({ className = '' }: { className?: string 
                 className="w-full rounded-xl border border-[#024c7d]/15 bg-white/70 py-2 pl-9 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#024c7d] dark:border-white/20 dark:bg-gray-900/65 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:ring-[#60c3ad]"
               />
             </div>
-            {/* Honeypot — sakriveno od korisnika, botovi ga često popune */}
+            {/* Honeypot - sakriveno od korisnika, botovi ga često popune */}
             <input
               value={website}
               onChange={e => setWebsite(e.target.value)}

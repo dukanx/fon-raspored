@@ -47,7 +47,7 @@ describe('encode/decode round-trip', () => {
   })
 })
 
-describe('decodeShare — odbacivanje smeća', () => {
+describe('decodeShare - odbacivanje smeća', () => {
   it('malformiran base64/JSON -> null', () => {
     expect(decodeShare('nije-base64-!!!')).toBeNull()
     expect(decodeShare('')).toBeNull()

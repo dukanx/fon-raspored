@@ -19,7 +19,7 @@ type BlurTextProps = {
   /** Tag korenskog elementa. `h1` kad je ovo pravi naslov strane, ne dekoracija. */
   as?: 'p' | 'h1' | 'h2' | 'h3' | 'div' | 'span'
   /**
-   * Pristupačno ime celog bloka. Sadržaj su spanovi slovo-po-slovo — neki
+   * Pristupačno ime celog bloka. Sadržaj su spanovi slovo-po-slovo - neki
    * čitači ekrana ih izgovaraju sa pauzama ili slovkaju. `aria-label` ih
    * preskače i daje jednu frazu, dok vidljiv tekst (i ono što pretraživač
    * čita) ostaje netaknut.
@@ -103,7 +103,7 @@ const BlurText: React.FC<BlurTextProps> = ({
   // Bez `flex`: spanovi su već `inline-block`, pa se u normalnom inline toku
   // ponašaju isto (i dalje se prelamaju), ali se tekst čita kao jedna fraza.
   // Kao flex stavke svako slovo je zasebna stavka, pa i `innerText` i ono što
-  // pretraživač indeksira postaje "F O N R a s p o r e d" — brend nam je
+  // pretraživač indeksira postaje "F O N R a s p o r e d" - brend nam je
   // bukvalno bio razložen na slova.
   return (
     <Tag ref={ref} aria-label={ariaLabel} className={`blur-text ${className}`}>

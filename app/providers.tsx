@@ -27,7 +27,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [])
 
   // Service worker (offline keš). Push ga i dalje registruje nezavisno iz
-  // lib/push.ts — register() je idempotentan po (scriptURL, scope) pa se ne
+  // lib/push.ts - register() je idempotentan po (scriptURL, scope) pa se ne
   // sudaraju; ko prvi stigne kreira registraciju, drugi dobije istu.
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return
@@ -48,12 +48,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       return
     }
 
-    // U dev-u ne registrujemo — keširan HTML i chunk-ovi se tuku sa Turbopack HMR-om.
+    // U dev-u ne registrujemo - keširan HTML i chunk-ovi se tuku sa Turbopack HMR-om.
     if (process.env.NODE_ENV !== 'production') return
 
     let reg: ServiceWorkerRegistration | undefined
 
-    // Posle `load` — precache (~900 KB) ne sme da otima propusni opseg prvom renderu.
+    // Posle `load` - precache (~900 KB) ne sme da otima propusni opseg prvom renderu.
     const register = () => {
       navigator.serviceWorker
         .register('/sw.js', { scope: '/', updateViaCache: 'none' })
@@ -64,7 +64,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     else window.addEventListener('load', register, { once: true })
 
     // Provera update-a kad se tab vrati u fokus. Bez ovoga bi tombstone sw.js
-    // (kill-switch nivo 1) čekao browser-ov update ciklus — do 24h.
+    // (kill-switch nivo 1) čekao browser-ov update ciklus - do 24h.
     const onVisible = () => {
       if (document.visibilityState === 'visible') reg?.update().catch(() => { })
     }

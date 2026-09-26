@@ -1,4 +1,4 @@
-// Deljeni Web Push sloj — jedno mesto za detekciju platforme i (od)pretplatu.
+// Deljeni Web Push sloj - jedno mesto za detekciju platforme i (od)pretplatu.
 //
 // Koriste ga i NotificationBell (na /rokovi) i NotificationIntro (prvi-put modal),
 // da se logika oko dozvola, VAPID-a i service workera ne duplira na dva mesta.
@@ -28,7 +28,7 @@ export function isIOS(): boolean {
   const maxTouch = navigator.maxTouchPoints ?? 0
   const iosUA = /iPad|iPhone|iPod/.test(ua)
   // Neki Chrome na Mac-u (pogotovo Apple Silicon) vraća maxTouchPoints > 1 iako
-  // nema ekran na dodir — trackpad ima "fine" pointer, pravi iPad "coarse".
+  // nema ekran na dodir - trackpad ima "fine" pointer, pravi iPad "coarse".
   const coarsePointer = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
   const ipadOS = navigator.platform === 'MacIntel' && maxTouch > 1 && coarsePointer
   return (iosUA || ipadOS) && maxTouch > 0

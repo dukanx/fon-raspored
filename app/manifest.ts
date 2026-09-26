@@ -12,7 +12,7 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'sr',
     // Best-effort: na Androidu (Chrome) ruta linkove u instaliranu PWA umesto
     // browsera, kad je već instalirana. Nije u next-ovom Manifest tipu (novije
-    // polje), zato ide preko dodatnog cast-a niže. iOS nema ekvivalent — zato
+    // polje), zato ide preko dodatnog cast-a niže. iOS nema ekvivalent - zato
     // ostaje "nalepi link" fallback u onboardingu.
     // @ts-expect-error capture_links nije (još) u next-ovom MetadataRoute.Manifest tipu
     capture_links: 'existing-client-navigate',

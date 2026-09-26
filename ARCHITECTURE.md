@@ -3,7 +3,7 @@
 FON Raspored is a PWA that gives students at the Faculty of Organizational
 Sciences (Belgrade) a personalized class schedule, exam dates (*rokovi*), and
 push reminders. This document describes how the system is put together and, more
-importantly, **why** — the design decisions and their trade-offs.
+importantly, **why** - the design decisions and their trade-offs.
 
 For setup, environment variables, and features, see the [README](README.md).
 
@@ -25,7 +25,7 @@ flowchart TB
     SW["Service Worker (sw.js)"]
   end
 
-  subgraph vercel["Vercel — Next.js app"]
+  subgraph vercel["Vercel - Next.js app"]
     UI["App Router pages<br/>raspored · rokovi · preneseni"]
     SA["Server Actions<br/>subscribeUser / unsubscribeUser"]
     API["/api/preneseni (route handler)"]
@@ -63,7 +63,7 @@ flowchart TB
 | Layer | Tech | Responsibility |
 |-------|------|----------------|
 | **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind 4 | Schedule/exam UI, offline-capable PWA, client-side personalization |
-| **Client state** | `localStorage` / `sessionStorage` via `lib/storage.ts` | Identity (group/year/program), subject selection, hidden slots, notes — no account required |
+| **Client state** | `localStorage` / `sessionStorage` via `lib/storage.ts` | Identity (group/year/program), subject selection, hidden slots, notes - no account required |
 | **Data store** | Static JSON in `public/data/` versioned in Git | Per-year schedule (`{year}god.json`), exam dates (`rokovi.json`), subject metadata (`subjects-meta.json`) |
 | **Ingestion pipeline** | Python (`check_fon.py`, `fon_parser`, `update_nastava.py`) run in GitHub Actions | Scrape FON PDFs/pages → parse → validate → commit JSON |
 | **Notifications** | Web Push (VAPID) + Service Worker + `send_push.mjs` + Upstash Redis | Subscribe on the client, fan-out delivery from CI, prune dead endpoints |
@@ -128,7 +128,7 @@ flowchart LR
 ### 3.3 Stateless schedule sharing
 
 A shared schedule is encoded entirely into the URL (`base64url` payload:
-year, group, subject count, selected indices) — no backend row, no ID to store.
+year, group, subject count, selected indices) - no backend row, no ID to store.
 The `/deli` route decodes it, guards against schedule drift (subject count
 mismatch), and applies it to local storage. See `lib/share.ts`.
 
@@ -144,17 +144,17 @@ server-side, so the model ranks rather than invents.
 
 ## 4. Architecture decision records
 
-### ADR-1 — Git + static JSON as the data store (no database)
+### ADR-1 - Git + static JSON as the data store (no database)
 **Context:** the schedule is read by many, written ~4×/year by one automated job.
 **Decision:** precompute the schedule into JSON committed to the repo; serve it
 as static assets over Vercel's CDN.
 **Consequences:** essentially free reads, infinite horizontal scale on the read
 path, every data change is a reviewable diff with full history, trivial rollback
 (`git revert`). Trade-off: writes are coarse (a whole-file commit + redeploy) and
-there is no per-record query layer — acceptable because the client loads one
+there is no per-record query layer - acceptable because the client loads one
 small JSON file and filters in memory.
 
-### ADR-2 — GitHub Actions as scheduler *and* worker
+### ADR-2 - GitHub Actions as scheduler *and* worker
 **Context:** ingestion needs a cron and a place to run Python scraping.
 **Decision:** use scheduled Actions to scrape, parse, commit, and trigger push,
 instead of standing up a dedicated backend/queue/cron service.
@@ -163,23 +163,23 @@ and run history for free. Trade-off: GitHub cron is best-effort (mitigated with
 3 daily attempts + dedup) and a run is a single sequential process (fine at
 current scale; see §5).
 
-### ADR-3 — Client-side identity, no accounts
+### ADR-3 - Client-side identity, no accounts
 **Context:** a student only needs *their* schedule on *their* device.
 **Decision:** keep identity and personalization in `localStorage`/`sessionStorage`
 behind a typed façade (`lib/storage.ts`); no sign-up, no user table.
 **Consequences:** zero PII stored server-side, no auth surface to secure, instant
 onboarding. Trade-off: no cross-device sync and state is per-browser (notably,
-an installed iOS PWA has separate storage from Safari — handled by a
+an installed iOS PWA has separate storage from Safari - handled by a
 "paste your link" onboarding step).
 
-### ADR-4 — Stateless share links
+### ADR-4 - Stateless share links
 **Context:** sharing a schedule shouldn't require persistence.
 **Decision:** encode the whole share payload into the URL (`base64url`).
 **Consequences:** no storage, no expiry job, no share-id collisions; links work
 forever offline. Trade-off: payload is visible in the URL and can go stale if the
-schedule changes — mitigated by a drift check on `/deli`.
+schedule changes - mitigated by a drift check on `/deli`.
 
-### ADR-5 — Upstash Redis, only for push subscriptions
+### ADR-5 - Upstash Redis, only for push subscriptions
 **Context:** the *one* thing that must persist server-side is who to notify.
 **Decision:** store subscriptions in a serverless Redis hash keyed by endpoint;
 reach it over HTTP from both Server Actions and the CI sender.
@@ -187,7 +187,7 @@ reach it over HTTP from both Server Actions and the CI sender.
 idempotent upserts, O(1) delete on prune. Trade-off: a second managed dependency,
 but scoped to a single tiny concern.
 
-### ADR-6 — Web Push (VAPID) over email/SMS/native
+### ADR-6 - Web Push (VAPID) over email/SMS/native
 **Context:** reminders should reach an installed PWA on Android, desktop, and iOS.
 **Decision:** standards-based Web Push with VAPID; the Service Worker renders the
 notification and routes clicks.
@@ -195,7 +195,7 @@ notification and routes clicks.
 app. Trade-off: iOS only supports Web Push from an installed PWA (16.4+), which
 shaped the install/onboarding UX.
 
-### ADR-7 — LLM as a constrained ranker, not a source of truth
+### ADR-7 - LLM as a constrained ranker, not a source of truth
 **Context:** picking non-overlapping carried-over slots is a fiddly optimization.
 **Decision:** pre-filter valid candidates server-side and ask the model to *rank*
 within an explicit rule set, returning a fixed format.
@@ -203,22 +203,22 @@ within an explicit rule set, returning a fixed format.
 ones), output is parseable, and the feature degrades gracefully. Trade-off:
 dependence on an external LLM for a non-critical convenience feature.
 
-### ADR-8 — Hand-rolled Service Worker cache, network-first for data
+### ADR-8 - Hand-rolled Service Worker cache, network-first for data
 **Context:** students check the schedule on campus where connectivity is poor, so
 the app should survive going offline. Next's PWA guide puts offline caching out of
-scope and points at Serwist, which needs webpack config — this build uses Turbopack.
+scope and points at Serwist, which needs webpack config - this build uses Turbopack.
 **Decision:** hand-roll the cache in the existing `public/sw.js`. App shell and
 hashed `/_next/static` assets are cache-first and versioned together; `public/data/*.json`
 is **network-first**, falling back to cache only when the request actually fails.
-RSC/flight requests are not intercepted at all — Next already falls back to an MPA
+RSC/flight requests are not intercepted at all - Next already falls back to an MPA
 navigation on network error, and a URL-keyed cache would be wrong because flight
 responses vary by `next-router-state-tree`.
 **Consequences:** the app works offline after one visit, and online behaviour for
-data is byte-identical to having no worker — which matters because
+data is byte-identical to having no worker - which matters because
 `reconcileSemester` clears the user's subject selection whenever the `semester`
 string differs, so serving a stale `god.json` would silently destroy user data.
 Trade-off: a Service Worker is hard for ordinary users to undo, so recovery is
-explicit — a tombstone worker (`docs/sw-tombstone.js`) that drops the fetch handler
+explicit - a tombstone worker (`docs/sw-tombstone.js`) that drops the fetch handler
 without calling `unregister()` (which would kill push subscriptions), plus a
 `?nosw=1` escape hatch.
 

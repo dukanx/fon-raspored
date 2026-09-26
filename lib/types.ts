@@ -30,7 +30,7 @@ export interface SemesterData {
 
 export interface RokEntry {
   subject: string
-  type?: string    // "P" (pismeni) | "U" (usmeni) — samo kod ispita
+  type?: string    // "P" (pismeni) | "U" (usmeni) - samo kod ispita
   date: string     // ISO: "2026-03-03"
   start: string    // "15:00"
   end: string      // "16:40"
@@ -46,12 +46,12 @@ export interface RokData {
   reklamacija_datum?: string     // "07.04.2026."
 }
 
-// Korisnikov sopstveni unos u rokovi kalendar (nije sa FON sajta) — npr.
+// Korisnikov sopstveni unos u rokovi kalendar (nije sa FON sajta) - npr.
 // dogovoreni usmeni sa profesorom koji nije na zvaničnom rasporedu.
-// type: 'P' | 'U' (isto kao RokEntry) ili slobodni label 'Kolokvijum' / 'Ostalo' —
+// type: 'P' | 'U' (isto kao RokEntry) ili slobodni label 'Kolokvijum' / 'Ostalo' -
 // postojeći render kod već ispisuje e.type sirovo kad nije 'P'/'U', pa nema
 // potrebe da se dira nijedno mesto koje prikazuje RokEntry.
-// tab: fiksira se pri dodavanju na tab u kom si tad bio (Ispiti/Kolokvijumi) —
+// tab: fiksira se pri dodavanju na tab u kom si tad bio (Ispiti/Kolokvijumi) -
 // NE izvodi se iz `type`, jer bi promena tipa (npr. u "Kolokvijum") inače
 // tiho preselila event u drugi tab.
 export interface CustomRokEntry extends RokEntry {

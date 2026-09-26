@@ -36,7 +36,7 @@ ROOMS_NOISE = {"СЕМЕСТРУ", "SEMESTR", "SEMESTER", "ЛЕТЊИ", "ЗИМ�
 # Datum u tabeli: DD/MM/YYYY, DD-MM-YYYY ili DD.MM.YYYY
 DATE_RE = re.compile(r"\d{2}[/.\-]\d{2}[/.\-]\d{4}")
 # P/U marker (P = pismeni, U = usmeni); latinica i ćirilica, uz opcionu tačku ili
-# kosu crtu — u zaglavlju se pojavljuje kao "P/" (drugi red je "U").
+# kosu crtu - u zaglavlju se pojavljuje kao "P/" (drugi red je "U").
 PU_RE = re.compile(r"^[PUПУ][./]?$")
 
 # Logičke kolone -> mogući nazivi u zaglavlju. FON menja nazive kroz
@@ -74,10 +74,10 @@ def _detect_columns(rows):
 def _bounds(cols):
     """(lo, hi) X-granice po koloni.
 
-    Desne kolone (od/do/sale) se cepaju na sredinama između susednih zaglavlja —
+    Desne kolone (od/do/sale) se cepaju na sredinama između susednih zaglavlja -
     vrednosti u PDF-u počinju ~7px levo od naziva, pa sredina pouzdano hvata bez
     obzira na pomeraj kolona. Napomena počinje na svom zaglavlju (uz malu marginu).
-    Leva strana (predmet + P/U) se NE računa odavde — sidri se direktno na datum-token,
+    Leva strana (predmet + P/U) se NE računa odavde - sidri se direktno na datum-token,
     jer je kolona Predmet široka i sredina bi sekla duge nazive."""
     datum, od, do, sale = cols["datum"], cols["od"], cols["do"], cols["sale"]
     note = cols.get("napomena")
@@ -132,13 +132,13 @@ def _is_header_row(texts):
 def _parse(pdf_path, fallback, with_type):
     """Zajedničko jezgro za ispit i kolokvijum.
 
-    with_type=True izdvaja P/U kolonu (pismeni/usmeni) — postoji samo kod ispita.
+    with_type=True izdvaja P/U kolonu (pismeni/usmeni) - postoji samo kod ispita.
 
     Strategija:
       • kolone se auto-detektuju iz zaglavlja (tolerantno na varijante naziva),
         uz fallback na stari layout;
       • datum se prepoznaje regexom levo od kolone 'Od' (ne fiksnim opsegom),
-        a predmet i P/U se sidre na poziciju samog datuma — otporno na pomeraj
+        a predmet i P/U se sidre na poziciju samog datuma - otporno na pomeraj
         kolona i na to što vrednosti počinju levo od svojih zaglavlja;
       • od/do/sale se čitaju preko sredina između susednih zaglavlja.
     """
@@ -147,7 +147,7 @@ def _parse(pdf_path, fallback, with_type):
     with pdfplumber.open(pdf_path) as pdf:
         pages_rows = [extract_rows(page) for page in pdf.pages]
 
-    # Detekcija kolona jednom — sa prve strane koja ima zaglavlje
+    # Detekcija kolona jednom - sa prve strane koja ima zaglavlje
     cols = {}
     for rows in pages_rows:
         cols = _detect_columns(rows)
@@ -155,7 +155,7 @@ def _parse(pdf_path, fallback, with_type):
             break
     b = _bounds(cols or fallback)
 
-    # Svi redovi u jednom nizu — radi pogleda unapred i preko granica strana
+    # Svi redovi u jednom nizu - radi pogleda unapred i preko granica strana
     flat = [row for rows in pages_rows for row in rows.values()]
 
     def find_date(row):
@@ -234,7 +234,7 @@ def _parse(pdf_path, fallback, with_type):
             entries[-1]["rooms"] += parse_rooms(cont_sale)
             continue
 
-        # Usamljeni P/U marker (drugi red 'P/U' zaglavlja) ili prazno — preskoči
+        # Usamljeni P/U marker (drugi red 'P/U' zaglavlja) ili prazno - preskoči
         if not left_words or (len(left_words) == 1 and PU_RE.match(left_words[0]["text"])):
             continue
 

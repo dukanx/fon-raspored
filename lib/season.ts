@@ -37,8 +37,8 @@ function order({ kind, startYear }: Sem): number {
 }
 
 // Semestar koji počinje posle roka koji se završio datog dana. Rok koji se
-// završava u avgustu–decembru (septembarski, oktobarski) vodi u zimski nove
-// školske godine, onaj u januaru–martu (januarski, februarski) u letnji. Posle
+// završava u avgustu-decembru (septembarski, oktobarski) vodi u zimski nove
+// školske godine, onaj u januaru-martu (januarski, februarski) u letnji. Posle
 // junskog/julskog sledi leto, pa nema semestra koji se čeka.
 function semesterAfterRok(lastIso: string): Sem | null {
   const [y, mo] = lastIso.split('-').map(Number)
@@ -48,7 +48,7 @@ function semesterAfterRok(lastIso: string): Sem | null {
 }
 
 export interface PendingSemester {
-  label: string            // "Zimski 2026/27" — semestar koji čekamo
+  label: string            // "Zimski 2026/27" - semestar koji čekamo
   newAcademicYear: boolean // zimski = nova školska godina (prelazak u višu godinu, nove grupe)
 }
 
@@ -82,7 +82,7 @@ export function waitingForSchedule(
   return pendingFor(publishedSemester, awaitedSemester(rokovi, todayIso))
 }
 
-// Današnji datum (YYYY-MM-DD) po lokalnom vremenu uređaja — toISOString bi dao
+// Današnji datum (YYYY-MM-DD) po lokalnom vremenu uređaja - toISOString bi dao
 // UTC, pa bi posle ponoći po našem vremenu još bio "juče".
 export function todayLocalIso(now: Date = new Date()): string {
   const p = (n: number) => String(n).padStart(2, '0')

@@ -72,7 +72,7 @@ export default function DeliPage() {
     session.year.set(String(s.y))
     session.program.set(s.program)
     session.semester.set(s.semester)
-    session.lastName.set(s.g) // iz linka nemamo prezime — grupa kao placeholder
+    session.lastName.set(s.g) // iz linka nemamo prezime - grupa kao placeholder
 
     saved.group.set(s.g)
     saved.year.set(String(s.y))
@@ -82,7 +82,7 @@ export default function DeliPage() {
   }
 
   // Primeni deljeni izbor predmeta i otvori raspored. extra/prevSubjects/
-  // otherSem su prisutni samo ako ih je pošiljalac uključio — ako ih nema,
+  // otherSem su prisutni samo ako ih je pošiljalac uključio - ako ih nema,
   // ne diramo ono što primalac možda već ima podešeno.
   function apply(s: Ready) {
     const checked: Record<string, boolean> = {}
@@ -97,7 +97,7 @@ export default function DeliPage() {
     router.push('/raspored')
   }
 
-  // Preskoči deljeni izbor — samo postavi grupu i vodi na izbor predmeta.
+  // Preskoči deljeni izbor - samo postavi grupu i vodi na izbor predmeta.
   function pickManually(s: Ready) {
     commitIdentity(s)
     router.push('/izborni')

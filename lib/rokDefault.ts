@@ -2,15 +2,15 @@
 //
 // Bira da li aplikacija podrazumevano otvara Raspored (nastava) ili Rokovi
 // (ispitni period), na osnovu STVARNIH datuma ispitnih rokova iz rokovi.json
-// — ne pretpostavljenog akademskog kalendara (koji bi svake godine drift-ovao).
+// - ne pretpostavljenog akademskog kalendara (koji bi svake godine drift-ovao).
 //
 // Susedni rokovi (npr. julski -> septembarski -> oktobarski, sa nedeljama
 // pauze između) se spajaju u JEDAN "ispitni period" ako je razmak između njih
-// manji od ROK_MERGE_GAP_DAYS — cela letnja sezona ispita je i dalje "nema
+// manji od ROK_MERGE_GAP_DAYS - cela letnja sezona ispita je i dalje "nema
 // nastave", ne samo nedelje kad se doslovno polaže. Veliki razmak (npr.
 // februarski -> junski, ~4 meseca aktivne nastave između) se NE spaja.
 //
-// Kolokvijumi se namerno ignorišu — dešavaju se USRED semestra (nastava i
+// Kolokvijumi se namerno ignorišu - dešavaju se USRED semestra (nastava i
 // dalje traje), pa ne treba da okinu default na Rokovi.
 
 import type { RokData } from './types'
@@ -24,7 +24,7 @@ function daysBetweenUTC(a: string, b: string): number {
   return (Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86_400_000
 }
 
-// Čisto UTC računanje datuma — new Date(str).setDate() + toISOString() bi
+// Čisto UTC računanje datuma - new Date(str).setDate() + toISOString() bi
 // pomerio dan unazad/unapred u zavisnosti od lokalne vremenske zone (npr. u
 // CEST-u ponoć 10. avgusta je 9. avgust u UTC-u).
 function subtractDaysUTC(dateStr: string, days: number): string {

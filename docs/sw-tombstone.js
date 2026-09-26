@@ -1,10 +1,10 @@
-// TOMBSTONE — kill-switch nivo 1 za offline keš.
+// TOMBSTONE - kill-switch nivo 1 za offline keš.
 //
 // KAKO SE KORISTI: `cp docs/sw-tombstone.js public/sw.js` pa deploy.
 //
 // Zašto radi: next.config.ts servira /sw.js kao `no-cache, no-store,
 // must-revalidate`, obe registracije koriste `updateViaCache: 'none'`, a fetch
-// samog SW skripta UVEK zaobilazi service worker — pokvaren `fetch` handler ne
+// samog SW skripta UVEK zaobilazi service worker - pokvaren `fetch` handler ne
 // može da spreči sopstvenu zamenu. Svaki korisnik ovo pokupi na sledećoj
 // navigaciji (ili na sledeći fokus taba, zbog reg.update() u providers.tsx).
 //
@@ -12,7 +12,7 @@
 // pre uvođenja keširanja.
 //
 // KRITIČNO: NE zovemo registration.unregister(). To bi oborilo PushSubscription
-// svim pretplatnicima i tiho im ubilo notifikacije — gore od buga koji se
+// svim pretplatnicima i tiho im ubilo notifikacije - gore od buga koji se
 // popravlja. Zato push handleri ostaju doslovno isti.
 
 self.addEventListener('install', () => self.skipWaiting())
@@ -27,7 +27,7 @@ self.addEventListener('activate', (event) => {
   })())
 })
 
-/* ---------------- Web Push — doslovno kao u public/sw.js ---------------- */
+/* ---------------- Web Push - doslovno kao u public/sw.js ---------------- */
 
 self.addEventListener('push', function (event) {
   let data = {}

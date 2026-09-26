@@ -1,10 +1,10 @@
 """Testovi za fon_exam_parser na realnim FON PDF-ovima.
 
 Dve vrste provera:
-  1. Golden test — izlaz parsera mora da se poklopi sa sačuvanim .expected.json.
+  1. Golden test - izlaz parsera mora da se poklopi sa sačuvanim .expected.json.
      Hvata regresije: ako se parser promeni i izlaz se razlikuje, test pada.
      Kad je promena namerna, regeneriši golden fajlove (vidi update_golden.py).
-  2. Strukturne provere — opšta pravila koja moraju da važe nezavisno od PDF-a
+  2. Strukturne provere - opšta pravila koja moraju da važe nezavisno od PDF-a
      (ISO datum, HH:MM vremena, ne-prazan naziv, P/U samo kod ispita, itd.).
 """
 import json

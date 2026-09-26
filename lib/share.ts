@@ -1,16 +1,16 @@
-// Deljenje rasporeda putem linka — stateless (ceo payload u URL-u, bez backend-a).
+// Deljenje rasporeda putem linka - stateless (ceo payload u URL-u, bez backend-a).
 //
 // Payload je namerno minimalan: godina + grupa + indeksi čekiranih predmeta.
 // Grupa određuje ceo bazni raspored; program/semestar se izvode iz god.json na
 // strani primaoca, pa se ne šalju. Lične beleške se NE dele.
 //
-// Predmeti se šalju kao INDEKSI u uniqueSubjectsForGroup(data, g) — istu
+// Predmeti se šalju kao INDEKSI u uniqueSubjectsForGroup(data, g) - istu
 // sortiranu listu grade obe strane. `n` (broj predmeta) je zaštita: ako se
 // primaocu raspored promenio (drugačiji n), indeksi ne valjaju i /deli pada na
 // picker umesto da tiho primeni pogrešan izbor.
 //
 // x/p/o (preneseni termini / predmeti iz prethodnih godina / drugog semestra)
-// su opcioni — pošiljalac bira da li da ih uključi (ako mu ceo raspored zavisi
+// su opcioni - pošiljalac bira da li da ih uključi (ako mu ceo raspored zavisi
 // od prenesenog predmeta, bez ovoga bi link stigao prazan). Odsutni polje =
 // pošiljalac nije uključio, primalac zadržava svoje postojeće vrednosti.
 
@@ -18,7 +18,7 @@ import type { ScheduleEntry } from './types'
 
 export type SharePayload = {
   v: 1
-  y: number      // godina studija (1–4)
+  y: number      // godina studija (1-4)
   g: string      // šifra grupe, npr. "C1"
   n: number      // broj jedinstvenih predmeta grupe (guard protiv drift-a)
   s: number[]    // indeksi čekiranih predmeta u sortiranoj listi
@@ -27,7 +27,7 @@ export type SharePayload = {
   o?: string[]                            // predmeti iz drugog semestra
 }
 
-// btoa/atob rade samo sa Latin1 — nazivi predmeta imaju č/ć/š/đ/ž (van Latin1
+// btoa/atob rade samo sa Latin1 - nazivi predmeta imaju č/ć/š/đ/ž (van Latin1
 // opsega), pa se prvo enkoduje u UTF-8 bajtove.
 function toBase64Url(s: string): string {
   const bytes = new TextEncoder().encode(s)

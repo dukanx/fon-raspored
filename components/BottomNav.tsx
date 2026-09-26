@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
 
-/* ---------- Ikonice (stroke, currentColor — rade u obe teme) ---------- */
+/* ---------- Ikonice (stroke, currentColor - rade u obe teme) ---------- */
 type IconProps = React.SVGProps<SVGSVGElement>
 const baseIcon = (props: IconProps) => ({
   viewBox: '0 0 24 24',

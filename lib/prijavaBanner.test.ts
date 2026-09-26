@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { pickPrijavaPovod, srDatumUISO, isoMinusDana } from './prijavaBanner'
 
 // Prijava traje 25.06 - 28.06.2026. "uskoro" (najavaDana=1, podrazumevano) pada
-// na 27.06 — dan pred istek (28.06), ne pre početka.
+// na 27.06 - dan pred istek (28.06), ne pre početka.
 const PRIJAVA = ['25.06.2026.', '28.06.2026.']
 
 function povod(todayStr: string, jeNov = false) {
@@ -97,12 +97,12 @@ describe('pickPrijavaPovod - ivični slučajevi', () => {
     expect(pickPrijavaPovod({ prijavaDatumi: PRIJAVA, todayStr: '2026-06-23', jeNov: false, najavaDana: 5 })).toBe('uskoro')
   })
 
-  // Konkretno pitanje: dvodnevna prijava — da li mogu DVA povoda da se poklope
+  // Konkretno pitanje: dvodnevna prijava - da li mogu DVA povoda da se poklope
   // istog dana i prikažu se oba (novo+počinje, ili počinje+uskoro)? Ne mogu:
   // funkcija uvek vraća najviše jedan, po prioritetu iz SVI_POVODI.
-  it('dvodnevna prijava: "dan pred istek" pada na dan početka — pocinje pobeđuje', () => {
+  it('dvodnevna prijava: "dan pred istek" pada na dan početka - pocinje pobeđuje', () => {
     const dvodnevna = ['25.06.2026.', '26.06.2026.']
-    // 25.06: i "pocinje" i "uskoro" (26.06 - 1 dan) su tačni za ovaj dan — samo jedan se vraća.
+    // 25.06: i "pocinje" i "uskoro" (26.06 - 1 dan) su tačni za ovaj dan - samo jedan se vraća.
     expect(pickPrijavaPovod({ prijavaDatumi: dvodnevna, todayStr: '2026-06-25', jeNov: false })).toBe('pocinje')
     // 26.06: poslednji dan.
     expect(pickPrijavaPovod({ prijavaDatumi: dvodnevna, todayStr: '2026-06-26', jeNov: false })).toBe('poslednji')

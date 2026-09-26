@@ -172,7 +172,7 @@ const TextType = ({
       {showCursor && (
         <span
           // Treptanje je CSS animacija (`.text-type-caret` u globals.css), ne
-          // gsap — isti efekat, bez 30 KB zavisnosti na ulaznoj ruti.
+          // gsap - isti efekat, bez 30 KB zavisnosti na ulaznoj ruti.
           // `cursorBlinkDuration` je poluciklus (fade out), pa je pun ciklus 2×.
           style={{ animationDuration: `${cursorBlinkDuration * 2}s` }}
           className={`text-type-caret ml-1 inline-block ${shouldHideCursor ? 'hidden' : ''} ${cursorClassName}`}

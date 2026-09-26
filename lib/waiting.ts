@@ -26,7 +26,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json()
 }
 
-// Deo odluke koji zavisi samo od datuma i rokovi.json-a — isti za ceo dan, pa
+// Deo odluke koji zavisi samo od datuma i rokovi.json-a - isti za ceo dan, pa
 // se čuva u localStorage. Tokom semestra (`awaited` je null) ulazak zato ne
 // čeka mrežu.
 async function dayPlan(date: string): Promise<{ dest: Dest; awaited: string | null } | null> {

@@ -1,4 +1,4 @@
-# Prevrtanje semestra — tri rupe pri flipu
+# Prevrtanje semestra - tri rupe pri flipu
 
 Kontekst: app čuva studentov izbor predmeta u `localStorage`, po grupi. Kad FON
 objavi novi raspored, pipeline pregazi `god.json` i **semestar se prevrne**
@@ -19,11 +19,11 @@ Ispod su tri konkretne rupe i kako su rešene.
 
 ---
 
-## Rupa 1 — Ustajala mapa predmeta (`fon_subjects_${group}`)
+## Rupa 1 - Ustajala mapa predmeta (`fon_subjects_${group}`)
 
 **Problem.** Posle flipa, `fon_subjects_${group}` sadrži nazive predmeta *starog*
 semestra. Rokovi filter (fail-closed) sakrije svaki termin čiji predmet nije u tom
-setu — dakle sve nove predmete.
+setu - dakle sve nove predmete.
 
 **Primer.**
 Marko je u letnjem 2025/26, grupa `A5`. Sačuvano:
@@ -32,7 +32,7 @@ fon_subjects_A5 = { "Matematika 2": true, "Principi programiranja": true }
 ```
 U oktobru app pređe na `Zimski 2026/27`. Grupa `A5` i dalje postoji (drugi opseg
 prezimena, ali isti ID). Marko sad sluša "Baze podataka", "Operativni sistemi"...
-- Raspored: prikaže nove predmete (fail-open) — izgleda OK.
+- Raspored: prikaže nove predmete (fail-open) - izgleda OK.
 - Rokovi: za januarski rok `userSubjects = {"Matematika 2","Principi programiranja"}`,
   pa se "Baze podataka" **ne pojavi** iako Marko ima ispit. Tiho sakriveno.
 
@@ -45,7 +45,7 @@ ponovo ne izabere predmete. Bezbedno prelazno stanje: bolje višak nego manjak.
 
 ---
 
-## Rupa 2 — Ustajali izbor drugog semestra (`fon_other_sem_${group}`)
+## Rupa 2 - Ustajali izbor drugog semestra (`fon_other_sem_${group}`)
 
 **Problem.** Picker "Predmeti iz drugog semestra" (za Sep/Okt rok) upisuje izbor u
 `fon_other_sem_${group}`. Posle flipa taj izbor pripada *pogrešnom* semestru i
@@ -72,7 +72,7 @@ localStorage.removeItem(`fon_other_sem_${group}`)
 
 ---
 
-## Rupa 3 — Istorija raste zauvek (`fon_subjects_history`)
+## Rupa 3 - Istorija raste zauvek (`fon_subjects_history`)
 
 **Problem.** `fon_subjects_history = { [semester]: string[] }` akumulira izbor po
 semestru da bi mešani Sep/Okt rok mogao da unira oba semestra. Bez orezivanja, tu
@@ -119,10 +119,10 @@ promenio). Kredencijali (grupa/prezime/smer) i istorija OSTAJU.
 
 Sva logika je u [`lib/semester.ts`](../lib/semester.ts):
 
-- `reconcileSemester(sem, group)` — ako se `sem` razlikuje od `fon_saved_semester`:
+- `reconcileSemester(sem, group)` - ako se `sem` razlikuje od `fon_saved_semester`:
   obriše `fon_subjects_${group}` + `fon_other_sem_${group}`, upiše novi
   `fon_saved_semester`, i digne `fon_flip_pending`. Vraća `true` na flip.
-- `isFlipPending(sem)` / `acknowledgeFlip()` — kontrola popupa.
+- `isFlipPending(sem)` / `acknowledgeFlip()` - kontrola popupa.
 
 **Detekcija je po `semester` STRINGU** (`"Zimski 2026/27"`), ne po sadržaju PDF-a:
 
@@ -130,24 +130,24 @@ Sva logika je u [`lib/semester.ts`](../lib/semester.ts):
   **nema** lažnog flipa. ✓
 - Letnji→Zimski ili nova školska godina → string se menja → flip. ✓
 
-**Popup** (`raspored`, ekran na koji svi padnu): "Nov semestar — proveri predmete",
+**Popup** (`raspored`, ekran na koji svi padnu): "Nov semestar - proveri predmete",
 sa CTA *Izaberi predmete* (→ `izborni`) i *Kasnije* (zatvori). Pokaže se **jednom
-po flipu** — `fon_flip_pending` preživi reload dok ga `acknowledgeFlip()` ne obriše
+po flipu** - `fon_flip_pending` preživi reload dok ga `acknowledgeFlip()` ne obriše
 (na CTA, na "Kasnije", ili kad student potvrdi izbor u `izborni`). Dok ne izabere,
-filteri su fail-open (prikaži sve) — ništa se ne krije.
+filteri su fail-open (prikaži sve) - ništa se ne krije.
 
 `izborni` zove isti `reconcileSemester` (fallback za direktnu navigaciju), a
 `handleConfirm` zove `acknowledgeFlip()`.
 
 ---
 
-## Picker "drugi semestar" — samo u letnjem
+## Picker "drugi semestar" - samo u letnjem
 
 Picker se prikazuje **samo kad je aktivan letnji** (uvek nudi zimske predmete).
 Razlog: mešani Sep/Okt rok uvek padne dok je app u letnjem i traži zimske
 predmete (ponavljanja). U zimskom je picker suvišan (jan/feb je čisto zimski) i
 samo zbunjuje. Novajlija koji uđe u maju i dalje može da doda zimske za septembar
-— to je i bila glavna vrednost pickera; istorija to ne pokriva jer nije bio
+- to je i bila glavna vrednost pickera; istorija to ne pokriva jer nije bio
 aktivan zimus.
 
 ---
@@ -155,7 +155,7 @@ aktivan zimus.
 ## Preostala ograničenja (svesno prihvaćena)
 
 1. **U zimskom semestru `god-letnji.json` je prošlogodišnji letnji** (osveži se
-   tek u martu) — ali picker se u zimskom ionako ne prikazuje, pa nije problem.
+   tek u martu) - ali picker se u zimskom ionako ne prikazuje, pa nije problem.
 
 2. **Sinhrono čitanje `localStorage` pre `fetch`.** Persist-efekat za
    `otherSelected` upiše `[]` pre nego što `fetch` stigne; async čitanje u

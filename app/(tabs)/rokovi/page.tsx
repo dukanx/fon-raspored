@@ -78,7 +78,7 @@ const IconExternal = (p: IconProps) => (
 const IconCalendar = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
 )
-// Izvoz u kalendar — isti okvir kao IconCalendar, ali sa strelicom nadole.
+// Izvoz u kalendar - isti okvir kao IconCalendar, ali sa strelicom nadole.
 // Namerno različita od IconCalendar (koja je prikaz „Kalendar"), jer su stajale
 // jedna do druge i izgledale kao isto dugme.
 const IconCalendarExport = (p: IconProps) => (
@@ -188,7 +188,7 @@ const eventTypeLabel = (t: string) => (t === 'P' ? 'Pismeni' : t === 'U' ? 'Usme
 export default function RokoviPage() {
   const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
-  // Podaci se nisu učitali (offline i nikad keširano) — razlikuje se od
+  // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od
   // "nema zakazanih rokova", pa ne sme da deli isti prazan prikaz.
   const [loadError, setLoadError] = useState(false)
   const [tab, setTab] = useState<Tab>('kolokvijumi')
@@ -224,7 +224,7 @@ export default function RokoviPage() {
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
 
-  // Default je uvek "Kalendar" — i na telefonu i na desktopu; korisnik može
+  // Default je uvek "Kalendar" - i na telefonu i na desktopu; korisnik može
   // ručno na "Lista".
   const view: 'list' | 'calendar' = manualView ?? 'calendar'
 
@@ -296,7 +296,7 @@ export default function RokoviPage() {
         setDismissedBanners(dismissed)
       })
       // Prazan niz sam po sebi renderuje "Nema podataka za prikaz", što se ne
-      // razlikuje od "nema zakazanih ispita" — zato zaseban loadError.
+      // razlikuje od "nema zakazanih ispita" - zato zaseban loadError.
       .catch(() => { setAllRokovi([]); setLoadError(true) })
   }, [isHydrated, meta.group])
 
@@ -320,7 +320,7 @@ export default function RokoviPage() {
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   // Skriveni termini se čuvaju odvojeno po tabu i grupi. Kad rok prođe više
-  // nema šta da se sakriva — izbaci ga i iz prikaza i iz storage-a (inače bi
+  // nema šta da se sakriva - izbaci ga i iz prikaza i iz storage-a (inače bi
   // se gomilali zauvek).
   useEffect(() => {
     if (!isHydrated || !meta.group) { setHiddenEntries([]); return }
@@ -345,7 +345,7 @@ export default function RokoviPage() {
     byGroup.rokHidden(tab, meta.group).set(next)
   }
 
-  // Korisnikovi sopstveni unosi (nisu sa FON sajta) — učitaju se po grupi.
+  // Korisnikovi sopstveni unosi (nisu sa FON sajta) - učitaju se po grupi.
   useEffect(() => {
     if (!isHydrated || !meta.group) { setCustomEntries([]); return }
     setCustomEntries(byGroup.customRokovi(meta.group).get())
@@ -381,7 +381,7 @@ export default function RokoviPage() {
     return r.entries.some(e => e.date >= todayStr)
   }), [allRokovi, tab, todayStr])
 
-  // Tab je fiksiran pri dodavanju (vidi CustomRokEntry.tab) — ne zavisi od tipa.
+  // Tab je fiksiran pri dodavanju (vidi CustomRokEntry.tab) - ne zavisi od tipa.
   const customForTab = useMemo(
     () => customEntries.filter(e => e.date >= todayStr && e.tab === tab),
     [customEntries, tab, todayStr]
@@ -695,7 +695,7 @@ export default function RokoviPage() {
     return null
   }, [allRokovi, tab, todayStr, seenSnapshot, dismissedBanners])
 
-  // Upis "prvi put viđeno" ide u efekat, ne u memo — memo sme samo da čita.
+  // Upis "prvi put viđeno" ide u efekat, ne u memo - memo sme samo da čita.
   useEffect(() => {
     if (!allRokovi.length) return
     const seen = app.rokFirstSeen.get()
@@ -725,7 +725,7 @@ export default function RokoviPage() {
 
   const isEmpty = activeRokovi.length === 0 && customForTab.length === 0
 
-  // Raspored/Rokovi — ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
+  // Raspored/Rokovi - ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
   const pageSwitch = [
     { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: false, onClick: () => router.push('/raspored') },
     { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: true, onClick: () => {} },
@@ -887,7 +887,7 @@ export default function RokoviPage() {
     const weeks: (number | null)[][] = []
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7))
 
-    // Kalendar ostaje interaktivan i kad nema rokova — klik na prazan dan
+    // Kalendar ostaje interaktivan i kad nema rokova - klik na prazan dan
     // dodaje sopstveni događaj, pa nema razloga da se zameni EmptyState-om.
     return (
       <div>
@@ -915,7 +915,7 @@ export default function RokoviPage() {
 
         {isEmpty && (
           <p className="mb-3 text-center text-xs text-gray-400 dark:text-gray-500">
-            Nema rokova za prikaz — klikni na datum da dodaš svoj događaj.
+            Nema rokova za prikaz - klikni na datum da dodaš svoj događaj.
           </p>
         )}
 
@@ -1020,7 +1020,7 @@ export default function RokoviPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-900 dark:text-gray-100">{e.subject}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                        {e.start}–{e.end} · {e.rooms.join(', ')}
+                        {e.start}-{e.end} · {e.rooms.join(', ')}
                         {e.type && ` · ${eventTypeLabel(e.type)}`}
                       </p>
                       {e.note && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.note}</p>}
@@ -1479,7 +1479,7 @@ export default function RokoviPage() {
 
       </div>
 
-      <Toast show={downloadToast}>Kalendar (.ics) preuzet — otvori fajl da dodaš termine.</Toast>
+      <Toast show={downloadToast}>Kalendar (.ics) preuzet - otvori fajl da dodaš termine.</Toast>
 
       <Toast show={imageToast}>Slika rokova je preuzeta!</Toast>
 

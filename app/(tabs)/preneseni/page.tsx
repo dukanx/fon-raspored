@@ -109,7 +109,7 @@ export default function PreneseniPage() {
     if (!group || !year) return
 
     // Offline bi ovde bacio unhandled rejection usred event handlera i tiho
-    // preskočio setTrenutniRaspored — zato try/catch.
+    // preskočio setTrenutniRaspored - zato try/catch.
     let data: SemesterData
     try {
       const res = await fetch(`/data/${year}god.json`)
@@ -203,7 +203,7 @@ export default function PreneseniPage() {
     if (!data) {
       setLoadingData(true)
       try {
-        // Oba semestra (zimski + letnji), ne samo trenutno "živi" ${g}god.json —
+        // Oba semestra (zimski + letnji), ne samo trenutno "živi" ${g}god.json -
         // inače predmet iz semestra koji trenutno nije aktivan ne može da se nađe.
         const entries = await fetchYearBothSemesters(g)
         data = { semester: '', year: g, groups: {}, entries }
@@ -392,7 +392,7 @@ export default function PreneseniPage() {
                             {e.subject}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
+                            {e.day} · {e.start}-{e.end} [{e.type_short}] · Sala {e.room}
                           </p>
                         </div>
                         <button
@@ -442,7 +442,7 @@ export default function PreneseniPage() {
                             {e.subject}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {e.day} · {e.start}–{e.end} [{e.type_short}] · Sala {e.room}
+                            {e.day} · {e.start}-{e.end} [{e.type_short}] · Sala {e.room}
                           </p>
                         </div>
                         <button

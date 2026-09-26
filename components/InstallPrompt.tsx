@@ -21,14 +21,14 @@ const baseIcon = (p: IconProps) => ({
   strokeLinejoin: 'round' as const,
   ...p,
 })
-// Strelica u fioku — "instaliraj / preuzmi".
+// Strelica u fioku - "instaliraj / preuzmi".
 const IconInstall = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 3v11M8 10l4 4 4-4" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></svg>
 )
 const IconChevron = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
 )
-// Zaobljeni kvadrat sa plusom — iOS "Dodaj na početni ekran".
+// Zaobljeni kvadrat sa plusom - iOS "Dodaj na početni ekran".
 const IconAddToHome = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="5" /><path d="M12 8v8M8 12h8" /></svg>
 )
@@ -36,7 +36,7 @@ const IconAddToHome = (p: IconProps) => (
 // Kartica sa uputstvom za instalaciju PWA. Sama se sakrije ako je app već
 // instalirana (standalone) ili na desktopu bez install prompta.
 //
-// withLink: na /deli strani pokazuje i "kopiraj ovaj link" — jer na iOS-u
+// withLink: na /deli strani pokazuje i "kopiraj ovaj link" - jer na iOS-u
 // instalirana PWA ima odvojen storage od Safarija, pa se deljeni raspored
 // primenjuje tek kad se link nalepi UNUTAR aplikacije.
 //
@@ -103,7 +103,7 @@ export default function InstallPrompt({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // clipboard nedostupan — tiho odustani
+      // clipboard nedostupan - tiho odustani
     }
   }
 

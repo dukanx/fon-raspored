@@ -39,9 +39,9 @@ type Slide = {
   Icon: (p: IconProps) => React.ReactElement
 }
 
-// Fokus na stvari koje se NE VIDE same od sebe (klik/swipe/skriveno dugme) —
+// Fokus na stvari koje se NE VIDE same od sebe (klik/swipe/skriveno dugme) -
 // tabovi (Raspored/Rokovi/Izmena) su već očigledni iz donjeg menija.
-// Screenshot-ovi u public/tutorial/*.png — dok fajl ne postoji, prikazuje se
+// Screenshot-ovi u public/tutorial/*.png - dok fajl ne postoji, prikazuje se
 // ikonica-placeholder (onError na <img>) da slajd ne izgleda polomljeno.
 const SLIDES: Slide[] = [
   {
@@ -82,7 +82,7 @@ const SLIDES: Slide[] = [
 ]
 
 // Prvi-put walkthrough kroz glavne funkcije aplikacije. Prikazuje se jednom
-// (fon_tutorial_seen), pre prvog notif-modala — vidi FirstRunOverlays.
+// (fon_tutorial_seen), pre prvog notif-modala - vidi FirstRunOverlays.
 //
 // Slajdovi su teme (5), svaka tema može imati više screenshot-ova koji sami
 // prolaze kao Instagram/Snapchat story (traka segmenata na vrhu slike, auto
@@ -101,7 +101,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
     queueMicrotask(() => setImgIndex(0))
   }, [index])
 
-  // Auto-napredovanje kroz slike unutar teme (kao story) — staje na poslednjoj.
+  // Auto-napredovanje kroz slike unutar teme (kao story) - staje na poslednjoj.
   useEffect(() => {
     if (slide.images.length <= 1 || imgIndex >= slide.images.length - 1) return
     const t = setTimeout(() => setImgIndex(i => i + 1), 5600)
@@ -140,7 +140,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
         <div className="relative mx-4 min-h-55 flex-1 overflow-hidden rounded-2xl ring-1 ring-[#024c7d]/20 shadow-[0_8px_24px_rgba(2,76,125,0.14)] dark:ring-white/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] bg-linear-to-br from-[#024c7d]/10 to-[#60c3ad]/10 dark:from-[#024c7d]/20 dark:to-[#60c3ad]/15">
           {slide.images.length > 1 && (
             <>
-              {/* Scrim iza trake — traka ostaje čitljiva bez obzira na sadržaj screenshot-a. */}
+              {/* Scrim iza trake - traka ostaje čitljiva bez obzira na sadržaj screenshot-a. */}
               <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 bg-linear-to-b from-black/55 to-transparent" />
               <div className="pointer-events-none absolute inset-x-2.5 top-2.5 z-10 flex gap-1.5">
                 {slide.images.map((_, i) => (
@@ -171,7 +171,7 @@ export default function Tutorial({ onDone }: { onDone: () => void }) {
           )}
 
           {slide.images.length > 1 && (
-            // Jedno dugme preko cele slike (levo/desno polovina po X koordinati klika) —
+            // Jedno dugme preko cele slike (levo/desno polovina po X koordinati klika) -
             // dva susedna dugmeta ostavljala su vidljiv šav na granici, ovo ga uklanja.
             <button
               type="button"

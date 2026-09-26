@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import BottomNav from '@/components/BottomNav'
 import FirstRunOverlays from '@/components/FirstRunOverlays'
 
-// Ove rute su personalizovane na klijentu — bez identiteta u localStorage-u
+// Ove rute su personalizovane na klijentu - bez identiteta u localStorage-u
 // robot vidi samo preusmerenje na `/`. Kao rezultat pretrage bile bi prazne
 // kopije početne, pa se izbacuju iz indeksa. `follow: true` znači da robot i
 // dalje prati linkove sa njih, samo ih ne prikazuje kao rezultat.

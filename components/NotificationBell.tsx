@@ -49,7 +49,7 @@ const IconClock = (p: IconProps) => (
   </svg>
 )
 
-// Kompaktno ikonica-dugme. Klik ne (od)prijavljuje odmah — otvara popup sa
+// Kompaktno ikonica-dugme. Klik ne (od)prijavljuje odmah - otvara popup sa
 // istim objašnjenjem kao NotificationIntro (prvi-put modal) plus dugme za
 // uključi/isključi, tako da objašnjenje ostaje dostupno i posle prvog puta.
 export default function NotificationBell({ className = '' }: { className?: string }) {
@@ -108,7 +108,7 @@ export default function NotificationBell({ className = '' }: { className?: strin
     }
   }
 
-  // Samo dok se ne utvrdi platforma (pre hidracije) — da ne bljesne pogrešan UI.
+  // Samo dok se ne utvrdi platforma (pre hidracije) - da ne bljesne pogrešan UI.
   if (supported === null) return null
 
   const btnClass = (active: boolean) =>
@@ -118,7 +118,7 @@ export default function NotificationBell({ className = '' }: { className?: strin
 
   // iOS pre instalacije: dugme otvara uputstvo (Web Push radi tek iz home screen-a).
   // Provera ide PRE pushSupported() jer iOS van standalone moda ne izlaže
-  // PushManager — inače bi uputstvo bilo skriveno baš onima kojima treba.
+  // PushManager - inače bi uputstvo bilo skriveno baš onima kojima treba.
   if (isIOS && !isStandalone) {
     return (
       <div className={className}>
@@ -153,7 +153,7 @@ export default function NotificationBell({ className = '' }: { className?: strin
   }
 
   // Bez podrške za push (star pregledač, in-app webview iz Instagrama/Facebooka…).
-  // Zvonce ipak stoji — inače korisnik nema gde da sazna zašto notifikacija nema.
+  // Zvonce ipak stoji - inače korisnik nema gde da sazna zašto notifikacija nema.
   if (!supported) {
     return (
       <div className={className}>

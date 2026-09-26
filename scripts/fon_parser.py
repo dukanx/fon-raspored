@@ -124,7 +124,7 @@ ENTRY_RE = re.compile(
     r"^(.+?)\s+(P|V)\s+"                  # naziv + tip
     r"(.+?)"                             # grupe (uklj. prečice npr. 'D-Akrd.2024 ISIT,svi')
     r"\s+(\d{1,2}:\d{2}-\d{1,2}:\d{2})"   # vreme
-    r"\s*(.*)$"                          # sala (opciono — može preći u sledeći red)
+    r"\s*(.*)$"                          # sala (opciono - može preći u sledeći red)
 )
 
 # Ključne reči za prepoznavanje MiO (menadžment) smera; sve ostalo je ISIT.
@@ -158,7 +158,7 @@ def expand_groups(raw, groups_dict=None):
             else:
                 codes = list(groups_dict.keys())
             return sorted(codes)
-        return []  # prečica bez liste grupa — ne možemo razrešiti
+        return []  # prečica bez liste grupa - ne možemo razrešiti
 
     codes = [g.strip() for g in raw.split(",") if g.strip()]
     codes = [c for c in codes if re.match(r"^[A-Z]\d+$", c)]
@@ -167,7 +167,7 @@ def expand_groups(raw, groups_dict=None):
     return codes
 
 
-# Data-red bez naziva: počinje sa "P "/"V " i ima vreme — znak da se dug naziv
+# Data-red bez naziva: počinje sa "P "/"V " i ima vreme - znak da se dug naziv
 # predmeta prelio u red iznad/ispod. Primer: "P A1,A2,A3 10:15-12:00 Amfiteatar 2"
 _SUBJECTLESS_DATA_RE = re.compile(r"^(P|V)\s+.+\d{1,2}:\d{2}-\d{1,2}:\d{2}")
 _TIME_RE = re.compile(r"\d{1,2}:\d{2}")
@@ -228,7 +228,7 @@ def parse_schedule_lines(lines, groups_dict=None):
     pending_entry = None  # unos kome sala nedostaje, čeka salu iz sledećeg reda
 
     def flush_room(line):
-        """Ako čekamo salu, a red liči na salu — dodeli je i vrati True."""
+        """Ako čekamo salu, a red liči na salu - dodeli je i vrati True."""
         nonlocal pending_entry
         if pending_entry is None:
             return False
@@ -243,7 +243,7 @@ def parse_schedule_lines(lines, groups_dict=None):
             entries.append(pending_entry)
             pending_entry = None
             return True
-        # nije sala — sačuvaj unos bez sale i nastavi normalnu obradu reda
+        # nije sala - sačuvaj unos bez sale i nastavi normalnu obradu reda
         entries.append(pending_entry)
         pending_entry = None
         return False
@@ -312,7 +312,7 @@ def parse_schedule_lines(lines, groups_dict=None):
                 pending_entry = entry  # sala verovatno u sledećem redu
             pending = None
         else:
-            # Možda je vreme prešlo u sledeći red — sačuvaj
+            # Možda je vreme prešlo u sledeći red - sačuvaj
             if re.search(r"\d{2}:\d{2}-$", line) or (
                 re.search(r"(P|V)\s+[A-Z]\d", line) and not re.search(r"\d{2}:\d{2}", line)
             ):
@@ -419,7 +419,7 @@ def _save_group(groups, gid_or_prefix, program_words, from_n, to_n):
     SKIP = {"Grupa","prog./","Stud.","grupa","Od","Do","prezimena",
             "GRUPE","STUDENATA","ZA","SLUŠANJE","NASTAVE","GODINE"}
 
-    # Program reči su samo "pravo" ime programa — reči koje nisu prezimena
+    # Program reči su samo "pravo" ime programa - reči koje nisu prezimena
     # Prezimena počinju velikim slovom i sadrže samo slova
     # "A-" i "Š-" su opseg markeri, ne deo programa
     clean_program = []
@@ -516,7 +516,7 @@ Primeri:
         print(f"Greška: fajl '{args.raspored}' ne postoji.")
         sys.exit(1)
 
-    # Grupe parsiramo prvo — trebaju za širenje prečica grupa u rasporedu.
+    # Grupe parsiramo prvo - trebaju za širenje prečica grupa u rasporedu.
     groups = {}
     if args.grupe:
         grupe_path = Path(args.grupe)

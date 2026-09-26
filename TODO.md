@@ -17,7 +17,7 @@ Podesi:
 - **Permissions:** `Repository → Actions: Read and write`
 - **Expiration:** po želji (npr. 1 godina)
 
-Sačuvaj generisani token (`github_pat_...`) — prikazaće se samo jednom.
+Sačuvaj generisani token (`github_pat_...`) - prikazaće se samo jednom.
 
 ---
 
@@ -122,7 +122,7 @@ Najlakša provera je:
 Dve odvojene automatizacije:
 
 ```
-1) check-fon.yml  —  AUTOMATSKI svaki dan (cron 10:07/11:07/12:07 + cron-job.org)
+1) check-fon.yml  -  AUTOMATSKI svaki dan (cron 10:07/11:07/12:07 + cron-job.org)
    |                  (radi i scraping i notifikacije)
    v
    check_fon.py (scraper)
@@ -138,7 +138,7 @@ Dve odvojene automatizacije:
                               (dedup preko Upstash: jednom dnevno)
    [koraci za notifikacije rade samo ako su secrets podešeni → HAS_PUSH]
 
-2) update-nastava.yml  —  RUČNO (Run workflow), ~4x godišnje
+2) update-nastava.yml  -  RUČNO (Run workflow), ~4x godišnje
    |
    v
    update_nastava.py → nađe PDF-ove na raspored-nastave → fon_parser.py
@@ -146,57 +146,57 @@ Dve odvojene automatizacije:
 ```
 
 Gde se šta čuva:
-- `public/data/rokovi.json` — ispiti/kolokvijumi + `prijava_datumi` po roku
-- `public/data/{1..4}god.json` — raspored nastave (izvor izbornih predmeta)
-- `scripts/known_pdfs.json` — već viđeni PDF-ovi (da zna šta je „novo")
-- Upstash Redis — pretplate (`push:subs`) + dedup marker (`sent:<datum>:<tag>`)
+- `public/data/rokovi.json` - ispiti/kolokvijumi + `prijava_datumi` po roku
+- `public/data/{1..4}god.json` - raspored nastave (izvor izbornih predmeta)
+- `scripts/known_pdfs.json` - već viđeni PDF-ovi (da zna šta je „novo")
+- Upstash Redis - pretplate (`push:subs`) + dedup marker (`sent:<datum>:<tag>`)
 
 ## Redosled rada (dogovoreno)
 
-1. **Deljenje rasporeda putem linka** (share) — vidi „Funkcionalnosti"
+1. **Deljenje rasporeda putem linka** (share) - vidi „Funkcionalnosti"
 2. **Export ispita/kolokvijuma u iCal**
-3. **Unit testovi za `lib/schedule.ts`** — vidi „Tehničko"
-4. **Organizacija ispitnih rokova (jun/jul)** — vidi „Planirano"
+3. **Unit testovi za `lib/schedule.ts`** - vidi „Tehničko"
+4. **Organizacija ispitnih rokova (jun/jul)** - vidi „Planirano"
 
 ## Planirano
 
-- [ ] **Organizacija ispitnih rokova (jun/jul)** — isti predmet je obično i u junskom i u julskom roku; student bira u kom roku polaže koji, da rasporedi pripremu.
+- [ ] **Organizacija ispitnih rokova (jun/jul)** - isti predmet je obično i u junskom i u julskom roku; student bira u kom roku polaže koji, da rasporedi pripremu.
   - **Ručni izbor:** sakrij/izaberi termin po predmetu; sakriveni se mogu vratiti (ako padne, vraća drugi rok). Mehanika kao postojeće skrivanje termina (localStorage).
   - **Pametni predlog (bez AI):** opcioni unos težine / dana pripreme po predmetu → deterministički algoritam predlaže koje u prvi a koje u drugi rok, maksimalno razmaknuto. Uvek mora postojati i opcija za potpuno samostalno poređanje.
   - **AI sloj (kasnije, opciono):** Groq objašnjava predlog / hvata neodređene želje. Matematika datuma OSTAJE u kodu (LLM je nepouzdan za to).
   - Aktivira se tek kad scraper povuče i junski i julski rok.
-- [x] **Export ispita/kolokvijuma u iCal** — `downloadICS()` u rokovi/page.tsx
-- [x] **Export ispita/kolokvijuma kao slika** — `downloadPNG()`, PNG sa pickerom (mesec/ceo rok)
+- [x] **Export ispita/kolokvijuma u iCal** - `downloadICS()` u rokovi/page.tsx
+- [x] **Export ispita/kolokvijuma kao slika** - `downloadPNG()`, PNG sa pickerom (mesec/ceo rok)
 
 
-# TODO — FON Raspored
+# TODO - FON Raspored
 
 ## Funkcionalnosti
 
-- [x] **Deljenje rasporeda putem linka** — dugme „Podeli" na `/raspored` generiše `/deli?s=` stateless link (godina/grupa/izbor predmeta u base64url); primalac dobija ekran potvrde. Obim v1: samo predmeti (extras/beleške se ne dele)
-- [x] **Napomene po predmetima** — beleška po predmetu u panelu na `/raspored` (localStorage `fon_note_<predmet>`, auto-expand textarea)
+- [x] **Deljenje rasporeda putem linka** - dugme „Podeli" na `/raspored` generiše `/deli?s=` stateless link (godina/grupa/izbor predmeta u base64url); primalac dobija ekran potvrde. Obim v1: samo predmeti (extras/beleške se ne dele)
+- [x] **Napomene po predmetima** - beleška po predmetu u panelu na `/raspored` (localStorage `fon_note_<predmet>`, auto-expand textarea)
 
 
 ---
 
 ## Poboljsanje rokova
-- [x] Export ispitnog roka u ICS (Google Calendar, Outlook) — v. „Planirano" gore
+- [x] Export ispitnog roka u ICS (Google Calendar, Outlook) - v. „Planirano" gore
 
 
 ---
 
 ## Tehničko
 
-- [x] Unit testovi za `lib/schedule.ts` — normalizacija ćirilice, range matching, detekcija izbornih (+ `lib/subjects.ts`, `lib/storage.ts`); Vitest u CI (`npm test`)
+- [x] Unit testovi za `lib/schedule.ts` - normalizacija ćirilice, range matching, detekcija izbornih (+ `lib/subjects.ts`, `lib/storage.ts`); Vitest u CI (`npm test`)
 - [ ] Skeleton loading stanja na `/raspored` i `/preneseni` za sporije konekcije
-- [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi — jasna poruka korisniku sa sugestijom
-- [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva — svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
-- [ ] Poboljšati tipove — smanjiti `any` i neeksplicitne tipove tamo gde postoje
-- [ ] **Scraper pada tiho — mora glasno.** `check_fon.py` nema nijedan `sys.exit` ni `raise`
+- [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi - jasna poruka korisniku sa sugestijom
+- [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva - svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
+- [ ] Poboljšati tipove - smanjiti `any` i neeksplicitne tipove tamo gde postoje
+- [ ] **Scraper pada tiho - mora glasno.** `check_fon.py` nema nijedan `sys.exit` ni `raise`
   (provereno grepom), pa svaki otkaz završi kao zelen GitHub Actions run:
   - sajt se ne otvori → `check_fon.py:67-69` odštampa grešku i uradi `continue`
   - FON promeni sajt pa linkovi ne odgovaraju obrascu → nula PDF-ova → poruka
-    „Nema novih PDF-ova." — ista ona koju daje i uredan prolaz kad stvarno nema ništa novo
+    „Nema novih PDF-ova." - ista ona koju daje i uredan prolaz kad stvarno nema ništa novo
   - greške se skupe u listu `errors` i samo se odštampaju
 
   Testovi ovo ne hvataju i ne mogu: `scripts/tests/fixtures/` su dva sačuvana PDF-a sa
@@ -205,17 +205,17 @@ Gde se šta čuva:
 
   - [x] **Nenulti izlaz** kad nijedna stranica iz `PAGES` nije dohvaćena, i kad se nađe
     nula PDF linkova a `known_pdfs.json` nije prazan (dakle ranije ih je bilo).
-    Workflow tad pada, a GitHub na pao zakazani workflow šalje mejl — to je uzbuna.
+    Workflow tad pada, a GitHub na pao zakazani workflow šalje mejl - to je uzbuna.
     Prvi prolaz ikad (prazan `known_pdfs.json`) i uredan prolaz bez novih PDF-ova
     namerno NE pucaju.
-  - [ ] **„Mrtvi čovek"** — javi ako duže od N dana nema uspešnog prolaza. Namerno
+  - [ ] **„Mrtvi čovek"** - javi ako duže od N dana nema uspešnog prolaza. Namerno
     odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
     **commit i Vercel redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.
     Pravo mesto za ovo je spoljni pinger (`cron-job.org`, v. „Sledeći korak" gore) koji
-    okida workflow i sam se žali kad izostane odgovor — jer izostanak run-a se iznutra
+    okida workflow i sam se žali kad izostane odgovor - jer izostanak run-a se iznutra
     ionako ne može detektovati (v. otkaz runner-a 2026-08-06/07).
 
-  Postojeća delimična zaštita: `check_fon.py` — PDF koji se isparsira u nula unosa
+  Postojeća delimična zaštita: `check_fon.py` - PDF koji se isparsira u nula unosa
   ne upisuje se kao poznat, pa se pokušava ponovo. Pokriva promenu formata PDF-a, ne i
   promenu sajta.
 
@@ -223,13 +223,13 @@ Gde se šta čuva:
 
 ## Admin i podaci
 
-- [ ] **Ručna ispravka slepljenih naziva predmeta** — neki FON ispitni PDF-ovi (npr. junski) imaju izgubljene razmake u nazivu (`Poslovniinformacionisistemi`, `Poslovnopravo`). U izvoru nema razmaka pa se ne mogu razdvojiti automatski. Plan: mapa `slepljeno -> tačno` (npr. `scripts/subject_fixes.json`) koja se primenjuje pri parsiranju; dopunjava se ručno kako se uoče novi slučajevi. (Datum/vreme/sala su tačni — ovo je samo naziv.)
-- [ ] **Admin panel** — interfejs za ručno ažuriranje JSON fajlova sa rasporedom (upload novog semestra bez deploy-a)
-- [ ] **Automatska detekcija promene semestra** — web scraping ili praćenje FON sajta za nove rasporede; pošto su fajlovi PDF, istražiti pipeline: scraper skida PDF → Python skripta parsira i generiše JSON → fajl se automatski ažurira
+- [ ] **Ručna ispravka slepljenih naziva predmeta** - neki FON ispitni PDF-ovi (npr. junski) imaju izgubljene razmake u nazivu (`Poslovniinformacionisistemi`, `Poslovnopravo`). U izvoru nema razmaka pa se ne mogu razdvojiti automatski. Plan: mapa `slepljeno -> tačno` (npr. `scripts/subject_fixes.json`) koja se primenjuje pri parsiranju; dopunjava se ručno kako se uoče novi slučajevi. (Datum/vreme/sala su tačni - ovo je samo naziv.)
+- [ ] **Admin panel** - interfejs za ručno ažuriranje JSON fajlova sa rasporedom (upload novog semestra bez deploy-a)
+- [ ] **Automatska detekcija promene semestra** - web scraping ili praćenje FON sajta za nove rasporede; pošto su fajlovi PDF, istražiti pipeline: scraper skida PDF → Python skripta parsira i generiše JSON → fajl se automatski ažurira
 
 ---
 
 ## Daleka budućnost
 
-- [ ] **Mobilna aplikacija** — native app sa svim funkcionalnostima + push notifikacije za podsetnike
-- [ ] **FON hub** — agregacija FON sajta (novosti, obaveštenja, dokumenti) u jedan interfejs; zahteva scraping više izvora
+- [ ] **Mobilna aplikacija** - native app sa svim funkcionalnostima + push notifikacije za podsetnike
+- [ ] **FON hub** - agregacija FON sajta (novosti, obaveštenja, dokumenti) u jedan interfejs; zahteva scraping više izvora
