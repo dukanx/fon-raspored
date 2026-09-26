@@ -2,8 +2,11 @@ name: Ažuriraj raspored nastave
 
 # Ručno, ili na svakih 30 min u mesecima kad FON objavljuje raspored (septembar
 # i oktobar za zimski, februar i mart za letnji). Zakazano pokretanje prvo brzo
-# proveri da li FON nudi semestar noviji od objavljenog (--check-new) i ako ne,
-# tu staje. Ako da, otvara PR, a merge pokreće push (notify-nastava.yml).
+# proveri ima li na FON-u nešto novo (--check): semestar noviji od objavljenog,
+# ili nova verzija objavljenog (drugi linkovi ili sadržaj nego u
+# known_nastava.json). Ako nema, tu staje. Ako ima i menjali su se samo sale i
+# termini, upisuje direktno na main. Ako je nov semestar ili su se menjali
+# predmeti, otvara PR, a merge pokreće push (notify-nastava.yml).
 on:
   schedule:
     - cron: '*/30 * * 9,10,2,3 *'
@@ -36,13 +39,13 @@ jobs:
 
       # Kod zakazanog pokretanja `inputs` su prazni, pa podrazumevane vrednosti
       # idu preko `||`. Semestar se ne pogađa po mesecu (auto bi u septembru
-      # rekao letnji), nego ga daje --check-new.
-      - name: Da li FON nudi novi semestar?
+      # rekao letnji), nego ga daje --check.
+      - name: Ima li nešto novo na FON-u?
         id: check
         if: github.event_name == 'schedule'
         run: |
           pip install beautifulsoup4
-          SEM=$(python scripts/update_nastava.py --check-new --years "${{ inputs.years || '1,2,3,4' }}")
+          SEM=$(python scripts/update_nastava.py --check --years "${{ inputs.years || '1,2,3,4' }}")
           echo "semester=$SEM" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
@@ -59,9 +62,39 @@ jobs:
           fi
           python scripts/update_nastava.py $ARGS
 
+      # Isti semestar i isti spisak predmeta (FON menjao samo sale i termine)
+      # -> upis direktno na main, bez PR-a i bez notifikacije. Nov semestar ili
+      # promena predmeta -> PR, pa merge radiš ti, a on šalje push.
+      - name: Da li su se menjali predmeti?
+        id: diff
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
+        run: |
+          subjects() { for y in 1 2 3 4; do "$@" "$y" | jq -r '.entries[].subject'; done | sort -u; }
+          now() { cat "public/data/${1}god.json"; }
+          committed() { git show "HEAD:public/data/${1}god.json"; }
+          if git diff --quiet -- public/data scripts/known_nastava.json; then
+            KIND=none
+          elif [ "$(now 1 | jq -r .semester)" = "$(committed 1 | jq -r .semester)" ] \
+              && [ "$(subjects now)" = "$(subjects committed)" ]; then
+            KIND=direct
+          else
+            KIND=pr
+          fi
+          echo "Izmena: $KIND"
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+
+      - name: Upiši izmene direktno na main
+        if: steps.diff.outputs.kind == 'direct'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/*god.json public/data/*god-letnji.json public/data/*god-zimski.json scripts/known_nastava.json
+          git commit -m "auto: izmene sala i termina u rasporedu nastave"
+          git push
+
       # Ako PR na grani auto/raspored-nastave već postoji, samo se osveži.
       - name: Napravi Pull Request
-        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
+        if: steps.diff.outputs.kind == 'pr'
         uses: peter-evans/create-pull-request@v6
         with:
           branch: auto/raspored-nastave
@@ -72,7 +105,7 @@ jobs:
             Automatski regenerisan raspored nastave sa FON sajta
             (`scripts/update_nastava.py`).
 
-            Pregledaj diff pre merge-a — posebno proveri da nije nešto
+            Pregledaj diff pre merge-a - posebno proveri da nije nešto
             neočekivano nestalo. Sigurnosna provera već odbacuje regresiju
             (manje predmeta/grupa nego u istom semestru ranije).
 
@@ -86,3 +119,4 @@ jobs:
             public/data/4god.json
             public/data/*god-letnji.json
             public/data/*god-zimski.json
+            scripts/known_nastava.json

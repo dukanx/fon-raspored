@@ -1,8 +1,11 @@
 name: Obavesti o novom rasporedu nastave
 
-# Kad se na main merge-uje god.json sa NOVIM semestrom (npr. PR iz
-# update-nastava.yml), pošalji push svim pretplatnicima. Re-objava istog
-# semestra (ispravke) ne šalje ništa — poredi se `semester` string.
+# Kad se na main merge-uje god.json (npr. PR iz update-nastava.yml), pošalji
+# push svim pretplatnicima:
+#   - nov semestar (`semester` string se promenio) -> "Objavljen je raspored"
+#   - isti semestar, ali sa novim predmetima (FON dopunio raspored, npr.
+#     izbornim) -> "Ponovo je objavljen raspored nastave"
+# Ispravke istog semestra bez novih predmeta (sala, termin) ne šalju ništa.
 on:
   push:
     branches: [main]
@@ -27,57 +30,80 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Da li je semestar nov?
+      # mode: nastava (nov semestar), dopuna (novi predmeti) ili prazno.
+      # version: otisak spiska predmeta svih godina, po njemu se prepoznaje da
+      # sajt servira novu verziju i da ista dopuna ne stigne dvaput.
+      - name: Šta se promenilo?
         id: sem
         run: |
+          subjects() { for y in 1 2 3 4; do "$@" "$y" | jq -r '.entries[].subject'; done | sort -u; }
+          now() { cat "public/data/${1}god.json"; }
+          before() { git show "$BEFORE:public/data/${1}god.json"; }
+
           NEW=$(jq -r .semester public/data/1god.json)
           BEFORE="${{ github.event.before }}"
           OLD=""
+          ADDED=""
           if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
-            OLD=$(git show "$BEFORE:public/data/1god.json" | jq -r .semester)
+            OLD=$(before 1 | jq -r .semester)
+            ADDED=$(comm -13 <(subjects before) <(subjects now))
           fi
-          echo "Staro: '$OLD' | novo: '$NEW'"
+          VERSION=$(subjects now | sha256sum | cut -c1-12)
+          echo "Staro: '$OLD' | novo: '$NEW' | verzija: $VERSION"
+          echo "Novi predmeti: ${ADDED:-nema}"
           echo "semester=$NEW" >> "$GITHUB_OUTPUT"
-          # Ručno pokretanje uvek šalje (dedup u send_push.mjs ipak sprečava duplikat).
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Ručno pokretanje šalje kao za nov semestar (dedup u send_push.mjs
+          # ipak sprečava duplikat).
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$OLD" != "$NEW" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "mode=nastava" >> "$GITHUB_OUTPUT"
+          elif [ -n "$ADDED" ]; then
+            echo "mode=dopuna" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "mode=" >> "$GITHUB_OUTPUT"
           fi
 
-      # Push ne sme da stigne pre nego što Vercel objavi novi deploy — inače bi
+      # Push ne sme da stigne pre nego što Vercel objavi novi deploy - inače bi
       # korisnik kliknuo i video stari raspored. Čekamo do 20 min.
       - name: Sačekaj da sajt servira novi raspored
-        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        if: ${{ steps.sem.outputs.mode != '' && env.HAS_PUSH == 'true' }}
         env:
-          SEM: ${{ steps.sem.outputs.semester }}
+          VERSION: ${{ steps.sem.outputs.version }}
         run: |
+          live() { curl -fsSL "$SITE_URL/data/${1}god.json?t=$(date +%s)"; }
           for i in $(seq 1 40); do
-            LIVE=$(curl -fsSL "$SITE_URL/data/1god.json?t=$(date +%s)" | jq -r .semester || true)
-            echo "Pokušaj $i: sajt servira '$LIVE'"
-            if [ "$LIVE" = "$SEM" ]; then exit 0; fi
+            LIVE=$(for y in 1 2 3 4; do live "$y" | jq -r '.entries[].subject' || true; done | sort -u | sha256sum | cut -c1-12)
+            echo "Pokušaj $i: sajt servira verziju $LIVE (čekamo $VERSION)"
+            if [ "$LIVE" = "$VERSION" ]; then exit 0; fi
             sleep 30
           done
-          echo "Sajt i dalje ne servira '$SEM' — ne šaljem." >&2
+          echo "Sajt i dalje ne servira novu verziju - ne šaljem." >&2
           exit 1
 
       - name: Set up Node
-        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        if: ${{ steps.sem.outputs.mode != '' && env.HAS_PUSH == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install Node dependencies
-        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        if: ${{ steps.sem.outputs.mode != '' && env.HAS_PUSH == 'true' }}
         run: npm ci
 
       - name: Pošalji push
-        if: ${{ steps.sem.outputs.changed == 'true' && env.HAS_PUSH == 'true' }}
+        if: ${{ steps.sem.outputs.mode != '' && env.HAS_PUSH == 'true' }}
         env:
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-        run: node scripts/send_push.mjs nastava "${{ steps.sem.outputs.semester }}"
+          SEM: ${{ steps.sem.outputs.semester }}
+          VERSION: ${{ steps.sem.outputs.version }}
+        run: |
+          if [ "${{ steps.sem.outputs.mode }}" = "dopuna" ]; then
+            node scripts/send_push.mjs nastava-dopuna "$SEM" "$VERSION"
+          else
+            node scripts/send_push.mjs nastava "$SEM"
+          fi

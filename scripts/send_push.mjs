@@ -6,6 +6,8 @@
 //   node scripts/send_push.mjs reminders   -> podsetnici dan pred početak/kraj prijave (čita rokovi.json)
 //   node scripts/send_push.mjs nastava "Zimski 2026/27"
 //                                          -> "objavljen je raspored nastave" (jednom po semestru)
+//   node scripts/send_push.mjs nastava-dopuna "Zimski 2026/27" "<oznaka verzije>"
+//                                          -> "ponovo je objavljen raspored" (jednom po verziji)
 //
 // Env: NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:),
 //      UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
@@ -87,12 +89,12 @@ function reminderPayloads() {
     const start = dates[0]
     const end = dates[dates.length - 1]
 
-    // Jednodnevna prijava (start === end) — samo jedna poruka tog dana.
+    // Jednodnevna prijava (start === end) - samo jedna poruka tog dana.
     if (start === end) {
       if (start === today) {
         payloads.push({
           title: 'Prijava je danas',
-          body: `${r.rok} (samo danas) — klikni za eStudent`,
+          body: `${r.rok} (samo danas) - klikni za eStudent`,
           url: ESTUDENT_URL,
           tag: `prijava-${r.rok}`,
         })
@@ -103,7 +105,7 @@ function reminderPayloads() {
     if (start === today) {
       payloads.push({
         title: 'Prijava počinje danas',
-        body: `${r.rok} — klikni za eStudent`,
+        body: `${r.rok} - klikni za eStudent`,
         url: ESTUDENT_URL,
         tag: `prijava-start-${r.rok}`,
       })
@@ -111,7 +113,7 @@ function reminderPayloads() {
     if (end === today) {
       payloads.push({
         title: 'Poslednji dan prijave',
-        body: `${r.rok} — klikni za eStudent`,
+        body: `${r.rok} - klikni za eStudent`,
         url: ESTUDENT_URL,
         tag: `prijava-end-${r.rok}`,
       })
@@ -121,17 +123,30 @@ function reminderPayloads() {
 }
 
 // Novi semestar u god.json (okida ga notify-nastava.yml posle merge-a).
-// Zimski = nova školska godina, pa podseti i na proveru godine/grupe.
+// Zimski = nova školska godina: aplikacija vraća starog korisnika na izbor
+// godine (v. lib/semester.ts), pa poruka to najavi.
 function nastavaPayloads(semester) {
   if (!semester) return []
   const isZimski = semester.toLowerCase().startsWith('zimski')
   return [{
-    title: `Objavljen je raspored — ${semester}`,
+    title: `Objavljen je raspored - ${semester}`,
     body: isZimski
-      ? 'Nova školska godina: proveri godinu i grupu, pa izaberi predmete.'
+      ? 'Nova školska godina: izaberi godinu koju upisuješ i svoje predmete.'
       : 'Izaberi predmete za novi semestar.',
     url: '/raspored',
     tag: `nastava-${semester}`,
+  }]
+}
+
+// Ponovo objavljen raspored istog semestra sa novim predmetima (npr. dopuna sa
+// izbornim). `version` razlikuje dopune, pa svaka stigne jednom.
+function nastavaDopunaPayloads(semester, version) {
+  if (!semester || !version) return []
+  return [{
+    title: 'Ponovo je objavljen raspored nastave',
+    body: 'Dodati su novi predmeti. Proveri svoje predmete i čekiraj one koje slušaš.',
+    url: '/raspored',
+    tag: `nastava-dopuna-${semester}-${version}`,
   }]
 }
 
@@ -192,7 +207,7 @@ async function dedupeReminders(payloads) {
   return out
 }
 
-// Obaveštenje o novom rasporedu šaljemo samo jednom po semestru — FON ume da
+// Obaveštenje o novom rasporedu šaljemo samo jednom po semestru - FON ume da
 // re-objavi isti raspored sa ispravkama, a ni ponovljen workflow ne sme da
 // pošalje duplikat.
 async function dedupeNastava(payloads) {
@@ -212,8 +227,9 @@ let payloads = []
 if (mode === 'new') payloads = newRokPayloads()
 else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads())
 else if (mode === 'nastava') payloads = await dedupeNastava(nastavaPayloads(process.argv[3]))
+else if (mode === 'nastava-dopuna') payloads = await dedupeNastava(nastavaDopunaPayloads(process.argv[3], process.argv[4]))
 else {
-  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>">')
+  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>"|nastava-dopuna "<semestar>" "<verzija>">')
   process.exit(1)
 }
 

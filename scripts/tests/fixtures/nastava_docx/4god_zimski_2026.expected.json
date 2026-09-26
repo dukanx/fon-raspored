@@ -1,0 +1,1411 @@
+{
+  "groups": {
+    "D1": {
+      "program": "Informacioni sistemi",
+      "range": "Svi"
+    },
+    "D2": {
+      "program": "Informacione tehnologije",
+      "range": "A- - N-"
+    },
+    "D3": {
+      "program": "Informacione tehnologije",
+      "range": "M- - Š-"
+    },
+    "D4": {
+      "program": "Softversko inženjerstvo",
+      "range": "A- - Matić"
+    },
+    "D5": {
+      "program": "Softversko inženjerstvo",
+      "range": "Madžar- - Š-"
+    },
+    "D6": {
+      "program": "Tehnologije elektronskog poslovanja",
+      "range": "A- - Lj-"
+    },
+    "D7": {
+      "program": "Tehnologije elektronskog poslovanja",
+      "range": "M- - Š-"
+    },
+    "D8": {
+      "program": "Poslovna analitika",
+      "range": "A- - O-"
+    },
+    "D9": {
+      "program": "Poslovna analitika",
+      "range": "P- - Š-"
+    },
+    "D10": {
+      "program": "Informaciono inženjerstvo",
+      "range": "Svi"
+    },
+    "D11": {
+      "program": "Finansijski menadžment",
+      "range": "Svi"
+    },
+    "D13": {
+      "program": "Lin organizacija poslovanja",
+      "range": "Svi"
+    },
+    "D15": {
+      "program": "Menadžment kvaliteta i standardizacija",
+      "range": "Svi"
+    },
+    "D17": {
+      "program": "Marketing menadžment i komunikacije",
+      "range": "Svi"
+    },
+    "D19": {
+      "program": "Operacioni menadžment",
+      "range": "Svi"
+    },
+    "D21": {
+      "program": "Projektni menadžment",
+      "range": "A- - M-"
+    },
+    "D22": {
+      "program": "Projektni menadžment",
+      "range": "N- - Š-"
+    }
+  },
+  "entries": [
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment totalnog kvaliteta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Teorija odlučivanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D13"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment totalnog kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Tehnološko preduzetništvo",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Korporativne finansije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "17"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "50"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje performansama i zaradama",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Implementacija IS (projekat)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Upravljanje performansama i zaradama",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Uvod u softverske arhitekture IS",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "13"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Korporativne finansije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Tehnološko preduzetništvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "61"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Implementacija IS (projekat)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D7"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "60"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Korporativne komunikacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D8",
+        "D9",
+        "D15",
+        "D19",
+        "D21",
+        "D22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Uvod u softverske arhitekture IS",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "13"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Osnove kvaliteta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljački sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Softverska podrška upravljanju projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D21"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje proizvodnih i uslužnih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "30"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Bankarski menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "20"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Inženjering kvaliteta",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Računarski integrisana proizvodnja",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "17"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Softverska podrška upravljanju projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljački sistemi",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13",
+        "D21",
+        "D22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Inženjering kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Računarski integrisana proizvodnja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje organizacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Računarski integrisana proizvodnja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Projektovanje organizacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D13"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "30"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Brend menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11",
+        "D17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Lean logistika",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Upravljački sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21",
+        "D22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "61"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Brend menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11",
+        "D17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Softverska podrška upravljanju projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Strateški marketing",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Softverska podrška upravljanju projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D22"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment prodaje",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Sistem menadžmenta zdravlja i bezbednosti na radu i životne sredine",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Upravljanje inovacionim projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Sistem menadžmenta zdravlja i bezbednosti na radu i životne sredine",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D10"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D19",
+        "D21",
+        "D22"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment prodaje",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D10"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "08"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Lean logistika",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Teorija odlučivanja",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D17",
+        "D19"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "61"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "11"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D9"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "60"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Upravljanje inovacionim projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D21",
+        "D22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Upravljanje inovacionim projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "61"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "60"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Strateški marketing",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "40"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D9"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "50"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D15",
+        "D21",
+        "D22"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D7",
+        "D8",
+        "D9",
+        "D10"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D22"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija odlučivanja",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D11",
+        "D13",
+        "D17",
+        "D19"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Bankarski menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "12"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D7"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje proizvodnih i uslužnih sistema",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13",
+        "D19"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D8",
+        "D9"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje organizacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D17",
+        "D21",
+        "D22"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D10"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D21"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "30"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "40"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje organizacije",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D8",
+        "D9",
+        "D11",
+        "D13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D5"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "50"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "60"
+    },
+    {
+      "day": "Petak",
+      "subject": "Korporativne komunikacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19",
+        "D22"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljanje performansama i zaradama",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "D13"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "21"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D6"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Petak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D1",
+        "D2",
+        "D3"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Internet tehnologije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje proizvodnih i uslužnih sistema",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D19"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "30"
+    },
+    {
+      "day": "Petak",
+      "subject": "Modelovanje poslovnih procesa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "62"
+    },
+    {
+      "day": "Petak",
+      "subject": "Projektovanje organizacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D8",
+        "D9",
+        "D21",
+        "D22"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Petak",
+      "subject": "Osnove kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "D4",
+        "D5",
+        "D6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 3"
+    }
+  ]
+}
