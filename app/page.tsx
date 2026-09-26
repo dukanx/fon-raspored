@@ -22,7 +22,7 @@ const BOOT_DEADLINE_MS = 1500
 
 // Izgled naslova na početnoj. 'blur' je originalni (BlurText, slova se stapaju
 // jednom pri ulasku), 'type' je varijanta sa kucanjem gde se reč pored naslova
-// vrti u krug. Menja se samo ovde — obe varijante su ispod, žive u repou.
+// vrti u krug. Menja se samo ovde - obe varijante su ispod, žive u repou.
 // `as HeadingStyle` je namerno: bez toga TypeScript suzi tip konstante na
 // 'blur' i onda poređenje sa 'type' prijavi kao nemoguće (ts2367).
 type HeadingStyle = 'blur' | 'type'
@@ -58,7 +58,7 @@ function BlurHeading() {
 function TypedHeading() {
   return (
     // Naslov i reč koja se menja stoje u istom redu ("FON Raspored predavanja"),
-    // poravnati po osnovnoj liniji. Flex je tu namerno — TextType sebi hardkoduje
+    // poravnati po osnovnoj liniji. Flex je tu namerno - TextType sebi hardkoduje
     // `inline-block`, pa se na prirodan inline tok ne može računati.
     <>
       {/* Za razliku od BlurHeading-a, ovde <h1> mora da bude sr-only: tekst se
@@ -77,7 +77,7 @@ function TypedHeading() {
           className={`shrink-0 ${TITLE_CLASS}`}
         />
         {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
-            (150ms + 12 znakova × 70ms), pa da krene ovaj — inače se dva kucanja
+            (150ms + 12 znakova × 70ms), pa da krene ovaj - inače se dva kucanja
             preklapaju i deluje nervozno. */}
         <TextType
           as="span"
@@ -100,7 +100,7 @@ function TypedHeading() {
   )
 }
 
-// Izvuče share kod iz nalepljenog teksta — bilo pun URL (.../deli?s=KOD) bilo
+// Izvuče share kod iz nalepljenog teksta - bilo pun URL (.../deli?s=KOD) bilo
 // sam kod. Omogućava da se deljeni raspored primeni i unutar sveže instalirane
 // PWA (na iOS-u home-screen app ima odvojen storage od Safarija).
 function extractShareCode(input: string): string {
@@ -172,7 +172,7 @@ const PREVIEW_DATA = {
     ] },
   ],
   weekDays: ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak'],
-  // Red po terminu, kolona po danu (pon–pet); null je prazan termin.
+  // Red po terminu, kolona po danu (pon-pet); null je prazan termin.
   week: [
     { time: '08:15', cells: [slot(EKO, 'P', 'Amfiteatar 2'), slot(ENG, 'P', 'Amfiteatar 1'), slot(MEN, 'P', 'Amfiteatar 3'), null, slot(EP, 'V', '60, 61')] },
     { time: '10:15', cells: [slot(OIKT, 'P', 'Amfiteatar 2'), slot(EP, 'P', 'Amfiteatar 1'), slot(MAT, 'P', 'Amfiteatar 3'), null, slot(MAT, 'V', '14')] },
@@ -415,11 +415,11 @@ export default function OnboardingPage() {
 
     // Onboarding je do ovog trenutka sakriven (klasa `fon-booting`, v. skriptu u
     // layout.tsx). Otkrivamo ga čim se zna da preusmerenja nema, i na izlasku sa
-    // strane — inače bi klijentska navigacija nazad na `/` zatekla klasu i
+    // strane - inače bi klijentska navigacija nazad na `/` zatekla klasu i
     // ostavila prazan ekran.
     const showOnboarding = () => document.documentElement.classList.remove('fon-booting')
 
-    // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") — ne preusmeravaj.
+    // Korisnik je svesno došao da izmeni podatke (klik na "1. Podaci") - ne preusmeravaj.
     if (new URLSearchParams(window.location.search).get('edit') === '1') {
       showOnboarding()
       return
@@ -428,7 +428,7 @@ export default function OnboardingPage() {
     // Raspored ili Rokovi (stvarni datumi iz rokovi.json, ne pretpostavljeni
     // akademski kalendar), i da li je period "čekamo raspored" (v. lib/waiting).
     // Do odluke se vidi samo pozadina, a `/data/*.json` je u service workeru
-    // network-first — na lošoj vezi bi se čekalo dok mreža ne odustane. Posle
+    // network-first - na lošoj vezi bi se čekalo dok mreža ne odustane. Posle
     // ovog roka idemo na poslednju poznatu stranu, kao da čekanja nema.
     function decision(): Promise<BootDecision> {
       return Promise.race([
@@ -454,12 +454,12 @@ export default function OnboardingPage() {
       })
     }
 
-    // Isti tab — sessionStorage ima grupu
+    // Isti tab - sessionStorage ima grupu
     if (session.group.get()) {
       boot(true)
       return showOnboarding
     }
-    // Novi tab/browser — localStorage ima grupu (korisnik je već prošao onboarding)
+    // Novi tab/browser - localStorage ima grupu (korisnik je već prošao onboarding)
     const savedGroup = saved.group.get()
     const savedYear = saved.year.get()
     if (savedGroup && savedYear) {
@@ -471,19 +471,19 @@ export default function OnboardingPage() {
       if (prog) session.program.set(prog)
       if (name) session.lastName.set(name)
       if (sem) session.semester.set(sem)
-      // Postojeći korisnik (već ima sačuvan identitet) — tutorial je samo za nove.
+      // Postojeći korisnik (već ima sačuvan identitet) - tutorial je samo za nove.
       app.tutorialSeen.set()
       boot(true)
       return showOnboarding
     }
 
-    // Nov korisnik — nema identiteta ni preusmerenja. Onboarding se odmah
+    // Nov korisnik - nema identiteta ni preusmerenja. Onboarding se odmah
     // prikazuje, a ekran čekanja ga zameni ako je period čekanja.
     showOnboarding()
     boot(false)
   }, [isHydrated, router])
 
-  // Drugi korak vodi na /izborni — učitaj je unapred, da posle animacije
+  // Drugi korak vodi na /izborni - učitaj je unapred, da posle animacije
   // odlaska ne bi bilo čekanja na mrežu.
   useEffect(() => {
     if (selectedYear !== null) router.prefetch('/izborni')
@@ -556,7 +556,7 @@ export default function OnboardingPage() {
     let groupId = findGroup(data, raw, program)
     let usedName = raw
 
-    // Čest slučaj: uneto "Ime Prezime" — probaj samo poslednju reč (prezime).
+    // Čest slučaj: uneto "Ime Prezime" - probaj samo poslednju reč (prezime).
     if (!groupId && /\s/.test(raw)) {
       const surnameOnly = raw.split(/\s+/).pop() ?? ''
       const retry = surnameOnly ? findGroup(data, surnameOnly, program) : null
@@ -584,7 +584,7 @@ export default function OnboardingPage() {
   }
 
   // Početna prvo ode (kartica ulevo, pregled naniže), pa tek onda navigacija,
-  // gde /izborni ulazi zdesna — kao sledeći korak čarobnjaka. Uz "smanji
+  // gde /izborni ulazi zdesna - kao sledeći korak čarobnjaka. Uz "smanji
   // pokrete" ide se odmah.
   function goToSubjects() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -595,7 +595,7 @@ export default function OnboardingPage() {
     setTimeout(() => router.push('/izborni'), LEAVE_MS)
   }
 
-  // Otvori deljeni raspored iz nalepljenog linka — vodi na /deli koji radi u
+  // Otvori deljeni raspored iz nalepljenog linka - vodi na /deli koji radi u
   // istom (PWA) kontekstu, pa se primenjuje na pravi storage.
   function openSharedLink() {
     const code = extractShareCode(shareInput)
@@ -629,7 +629,7 @@ export default function OnboardingPage() {
         <div className={`flex shrink-0 flex-col gap-3 ${leaving ? 'leave-left' : ''}`}>
           <div className={`rounded-[28px] px-6 pt-8 pb-7 ring-1 ring-[#024c7d]/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] lg:px-10 lg:pt-11 lg:pb-10 dark:ring-white/15 dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
-            {/* <h1> nosi sama varijanta naslova — vidljiv u BlurHeading-u, sr-only
+            {/* <h1> nosi sama varijanta naslova - vidljiv u BlurHeading-u, sr-only
                 u TypedHeading-u (v. komentare tamo). Ovde ga namerno nema da strana
                 ne bi imala dva h1. */}
             {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
@@ -669,7 +669,7 @@ export default function OnboardingPage() {
                   ))}
                 </div>
 
-                {/* Nalepi deljeni link — koristi se npr. posle instalacije PWA
+                {/* Nalepi deljeni link - koristi se npr. posle instalacije PWA
                     (iOS home screen app ima odvojen storage od Safarija) */}
                 <div className="mt-7 border-t border-[#024c7d]/12 pt-5 lg:mt-9 lg:pt-6 dark:border-white/15">
                   {shareOpen ? (
@@ -820,7 +820,7 @@ export default function OnboardingPage() {
                         .sort(([a], [b]) => a.localeCompare(b, 'sr', { numeric: true, sensitivity: 'base' }))
                         .map(([id, g]) => (
                           <option key={id} value={id}>
-                            {id} — {g.program} ({g.range})
+                            {id} - {g.program} ({g.range})
                           </option>
                         ))}
                     </select>
@@ -842,8 +842,15 @@ export default function OnboardingPage() {
             osim <h1> i ove rečenice sve ostalo su dugmad i polja, pa Google
             inače nema šta da poveže sa upitom tipa "raspored nastave FON".
             Ruta je prerenderovana u statički HTML, dakle vidi se i bez JS-a.
-            Formulacija prati ostatak aplikacije: "nastava", ne "časovi" —
+            Formulacija prati ostatak aplikacije: "nastava", ne "časovi" -
             ovo je fakultet, ne škola. */}
+        {/* Isto radi pretrage: kratko šta aplikacija radi, frazama koje ljudi
+            kucaju ("raspored ispita", "ispitni rokovi", "raspored kolokvijuma"). */}
+        <ul className="mx-auto mb-4 max-w-md space-y-1 leading-relaxed text-pretty">
+          <li>Raspored nastave po grupi: predavanja i vežbe za tvoju grupu, sa salama.</li>
+          <li>Raspored ispita i ispitni rokovi: januarski, februarski, junski, julski, septembarski i oktobarski, sa datumima prijave.</li>
+          <li>Raspored kolokvijuma i izvoz u Google Calendar.</li>
+        </ul>
         <p className="mx-auto max-w-sm leading-relaxed text-balance">
           <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
           {' '}- raspored nastave, ispitni rokovi i kolokvijumi za studente

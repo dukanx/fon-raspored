@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup, uniqueSubjectsForGroup } from '@/lib/schedule'
-import { reconcileSemester, isFlipPending, acknowledgeFlip } from '@/lib/semester'
+import { getScheduleForGroup, uniqueSubjectsForGroup, findGroup } from '@/lib/schedule'
+import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, forgetYearAndGroup } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
-import { session, app, byGroup, note as noteStore } from '@/lib/storage'
+import { session, saved as savedStore, app, byGroup, note as noteStore, resetSubjectsForNewSemester } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
@@ -51,10 +51,10 @@ const COLORS = [
   { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d057a0', darkBg: '#3d1a30', darkText: '#e8a8d0' },
 ]
 
-// Liquid-glass površina (frosted) — koristi se za kartice, dugmad, header, bar
+// Liquid-glass površina (frosted) - koristi se za kartice, dugmad, header, bar
 const GLASS = 'liquid-glass'
 
-/* ---------- Ikonice (stroke, currentColor — rade u obe teme) ---------- */
+/* ---------- Ikonice (stroke, currentColor - rade u obe teme) ---------- */
 type IconProps = React.SVGProps<SVGSVGElement>
 const baseIcon = (props: IconProps) => ({
   viewBox: '0 0 24 24',
@@ -68,7 +68,7 @@ const baseIcon = (props: IconProps) => ({
 const IconCalendar = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
 )
-// Izvoz u kalendar — kalendar sa strelicom nadole. Ista ikonica kao u Rokovima,
+// Izvoz u kalendar - kalendar sa strelicom nadole. Ista ikonica kao u Rokovima,
 // da ista radnja svuda izgleda isto.
 const IconCalendarExport = (p: IconProps) => (
   <svg {...baseIcon(p)}>
@@ -226,8 +226,10 @@ export default function RasporedPage() {
   const [showShareChoice, setShowShareChoice] = useState(false)
   const [allSubjects, setAllSubjects] = useState<string[]>([])
   const [showFlipPopup, setShowFlipPopup] = useState(false)
+  // Predmeti dodati u raspored grupe posle poslednjeg izbora predmeta.
+  const [newSubjects, setNewSubjects] = useState<string[]>([])
   const [showTour, setShowTour] = useState(false)
-  // Podaci se nisu učitali (offline i nikad keširano) — razlikuje se od praznog
+  // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
   const [loadError, setLoadError] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
@@ -239,7 +241,7 @@ export default function RasporedPage() {
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
 
-  // Default je uvek "Sedmica" (grid) — i na telefonu i na desktopu; korisnik
+  // Default je uvek "Sedmica" (grid) - i na telefonu i na desktopu; korisnik
   // može ručno na "Lista".
   const view: 'grid' | 'list' = manualView ?? 'grid'
   const meta = isHydrated
@@ -272,16 +274,47 @@ export default function RasporedPage() {
           return
         }
         setLoadError(false)
+        // Nova školska godina: sačuvane godina i grupa su prošlogodišnje, pa bi
+        // ovde stajao raspored tuđe grupe. Nazad na izbor godine, prezime ostaje.
+        const newYear = isNewAcademicYear(savedStore.semester.get(), data.semester)
         // Prevrtanje semestra: resetuj stari izbor predmeta i digni "Nov
         // semestar" popup. Mora pre čitanja fon_subjects (reset ga briše).
-        reconcileSemester(data.semester, meta.group)
+        const flipped = reconcileSemester(data.semester, meta.group)
+        if (newYear) {
+          forgetYearAndGroup()
+          router.replace('/')
+          return
+        }
+        // Nov semestar iste godine: grupa može da se promeni. U zimskom 2. i 3.
+        // godine ISiT grupe su samo po prezimenu, a u letnjem po modulu i sa
+        // drugim oznakama. Sa sačuvanim modulom i prezimenom nova grupa se nađe
+        // sama; strana se učita ponovo sa njom.
+        if (flipped) {
+          const prog = savedStore.program.get()
+          const lastName = savedStore.lastName.get()
+          const found = prog && lastName ? findGroup(data, lastName, prog) : null
+          if (found && found !== meta.group) {
+            resetSubjectsForNewSemester(found)
+            session.group.set(found)
+            savedStore.group.set(found)
+            window.location.replace('/raspored')
+            return
+          }
+        }
         if (isFlipPending(data.semester)) setShowFlipPopup(true)
 
         const all = getScheduleForGroup(data, meta.group)
         setAllSubjects(uniqueSubjectsForGroup(data, meta.group))
         const checked = byGroup.subjects(meta.group).get()
         const hasSaved = Object.keys(checked).length > 0
-        let base = hasSaved ? all.filter(e => checked[e.subject] !== false) : all
+        // Predmet kog nema u sačuvanom izboru stigao je kasnije (FON dopunio
+        // raspored, npr. izbornim). Ne prikazuje se dok ga student ne izabere,
+        // a popup ga pita (v. newSubjects).
+        let base = hasSaved ? all.filter(e => checked[e.subject] === true) : all
+        if (hasSaved) {
+          const added = uniqueSubjectsForGroup(data, meta.group).filter(s => !(s in checked))
+          if (added.length > 0) setNewSubjects(added)
+        }
 
         const extra = byGroup.extra(meta.group).get()
 
@@ -310,22 +343,22 @@ export default function RasporedPage() {
 
         setHiddenEntries(byGroup.hidden(meta.group).get())
       })
-      // NE zovemo setLoaded(true) — to bi okinulo `isEmpty` i prikazalo
+      // NE zovemo setLoaded(true) - to bi okinulo `isEmpty` i prikazalo
       // "Nema termina za prikaz", što je netačna poruka kad je uzrok offline.
       .catch(() => setLoadError(true))
   }, [isHydrated, meta.group, meta.year, router])
 
   // Samo predmeti iz prethodnih godina (prevSubjects) traže ručan izbor
-  // termina u Izmeni — drugosemestralni (otherSem) su samo za filtriranje
+  // termina u Izmeni - drugosemestralni (otherSem) su samo za filtriranje
   // rokova (već imaju svoje termine iz semestra kad su slušani).
   function hasTransferredSubjects(): boolean {
     if (!meta.group) return false
     return byGroup.prevSubjects(meta.group).get().length > 0
   }
 
-  // Popup — prvi put opšti tur (deljenje/slika/kalendar/rokovi/notifikacije),
+  // Popup - prvi put opšti tur (deljenje/slika/kalendar/rokovi/notifikacije),
   // sa "Podesi termine" slajdom na kraju SAMO ako već ima prenesene predmete.
-  // Ako ih tada nema, taj slajd se preskače u turu — ali ako se kasnije dodaju
+  // Ako ih tada nema, taj slajd se preskače u turu - ali ako se kasnije dodaju
   // (npr. preko "Moji predmeti"), prikaže se sam za sebe sledeći put kad se
   // stigne na Raspored. Uvek sa malim zakašnjenjem posle promene taba, ne odmah.
   useEffect(() => {
@@ -342,7 +375,7 @@ export default function RasporedPage() {
 
     // U instaliranoj PWA prvo ide popup za notifikacije (NotificationIntro).
     // Bez ovoga tur iskoči preko njega, pa se korisnik po završetku tura vrati
-    // na notifikacije. Čekamo da NotificationIntro zaključi svoj posao — on u
+    // na notifikacije. Čekamo da NotificationIntro zaključi svoj posao - on u
     // SVAKOM ishodu upiše fon_notif_intro_seen (uključeno, "kasnije", odbijeno
     // na nivou browsera, ili već pretplaćen). Anketiramo flag umesto da slušamo
     // event, jer deo tih ishoda nastupa asinhrono i lako bi se propustio.
@@ -427,7 +460,7 @@ export default function RasporedPage() {
 
   // Tur već viđen -> ako se prenesen predmet naknadno pojavio, taj jedan
   // slajd samostalno; inače (prvi put) ceo tur, sa tim slajdom NA KRAJU (ne na
-  // početku) — inače bi "Idi na Izmenu" (umesto "Dalje") odmah prekinuo tur
+  // početku) - inače bi "Idi na Izmenu" (umesto "Dalje") odmah prekinuo tur
   // pre nego što korisnik stigne do ostalih slajdova.
   const tourSlides: TourSlide[] = app.appTourSeen.get()
     ? [transferredSlide]
@@ -435,7 +468,7 @@ export default function RasporedPage() {
       ? [...generalSlides, transferredSlide]
       : generalSlides
 
-  // Rokovi (ispiti/kolokvijumi) — za sekciju "Vezani rokovi" u panelu predmeta.
+  // Rokovi (ispiti/kolokvijumi) - za sekciju "Vezani rokovi" u panelu predmeta.
   useEffect(() => {
     if (!isHydrated) return
     fetch('/data/rokovi.json')
@@ -444,7 +477,7 @@ export default function RasporedPage() {
       .catch(() => setRokovi([]))
   }, [isHydrated])
 
-  // Metapodaci predmeta (ESPB / katedra / link na FON sajt) — za panel.
+  // Metapodaci predmeta (ESPB / katedra / link na FON sajt) - za panel.
   useEffect(() => {
     if (!isHydrated) return
     fetch('/data/subjects-meta.json')
@@ -483,7 +516,7 @@ export default function RasporedPage() {
     )
   }
 
-  // Klik na "Podeli" — ako ima šta van tekućih predmeta, pitaj šta da uključi
+  // Klik na "Podeli" - ako ima šta van tekućih predmeta, pitaj šta da uključi
   // (bez toga bi link mogao da stigne prazan, npr. ako ceo raspored zavisi od
   // prenesenog predmeta). Ako nema ništa extra, ne gnjavi pitanjem.
   function openShareFlow() {
@@ -522,7 +555,7 @@ export default function RasporedPage() {
         await navigator.share({ title: 'FON Raspored', text: `Raspored - grupa ${meta.group}`, url })
         return
       } catch {
-        return // korisnik otkazao share sheet — ne kopiraj
+        return // korisnik otkazao share sheet - ne kopiraj
       }
     }
     try {
@@ -530,7 +563,7 @@ export default function RasporedPage() {
       setShowShareToast(true)
       setTimeout(() => setShowShareToast(false), 3000)
     } catch {
-      // clipboard nedostupan (npr. http) — tiho odustani
+      // clipboard nedostupan (npr. http) - tiho odustani
     }
   }
 
@@ -542,6 +575,13 @@ export default function RasporedPage() {
     acknowledgeFlip()
     setShowFlipPopup(false)
     router.push('/izborni')
+  }
+  // "Kasnije": novi predmeti se pamte kao nečekirani, da popup ne dolazi
+  // ponovo. Student ih i dalje može čekirati na izboru predmeta.
+  function dismissNewSubjects() {
+    const store = byGroup.subjects(meta.group)
+    store.set({ ...store.get(), ...Object.fromEntries(newSubjects.map(s => [s, false])) })
+    setNewSubjects([])
   }
 
   const colorMap = useSubjectColors(entries)
@@ -756,17 +796,17 @@ export default function RasporedPage() {
 
   }
 
-  // Export akcije (skidanje slike / kalendar) — NISU navigacija, stoje uz kontrole
+  // Export akcije (skidanje slike / kalendar) - NISU navigacija, stoje uz kontrole
   const exportActions = [
     { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: openShareFlow },
     { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
     { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendarExport, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
   ]
-  // Navigacija (desktop toolbar) — Rokovi ide kroz pageSwitch ispod, ne odavde
+  // Navigacija (desktop toolbar) - Rokovi ide kroz pageSwitch ispod, ne odavde
   const navActions = [
     { key: 'izmena', short: 'Izmena', long: 'Izmena termina', Icon: IconEdit, onClick: () => router.push('/preneseni') },
   ]
-  // Raspored/Rokovi — ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
+  // Raspored/Rokovi - ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
   const pageSwitch = [
     { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: true, onClick: () => {} },
     { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: false, onClick: () => router.push('/rokovi') },
@@ -976,7 +1016,7 @@ export default function RasporedPage() {
                 ))}
               </div>
 
-              {/* Slots — ulaze red po red pri prvom prikazu */}
+              {/* Slots - ulaze red po red pri prvom prikazu */}
               {SLOTS.map((slot, si) => (
                 <div
                   key={slot}
@@ -1080,7 +1120,7 @@ export default function RasporedPage() {
           </div>
         )}
 
-        {/* Panel predmeta — tap na blok u sedmici otvara info ispod */}
+        {/* Panel predmeta - tap na blok u sedmici otvara info ispod */}
         {selectedSubject && (
           <div className={`mx-auto mt-6 max-w-3xl rounded-2xl p-4 sm:p-5 ${GLASS}`}>
             <div className="mb-4 flex items-start justify-between gap-3">
@@ -1097,7 +1137,7 @@ export default function RasporedPage() {
               </button>
             </div>
 
-            {/* O predmetu — ESPB / katedra / link na FON sajt (ako imamo meta) */}
+            {/* O predmetu - ESPB / katedra / link na FON sajt (ako imamo meta) */}
             {subjectMeta && (
               <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 {subjectMeta.espb && (
@@ -1147,7 +1187,7 @@ export default function RasporedPage() {
               </div>
             </div>
 
-            {/* Vezani rokovi — samo ako ih ima */}
+            {/* Vezani rokovi - samo ako ih ima */}
             {subjectRokovi.length > 0 && (
               <div className="mb-4">
                 <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Rokovi</h4>
@@ -1181,7 +1221,7 @@ export default function RasporedPage() {
         )}
       </main>
 
-      {/* "Nov semestar" — reset predmeta (kredencijali ostaju) */}
+      {/* "Nov semestar" - reset predmeta (kredencijali ostaju) */}
       <Modal
         open={showFlipPopup}
         onClose={dismissFlip}
@@ -1210,6 +1250,41 @@ export default function RasporedPage() {
           </button>
           <button
             onClick={dismissFlip}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          >
+            Kasnije
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={newSubjects.length > 0 && !showFlipPopup}
+        onClose={dismissNewSubjects}
+        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+      >
+        <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+          Dodati su novi predmeti
+        </h2>
+        <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
+          FON je dopunio raspored tvoje grupe. Čekiraj one koje slušaš.
+        </p>
+        <ul className="mb-6 max-h-40 space-y-1 overflow-y-auto text-sm text-gray-700 dark:text-gray-300">
+          {newSubjects.map(s => (
+            <li key={s} className="rounded-lg bg-[#024c7d]/5 px-3 py-1.5 dark:bg-white/5">{s}</li>
+          ))}
+        </ul>
+        <div className="flex flex-col gap-2 sm:flex-row-reverse">
+          <button
+            onClick={() => { setNewSubjects([]); router.push('/izborni') }}
+            className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
+                       bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                       dark:hover:bg-[#4db3a0]"
+          >
+            Izaberi predmete
+          </button>
+          <button
+            onClick={dismissNewSubjects}
             className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           >
             Kasnije

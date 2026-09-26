@@ -57,14 +57,15 @@ describe('defaultChecked', () => {
     expect(defaultChecked(s, 'MiO')).toBe(true)
   })
 
-  it('smer nije u modul-splitu -> true (bezbedno)', () => {
-    expect(defaultChecked('IST - Izborni predmet', 'MiO')).toBe(true)
+  it('smer nije u modul-splitu -> false (nepoznato, student bira)', () => {
+    expect(defaultChecked('IST - Izborni predmet', 'MiO')).toBe(false)
   })
 
-  it('nepoznat/prazan status -> true', () => {
-    expect(defaultChecked(null, 'IST')).toBe(true)
-    expect(defaultChecked(undefined, 'IST')).toBe(true)
-    expect(defaultChecked('', 'MiO')).toBe(true)
+  it('nepoznat/prazan status (nema meta) -> false', () => {
+    expect(defaultChecked(null, 'IST')).toBe(false)
+    expect(defaultChecked(undefined, 'IST')).toBe(false)
+    expect(defaultChecked('', 'MiO')).toBe(false)
+    expect(defaultChecked('Nešto treće', 'IST')).toBe(false)
   })
 
   it('robustno na skraćene parse oblike', () => {

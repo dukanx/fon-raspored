@@ -133,8 +133,9 @@ export default function WaitingForSchedule({
       {savedGroup && (
         <div className="mt-6 border-t border-[#024c7d]/12 pt-5 text-[13px] leading-[18px] text-gray-500 dark:border-white/15 dark:text-gray-400">
           <p className="text-pretty">
-            Tvoji podaci su sačuvani (grupa {savedGroup}).
-            {pending.newAcademicYear && ' Kad raspored izađe, samo proveri godinu i grupu.'}
+            {pending.newAcademicYear
+              ? 'Kad raspored izađe, samo izaberi godinu koju upisuješ. Prezime smo zapamtili.'
+              : `Tvoji podaci su sačuvani (grupa ${savedGroup}).`}
           </p>
           <Link
             href="/rokovi"

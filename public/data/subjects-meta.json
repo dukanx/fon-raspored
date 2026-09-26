@@ -29,11 +29,29 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-analiza-pouzdanosti-i-rizika/"
  },
+ "Arhitektura računara i operativni sistemi": {
+  "espb": "6",
+  "katedra": "Katedra za informacione tehnologije",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-arhitektura-racunara-i-operativni-sistemi/"
+ },
+ "Bankarski menadžment": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-bankarski-menadzment/"
+ },
  "Baze podataka": {
   "espb": "5",
   "katedra": "Katedra za informacione sisteme",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-baze-podataka/"
+ },
+ "Brend menadžment": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-brend-menadzment/"
  },
  "Cloud infrastruktura i servisi": {
   "espb": "5",
@@ -46,6 +64,12 @@
   "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-digitalni-marketing/"
+ },
+ "Diskretne matematičke strukture": {
+  "espb": "5",
+  "katedra": "Katedra za matematiku",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-diskretne-matematicke-strukture/"
  },
  "Dizajn korisničkog interfejsa": {
   "espb": "5",
@@ -89,17 +113,35 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-ekonometrijski-modeli-i-predvidjanje/"
  },
+ "Ekonomija": {
+  "espb": "6",
+  "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-ekonomija/"
+ },
  "Ekonomika poslovanja i planiranje": {
   "espb": "5",
   "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
   "status": "IST - Izborni predmet, MiO - Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-ekonomika-poslovanja-i-planiranje/"
  },
+ "Elektronsko poslovanje (NA)": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "status": "IST - Obavezan predmet, MiO - Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-elektronsko-poslovanje/"
+ },
  "Engleski jezik struke 3": {
   "espb": "4",
   "katedra": "Katedra za menadžment ljudskih resursa",
   "status": "Izborni",
   "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-struke-3/"
+ },
+ "Engleski jezik u informatici": {
+  "espb": "4",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-engleski-jezik-u-informatici/"
  },
  "Engleski jezik u menadžmentu 1": {
   "espb": "6",
@@ -143,6 +185,18 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-funkcionalni-jezici/"
  },
+ "Implementacija IS (projekat)": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-implementacija-is-projekat/"
+ },
+ "Industrijsko i menadžment inženjerstvo": {
+  "espb": "6",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-industrijsko-i-menadzment-inzenjerstvo/"
+ },
  "Inteligentni sistemi": {
   "espb": "5",
   "katedra": "Katedra za softversko inženjerstvo",
@@ -167,6 +221,12 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-internet-marketing-i-drustveni-mediji/"
  },
+ "Internet tehnologije": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-internet-tehnologije/"
+ },
  "Interpersonalne veštine u organizaciji": {
   "espb": "5",
   "katedra": "Katedra za menadžment ljudskih resursa",
@@ -178,6 +238,12 @@
   "katedra": "Katedra za finansijski menadžment i računovodstvo",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-investiciono-bankarstvo/"
+ },
+ "Inženjering kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-inzenjering-kvaliteta/"
  },
  "Inženjering procesa (NA)": {
   "espb": "5",
@@ -209,11 +275,35 @@
   "status": "Obavezan predmet-Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-kontrola-kvaliteta/"
  },
+ "Korporativne finansije": {
+  "espb": "5",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-korporativne-finansije/"
+ },
+ "Korporativne komunikacije": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose s javnošću",
+  "status": "IST- Izborni predmet, MiO - Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-korporativne-komunikacije/"
+ },
  "Kvalitet u IT": {
   "espb": "5",
   "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-kvalitet-u-it/"
+ },
+ "Lean logistika": {
+  "espb": "5",
+  "katedra": "Katedra za računarski integrisanu proizvodnju i logistiku",
+  "status": "Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-lean-logistika/"
+ },
+ "Lin proizvodnja i usluge": {
+  "espb": "5",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-lin-proizvodnja-i-usluge/"
  },
  "Linearni statistički modeli": {
   "espb": "6",
@@ -221,17 +311,35 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-linearni-statisticki-modeli/"
  },
+ "Marketing": {
+  "espb": "IST - 5, MiO - 6",
+  "katedra": "Katedra za marketing menadžment i odnose s javnošću",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-marketing/"
+ },
  "Marketing logistika": {
   "espb": "5",
   "katedra": null,
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-marketing-logistika/"
  },
+ "Matematika 1": {
+  "espb": "6",
+  "katedra": "Katedra za matematiku",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-matematika-1/"
+ },
  "Matematika 2": {
   "espb": "6",
   "katedra": "Katedra za matematiku",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-matematika-2/"
+ },
+ "Matematika 3": {
+  "espb": "5",
+  "katedra": "Katedra za matematiku",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-matematika-3/"
  },
  "Mašinsko učenje": {
   "espb": "5",
@@ -245,6 +353,24 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-medijske-komunikacije/"
  },
+ "Menadžment": {
+  "espb": "6",
+  "katedra": "Katedra za menadžment i upravljanje projektima",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment/"
+ },
+ "Menadžment ljudskih resursa": {
+  "espb": "IST - 5, MiO - 6",
+  "katedra": "Katedra za menadžment ljudskih resursa",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-ljudskih-resursa/"
+ },
+ "Menadžment prodaje": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-prodaje/"
+ },
  "Menadžment proizvodnje i pružanja usluga": {
   "espb": "5",
   "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
@@ -256,6 +382,12 @@
   "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
   "status": "IST - Izborni predmet, MiO - Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-tehnologije-i-razvoja/"
+ },
+ "Menadžment totalnog kvaliteta": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-menadzment-totalnog-kvaliteta/"
  },
  "Metode optimizacije": {
   "espb": "6",
@@ -298,6 +430,12 @@
   "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-modeli-i-indikatori-poboljsavanja-kvaliteta/"
+ },
+ "Modelovanje poslovnih procesa": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "IST - Obavezan predmet, MiO - Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-modelovanje-poslovnih-procesa/"
  },
  "Multimediji": {
   "espb": "5",
@@ -347,6 +485,12 @@
   "status": "Obavezni",
   "url": "https://oas.fon.bg.ac.rs/predmet-odnosi-s-javnoscu/"
  },
+ "Operaciona istraživanja 1": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-operaciona-istrazivanja-1/"
+ },
  "Operaciona istraživanja 2": {
   "espb": "6",
   "katedra": "Katedra za operaciona istraživanja i statistiku",
@@ -364,6 +508,18 @@
   "katedra": "Katedra za finansijski menadžment i računovodstvo",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-osnove-finansijskog-menadzmenta/"
+ },
+ "Osnove informaciono komunikacionih tehnologija": {
+  "espb": "6",
+  "katedra": "Katedra za informacione tehnologije",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-informaciono-komunikacionih-tehnologija/"
+ },
+ "Osnove kvaliteta": {
+  "espb": "IST - 5, MiO - 6",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnove-kvaliteta/"
  },
  "Osnove operacionog menadžmenta": {
   "espb": "5",
@@ -394,6 +550,12 @@
   "katedra": "Katedra za softversko inženjerstvo",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-osnovi-kvaliteta-softvera/"
+ },
+ "Osnovi organizacije": {
+  "espb": "6",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "status": "MiO - Obavezan predmet, IST - Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-osnovi-organizacije/"
  },
  "Planiranje kvaliteta": {
   "espb": "5",
@@ -467,6 +629,12 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-principi-programiranja/"
  },
+ "Programiranje 1 (NA)": {
+  "espb": "6",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programiranje-1/"
+ },
  "Programiranje 2 (NA)": {
   "espb": "6",
   "katedra": "Katedra za softversko inženjerstvo",
@@ -491,6 +659,30 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-programski-jezici-za-analitiku/"
  },
+ "Projektovanje informacionih sistema": {
+  "espb": "6",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-projektovanje-informacionih-sistema/"
+ },
+ "Projektovanje organizacije": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-projektovanje-organizacije/"
+ },
+ "Projektovanje proizvodnih i uslužnih sistema": {
+  "espb": "5",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-projektovanje-proizvodnih-i-usluznih-sistema/"
+ },
+ "Projektovanje softvera": {
+  "espb": "6",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-projektovanje-softvera/"
+ },
  "Psihologija": {
   "espb": "MiO - 6, IST - 5",
   "katedra": "Katedra za menadžment ljudskih resursa",
@@ -508,6 +700,24 @@
   "katedra": "Katedra za elektronsko poslovanje",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-razvoj-naprednih-aplikacija-elektronskog-poslovanja-projekat/"
+ },
+ "Računarske mreže i telekomunikacije": {
+  "espb": "6",
+  "katedra": "Katedra za informacione tehnologije",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-racunarske-mreze-i-telekomunikacije/"
+ },
+ "Računarski integrisana proizvodnja": {
+  "espb": "5",
+  "katedra": "Katedra za računarski integrisanu proizvodnju i logistiku",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-racunarski-integrisana-proizvodnja/"
+ },
+ "Računovodstvo": {
+  "espb": "ISIT - 5, MiO - 6",
+  "katedra": "Katedra za finansijski menadžment i računovodstvo",
+  "status": "ISIT - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-racunovodstvo/"
  },
  "Rukovođenje i liderstvo": {
   "espb": "5",
@@ -545,6 +755,12 @@
   "status": "IST - Izborni predmet, MiO - Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-sociologija/"
  },
+ "Softverska podrška upravljanju projektima": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment i upravljanje projektima",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-softverska-podrska-upravljanju-projektima/"
+ },
  "Softverski alati": {
   "espb": "5",
   "katedra": "Katedra za softversko inženjerstvo",
@@ -563,6 +779,12 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-statistika/"
  },
+ "Strateški marketing": {
+  "espb": "5",
+  "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-strateski-marketing/"
+ },
  "Strateški menadžment": {
   "espb": "5",
   "katedra": "Katedra za menadžment i upravljanje projektima",
@@ -575,11 +797,35 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-strukture-podataka-i-algoritmi/"
  },
+ "Tehnološko preduzetništvo": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-tehnolosko-preduzetnistvo/"
+ },
  "Teorija igara": {
   "espb": "5",
   "katedra": "Katedra za operaciona istraživanja i statistiku",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-teorija-igara/"
+ },
+ "Teorija odlučivanja": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-teorija-odlucivanja/"
+ },
+ "Teorija sistema": {
+  "espb": "6",
+  "katedra": "Katedra za upravljanje sistemima",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-teorija-sistema/"
+ },
+ "Teorija verovatnoće": {
+  "espb": "6",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-teorija-verovatnoce/"
  },
  "Trening i razvoj": {
   "espb": "5",
@@ -599,11 +845,23 @@
   "status": "Obavezan predmet/Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-inovacijama/"
  },
+ "Upravljanje inovacionim projektima": {
+  "espb": "5",
+  "katedra": "Katedra za menadžment tehnologije, inovacija i održivog razvoja",
+  "status": "Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-inovacionim-projektima/"
+ },
  "Upravljanje investicijama": {
   "espb": "5",
   "katedra": "Katedra za menadžment i upravljanje projektima",
   "status": "Obavezan predmet/Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-investicijama/"
+ },
+ "Upravljanje kvalitetom": {
+  "espb": "6",
+  "katedra": "Katedra za menadžment kvaliteta i standardizaciju",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-kvalitetom/"
  },
  "Upravljanje kvalitetom projekta": {
   "espb": "6",
@@ -623,6 +881,18 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-odrzavanjem/"
  },
+ "Upravljanje performansama i zaradama": {
+  "espb": "5",
+  "katedra": "Katedra za industrijsko i menadžment inženjerstvo",
+  "status": "Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-performansama-i-zaradama/"
+ },
+ "Upravljanje projektima": {
+  "espb": "IST - 5, MiO - 6",
+  "katedra": "Katedra za menadžment i upravljanje projektima",
+  "status": "IST - Izborni predmet, MiO - Obavezan predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-projektima/"
+ },
  "Upravljanje promenama": {
   "espb": "5",
   "katedra": "Katedra za interdisciplinirana istraživanja u menadžmentu",
@@ -640,6 +910,12 @@
   "katedra": "Katedra za ekonomiju, poslovno planiranje i međunarodni menadžment",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-upravljanje-troskovima/"
+ },
+ "Upravljački sistemi": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
+  "status": "Obavezan predmet/Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-upravljacki-sistemi/"
  },
  "Upravljačko računovodstvo": {
   "espb": "5",
@@ -670,6 +946,12 @@
   "katedra": "Katedra za operaciona istraživanja i statistiku",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-uvod-u-poslovnu-analitiku/"
+ },
+ "Uvod u softverske arhitekture IS": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-uvod-u-softverske-arhitekture-is/"
  },
  "Veštačka inteligencija": {
   "espb": "6",

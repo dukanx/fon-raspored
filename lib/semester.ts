@@ -3,19 +3,39 @@
 // Prevrtanje semestra (Letnji <-> Zimski ili nova školska godina).
 // Detekcija je po `semester` stringu iz god.json (npr. "Zimski 2026/27"), pa je
 // OTPORNA na re-objavu istog semestra (kad FON nedelju dana kasnije izmeni
-// raspored — semestar string ostaje isti, nema lažnog flipa).
+// raspored - semestar string ostaje isti, nema lažnog flipa).
 
 import { saved as savedStore, app, session, resetSubjectsForNewSemester } from './storage'
+import { parseSemester } from './season'
+
+// Da li prelaz sa `prev` na `current` počinje novu školsku godinu (letnji ->
+// zimski sledeće godine). Tada student prelazi u višu godinu i dobija novu
+// grupu, pa sačuvane godina i grupa više ne važe.
+export function isNewAcademicYear(prev: string | null, current: string): boolean {
+  const a = prev ? parseSemester(prev) : null
+  const b = parseSemester(current)
+  return !!a && !!b && b.startYear > a.startYear
+}
+
+// Nova školska godina: zaboravi godinu, grupu i smer, pa korisnik ponovo bira
+// godinu. Prezime ostaje, grupa se po njemu nađe sama.
+export function forgetYearAndGroup(): void {
+  for (const store of [session, savedStore]) {
+    store.group.remove()
+    store.year.remove()
+    store.program.remove()
+  }
+}
 
 // Pomeri sačuvani semestar i resetuj izbor predmeta kad se semestar prevrne.
-// Kredencijali (grupa/prezime/smer) i `fon_subjects_history` OSTAJU — istorija
+// Kredencijali (grupa/prezime/smer) i `fon_subjects_history` OSTAJU - istorija
 // napaja mešani septembarski/oktobarski rok. Vraća true ako je flip detektovan.
 export function reconcileSemester(currentSemester: string, group: string): boolean {
   if (typeof window === 'undefined' || !currentSemester) return false
 
   const saved = savedStore.semester.get()
 
-  // Prvi put (nema sačuvanog) — samo zabeleži, nije flip.
+  // Prvi put (nema sačuvanog) - samo zabeleži, nije flip.
   if (!saved) {
     savedStore.semester.set(currentSemester)
     return false
@@ -32,7 +52,7 @@ export function reconcileSemester(currentSemester: string, group: string): boole
   return true
 }
 
-// Da li treba prikazati "Nov semestar — proveri predmete" popup za dati semestar.
+// Da li treba prikazati "Nov semestar - proveri predmete" popup za dati semestar.
 export function isFlipPending(currentSemester: string): boolean {
   if (typeof window === 'undefined') return false
   return app.flipPending.get() === currentSemester

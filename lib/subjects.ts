@@ -10,7 +10,7 @@ export type SubjectMeta = {
 export type Track = 'IST' | 'MiO'
 
 // FON OAS ima dva velika smera: "Informacioni sistemi i tehnologije" (IST) i
-// "Menadžment i organizacija" (MiO). U 2–4. godini se granaju na fine module,
+// "Menadžment i organizacija" (MiO). U 2-4. godini se granaju na fine module,
 // ali status na stranici predmeta je i dalje na nivou IST/MiO. Mapiramo fini
 // program (iz onboardinga) na grubi smer.
 const MIO_KEYS = [
@@ -27,22 +27,18 @@ export function programToTrack(program: string): Track {
 // Da li predmet treba da bude podrazumevano čekiran za dati smer.
 // Status može biti prost ("Obavezan predmet" / "Izborni predmet") ili
 // modul-zavisan ("IST - Obavezan predmet, MiO - Izborni predmet").
-//   obavezan            -> true  (čekiran)
-//   izborni             -> false (student sam čekira ako ga sluša)
-//   dvosmislen/nepoznat -> true  (bezbedno: radije prikaži pa nek odčekira)
+//   obavezan (i "obavezan/izborni") -> true  (čekiran)
+//   izborni, nepoznat, bez meta     -> false (student sam čekira šta sluša)
+// Čekira se samo ono za šta znamo da je obavezno: ako meta za nove predmete
+// još nije skupljena, bolje da student sam izabere nego da odčekirava tuđe.
 export function defaultChecked(status: string | null | undefined, track: Track): boolean {
-  if (!status) return true
+  if (!status) return false
   let clause = status
   const parts = [...status.matchAll(/(IST|MiO)\s*-\s*([^,]+)/gi)]
   if (parts.length) {
     const mine = parts.find(p => p[1].toUpperCase() === track.toUpperCase())
-    if (!mine) return true
+    if (!mine) return false
     clause = mine[2]
   }
-  const low = clause.toLowerCase()
-  const hasObavezan = low.includes('obavez')
-  const hasIzborni = low.includes('izbor')
-  if (hasObavezan && hasIzborni) return true // dvosmisleno -> bezbedno
-  if (hasIzborni) return false
-  return true // obavezan ili neprepoznato
+  return clause.toLowerCase().includes('obavez')
 }

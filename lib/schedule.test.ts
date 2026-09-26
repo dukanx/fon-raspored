@@ -25,7 +25,7 @@ const DATA: SemesterData = {
   ],
 } as unknown as SemesterData
 
-describe('findGroup — opsezi prezimena', () => {
+describe('findGroup - opsezi prezimena', () => {
   it('bira grupu po opsegu (leva/desna ivica)', () => {
     expect(findGroup(DATA, 'Anić', 'Informacioni sistemi')).toBe('B1')
     expect(findGroup(DATA, 'Petrović', 'Informacioni sistemi')).toBe('B2')
@@ -59,6 +59,23 @@ describe('findGroup — opsezi prezimena', () => {
   it('nepostojeći program -> null', () => {
     expect(findGroup(DATA, 'Anić', 'Ne postoji')).toBeNull()
   })
+
+  it('"do" sa crtom obuhvata sva prezimena na to slovo (zimski 2026/27)', () => {
+    const data = {
+      ...DATA,
+      groups: {
+        A3: { program: 'ISiT', range: 'Dobrosavljević - I-' },
+        A4: { program: 'ISiT', range: 'Jakovljević - Kocić' },
+        C3: { program: 'ISiT', range: 'Ječmenica - Lj-' },
+        C4: { program: 'ISiT', range: 'M- - Mićić' },
+      },
+    } as unknown as SemesterData
+    expect(findGroup(data, 'Ilić', 'ISiT')).toBe('A3')
+    expect(findGroup(data, 'Jakovljević', 'ISiT')).toBe('A4')
+    expect(findGroup(data, 'Lukić', 'ISiT')).toBe('C3')
+    expect(findGroup(data, 'Ljubić', 'ISiT')).toBe('C3')
+    expect(findGroup(data, 'Marković', 'ISiT')).toBe('C4')
+  })
 })
 
 describe('getScheduleForGroup', () => {
@@ -73,6 +90,50 @@ describe('getScheduleForGroup', () => {
 describe('getProgramsForYear', () => {
   it('vraća jedinstvene programe, sortirane', () => {
     expect(getProgramsForYear(DATA)).toEqual(['Finansijski menadžment', 'Informacioni sistemi'])
+  })
+})
+
+// Zimski 2. i 3. godine: FON grupe su samo "ISiT", a student bira modul.
+const ZAJEDNO = {
+  semester: 'Zimski 2026/27',
+  year: 3,
+  groups: {
+    C1: { program: 'ISiT', range: 'A- - G-' },
+    C2: { program: 'ISiT', range: 'D- - Š-' },
+    C11: { program: 'Finansijski menadžment', range: 'Svi' },
+  },
+  entries: [],
+} as unknown as SemesterData
+
+// Letnji iste godine: grupe po modulima, sa drugim oznakama.
+const PO_MODULIMA = {
+  semester: 'Letnji 2026/27',
+  year: 3,
+  groups: {
+    C2: { program: 'Informacione tehnologije', range: 'A- - Š-' },
+    C4: { program: 'Softversko inženjerstvo', range: 'A- - Marjanović' },
+    C5: { program: 'Softversko inženjerstvo', range: 'Martinović - Š-' },
+  },
+  entries: [],
+} as unknown as SemesterData
+
+describe('ISiT moduli', () => {
+  it('od 2. godine se umesto "ISiT" nude moduli', () => {
+    const p = getProgramsForYear(ZAJEDNO)
+    expect(p).not.toContain('ISiT')
+    expect(p).toContain('Softversko inženjerstvo')
+    expect(p).toContain('Finansijski menadžment')
+  })
+
+  it('1. godina ostaje ISiT/MiO', () => {
+    const prva = { ...ZAJEDNO, year: 1 } as unknown as SemesterData
+    expect(getProgramsForYear(prva)).toContain('ISiT')
+  })
+
+  it('modul nalazi grupu među "ISiT" grupama, a u letnjem među svojim', () => {
+    expect(findGroup(ZAJEDNO, 'Petrović', 'Softversko inženjerstvo')).toBe('C2')
+    expect(findGroup(PO_MODULIMA, 'Petrović', 'Softversko inženjerstvo')).toBe('C5')
+    expect(findGroup(PO_MODULIMA, 'Anić', 'Softversko inženjerstvo')).toBe('C4')
   })
 })
 

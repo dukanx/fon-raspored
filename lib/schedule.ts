@@ -54,19 +54,43 @@ function nameInRange(lastName: string, range: string): boolean {
   const [from, to] = parts
 
   const afterFrom = from === 'A-' ? true : compareNames(lastName, from) >= 0
-  const beforeTo  = to   === 'Š-' ? true : compareNames(lastName, to)   <= 0
+  // "Do" sa crtom na kraju ("I-", "Lj-", "Š-") znači sva prezimena koja počinju
+  // time, pa se poredi samo početak prezimena iste dužine.
+  const beforeTo = to.endsWith('-')
+    ? normalizeName(lastName).slice(0, normalizeName(to.slice(0, -1)).length) <= normalizeName(to.slice(0, -1))
+    : compareNames(lastName, to) <= 0
 
   return afterFrom && beforeTo
 }
 
+
+// ISiT moduli. Student ga bira pri upisu 2. godine, ali FON u zimskim
+// semestrima 2. i 3. godine ima grupe samo za "ISiT", bez modula, jer tada svi
+// moduli slušaju iste predmete. U letnjem su grupe po modulima.
+export const ISIT_MODULES = [
+  'Informacione tehnologije',
+  'Informacioni sistemi',
+  'Informaciono inženjerstvo',
+  'Poslovna analitika',
+  'Softversko inženjerstvo',
+  'Tehnologije elektronskog poslovanja',
+]
+
+// Program kako ga piše grupa u ovom semestru: sam modul, ili "ISiT" kad
+// semestar nema grupe po modulima.
+export function groupProgramFor(data: SemesterData, program: string): string {
+  const hasModuleGroups = Object.values(data.groups).some(g => g.program === program)
+  return !hasModuleGroups && ISIT_MODULES.includes(program) ? 'ISiT' : program
+}
 
 export function findGroup(
   data: SemesterData,
   lastName: string,
   program: string | null
 ): string | null {
+  const groupProgram = program === null ? null : groupProgramFor(data, program)
   const candidates = Object.entries(data.groups).filter(([, g]) => {
-    return program === null || g.program === program
+    return groupProgram === null || g.program === groupProgram
   })
 
   const sorted = candidates.sort(([, a], [, b]) => {
@@ -97,7 +121,7 @@ export function findGroup(
 }
 
 // Učitava termine za godinu iz OBA arhiviranih semestra (zimski + letnji), ne
-// samo iz trenutno "živog" ${g}god.json — inače predmeti iz semestra koji
+// samo iz trenutno "živog" ${g}god.json - inače predmeti iz semestra koji
 // trenutno nije aktivan (npr. zimski dok traje letnji) ne mogu da se nađu ni
 // u "Predmeti iz prethodnih godina" ni u "Izmena termina" ručnom pretragom.
 export async function fetchYearBothSemesters(g: number): Promise<ScheduleEntry[]> {
@@ -119,7 +143,7 @@ export function getScheduleForGroup(
 }
 
 // Sortirana lista jedinstvenih predmeta grupe. Kanonski poredak koji koriste
-// izbor predmeta (/izborni) i deljenje putem linka (lib/share) — obe strane
+// izbor predmeta (/izborni) i deljenje putem linka (lib/share) - obe strane
 // moraju da mapiraju iste indekse na iste predmete.
 export function uniqueSubjectsForGroup(
   data: SemesterData,
@@ -142,6 +166,10 @@ export function getProgramsForYear(data: SemesterData): string[] {
       programs.add(base)
     }
   }
+  // Od 2. godine ISiT student zna svoj modul, pa bira njega i kad semestar
+  // ima grupe samo za "ISiT" (v. ISIT_MODULES). Tako se pri prelasku na
+  // letnji, gde su grupe po modulima, grupa nađe sama.
+  if (data.year >= 2 && programs.delete('ISiT')) ISIT_MODULES.forEach(m => programs.add(m))
   return Array.from(programs).sort()
 }
 

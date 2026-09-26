@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
 import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
-import { type SubjectMeta, type Track, programToTrack, defaultChecked } from '@/lib/subjects'
+import { type SubjectMeta, programToTrack, defaultChecked } from '@/lib/subjects'
+import { planStatus, semesterKey, hasUnpublishedElectives, type StudyPlan } from '@/lib/plan'
 import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
 import { AnimatePresence, motion } from 'motion/react'
 import OfflineNotice from '@/components/OfflineNotice'
@@ -127,11 +128,13 @@ export default function IzbornoPage() {
   const group = isHydrated ? (session.group.get() ?? '') : ''
   const year = isHydrated ? (session.year.get() ?? '') : ''
   const program = isHydrated ? (session.program.get() ?? '') : ''
-  const track: Track = programToTrack(program)
   const [subjects, setSubjects] = useState<string[]>([])
-  const [subjectsMeta, setSubjectsMeta] = useState<Record<string, SubjectMeta>>({})
+  // Obavezan ili izborni za modul ove grupe (v. subjectStatus u efektu ispod).
+  const [status, setStatus] = useState<Record<string, 'obavezan' | 'izborni' | 'nepoznat'>>({})
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const [semester, setSemester] = useState<string>('')
+  // FON još nije objavio raspored nekog izbornog bloka za modul ove grupe.
+  const [electivesPending, setElectivesPending] = useState(false)
   const [loadError, setLoadError] = useState(false)
 
   const [prevOpen, setPrevOpen] = useState(false)
@@ -157,7 +160,7 @@ export default function IzbornoPage() {
     if (!isHydrated) return
     if (!group || !year) { router.replace('/'); return }
 
-    // Sinhrono čitanje — persist-efekat za otherSelected piše pre nego što
+    // Sinhrono čitanje - persist-efekat za otherSelected piše pre nego što
     // fetch stigne, pa bi async čitanje videlo već pregaženu vrednost.
     const savedSubjects = byGroup.subjects(group).get()
     const hadSavedSubjects = Object.keys(savedSubjects).length > 0
@@ -166,30 +169,55 @@ export default function IzbornoPage() {
     Promise.all([
       fetch(`/data/${year}god.json`).then(r => { if (!r.ok) throw new Error('http'); return r.json() }),
       fetch('/data/subjects-meta.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      fetch('/data/plan.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
     ])
-      .then(([data, meta]: [SemesterData, Record<string, SubjectMeta>]) => {
+      .then(([data, meta, plan]: [SemesterData, Record<string, SubjectMeta>, StudyPlan]) => {
         setSemester(data.semester)
-        setSubjectsMeta(meta && typeof meta === 'object' ? meta : {})
+        // Modul iz sesije je precizniji od programa grupe ("ISiT" u zimskom 2. i
+        // 3. godine), pa ima prednost kad ga plan zna.
+        const groupProgram = plan && typeof plan === 'object' && program in plan
+          ? program
+          : data.groups[group]?.program
         const entries = getScheduleForGroup(data, group)
         const unique = [...new Set(entries.map(e => e.subject))].sort()
         setSubjects(unique)
 
+        // Plan modula (plan.json) je tačan za baš ovaj modul i semestar. Status
+        // sa stranice predmeta (subjects-meta.json) je samo rezerva za predmete
+        // kojih nema u planu, jer ne zna za modul.
+        const semKey = semesterKey(data.semester)
+        const tr = programToTrack(program)
+        const subjectStatus = (s: string): 'obavezan' | 'izborni' | 'nepoznat' => {
+          const fromPlan = groupProgram && semKey && plan && typeof plan === 'object'
+            ? planStatus(plan, groupProgram, Number(year), semKey, s)
+            : null
+          if (fromPlan) return fromPlan
+          const metaStatus = meta?.[s]?.status
+          if (!metaStatus) return 'nepoznat'
+          return defaultChecked(metaStatus, tr) ? 'obavezan' : 'izborni'
+        }
+        const st = Object.fromEntries(unique.map(s => [s, subjectStatus(s)]))
+        setStatus(st)
+        if (groupProgram && semKey && plan && typeof plan === 'object') {
+          setElectivesPending(hasUnpublishedElectives(plan, groupProgram, Number(year), semKey, unique))
+        }
+
         // Prevrtanje semestra: sačuvani izbori se odnose na predmete starog
-        // semestra — reconcileSemester ih resetuje da rokovi filter ne sakrije
+        // semestra - reconcileSemester ih resetuje da rokovi filter ne sakrije
         // nove predmete. (Isti helper koristi i raspored za "Nov semestar" popup.)
         const flipped = reconcileSemester(data.semester, group)
 
         if (!flipped && hadSavedSubjects) {
-          setChecked(savedSubjects)
+          // Predmeti dodati posle poslednjeg izbora (dopuna rasporeda) dobijaju
+          // isti početni izbor kao pri prvom biranju: čekirani samo obavezni.
+          const merged = { ...savedSubjects }
+          unique.forEach(s => { if (!(s in merged)) merged[s] = st[s] === 'obavezan' })
+          setChecked(merged)
         } else {
-          // Pametan default: obavezni čekirani, izborni odčekirani (student sam
-          // bira koje izborne sluša). Dvosmisleni/nepoznati -> čekirani (bezbedno),
-          // pa bez subjects-meta.json ostaje sve čekirano. Na modulima gde je
-          // sve izborno (4. godina) ništa nije čekirano i student čekira šta sluša.
-          const tr = programToTrack(program)
-          const smart: Record<string, boolean> = {}
-          unique.forEach(s => { smart[s] = defaultChecked(meta?.[s]?.status, tr) })
-          setChecked(smart)
+          // Pametan default: čekirani su samo predmeti za koje znamo da su
+          // obavezni. Izborni i nepoznati su odčekirani, pa student sam čekira
+          // šta sluša.
+          setChecked(Object.fromEntries(unique.map(s => [s, st[s] === 'obavezan'])))
         }
 
         if (!flipped && savedOther.length > 0) setOtherSelected(savedOther)
@@ -243,12 +271,12 @@ export default function IzbornoPage() {
     // Potvrda izbora = korisnik je odradio "Nov semestar" korak.
     acknowledgeFlip()
     byGroup.subjects(group).set(checked)
-    // Akumuliraj izbor po semestru — mešani Sep/Okt rokovi uniraju oba semestra.
+    // Akumuliraj izbor po semestru - mešani Sep/Okt rokovi uniraju oba semestra.
     if (semester) {
       const hist = app.subjectsHistory.get()
       hist[semester] = Object.entries(checked).filter(([, v]) => v).map(([k]) => k)
       // Orezivanje: čuvaj samo tekuću i prošlu školsku godinu ("Letnji 2025/26" -> 2025).
-      // Prošla mora da ostane — Sep/Okt rok pripada staroj školskoj godini.
+      // Prošla mora da ostane - Sep/Okt rok pripada staroj školskoj godini.
       const ayStart = (s: string) => parseInt(s.match(/(\d{4})\/\d{2}/)?.[1] ?? '', 10)
       const current = ayStart(semester)
       if (!Number.isNaN(current)) {
@@ -296,8 +324,10 @@ export default function IzbornoPage() {
   // "izborni" tag ima smisla samo kad status razlikuje obavezne od izbornih za
   // ovaj smer. Kad je sve izborno (fini moduli 4. godine), tag bi stajao na
   // svakom predmetu, pa ga tada nema, a podnaslov to kaže.
-  const smartMode = subjects.some(s => defaultChecked(subjectsMeta[s]?.status, track))
-  const allElective = subjects.length > 0 && !smartMode
+  const smartMode = subjects.some(s => status[s] === 'obavezan')
+  // "Svi su izborni" samo kad to stvarno piše za svaki predmet, a ne kad meta
+  // podataka nema (novi predmeti pre scrape-a).
+  const allElective = subjects.length > 0 && subjects.every(s => status[s] === 'izborni')
 
   if (loadError) {
     return (
@@ -319,8 +349,13 @@ export default function IzbornoPage() {
               ? 'Obavezni su već čekirani - čekiraj izborne koje slušaš'
               : allElective
                 ? 'Na ovom modulu su svi predmeti izborni - čekiraj one koje slušaš'
-                : 'Odčekiraj predmete koje ne slušaš'}
+                : 'Čekiraj predmete koje slušaš'}
           </p>
+          {electivesPending && (
+            <p className="mt-3 rounded-xl bg-amber-100/70 px-3 py-2 text-xs text-pretty text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+              Raspored izbornih predmeta za tvoj modul još nije objavljen. Kad FON dopuni raspored, stiže ti notifikacija i ovde ih biraš.
+            </p>
+          )}
         </div>
 
         <div className="space-y-1 mb-4 max-h-72 overflow-y-auto">
@@ -341,7 +376,7 @@ export default function IzbornoPage() {
               <span className={`flex-1 text-sm ${checked[subject] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
                 {subject}
               </span>
-              {smartMode && subjectsMeta[subject] && !defaultChecked(subjectsMeta[subject].status, track) && (
+              {smartMode && status[subject] === 'izborni' && (
                 <span className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                   izborni
                 </span>
@@ -418,7 +453,7 @@ export default function IzbornoPage() {
             />
           </Collapsible>
 
-          {/* Predmeti iz drugog semestra — prikaži SAMO u letnjem semestru.
+          {/* Predmeti iz drugog semestra - prikaži SAMO u letnjem semestru.
               Mešani Sep/Okt rok uvek padne u letnjem i traži zimske predmete
               (ponavljanja); u zimskom je picker suvišan i samo zbunjuje. */}
           {semester.toLowerCase().startsWith('letnji') && (

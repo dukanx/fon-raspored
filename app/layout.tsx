@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
-// Next-specifična integracija (usePathname/useSearchParams) — NE patchuje
+// Next-specifična integracija (usePathname/useSearchParams) - NE patchuje
 // history.pushState kao /react, koji je lomio navigaciju u Next 16.
 import { Analytics } from '@vercel/analytics/next'
 
@@ -27,14 +27,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  // Title je najjači pojedinačni signal na strani, pa uz brend nosi i dva
-  // upita koja studenti stvarno kucaju ("raspored nastave", "ispitni rokovi").
-  // "nastava", a ne "časovi" — ovo je fakultet, i tako piše svuda u aplikaciji.
-  // Ime na home screen-u NE zavisi od ovoga — njega diktiraju `appleWebApp.title`
+  // Title je najjači pojedinačni signal na strani, pa uz brend nosi upite koje
+  // studenti stvarno kucaju (Search Console: "fon raspored nastave", "raspored
+  // ispita fon", "fon raspored kolokvijuma"). Isti je tekst kao podnaslov na
+  // početnoj. "nastava", a ne "časovi" - ovo je fakultet, i tako piše svuda.
+  // Ime na home screen-u NE zavisi od ovoga - njega diktiraju `appleWebApp.title`
   // (iOS) i `name`/`short_name` iz app/manifest.ts (Android), koji ostaju kratki.
-  title: "FON Raspored - raspored nastave i ispitni rokovi",
+  title: "FON Raspored - raspored nastave, ispita i kolokvijuma",
   description:
-    "Lični raspored nastave, ispitni rokovi i kolokvijumi za studente Fakulteta organizacionih nauka (FON).",
+    "Lični raspored nastave po grupi, raspored ispita i kolokvijuma za FON. Unesi prezime i dobij svoj raspored, ispitne rokove i obaveštenja.",
   // Izričito govori pretraživaču koja je prava adresa stranice. Bez ovoga isti
   // sadržaj na `.vercel.app` i na fonraspored.rs izgleda kao dva sajta, pa se
   // signali (posete, linkovi) dele između njih umesto da se sabiraju.
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   },
 }
 
-// Strukturisani podaci (schema.org). Vidljivom sadržaju ne dodaje ništa —
+// Strukturisani podaci (schema.org). Vidljivom sadržaju ne dodaje ništa -
 // mašinama kaže ono što se iz dve rečenice teksta ne da zaključiti: da je ovo
 // besplatna web aplikacija, na srpskom, za studente, i o kom fakultetu je reč.
 //
@@ -91,7 +92,7 @@ const jsonLd = {
       name: 'FON Raspored',
       url: SITE_URL,
       applicationCategory: 'EducationalApplication',
-      // PWA — radi u svakom modernom browseru, instalira se na telefon.
+      // PWA - radi u svakom modernom browseru, instalira se na telefon.
       operatingSystem: 'Web, Android, iOS',
       inLanguage: 'sr-RS',
       description:
@@ -160,7 +161,7 @@ export default function RootLayout({
             se korisniku koji već ima identitet onboarding iscrta i tek onda
             zameni Rasporedom/Rokovima (preusmerenje čeka hidraciju). Ovde
             sinhrono, pre prvog iscrtavanja, utvrđujemo da preusmerenje sledi i
-            sakrivamo onboarding — vidi se samo pozadina.
+            sakrivamo onboarding - vidi se samo pozadina.
             Uslov mora da preslikava app/page.tsx (session pa saved identitet, uz
             izuzetak za ?edit=1); on je i taj koji skida klasu. */}
         <script

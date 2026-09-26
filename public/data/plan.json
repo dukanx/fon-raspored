@@ -1,0 +1,2355 @@
+{
+ "Finansijski menadžment": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Upravljanje investicijama",
+       "Upravljanje troškovima"
+      ],
+      [
+       "Ekološki menadžment",
+       "Menadžment proizvodnje i pružanja usluga"
+      ],
+      [
+       "Ekonometrijske metode",
+       "Operaciona istraživanja 2"
+      ]
+     ],
+     "izborni": [
+      "Ekološki menadžment",
+      "Ekonometrijske metode",
+      "Menadžment proizvodnje i pružanja usluga",
+      "Operaciona istraživanja 2",
+      "Upravljanje investicijama",
+      "Upravljanje troškovima"
+     ],
+     "obavezni": [
+      "Finansijska tržišta",
+      "Upravljanje dokumentacijom",
+      "Upravljačko računovodstvo"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Elektronsko poslovanje",
+      "Korporativne komunikacije",
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Upravljanje projektima"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijska analiza prodaje",
+       "Investiciono bankarstvo",
+       "Korporativno restrukturiranje"
+      ],
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Engleski jezik u menadžmentu 2",
+       "Finansijska matematika",
+       "Francuski jezik u menadžmentu 2",
+       "Međunarodni menadžment",
+       "Modelovanje finansijskih sistema",
+       "Poslovno pravo",
+       "Simulacioni modeli u finansijama",
+       "Statističke metode u menadžmentu"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Engleski jezik u menadžmentu 2",
+      "Finansijska analiza prodaje",
+      "Finansijska matematika",
+      "Francuski jezik u menadžmentu 2",
+      "Investiciono bankarstvo",
+      "Korporativno restrukturiranje",
+      "Međunarodni menadžment",
+      "Modelovanje finansijskih sistema",
+      "Poslovno pravo",
+      "Simulacioni modeli u finansijama",
+      "Statističke metode u menadžmentu"
+     ],
+     "obavezni": [
+      "Osnove računarske inteligencije",
+      "Simulacija u poslovnom odlučivanju",
+      "Vrednovanje preduzeća"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Bankarski menadžment",
+       "Finansijske tehnologije",
+       "Finansijsko izveštavanje"
+      ]
+     ],
+     "izborni": [
+      "Bankarski menadžment",
+      "Finansijske tehnologije",
+      "Finansijsko izveštavanje"
+     ],
+     "obavezni": [
+      "Brend menadžment",
+      "Korporativne finansije",
+      "Projektovanje organizacije",
+      "Teorija odlučivanja"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Informacione tehnologije": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Interakcija čovek-računar",
+      "Statistika",
+      "Strukture podataka i algoritmi"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ],
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Veštačka inteligencija",
+      "Zaštita računarskih sistema"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Digitalna ekonomija",
+       "Digitalna transformacija i informaciono društvo",
+       "Kvalitet u IT",
+       "Neuronske mreže"
+      ]
+     ],
+     "izborni": [
+      "Digitalna ekonomija",
+      "Digitalna transformacija i informaciono društvo",
+      "Ekonomika poslovanja i planiranje",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Kvalitet u IT",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Neuronske mreže",
+      "Osnove naučnog izračunavanja",
+      "Teorija igara"
+     ],
+     "obavezni": [
+      "Metodologija izrade IT projekta",
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Distribuirani računarski sistemi",
+       "Mašinsko učenje",
+       "Multimedijalna produkcija",
+       "Pravo i etika obrade podataka"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Baze podataka 2",
+      "Biostatistika",
+      "Dinamika organizacionih sistema",
+      "Distribuirani računarski sistemi",
+      "Internet marketing i društveni mediji",
+      "Mašinsko učenje",
+      "Menadžment ljudskih resursa",
+      "Multimedijalna produkcija",
+      "Multimediji",
+      "Osnove kvaliteta",
+      "Pravo i etika obrade podataka",
+      "Softverski paterni",
+      "Teorija odlučivanja"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ },
+ "Informacioni sistemi": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Jezici i okruženja za razvoj IS",
+      "Statistika",
+      "Strukture podataka i algoritmi"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ],
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "Analiza i logičko projektovanje IS (projekat)",
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Veštačka inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Interpersonalne veštine u organizaciji",
+       "Poslovni informacioni sistemi",
+       "Pravne osnove informacionih sistema"
+      ],
+      [
+       "Dizajn korisničkog interfejsa",
+       "Funkcionalni jezici",
+       "Odabrana poglavlja iz informacionih sistema",
+       "Programski prevodioci",
+       "Uvod u skladišta podataka"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Dizajn korisničkog interfejsa",
+      "Ekonomika poslovanja i planiranje",
+      "Funkcionalni jezici",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Interpersonalne veštine u organizaciji",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Odabrana poglavlja iz informacionih sistema",
+      "Osnove naučnog izračunavanja",
+      "Poslovni informacioni sistemi",
+      "Pravne osnove informacionih sistema",
+      "Programski prevodioci",
+      "Teorija igara",
+      "Uvod u skladišta podataka"
+     ],
+     "obavezni": [
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Implementacija IS (projekat)",
+       "Uvod u softverske arhitekture IS"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Baze podataka 2",
+      "Biostatistika",
+      "Dinamika organizacionih sistema",
+      "Implementacija IS (projekat)",
+      "Internet marketing i društveni mediji",
+      "Menadžment ljudskih resursa",
+      "Multimediji",
+      "Osnove kvaliteta",
+      "Softverski paterni",
+      "Teorija odlučivanja",
+      "Uvod u softverske arhitekture IS"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ },
+ "Informaciono inženjerstvo": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Programski jezici za analitiku",
+      "Statistika",
+      "Strukture podataka i algoritmi"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ],
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "ETL i skladišta podataka",
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Veštačka inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Analiza podataka",
+       "Ekonometrijski modeli i predviđanje",
+       "Elementi teorije algoritama",
+       "Osnove računarske inteligencije",
+       "Poslovna analitika",
+       "Preduzetništvo",
+       "Sistemi za preporučivanje"
+      ]
+     ],
+     "izborni": [
+      "Analiza podataka",
+      "Ekonometrijski modeli i predviđanje",
+      "Ekonomika poslovanja i planiranje",
+      "Elementi teorije algoritama",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Osnove naučnog izračunavanja",
+      "Osnove računarske inteligencije",
+      "Poslovna analitika",
+      "Preduzetništvo",
+      "Sistemi za preporučivanje",
+      "Teorija igara"
+     ],
+     "obavezni": [
+      "Mašinsko učenje",
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Alati za izveštavanje i vizuelizaciju podataka",
+       "Distribuirani računarski sistemi",
+       "Otkrivanje zakonitosti u procesima",
+       "Pravo i etika obrade podataka"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ],
+      [
+       "Implementacija aplikacija za analitiku",
+       "Neuronske mreže",
+       "Odabrana poglavlja iz IS",
+       "Simulacija u poslovnom odlučivanju",
+       "Uvod u matematičko programiranje",
+       "Zaštita računarskih sistema"
+      ]
+     ],
+     "izborni": [
+      "Alati za izveštavanje i vizuelizaciju podataka",
+      "Baze podataka 2",
+      "Biostatistika",
+      "Dinamika organizacionih sistema",
+      "Distribuirani računarski sistemi",
+      "Implementacija aplikacija za analitiku",
+      "Internet marketing i društveni mediji",
+      "Menadžment ljudskih resursa",
+      "Multimediji",
+      "Neuronske mreže",
+      "Odabrana poglavlja iz IS",
+      "Osnove kvaliteta",
+      "Otkrivanje zakonitosti u procesima",
+      "Pravo i etika obrade podataka",
+      "Simulacija u poslovnom odlučivanju",
+      "Softverski paterni",
+      "Teorija odlučivanja",
+      "Uvod u matematičko programiranje",
+      "Zaštita računarskih sistema"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ },
+ "Lin organizacija poslovanja": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Kontrola kvaliteta",
+       "Osnove programiranja",
+       "Poslovni informacioni sistemi",
+       "Statistička kontrola procesa",
+       "Upravljanje dokumentacijom",
+       "Upravljanje inovacijama"
+      ]
+     ],
+     "izborni": [
+      "Kontrola kvaliteta",
+      "Osnove programiranja",
+      "Poslovni informacioni sistemi",
+      "Statistička kontrola procesa",
+      "Upravljanje dokumentacijom",
+      "Upravljanje inovacijama"
+     ],
+     "obavezni": [
+      "Operaciona istraživanja 2",
+      "Preduzetništvo",
+      "Upravljanje promenama"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Industrijsko i menadžment inženjerstvo",
+      "Lin proizvodnja i usluge",
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Upravljanje projektima"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Analiza podataka",
+       "Organizacija javne uprave",
+       "Organizacija specijalnih događaja",
+       "Poslovna analitika",
+       "Poslovna inteligencija",
+       "Poslovne aplikacije u spredšit okruženju",
+       "Privredni razvoj",
+       "Rukovođenje i liderstvo",
+       "Simulacioni modeli u finansijama",
+       "Utvrđivanje normativa rada i učinka"
+      ]
+     ],
+     "izborni": [
+      "Analiza podataka",
+      "Organizacija javne uprave",
+      "Organizacija specijalnih događaja",
+      "Poslovna analitika",
+      "Poslovna inteligencija",
+      "Poslovne aplikacije u spredšit okruženju",
+      "Privredni razvoj",
+      "Rukovođenje i liderstvo",
+      "Simulacioni modeli u finansijama",
+      "Utvrđivanje normativa rada i učinka"
+     ],
+     "obavezni": [
+      "Ekološki menadžment",
+      "Simulacija u poslovnom odlučivanju"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Projektovanje organizacije",
+      "Projektovanje proizvodnih i uslužnih sistema",
+      "Teorija odlučivanja",
+      "Upravljanje performansama i zaradama",
+      "Upravljački sistemi"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Marketing menadžment i komunikacije": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonometrijske metode",
+       "Operaciona istraživanja 2"
+      ],
+      [
+       "Menadžment proizvodnje i pružanja usluga",
+       "Upravljanje troškovima"
+      ],
+      [
+       "Ekološki menadžment",
+       "Finansijska analiza prodaje",
+       "Interpersonalne veštine u organizaciji",
+       "Marketing logistika",
+       "Međunarodni menadžment",
+       "Poslovno pravo",
+       "Trening i razvoj",
+       "Upravljanje investicijama"
+      ]
+     ],
+     "izborni": [
+      "Ekološki menadžment",
+      "Ekonometrijske metode",
+      "Finansijska analiza prodaje",
+      "Interpersonalne veštine u organizaciji",
+      "Marketing logistika",
+      "Menadžment proizvodnje i pružanja usluga",
+      "Međunarodni menadžment",
+      "Operaciona istraživanja 2",
+      "Poslovno pravo",
+      "Trening i razvoj",
+      "Upravljanje investicijama",
+      "Upravljanje troškovima"
+     ],
+     "obavezni": [
+      "Digitalni marketing",
+      "Upravljačko računovodstvo"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Elektronsko poslovanje",
+      "Korporativne komunikacije",
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Upravljanje projektima"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Poslovna analitika",
+       "Poslovna inteligencija"
+      ],
+      [
+       "Upravljanje dokumentacijom",
+       "Upravljanje inovacijama"
+      ],
+      [
+       "Multimediji",
+       "Osnove računarske inteligencije",
+       "Simulacija u poslovnom odlučivanju",
+       "Statističke metode u menadžmentu",
+       "Teorija igara"
+      ],
+      [
+       "Medijske komunikacije",
+       "Međunarodni marketing",
+       "Ponašanje potrošača",
+       "Poslovno pregovaranje i veštine komunikacije",
+       "Proučavanje studija slučaja"
+      ]
+     ],
+     "izborni": [
+      "Medijske komunikacije",
+      "Međunarodni marketing",
+      "Multimediji",
+      "Osnove računarske inteligencije",
+      "Ponašanje potrošača",
+      "Poslovna analitika",
+      "Poslovna inteligencija",
+      "Poslovno pregovaranje i veštine komunikacije",
+      "Proučavanje studija slučaja",
+      "Simulacija u poslovnom odlučivanju",
+      "Statističke metode u menadžmentu",
+      "Teorija igara",
+      "Upravljanje dokumentacijom",
+      "Upravljanje inovacijama"
+     ],
+     "obavezni": []
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Brend menadžment",
+      "Menadžment prodaje",
+      "Projektovanje organizacije",
+      "Strateški marketing",
+      "Teorija odlučivanja"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Menadžment kvaliteta i standardizacija": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Kontrola kvaliteta",
+      "Metrologija i normativno regulisanje kvaliteta",
+      "Operaciona istraživanja 2",
+      "Planiranje kvaliteta",
+      "Sistem menadžmenta kvaliteta",
+      "Upravljanje dokumentacijom"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Teorija odlučivanja",
+      "Upravljanje kvalitetom",
+      "Upravljanje projektima"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Akreditacija i sertifikacija",
+       "Menadžment kvaliteta 1",
+       "Menadžment kvaliteta 2",
+       "Menadžment kvaliteta u upravi",
+       "Standardizacija terminologija"
+      ],
+      [
+       "Menadžment kvaliteta u informacionim sistemima i tehnologijama",
+       "Obezbeđivanje kvaliteta u softverskoj industriji",
+       "Poslovni informacioni sistemi",
+       "Sistem menadžmenta sigurnosti informacija",
+       "Standardizacija i standardi u informacionim tehnologijama"
+      ],
+      [
+       "Analiza pouzdanosti i rizika",
+       "Ekološki menadžment",
+       "Engleski jezik u menadžmentu 2",
+       "Francuski jezik u menadžmentu 2",
+       "Menadžment proizvodnje i pružanja usluga",
+       "Poslovna analitika"
+      ]
+     ],
+     "izborni": [
+      "Akreditacija i sertifikacija",
+      "Analiza pouzdanosti i rizika",
+      "Ekološki menadžment",
+      "Engleski jezik u menadžmentu 2",
+      "Francuski jezik u menadžmentu 2",
+      "Menadžment kvaliteta 1",
+      "Menadžment kvaliteta 2",
+      "Menadžment kvaliteta u informacionim sistemima i tehnologijama",
+      "Menadžment kvaliteta u upravi",
+      "Menadžment proizvodnje i pružanja usluga",
+      "Obezbeđivanje kvaliteta u softverskoj industriji",
+      "Poslovna analitika",
+      "Poslovni informacioni sistemi",
+      "Sistem menadžmenta sigurnosti informacija",
+      "Standardizacija i standardi u informacionim tehnologijama",
+      "Standardizacija terminologija"
+     ],
+     "obavezni": [
+      "Modeli i indikatori poboljšavanja kvaliteta",
+      "Ocena kvaliteta poslovnog sistema"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "E-obrazovanje",
+       "Elektronsko poslovanje"
+      ],
+      [
+       "Lean logistika",
+       "Menadžment totalnog kvaliteta"
+      ]
+     ],
+     "izborni": [
+      "E-obrazovanje",
+      "Elektronsko poslovanje",
+      "Lean logistika",
+      "Menadžment totalnog kvaliteta"
+     ],
+     "obavezni": [
+      "Inženjering kvaliteta",
+      "Korporativne komunikacije",
+      "Sistem menadžmenta zdravlja i bezbednosti na radu i životne sredine"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Operacioni menadžment": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Kontrola kvaliteta",
+       "Matematika 3"
+      ]
+     ],
+     "izborni": [
+      "Kontrola kvaliteta",
+      "Matematika 3"
+     ],
+     "obavezni": [
+      "Ekološki menadžment",
+      "Operaciona istraživanja 2",
+      "Osnove programiranja",
+      "Planiranje proizvodnje i usluga",
+      "Upravljanje inovacijama"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Industrijsko i menadžment inženjerstvo",
+      "Lean logistika",
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Upravljački sistemi"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Analiza i menadžment vrednosti",
+       "Analiza pouzdanosti i rizika",
+       "Digitalno upravljanje proizvodnjom",
+       "Eko-marketing",
+       "Fleksibilne usluge i proizvodnja",
+       "Intelektualna svojina",
+       "Inteligentna proizvodnja",
+       "Komercijalizacija tehnologije",
+       "Marketing logistika",
+       "Menadžment ključnih performansi proizvodnje",
+       "Metode optimizacije",
+       "Metode tehnološke analize",
+       "Poslovna inteligencija",
+       "Poslovne aplikacije u spredšit okruženju",
+       "Preduzetničko upravljanje malim i srednjim preduzećima",
+       "Upravljanje inovacionim projektima",
+       "Upravljanje održavanjem"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Analiza i menadžment vrednosti",
+      "Analiza pouzdanosti i rizika",
+      "Digitalno upravljanje proizvodnjom",
+      "Eko-marketing",
+      "Fleksibilne usluge i proizvodnja",
+      "Intelektualna svojina",
+      "Inteligentna proizvodnja",
+      "Komercijalizacija tehnologije",
+      "Marketing logistika",
+      "Menadžment ključnih performansi proizvodnje",
+      "Metode optimizacije",
+      "Metode tehnološke analize",
+      "Poslovna inteligencija",
+      "Poslovne aplikacije u spredšit okruženju",
+      "Preduzetničko upravljanje malim i srednjim preduzećima",
+      "Upravljanje inovacionim projektima",
+      "Upravljanje održavanjem"
+     ],
+     "obavezni": [
+      "Menadžment proizvodnje i pružanja usluga",
+      "Upravljanje lancima snabdevanja 1"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Korporativne komunikacije",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Korporativne komunikacije",
+      "Teorija odlučivanja"
+     ],
+     "obavezni": [
+      "Modelovanje poslovnih procesa",
+      "Projektovanje proizvodnih i uslužnih sistema",
+      "Računarski integrisana proizvodnja",
+      "Tehnološko preduzetništvo"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Poslovna analitika": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Statistika",
+      "Strukture podataka i algoritmi",
+      "Uvod u poslovnu analitiku"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ],
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "Metode optimizacije",
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Veštačka inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Analiza procesa i Petrijeve mreže",
+       "Ekonometrijski modeli i predviđanje"
+      ],
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Analiza podataka",
+       "Analiza pouzdanosti i rizika",
+       "Osnove računarske inteligencije",
+       "Poslovne aplikacije u spredšit okruženju",
+       "Poslovni informacioni sistemi",
+       "Preduzetništvo",
+       "Simulacija u poslovnom odlučivanju",
+       "Tehnološko preduzetništvo",
+       "Uvod u matematičko programiranje"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Analiza podataka",
+      "Analiza pouzdanosti i rizika",
+      "Analiza procesa i Petrijeve mreže",
+      "Ekonometrijski modeli i predviđanje",
+      "Ekonomika poslovanja i planiranje",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Osnove naučnog izračunavanja",
+      "Osnove računarske inteligencije",
+      "Poslovne aplikacije u spredšit okruženju",
+      "Poslovni informacioni sistemi",
+      "Preduzetništvo",
+      "Simulacija u poslovnom odlučivanju",
+      "Tehnološko preduzetništvo",
+      "Teorija igara",
+      "Uvod u matematičko programiranje"
+     ],
+     "obavezni": [
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Analitika lanaca snabdevanja",
+       "Elementi teorije algoritama",
+       "Korporativne komunikacije",
+       "Mašinsko učenje",
+       "Pravo i etika obrade podataka",
+       "Projektovanje organizacije",
+       "Teorija odlučivanja",
+       "Upravljanje ekološkim rizikom"
+      ],
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Analitika lanaca snabdevanja",
+      "Baze podataka 2",
+      "Biostatistika",
+      "Dinamika organizacionih sistema",
+      "Elementi teorije algoritama",
+      "Internet marketing i društveni mediji",
+      "Korporativne komunikacije",
+      "Mašinsko učenje",
+      "Menadžment ljudskih resursa",
+      "Multimediji",
+      "Osnove kvaliteta",
+      "Pravo i etika obrade podataka",
+      "Projektovanje organizacije",
+      "Softverski paterni",
+      "Teorija odlučivanja",
+      "Upravljanje ekološkim rizikom"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ },
+ "Projektni menadžment": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Engleski jezik u menadžmentu 1",
+       "Francuski jezik u menadžmentu 1"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u menadžmentu 1",
+      "Francuski jezik u menadžmentu 1"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Psihologija",
+      "Sociologija",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomija",
+      "Matematika 1",
+      "Menadžment",
+      "Osnove informaciono komunikacionih tehnologija",
+      "Osnovi organizacije"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Ekonomika poslovanja i planiranje",
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Standardizacija",
+      "Statistika"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Marketing",
+      "Menadžment ljudskih resursa",
+      "Osnove kvaliteta",
+      "Računovodstvo",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonometrijske metode",
+       "Operaciona istraživanja 2"
+      ],
+      [
+       "Upravljanje troškovima",
+       "Upravljačko računovodstvo"
+      ],
+      [
+       "Osnove programiranja",
+       "Upravljanje dokumentacijom"
+      ]
+     ],
+     "izborni": [
+      "Ekonometrijske metode",
+      "Operaciona istraživanja 2",
+      "Osnove programiranja",
+      "Upravljanje dokumentacijom",
+      "Upravljanje troškovima",
+      "Upravljačko računovodstvo"
+     ],
+     "obavezni": [
+      "Upravljanje investicijama",
+      "Upravljanje kvalitetom projekta",
+      "Upravljanje promenama"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Lin proizvodnja i usluge",
+      "Operaciona istraživanja 1",
+      "Osnove finansijskog menadžmenta",
+      "Teorija odlučivanja",
+      "Upravljanje projektima"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Poslovna inteligencija",
+       "Simulacija u poslovnom odlučivanju"
+      ],
+      [
+       "Engleski jezik za akademske namene",
+       "Francuski jezik za akademske namene",
+       "Poslovno pravo",
+       "Preduzetništvo",
+       "Trening i razvoj",
+       "Vođstvo i motivisanje"
+      ],
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Mašinsko učenje",
+       "Poslovna analitika",
+       "Simulacioni modeli u finansijama",
+       "Statističke metode u menadžmentu",
+       "Teorija igara"
+      ],
+      [
+       "Ekološki menadžment",
+       "Intelektualna svojina",
+       "Međunarodni menadžment",
+       "Poslovne aplikacije u spredšit okruženju",
+       "Privredni razvoj"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Ekološki menadžment",
+      "Engleski jezik za akademske namene",
+      "Francuski jezik za akademske namene",
+      "Intelektualna svojina",
+      "Mašinsko učenje",
+      "Međunarodni menadžment",
+      "Poslovna analitika",
+      "Poslovna inteligencija",
+      "Poslovne aplikacije u spredšit okruženju",
+      "Poslovno pravo",
+      "Preduzetništvo",
+      "Privredni razvoj",
+      "Simulacija u poslovnom odlučivanju",
+      "Simulacioni modeli u finansijama",
+      "Statističke metode u menadžmentu",
+      "Teorija igara",
+      "Trening i razvoj",
+      "Vođstvo i motivisanje"
+     ],
+     "obavezni": [
+      "Strateški menadžment"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Elektronsko poslovanje",
+       "Modelovanje poslovnih procesa",
+       "Upravljački sistemi"
+      ]
+     ],
+     "izborni": [
+      "Elektronsko poslovanje",
+      "Modelovanje poslovnih procesa",
+      "Upravljački sistemi"
+     ],
+     "obavezni": [
+      "Korporativne komunikacije",
+      "Projektovanje organizacije",
+      "Softverska podrška upravljanju projektima",
+      "Upravljanje inovacionim projektima"
+     ]
+    }
+   }
+  },
+  "program": "MiO"
+ },
+ "Softversko inženjerstvo": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Programiranje 2",
+      "Statistika",
+      "Strukture podataka i algoritmi"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ],
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "Napredne Java tehnologije",
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Veštačka inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Napredne .NET tehnologije",
+       "Programiranje repozitorijuma podataka"
+      ],
+      [
+       "Analitika performansi - osnovni koncepti",
+       "Analiza podataka",
+       "Digitalna ekonomija",
+       "Diskretna matematika i primene",
+       "Elementi teorije algoritama",
+       "Intelektualna svojina",
+       "Interpersonalne veštine u organizaciji",
+       "Konkurentno i distribuirano programiranje (projekat)",
+       "Osnovi kvaliteta softvera",
+       "Razvoj i održavanje softvera",
+       "Tehnologije korisničkog interfejsa",
+       "Tehnološko preduzetništvo"
+      ],
+      [
+       "Duboko učenje i neuronske mreže",
+       "Softverski alati"
+      ]
+     ],
+     "izborni": [
+      "Analitika performansi - osnovni koncepti",
+      "Analiza podataka",
+      "Digitalna ekonomija",
+      "Diskretna matematika i primene",
+      "Duboko učenje i neuronske mreže",
+      "Ekonomika poslovanja i planiranje",
+      "Elementi teorije algoritama",
+      "Intelektualna svojina",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Interpersonalne veštine u organizaciji",
+      "Konkurentno i distribuirano programiranje (projekat)",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Napredne .NET tehnologije",
+      "Osnove naučnog izračunavanja",
+      "Osnovi kvaliteta softvera",
+      "Programiranje repozitorijuma podataka",
+      "Razvoj i održavanje softvera",
+      "Softverski alati",
+      "Tehnologije korisničkog interfejsa",
+      "Tehnološko preduzetništvo",
+      "Teorija igara"
+     ],
+     "obavezni": [
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Napredna analiza podataka",
+       "Programiranje 3",
+       "Programiranje repozitorijuma podataka"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Baze podataka 2",
+      "Biostatistika",
+      "Dinamika organizacionih sistema",
+      "Internet marketing i društveni mediji",
+      "Menadžment ljudskih resursa",
+      "Multimediji",
+      "Napredna analiza podataka",
+      "Osnove kvaliteta",
+      "Programiranje 3",
+      "Programiranje repozitorijuma podataka",
+      "Softverski paterni",
+      "Teorija odlučivanja"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ },
+ "Tehnologije elektronskog poslovanja": {
+  "godine": {
+   "1": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Psihologija",
+       "Sociologija"
+      ],
+      [
+       "Inženjering procesa",
+       "Menadžment tehnologije i razvoja",
+       "Osnove operacionog menadžmenta"
+      ]
+     ],
+     "izborni": [
+      "Inženjering procesa",
+      "Menadžment tehnologije i razvoja",
+      "Osnove operacionog menadžmenta",
+      "Psihologija",
+      "Sociologija"
+     ],
+     "obavezni": [
+      "Matematika 2",
+      "Principi programiranja",
+      "Uvod u informacione sisteme"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment",
+       "Osnovi organizacije"
+      ],
+      [
+       "Engleski jezik u informatici",
+       "Francuski jezik u informatici"
+      ]
+     ],
+     "izborni": [
+      "Engleski jezik u informatici",
+      "Francuski jezik u informatici",
+      "Menadžment",
+      "Osnovi organizacije"
+     ],
+     "obavezni": [
+      "Ekonomija",
+      "Elektronsko poslovanje",
+      "Matematika 1",
+      "Osnove informaciono komunikacionih tehnologija"
+     ]
+    }
+   },
+   "2": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Finansijski menadžment i računovodstvo",
+       "Osnove finansijskog menadžmenta",
+       "Računovodstvo"
+      ]
+     ],
+     "izborni": [
+      "Finansijski menadžment i računovodstvo",
+      "Osnove finansijskog menadžmenta",
+      "Računovodstvo"
+     ],
+     "obavezni": [
+      "Baze podataka",
+      "Cloud infrastruktura i servisi",
+      "Klijentske veb tehnologije i skriptni jezici",
+      "Statistika",
+      "Strukture podataka i algoritmi"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Marketing",
+       "Upravljanje projektima"
+      ],
+      [
+       "Diskretne matematičke strukture",
+       "Matematika 3"
+      ]
+     ],
+     "izborni": [
+      "Diskretne matematičke strukture",
+      "Marketing",
+      "Matematika 3",
+      "Upravljanje projektima"
+     ],
+     "obavezni": [
+      "Arhitektura računara i operativni sistemi",
+      "Programiranje 1",
+      "Teorija verovatnoće"
+     ]
+    }
+   },
+   "3": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Linearni statistički modeli",
+       "Numerička analiza"
+      ]
+     ],
+     "izborni": [
+      "Linearni statistički modeli",
+      "Numerička analiza"
+     ],
+     "obavezni": [
+      "Operaciona istraživanja 2",
+      "Programski jezici",
+      "Serverske veb tehnologije",
+      "Veštačka inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [],
+     "izborni": [],
+     "obavezni": [
+      "Operaciona istraživanja 1",
+      "Projektovanje informacionih sistema",
+      "Projektovanje softvera",
+      "Računarske mreže i telekomunikacije",
+      "Teorija sistema"
+     ]
+    }
+   },
+   "4": {
+    "letnji": {
+     "blokovi": [
+      [
+       "Ekonomika poslovanja i planiranje",
+       "Inteligentni sistemi",
+       "Internet inteligentnih uređaja",
+       "Mikroservisna arhitektura informacionih sistema",
+       "Mobilno računarstvo",
+       "Osnove naučnog izračunavanja",
+       "Teorija igara"
+      ],
+      [
+       "Razvoj mobilnih aplikacija i servisa - projekat",
+       "Razvoj naprednih aplikacija elektronskog poslovanja - projekat"
+      ],
+      [
+       "Digitalna ekonomija",
+       "Konkurentno i distribuirano programiranje - projekat",
+       "Ponašanje potrošača",
+       "Standardizacija i standardi u informacionim tehnologijama",
+       "Upravljanje rizikom u razvoju aplikacija elektronskog poslovanja"
+      ],
+      [
+       "Napredne Java tehnologije",
+       "Projektovanje računarskih mreža preduzeća",
+       "Uvod u menadžment elektronskog poslovanja",
+       "Virtuelna realnost i računarska simulacija"
+      ]
+     ],
+     "izborni": [
+      "Digitalna ekonomija",
+      "Ekonomika poslovanja i planiranje",
+      "Inteligentni sistemi",
+      "Internet inteligentnih uređaja",
+      "Konkurentno i distribuirano programiranje - projekat",
+      "Mikroservisna arhitektura informacionih sistema",
+      "Mobilno računarstvo",
+      "Napredne Java tehnologije",
+      "Osnove naučnog izračunavanja",
+      "Ponašanje potrošača",
+      "Projektovanje računarskih mreža preduzeća",
+      "Razvoj mobilnih aplikacija i servisa - projekat",
+      "Razvoj naprednih aplikacija elektronskog poslovanja - projekat",
+      "Standardizacija i standardi u informacionim tehnologijama",
+      "Teorija igara",
+      "Upravljanje rizikom u razvoju aplikacija elektronskog poslovanja",
+      "Uvod u menadžment elektronskog poslovanja",
+      "Virtuelna realnost i računarska simulacija"
+     ],
+     "obavezni": [
+      "Poslovna inteligencija"
+     ]
+    },
+    "zimski": {
+     "blokovi": [
+      [
+       "Menadžment ljudskih resursa",
+       "Osnove kvaliteta"
+      ],
+      [
+       "Analiza podataka u elektronskom poslovanju",
+       "Big data infrastruktura i servisi",
+       "Digitalna transformacija i informaciono društvo",
+       "E-obrazovanje",
+       "Napredne .NET tehnologije",
+       "Pravo i etika obrade podataka"
+      ],
+      [
+       "Baze podataka 2",
+       "Biostatistika",
+       "Dinamika organizacionih sistema",
+       "Internet marketing i društveni mediji",
+       "Multimediji",
+       "Softverski paterni",
+       "Teorija odlučivanja"
+      ]
+     ],
+     "izborni": [
+      "Analiza podataka u elektronskom poslovanju",
+      "Baze podataka 2",
+      "Big data infrastruktura i servisi",
+      "Biostatistika",
+      "Digitalna transformacija i informaciono društvo",
+      "Dinamika organizacionih sistema",
+      "E-obrazovanje",
+      "Internet marketing i društveni mediji",
+      "Menadžment ljudskih resursa",
+      "Multimediji",
+      "Napredne .NET tehnologije",
+      "Osnove kvaliteta",
+      "Pravo i etika obrade podataka",
+      "Softverski paterni",
+      "Teorija odlučivanja"
+     ],
+     "obavezni": [
+      "Internet tehnologije",
+      "Modelovanje poslovnih procesa"
+     ]
+    }
+   }
+  },
+  "program": "ISiT"
+ }
+}
