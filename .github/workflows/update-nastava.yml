@@ -89,7 +89,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/data/*god.json public/data/*god-letnji.json public/data/*god-zimski.json scripts/known_nastava.json
-          git commit -m "auto: izmene sala i termina u rasporedu nastave"
+          # FON ume da ponovo okači isti raspored (nov fajl, isti termini): tada
+          # se menja samo zapis o fajlovima, pa poruka to kaže.
+          if git diff --cached --quiet -- public/data; then
+            MSG="auto: FON ponovo okačio raspored nastave, termini isti"
+          else
+            MSG="auto: izmene sala i termina u rasporedu nastave"
+          fi
+          git commit -m "$MSG"
           git push
 
       # Ako PR na grani auto/raspored-nastave već postoji, samo se osveži.
