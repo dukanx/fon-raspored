@@ -1,0 +1,52 @@
+name: Osveži plan modula
+
+# Jednom nedeljno skida plan studija po modulima (plan.json) i podatke o
+# predmetima (subjects-meta.json) sa FON sajta. Uz objavu rasporeda nastave to
+# se radi i u update-nastava.yml; ovo hvata izmene plana usred semestra, kad se
+# raspored ne menja (npr. nova akreditacija). Posle provere podataka izmena se
+# objavljuje sama; ako provera padne, ništa se ne upisuje i GitHub šalje email.
+on:
+  schedule:
+    - cron: '17 5 * * 1'  # ponedeljkom oko 7:17 po Beogradu
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install beautifulsoup4
+
+      - name: Skini plan modula i podatke o predmetima
+        working-directory: scripts
+        run: |
+          python scrape_plan.py
+          python scrape_subjects_meta.py > /dev/null
+
+      - name: Provera podataka
+        run: |
+          python scripts/validate_data.py --report "$RUNNER_TEMP/provera.md"
+          cat "$RUNNER_TEMP/provera.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Objavi ako se nešto promenilo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/plan.json public/data/subjects-meta.json
+          if git diff --cached --quiet; then
+            echo "Plan i podaci o predmetima su isti."
+            exit 0
+          fi
+          git commit -m "auto: osvežen plan modula i podaci o predmetima"
+          git pull --rebase origin main
+          git push
