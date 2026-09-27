@@ -9,9 +9,12 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Raspored nastave** - filtriran po godini, programu i grupi; lista ili nedeljni prikaz; na desktopu ravnopravan prekidač između Rasporeda i Rokova
 - **Skrivanje termina** - swipe na mobilnom ili klik na termin ga sakriva iz rasporeda (i iz Rokova); bira se koji termini su relevantni; čuva se u localStorage, uz mogućnost vraćanja
 - **Ispiti i kolokvijumi** - lista i kalendarski prikaz; prikazuju se samo predmeti koje student sluša; aplikacija se pri otvaranju sama postavlja na Raspored ili Rokove u zavisnosti da li je u toku/blizu stvaran ispitni period
+- **Kalendar aktivnosti** - kalendar u Rokovima je obojen po FON kalendaru aktivnosti: ispitni rokovi, kolokvijumske nedelje, neradni dani i dani bez nastave, uz oznaku za onlajn nastavu
 - **Sopstveni događaji u Rokovima** - dodavanje, izmena i brisanje ličnih ispita/kolokvijuma/dogovora koji nisu na FON sajtu (npr. dogovor sa profesorom), sa sopstvenim datumom, vremenom i salom
 - **Rokovi kroz oba semestra** - septembarski i oktobarski rok mešaju predmete oba semestra; aplikacija pamti izbor po semestru i (u letnjem) nudi dodavanje zimskih predmeta radi ponavljanja u septembru
-- **Promena semestra** - kad se objavi raspored za novi semestar, aplikacija podseća studenta da ponovo izabere predmete (kredencijali ostaju), pa raspored i rokovi ostaju tačni
+- **Promena semestra** - kad se objavi raspored za novi semestar, aplikacija podseća studenta da ponovo izabere predmete, a kad se promeni grupa (npr. ISiT grupe u zimskom su po prezimenu, a u letnjem po modulu) sama nađe novu po modulu i prezimenu; na početku nove školske godine vraća studenta na izbor godine, uz zapamćeno prezime
+- **Čekamo raspored** - između kraja ispitnog roka i objave novog rasporeda početna jasno kaže da raspored još nije objavljen, umesto da prikazuje stari, i nudi uključivanje notifikacija da student sazna čim izađe
+- **Obavezni i izborni po modulu** - pri izboru predmeta čekirani su samo obavezni predmeti za studentov modul, po planu sa sajta modula; ako FON još nije objavio raspored nekog izbornog bloka, aplikacija to napomene
 - **Izborni, preneseni i drugosemestralni predmeti** - tok pri onboardingu za izbor izbornih predmeta, dodavanje prenesenih predmeta iz prethodnih godina i štikliranje predmeta iz drugog semestra (radi tačnih rokova); sve se kasnije može menjati i iz Izmena taba ("Moji predmeti"), ne samo pri onboardingu
 - **Izmena rasporeda** - ručno biranje termina (predavanje/vežbe) za prenesene predmete ili alternativnog termina za tekući predmet, uz AI predlog termina bez preklapanja (Groq/Llama)
 - **Onboarding tur** - posle prvog izbora predmeta, kratak multi-slajd vodič kroz glavne funkcije (Izmena tab, skrivanje, info o predmetu, deljenje, izvoz, rokovi, notifikacije); ako korisnik ima prenesene predmete, dodatni slajd ga upućuje da im ručno podesi termin
@@ -23,7 +26,7 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Dark/light mode**
 - **Export u sliku i iCal** - raspored ili rokovi se mogu sačuvati kao PNG slika ili uvesti u Google Calendar, Apple Calendar i sl.
 - **Deljenje putem linka** - dugme „Podeli" pravi link (`/deli`) sa enkodiranom grupom i izborom predmeta, uz opciju da pošiljalac uključi i prenesene/drugosemestralne predmete; ko ga otvori dobija taj raspored posle potvrde, bez onboardinga
-- **Automatsko ažuriranje** - GitHub Actions svaki dan proverava FON sajt za nove PDF rasporede i automatski ih parsira i upisuje
+- **Automatsko ažuriranje** - GitHub Actions svaki dan proverava ispite, kolokvijume i kalendar aktivnosti, a u mesecima kad se objavljuje raspored nastave proverava ga na svakih 30 minuta; posle automatske provere podataka izmene se objavljuju same
 
 ## Struktura projekta
 
@@ -51,6 +54,7 @@ components/
   FirstRunOverlays.tsx    # Orkestrira first-run popup-ove (trenutno: notifikacije)
   Tutorial.tsx            # Story-carousel walkthrough - izgrađen, privremeno isključen
   InstallPrompt.tsx       # Uputstvo za instalaciju PWA na home screen
+  WaitingForSchedule.tsx  # Početna dok novi raspored nije objavljen (notifikacije, instalacija)
   FeedbackButton.tsx      # Plutajuće dugme - šalje poruku na mejl preko Resend-a
   BlurText.tsx            # Animacija teksta pri učitavanju (naslov na onboardingu)
 
@@ -61,6 +65,10 @@ lib/
   semester.ts      # Detekcija promene semestra i resetovanje izbora predmeta
   subjects.ts      # Mapiranje programa u smer (IST/MiO) i podrazumevani izbor predmeta
   rokDefault.ts    # Bira default tab (Raspored/Rokovi) po stvarnim datumima rokova
+  season.ts        # Da li se čeka raspored: kraj poslednjeg roka vs. objavljeni semestar
+  waiting.ts       # Odluka pri ulasku u aplikaciju (tab + period čekanja), zajednička za strane
+  plan.ts          # Obavezan/izborni po planu modula, nepotpuni izborni blokovi
+  kalendar.ts      # Vrste dana iz FON kalendara aktivnosti i njihove boje
   theme.ts, date.ts, types.ts, push.ts, shareOrDownload.ts
 
 public/
@@ -71,6 +79,8 @@ public/
     1god.json-4god.json               # Raspored po godinama, trenutno aktivan semestar
     1god-zimski.json / -letnji.json    # Arhiva po semestru (za rokove koji mešaju oba)
     subjects-meta.json                 # Status (obavezan/izborni), ESPB i katedra po predmetu
+    plan.json                          # Plan studija po modulu: obavezni predmeti i izborni blokovi
+    kalendar.json                      # FON kalendar aktivnosti: vrsta svakog dana školske godine
     rokovi.json                        # Ispitni rokovi i kolokvijumi (automatski ažurirano)
 
 scripts/
@@ -79,7 +89,12 @@ scripts/
   fon_exam_parser.py    # Parser - PDF tabela termina → JSON (pdfplumber)
   parse_rok.py          # Parser - datumi prijave i reklamacije iz PDF zaglavlja (pymupdf)
   fon_parser.py         # Parser rasporeda NASTAVE (PDF → god.json), širi grupe-prečice
-  update_nastava.py     # Orkestrator - nađe PDF-ove na FON sajtu, parsira, upiše god.json
+  fon_docx.py           # Rezervno čitanje rasporeda i grupa iz Word (.docx) fajlova
+  update_nastava.py     # Orkestrator - nađe fajlove na FON sajtu, parsira, upiše god.json
+  validate_data.py      # Provera rasporeda pre objave (greške blokiraju, upozorenja idu u issue)
+  scrape_plan.py        # Plan studija po modulima sa sajta → plan.json
+  scrape_kalendar.py    # FON kalendar aktivnosti → kalendar.json
+  known_nastava.json    # Linkovi i otisci fajlova iz kojih je napravljen objavljeni raspored
   send_push.mjs         # Slanje Web Push notifikacija (novi rokovi + podsetnici za prijavu)
   known_pdfs.json       # Lista već viđenih PDF URL-ova
 
@@ -87,8 +102,10 @@ scripts/
 
 .github/workflows/
   ci.yml                # CI - lint/typecheck/build (Node) + pytest (Python) na PR/push
-  check-fon.yml         # Dnevna automatizacija ispita/kolokvijuma (scraping + notifikacije)
-  update-nastava.yml    # Ručni workflow - regeneriše raspored nastave (god.json)
+  check-fon.yml         # Dnevna automatizacija ispita/kolokvijuma i kalendara aktivnosti
+  update-nastava.yml    # Raspored nastave: provera na 30 min u sezoni, provera podataka, objava
+  notify-nastava.yml    # Notifikacija kad izađe nov semestar ili dopuna sa novim predmetima
+  osvezi-plan.yml       # Nedeljno osvežavanje plana modula i podataka o predmetima
 ```
 
 ## Lokalni razvoj
@@ -105,7 +122,7 @@ Aplikacija se otvara na [http://localhost:3000](http://localhost:3000).
 Na svaki push i Pull Request pokreće se `ci.yml` sa dva job-a:
 
 - **build** - `npm run lint`, `tsc --noEmit`, `npm test` (Vitest) i `next build` (da se ne merge-uje kod koji ne prolazi lint/typecheck/test/build)
-- **python-tests** - `pytest` nad parserima (raspored nastave + ispiti/kolokvijumi)
+- **python-tests** - `pytest` nad parserima (raspored nastave iz PDF-a i Word-a, ispiti/kolokvijumi, kalendar aktivnosti) i provera podataka u `public/data` (`validate_data.py`)
 
 Vitest pokriva čistu logiku u `lib/` (kolokacija predmeta po smeru, opsezi prezimena / srpska kolacija, detekcija izbornih). Testovi su kolocirani kao `lib/*.test.ts`:
 
@@ -131,13 +148,14 @@ cd scripts && python tests/update_golden.py
 
 ## Automatizacija rasporeda ispita
 
-GitHub Actions workflow (`check-fon.yml`) se pokreće svaki dan u 10:00 po Beogradu (`0 8 * * *` UTC) i:
+GitHub Actions workflow (`check-fon.yml`) se pokreće svaki dan oko 10:00 po Beogradu (tri pokušaja, `7 8,9,10 * * *` UTC, jer GitHub cron ume da preskoči pokretanje) i:
 
 1. Scrape-uje [raspored-kolokvijuma](https://oas.fon.bg.ac.rs/raspored-kolokvijuma/) i [raspored-ispita](https://oas.fon.bg.ac.rs/raspored-ispita/)
 2. Za svaki novi PDF (koji nije u `known_pdfs.json`) - skida ga i parsira
 3. Rezultat merge-uje u `public/data/rokovi.json`
 4. Commit-uje i push-uje promene
 5. Šalje push notifikacije (`send_push.mjs`): za svaki nov rok, i podsetnik na dan početka i kraja prijave
+6. Osvežava kalendar aktivnosti (`scrape_kalendar.py` → `kalendar.json`); ako stranica ne izgleda kako se očekuje, zadržava stari kalendar i otvara issue
 
 > Koraci za slanje notifikacija se izvršavaju samo ako su podešeni secrets (vidi „Push notifikacije" ispod); u suprotnom se preskaču i scraping radi kao i ranije.
 
@@ -145,7 +163,9 @@ PDF se po potrebi može parsirati i ručno (`merge_rok.py` detektuje tip, izvla�
 
 ## Raspored nastave
 
-Raspored nastave (`1god.json`-`4god.json`) menja se ~4× godišnje, pa se ne skida dnevno nego po potrebi: `update_nastava.py` pronalazi aktuelne PDF-ove na [raspored-nastave](https://oas.fon.bg.ac.rs/raspored-nastave/) (po tekstu linka, bira najnoviju verziju), parsira ih (`fon_parser.py`, uz širenje grupa-prečica tipa „ISIT, svi") i regeneriše `god.json`. Pokreće se ručnim GitHub Actions workflow-om (`update-nastava.yml`) koji uz sigurnosnu proveru (broj predmeta/grupa ne sme da padne) otvara Pull Request sa promenama.
+Raspored nastave (`1god.json`-`4god.json`) se objavljuje nekoliko puta godišnje, uz povremene dopune i ispravke. U septembru, oktobru, februaru i martu `update-nastava.yml` na svakih 30 minuta brzo proverava stranicu [raspored-nastave](https://oas.fon.bg.ac.rs/raspored-nastave/): da li je objavljen semestar noviji od trenutnog, ili su se promenili fajlovi objavljenog (pamte se linkovi i otisak sadržaja). Za proveru nove školske godine gleda se i naslov stranice, da prošlogodišnji fajlovi ne bi bili objavljeni kao novi.
+
+Kad ima nečeg novog, fajlovi se parsiraju: PDF preko `fon_parser.py`, a kad FON objavi samo Word, preko `fon_docx.py`. Pre objave se osveže plan modula i podaci o predmetima, pa `validate_data.py` proveri rezultat. Ako je sve u redu, raspored se objavljuje sam, a notifikacija ide za nov semestar i za dopunu sa novim predmetima (ne i za izmene sala i termina). Ako provera nađe grešku u čitanju, ništa se ne objavljuje, nego se otvara Pull Request sa izveštajem; čudnosti u samim FON podacima (npr. opsezi prezimena koji se preklapaju) objavljuju se, uz GitHub issue. Plan modula i podaci o predmetima osvežavaju se i jednom nedeljno (`osvezi-plan.yml`), da izmene plana usred semestra ne bi čekale sledeći raspored.
 
 ## Push notifikacije
 
@@ -228,6 +248,15 @@ Service worker sada kešira ljusku aplikacije, hashovane resurse i `public/data/
 ### v2.12 - Onboarding tur
 Posle prvog izbora predmeta, kratak multi-slajd vodič (isti vizuelni stil kao popup za notifikacije, bez screenshotova) kroz Izmenu, skrivanje termina, info o predmetu, deljenje, izvoz, rokove i notifikacije. Ako korisnik ima prenesene predmete kojima treba ručno podesiti termin, dodatni slajd ga upućuje na Izmenu - bitan je pa se ne može slučajno preskočiti.
 
+### v2.14 - Čekamo raspored i nova školska godina
+Između kraja ispitnog roka i objave novog rasporeda početna kaže da raspored još nije objavljen i nudi notifikacije, umesto da prikazuje stari. Na početku nove školske godine stari korisnik se vraća na izbor godine uz zapamćeno prezime. ISiT studenti od 2. godine biraju modul, pa aplikacija pri prelasku na letnji semestar sama nađe novu grupu. Izbor predmeta čekira samo obavezne predmete po planu modula i napominje kad izborni još nisu objavljeni. Zimski 2026/27, koji je FON objavio samo u Word-u, čita se rezervnim parserom za `.docx`.
+
+### v2.15 - Automatska objava rasporeda nastave
+Raspored nastave se proverava na svakih 30 minuta u sezoni objave i objavljuje sam posle automatske provere podataka, uključujući nov semestar i dopune. Prepoznaje se i kad FON pregazi fajl na istoj adresi. Notifikacija ide i za dopunu sa novim predmetima, a aplikacija tada pita studenta za nove predmete umesto da ih sama prikaže.
+
+### v2.16 - Kalendar aktivnosti u Rokovima
+Kalendar u Rokovima je obojen po FON kalendaru aktivnosti (ispitni rokovi, kolokvijumske nedelje, neradni dani, dani bez nastave, onlajn nastava), uz legendu. Kalendar se osvežava svakog dana sa FON sajta.
+
 ---
 
 ## Tech stack
@@ -235,6 +264,7 @@ Posle prvog izbora predmeta, kratak multi-slajd vodič (isti vizuelni stil kao p
 - [Next.js](https://nextjs.org) (App Router)
 - [Tailwind CSS](https://tailwindcss.com)
 - [pdfplumber](https://github.com/jsvine/pdfplumber) - parsiranje PDF rasporeda
+- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) - čitanje FON stranica (linkovi, plan modula, kalendar aktivnosti)
 - [web-push](https://github.com/web-push-libs/web-push) + VAPID - Web Push notifikacije
 - [Upstash Redis](https://upstash.com) - čuvanje push pretplata
 - GitHub Actions - CI (lint/typecheck/test/build + pytest) i automatsko ažuriranje podataka

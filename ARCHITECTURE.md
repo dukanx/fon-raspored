@@ -34,7 +34,7 @@ flowchart TB
   subgraph gh["GitHub"]
     REPO[("Repo = data store<br/>public/data/*.json")]
     A1["Action: check-fon.yml<br/>(cron, 3× / day)"]
-    A2["Action: update-nastava.yml<br/>(manual, opens PR)"]
+    A2["Action: update-nastava.yml<br/>(every 30 min in Sep/Oct/Feb/Mar,<br/>validates, publishes or opens PR)"]
     SEND["send_push.mjs"]
   end
 
@@ -50,7 +50,9 @@ flowchart TB
   A1 -->|"scrape + parse"| FON
   A1 -->|"commit changed JSON"| REPO
   A1 -->|"trigger"| SEND
-  A2 -->|"pull request"| REPO
+  A2 -->|"scrape + parse"| FON
+  A2 -->|"commit if valid, else PR"| REPO
+  A2 -->|"trigger notify-nastava"| SEND
   REPO -->|"build + deploy (CDN)"| vercel
   SEND -->|"read subscriptions"| REDIS
   SEND -->|"Web Push (VAPID)"| SW
@@ -64,8 +66,8 @@ flowchart TB
 |-------|------|----------------|
 | **Frontend** | Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind 4 | Schedule/exam UI, offline-capable PWA, client-side personalization |
 | **Client state** | `localStorage` / `sessionStorage` via `lib/storage.ts` | Identity (group/year/program), subject selection, hidden slots, notes - no account required |
-| **Data store** | Static JSON in `public/data/` versioned in Git | Per-year schedule (`{year}god.json`), exam dates (`rokovi.json`), subject metadata (`subjects-meta.json`) |
-| **Ingestion pipeline** | Python (`check_fon.py`, `fon_parser`, `update_nastava.py`) run in GitHub Actions | Scrape FON PDFs/pages → parse → validate → commit JSON |
+| **Data store** | Static JSON in `public/data/` versioned in Git | Per-year schedule (`{year}god.json`), exam dates (`rokovi.json`), subject metadata (`subjects-meta.json`), study plan per module (`plan.json`), academic calendar (`kalendar.json`) |
+| **Ingestion pipeline** | Python (`check_fon.py`, `fon_parser`, `fon_docx`, `update_nastava.py`, `scrape_plan.py`, `scrape_kalendar.py`) run in GitHub Actions | Scrape FON PDFs/Word files/pages → parse → validate (`validate_data.py`) → commit JSON |
 | **Notifications** | Web Push (VAPID) + Service Worker + `send_push.mjs` + Upstash Redis | Subscribe on the client, fan-out delivery from CI, prune dead endpoints |
 | **Offline** | Service Worker cache (`public/sw.js`) registered for every visitor | Precaches the app shell, hashed assets and `public/data/*.json`; serves them when the network fails |
 | **AI helper** | `/api/preneseni` → Groq (LLM) | Recommends the best lecture/lab slots for a carried-over course under strict constraints |
@@ -108,7 +110,20 @@ sequenceDiagram
 
 The cron runs three times (`7 8,9,10 * * *`) because GitHub's scheduler is
 best-effort and often skips or delays runs on the hour; a dedup guard in
-`send_push.mjs` prevents duplicate notifications across the retries.
+`send_push.mjs` prevents duplicate notifications across the retries. The same
+daily job also refreshes the academic calendar (`kalendar.json`), which colors
+exam periods, colloquium weeks and non-working days in the Rokovi calendar.
+
+The class schedule (`{year}god.json`) has its own job, `update-nastava.yml`,
+running every 30 minutes in the months FON publishes schedules. It first does a
+cheap check (`update_nastava.py --check`): is a newer semester on the page, or
+did the files of the published one change (links and sha256 are remembered in
+`scripts/known_nastava.json`)? Only then it downloads and parses: PDF through
+`fon_parser`, or the Word files through `fon_docx` when FON publishes only
+`.docx`. Before publishing it refreshes the study plan (`plan.json`) and subject
+metadata, and runs `validate_data.py` (see ADR-9). A valid result is committed
+straight to `main` and `notify-nastava.yml` decides what to send: a new semester
+and a supplement with new subjects notify everyone, room/time fixes do not.
 
 ### 3.2 Push subscription lifecycle
 
@@ -222,6 +237,37 @@ explicit - a tombstone worker (`docs/sw-tombstone.js`) that drops the fetch hand
 without calling `unregister()` (which would kill push subscriptions), plus a
 `?nosw=1` escape hatch.
 
+### ADR-9 - A validation gate instead of human review
+**Context:** schedules used to land as a pull request that the maintainer merged
+by hand, which meant students waited for a human, and the review itself was
+mostly re-checking the same things every time.
+**Decision:** `validate_data.py` encodes those checks. *Errors* mean our parse
+went wrong (entry without a group, unknown group of that year, bad time, group
+without entries, years disagreeing on the semester) and block publishing: the
+result goes to a PR with the report. *Warnings* are oddities in FON's own data
+(overlapping surname ranges, a subject missing from the module plan) and do not
+block: the schedule is published and the warnings go to a GitHub issue. The
+same check runs in CI, so a hand edit of `public/data` can't bypass it.
+**Consequences:** a new semester reaches students minutes after FON publishes it,
+and a human is only involved when something is genuinely off. Trade-off: the
+checks are only as good as their rules; a parse that is structurally valid but
+semantically wrong would still pass, which is why parsers also keep golden tests
+on real FON files.
+
+### ADR-10 - The module plan decides required vs. elective
+**Context:** a subject's own page on the FON site says e.g. "required/elective",
+because it is required in one module and elective in another, so it can't tell
+what is required for *this* student.
+**Decision:** scrape each module's study plan (year, semester, required subjects
+and elective blocks with their options) into `plan.json`; subject selection
+reads the rule for the student's module and falls back to the subject page only
+for subjects the plan doesn't list. Elective blocks with no subject in the
+schedule show a note that FON hasn't published those electives yet.
+**Consequences:** defaults match the official plan per module. Trade-off: names
+in the schedule and the plan sometimes differ ("Internet marketing" vs. "...i
+društveni mediji"), handled by normalization plus a short alias list in
+`scrape_plan.py`; the validator warns about any subject it still can't place.
+
 ---
 
 ## 5. Scaling & reliability notes
@@ -235,11 +281,11 @@ usage grew by orders of magnitude, the pressure points and likely evolutions:
 - **Data store** stays static far longer than intuition suggests (reads are CDN
   hits). If per-record queries or partial updates were ever needed, the JSON
   could move to a KV/edge store fronted by ISR without touching the read model.
-- **Reliability gaps (known, not yet built):** the scraper can fail silently if
-  FON changes its HTML. Planned: schema validation at ingest (quarantine bad
-  parses) and a dead-man's-switch alert if no successful scrape lands within N
-  days. Delivery metrics (sent / failed / pruned) would make the push pipeline
-  observable.
+- **Reliability gaps (known, not yet built):** the class schedule is validated at
+  ingest (ADR-9) and the calendar scraper refuses to write a page it doesn't
+  recognize, but there is still no dead-man's-switch alert if no successful scrape
+  lands within N days. Delivery metrics (sent / failed / pruned) would make the
+  push pipeline observable.
 
 Existing reliability measures: cron redundancy with dedup (§3.1), idempotent
 subscription upserts, dead-endpoint pruning (§3.2), TZ-correct date handling
