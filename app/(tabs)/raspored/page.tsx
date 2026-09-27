@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup, uniqueSubjectsForGroup, findGroup } from '@/lib/schedule'
+import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, forgetYearAndGroup } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
@@ -228,6 +228,8 @@ export default function RasporedPage() {
   const [showFlipPopup, setShowFlipPopup] = useState(false)
   // Predmeti dodati u raspored grupe posle poslednjeg izbora predmeta.
   const [newSubjects, setNewSubjects] = useState<string[]>([])
+  // Premeštanje u drugu grupu posle FON-ove ispravke opsega (v. efekat ispod).
+  const [groupMoved, setGroupMoved] = useState<{ from: string; to: string } | null>(null)
   const [showTour, setShowTour] = useState(false)
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
@@ -292,15 +294,45 @@ export default function RasporedPage() {
         if (flipped) {
           const prog = savedStore.program.get()
           const lastName = savedStore.lastName.get()
-          const found = prog && lastName ? findGroup(data, lastName, prog) : null
-          if (found && found !== meta.group) {
-            resetSubjectsForNewSemester(found)
-            session.group.set(found)
-            savedStore.group.set(found)
+          const match = prog && lastName ? resolveGroup(data, lastName, prog) : null
+          if (match?.status === 'ok' && match.group !== meta.group) {
+            resetSubjectsForNewSemester(match.group)
+            session.group.set(match.group)
+            savedStore.group.set(match.group)
+            window.location.replace('/raspored')
+            return
+          }
+          // Grupa zavisi od kvačica u prezimenu: ne pogađamo, nego student na
+          // početnoj (ista godina, smer i prezime) bira pisanje.
+          if (match?.status === 'ambiguous') {
+            session.group.remove()
+            savedStore.group.remove()
+            window.location.replace('/?edit=1')
+            return
+          }
+        } else if (!savedStore.manualGroup.get()) {
+          // Isti semestar, ali FON je možda ispravio opsege prezimena (npr.
+          // preklapanje D2 "A- - N-" / D3 "M- - Š-"). Ako prezime više ne spada
+          // u sačuvanu grupu, a spada u tačno jednu drugu, premešta se tamo i
+          // nosi izbor predmeta. Ako i dalje spada u sačuvanu (ili je izbor
+          // neodređen), ništa se ne dira.
+          const prog = savedStore.program.get()
+          const lastName = savedStore.lastName.get()
+          const match = prog && lastName ? resolveGroup(data, lastName, prog) : null
+          const fits = !match || match.status === 'none'
+            || (match.status === 'ok' ? match.group === meta.group : match.options.some(o => o.group === meta.group))
+          if (!fits && match?.status === 'ok') {
+            const target = byGroup.subjects(match.group)
+            if (Object.keys(target.get()).length === 0) target.set(byGroup.subjects(meta.group).get())
+            session.group.set(match.group)
+            savedStore.group.set(match.group)
+            app.groupMoved.set({ from: meta.group, to: match.group })
             window.location.replace('/raspored')
             return
           }
         }
+        const moved = app.groupMoved.get()
+        if (moved && moved.to === meta.group) setGroupMoved(moved)
         if (isFlipPending(data.semester)) setShowFlipPopup(true)
 
         const all = getScheduleForGroup(data, meta.group)
@@ -1258,7 +1290,30 @@ export default function RasporedPage() {
       </Modal>
 
       <Modal
-        open={newSubjects.length > 0 && !showFlipPopup}
+        open={!!groupMoved}
+        onClose={() => { app.groupMoved.remove(); setGroupMoved(null) }}
+        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+      >
+        <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+          Promenjena je grupa
+        </h2>
+        <p className="mb-6 text-sm text-center text-pretty text-gray-600 dark:text-gray-300">
+          FON je ispravio spisak grupa, pa si prebačen iz grupe {groupMoved?.from} u {groupMoved?.to}.
+          Izbor predmeta je ostao isti.
+        </p>
+        <button
+          onClick={() => { app.groupMoved.remove(); setGroupMoved(null) }}
+          className="btn-lift w-full rounded-lg py-2.5 text-sm font-medium
+                     bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                     dark:hover:bg-[#4db3a0]"
+        >
+          U redu
+        </button>
+      </Modal>
+
+      <Modal
+        open={newSubjects.length > 0 && !showFlipPopup && !groupMoved}
         onClose={dismissNewSubjects}
         overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
         className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"

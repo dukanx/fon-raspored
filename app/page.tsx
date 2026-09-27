@@ -3,7 +3,7 @@
 import { Fragment, useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData } from '@/lib/types'
-import { findGroup, getProgramsForYear } from '@/lib/schedule'
+import { resolveGroup, formatRange, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
 import { decodeShare } from '@/lib/share'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
@@ -393,6 +393,9 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null)
   const [shareInput, setShareInput] = useState('')
   const [shareError, setShareError] = useState<string | null>(null)
+  // Prezime koje daje više grupa (bez kvačica: "Sasic" je Sasić ili Šašić, ili
+  // se FON-ovi opsezi preklapaju): student bira, ne pogađamo.
+  const [groupChoices, setGroupChoices] = useState<{ group: string; lastName: string }[] | null>(null)
   // Period "čekamo raspored" (v. lib/season): umesto koraka ide WaitingForSchedule.
   const [pending, setPending] = useState<PendingSemester | null>(null)
   const isHydrated = useSyncExternalStore(
@@ -535,7 +538,7 @@ export default function OnboardingPage() {
   // sessionLastName dozvoljava fallback na grupu kad prezime nije uneto.
   function commitSelection(
     groupId: string,
-    opts: { year: number; program: string; lastName: string; semester: string; sessionLastName?: string }
+    opts: { year: number; program: string; lastName: string; semester: string; sessionLastName?: string; manual?: boolean }
   ) {
     const yr = String(opts.year)
     session.group.set(groupId)
@@ -549,39 +552,46 @@ export default function OnboardingPage() {
     saved.program.set(opts.program)
     saved.lastName.set(opts.lastName)
     saved.semester.set(opts.semester)
+    if (opts.manual) saved.manualGroup.set()
+    else saved.manualGroup.remove()
   }
 
   function handleSubmit() {
     if (!data || !enteredLastName.trim() || selectedYear === null) return
     setError(null)
+    setGroupChoices(null)
 
     const raw = enteredLastName.trim()
     const program = selectedProgram || null
-    let groupId = findGroup(data, raw, program)
-    let usedName = raw
+    let match = resolveGroup(data, raw, program)
 
     // Čest slučaj: uneto "Ime Prezime" - probaj samo poslednju reč (prezime).
-    if (!groupId && /\s/.test(raw)) {
+    if (match.status === 'none' && /\s/.test(raw)) {
       const surnameOnly = raw.split(/\s+/).pop() ?? ''
-      const retry = surnameOnly ? findGroup(data, surnameOnly, program) : null
-      if (retry) {
-        groupId = retry
-        usedName = surnameOnly
-      }
+      if (surnameOnly) match = resolveGroup(data, surnameOnly, program)
     }
 
-    if (!groupId) {
+    if (match.status === 'none') {
       setError(
         `Nismo našli grupu za „${raw}". Unesi samo prezime (bez imena), probaj sa kvačicama (č, ć, š, ž, đ) ili bez njih, a možeš i da odabereš grupu direktno ispod.`
       )
       return
     }
+    if (match.status === 'ambiguous') {
+      setGroupChoices(match.options)
+      return
+    }
+    finishWithGroup(match.group, match.lastName)
+  }
 
-    // Sačuvaj izbor pa redirectuj
+  // Pamti se pisanje prezimena koje daje baš tu grupu, pa i kasnije traženje
+  // grupe (npr. pri prelasku na letnji) ide po njemu.
+  function finishWithGroup(groupId: string, lastName: string) {
+    if (!data || selectedYear === null) return
     commitSelection(groupId, {
       year: selectedYear,
       program: selectedProgram,
-      lastName: usedName,
+      lastName,
       semester: data.semester,
     })
     goToSubjects()
@@ -770,12 +780,38 @@ export default function OnboardingPage() {
                   id="prezime"
                   type="text"
                   value={enteredLastName}
-                  onChange={e => setLastName(e.target.value)}
+                  onChange={e => { setLastName(e.target.value); setGroupChoices(null) }}
                   onKeyDown={e => e.key === 'Enter' && canSubmit && handleSubmit()}
                   placeholder="npr. Petrović"
                   className={`anim-up mb-5 w-full ${field}`}
                   style={{ animationDelay: '200ms' }}
                 />
+
+                {groupChoices && (
+                  <div className="anim-up mb-4 rounded-xl border border-[#024c7d]/15 bg-white/70 p-3 dark:border-white/15 dark:bg-gray-900/60">
+                    <p className="mb-2.5 text-sm text-pretty text-gray-700 dark:text-gray-300">
+                      {new Set(groupChoices.map(c => c.lastName)).size > 1
+                        ? 'Grupa zavisi od kvačica u prezimenu. Kako se piše tvoje?'
+                        : 'Po FON-ovom spisku tvoje prezime spada u više grupa. Izaberi svoju:'}
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {groupChoices.map(c => (
+                        <button
+                          key={c.group}
+                          type="button"
+                          onClick={() => finishWithGroup(c.group, c.lastName)}
+                          className="btn-lift flex items-center justify-between rounded-lg border border-[#024c7d]/15 px-3 py-2 text-left text-sm hover:bg-white dark:border-white/15 dark:hover:bg-gray-800/70"
+                        >
+                          <span className="font-medium text-gray-900 dark:text-gray-100">{c.lastName}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            grupa {c.group}
+                            {data?.groups[c.group] && ` (${formatRange(data.groups[c.group].range)})`}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Greška */}
                 {error && (
@@ -814,6 +850,7 @@ export default function OnboardingPage() {
                           lastName: enteredLastName.trim(),
                           sessionLastName: enteredLastName.trim() || groupId,
                           semester: data.semester,
+                          manual: true,
                         })
                         goToSubjects()
                       }}
@@ -824,7 +861,7 @@ export default function OnboardingPage() {
                         .sort(([a], [b]) => a.localeCompare(b, 'sr', { numeric: true, sensitivity: 'base' }))
                         .map(([id, g]) => (
                           <option key={id} value={id}>
-                            {id} - {g.program} ({g.range})
+                            {id} - {g.program} ({formatRange(g.range)})
                           </option>
                         ))}
                     </select>

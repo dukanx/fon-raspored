@@ -79,6 +79,7 @@ export default function DeliPage() {
     saved.program.set(s.program)
     saved.lastName.set(s.g)
     saved.semester.set(s.semester)
+    saved.manualGroup.set() // grupa iz linka, ne po prezimenu
   }
 
   // Primeni deljeni izbor predmeta i otvori raspored. extra/prevSubjects/

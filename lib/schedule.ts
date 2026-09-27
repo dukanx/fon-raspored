@@ -83,6 +83,15 @@ export function groupProgramFor(data: SemesterData, program: string): string {
   return !hasModuleGroups && ISIT_MODULES.includes(program) ? 'ISiT' : program
 }
 
+// Sve grupe čiji opseg obuhvata tačno ovo pisanje prezimena. Više od jedne
+// ima kad se FON-ovi opsezi preklapaju (npr. D2 "A- - N-" i D3 "M- - Š-").
+function groupsContaining(data: SemesterData, lastName: string, program: string | null): string[] {
+  const groupProgram = program === null ? null : groupProgramFor(data, program)
+  return Object.entries(data.groups)
+    .filter(([, g]) => (groupProgram === null || g.program === groupProgram) && nameInRange(lastName, g.range))
+    .map(([id]) => id)
+}
+
 export function findGroup(
   data: SemesterData,
   lastName: string,
@@ -118,6 +127,88 @@ export function findGroup(
   if (withC !== lastName) return search(withC)
 
   return null
+}
+
+// Ćirilica -> latinica, da prezime otkucano ćirilicom ("Петровић") nađe grupu.
+const CYR: Record<string, string> = {
+  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', ђ: 'đ', е: 'e', ж: 'ž', з: 'z', и: 'i',
+  ј: 'j', к: 'k', л: 'l', љ: 'lj', м: 'm', н: 'n', њ: 'nj', о: 'o', п: 'p', р: 'r',
+  с: 's', т: 't', ћ: 'ć', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: 'č', џ: 'dž', ш: 'š',
+}
+
+export function toLatin(name: string): string {
+  return [...name]
+    .map(ch => {
+      const lat = CYR[ch.toLowerCase()]
+      if (lat === undefined) return ch
+      return ch === ch.toLowerCase() ? lat : lat[0].toUpperCase() + lat.slice(1)
+    })
+    .join('')
+}
+
+// Sva moguća pisanja prezimena sa kvačicama: c -> č/ć, s -> š, z -> ž. Ko
+// kuca bez kvačica ("Sasic") ne sme tiho da dobije grupu nekog drugog, jer je Š
+// u azbuci na kraju, a S u sredini (npr. C6 "R- - Stević" i C7 "Stefanović - Š-").
+const DIACRITIC_OPTIONS: Record<string, string[]> = {
+  c: ['c', 'č', 'ć'], C: ['C', 'Č', 'Ć'],
+  s: ['s', 'š'], S: ['S', 'Š'],
+  z: ['z', 'ž'], Z: ['Z', 'Ž'],
+}
+const MAX_VARIANTS = 256
+
+function diacriticVariants(name: string): string[] {
+  let out = ['']
+  for (const ch of name) {
+    const opts = DIACRITIC_OPTIONS[ch] ?? [ch]
+    out = out.flatMap(prefix => opts.map(o => prefix + o))
+    if (out.length > MAX_VARIANTS) return [name] // predugo, ostaje samo kako je otkucano
+  }
+  return out
+}
+
+export type GroupMatch =
+  | { status: 'ok'; group: string; lastName: string }
+  // Grupa zavisi od kvačica: `options` su grupe i pisanje prezimena koje ih daje.
+  | { status: 'ambiguous'; options: { group: string; lastName: string }[] }
+  | { status: 'none' }
+
+// Grupa po prezimenu, bez pogađanja. Prezime otkucano bez kvačica proba se u
+// svim pisanjima sa kvačicama: ako sva daju istu grupu, to je ta grupa; ako
+// daju različite, vraća izbor. Ko kuca kvačice ("Stošić") piše ih, pa se
+// uzima tačno otkucano. Izbor se vraća i kad se FON-ovi opsezi preklapaju.
+export function resolveGroup(data: SemesterData, lastName: string, program: string | null): GroupMatch {
+  const typed = toLatin(lastName.trim())
+  if (!typed) return { status: 'none' }
+  // Za svaku grupu pamti se najprirodnije pisanje (najviše kvačica, "-ić" na
+  // kraju), jer se ono prikazuje studentu pri izboru: "Šašić", a ne "Šasic".
+  const natural = (n: string) => (n.match(/[čćšžđ]/gi)?.length ?? 0) + (/ić$/i.test(n) ? 2 : 0)
+  const byGroup = new Map<string, string>()
+  const add = (name: string) => {
+    for (const g of groupsContaining(data, name, program)) {
+      const cur = byGroup.get(g)
+      if (cur === undefined || (cur !== typed && natural(name) > natural(cur))) byGroup.set(g, name)
+    }
+  }
+  add(typed)
+  const hasDiacritics = /[čćšžđ]/i.test(typed)
+  for (const v of hasDiacritics ? [] : diacriticVariants(typed)) add(v)
+  // Kao i ranije: "Markovic" -> "Marković", "Djordjevic" -> "Đorđevic".
+  if (byGroup.size === 0) add(typed.replace(/c$/i, 'ć').replace(/dj/gi, 'đ'))
+  if (byGroup.size === 0) return { status: 'none' }
+  if (byGroup.size === 1) {
+    const [[group, name]] = [...byGroup]
+    return { status: 'ok', group, lastName: name }
+  }
+  const options = [...byGroup].map(([group, name]) => ({ group, lastName: name }))
+  options.sort((a, b) => a.group.localeCompare(b.group, 'sr', { numeric: true }))
+  return { status: 'ambiguous', options }
+}
+
+// Opseg za prikaz: "Mihajlica - P-" -> "Mihajlica - P", "A- - Vukas" -> "A - Vukas".
+// Crta posle slova u FON tabelama znači "sva prezimena na to slovo".
+export function formatRange(range: string): string {
+  if (range === 'Svi') return 'svi'
+  return range.split(' - ').map(p => p.replace(/-$/, '')).join(' - ')
 }
 
 // Učitava termine za godinu iz OBA arhiviranih semestra (zimski + letnji), ne

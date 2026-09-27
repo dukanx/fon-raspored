@@ -94,12 +94,18 @@ export const saved = {
   program: str('local', 'fon_saved_program'),
   lastName: str('local', 'fon_saved_lastName'),
   semester: str('local', 'fon_saved_semester'),
+  // Grupa izabrana ručno (lista grupa, deljeni link), a ne po prezimenu. Takvu
+  // grupu aplikacija ne menja sama kad FON izmeni opsege prezimena.
+  manualGroup: flag('local', 'fon_saved_group_manual'),
 }
 
 // Globalno stanje aplikacije (nije vezano za grupu).
 export const app = {
   theme: str('local', 'fon_theme'),
   flipPending: str('local', 'fon_flip_pending'),
+  // Aplikacija je sama premestila studenta u drugu grupu jer je FON ispravio
+  // opsege prezimena; poruka se prikaže jednom na Rasporedu.
+  groupMoved: json<{ from: string; to: string } | null>('local', 'fon_group_moved', null),
   subjectsHistory: json<Record<string, string[]>>('local', 'fon_subjects_history', {}),
   // Prvi-put modal za notifikacije prikazan (upisuje se čim se pokaže, jednom).
   notifIntroSeen: flag('local', 'fon_notif_intro_seen'),

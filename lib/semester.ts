@@ -25,6 +25,7 @@ export function forgetYearAndGroup(): void {
     store.year.remove()
     store.program.remove()
   }
+  savedStore.manualGroup.remove()
 }
 
 // Pomeri sačuvani semestar i resetuj izbor predmeta kad se semestar prevrne.
