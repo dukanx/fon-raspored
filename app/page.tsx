@@ -358,8 +358,12 @@ function LandingPreview({ leaving }: { leaving: boolean }) {
   ]
 
   return (
+    // data-nosnippet: izmišljeni termini su u HTML-u, pa ih je Google uzimao
+    // za opis strane u rezultatima ("08:15-10:00. Ekonomija Amfiteatar 2...").
+    // Ovako ih preskače, a stranu i dalje normalno indeksira.
     <div
       aria-hidden="true"
+      data-nosnippet=""
       style={{ maskImage: fade, WebkitMaskImage: fade }}
       className={`pointer-events-none relative min-h-[240px] flex-1 overflow-hidden select-none [--fade:35%] lg:mt-10 lg:h-[620px] lg:flex-none lg:[--fade:55%] ${leaving ? 'leave-down' : ''}`}
     >
@@ -838,23 +842,19 @@ export default function OnboardingPage() {
       </div>
 
       <footer className={`w-full space-y-1.5 pt-7 text-center text-xs text-gray-400 lg:pt-3 dark:text-gray-600 ${leaving ? 'leave-fade' : ''}`}>
-        {/* Bezličan opis, jedina prava rečenica na stranici. Postoji radi pretrage:
-            osim <h1> i ove rečenice sve ostalo su dugmad i polja, pa Google
-            inače nema šta da poveže sa upitom tipa "raspored nastave FON".
-            Ruta je prerenderovana u statički HTML, dakle vidi se i bez JS-a.
+        {/* Bezličan opis, jedini pravi tekst na stranici. Postoji radi pretrage:
+            osim <h1> sve ostalo su dugmad i polja, pa Google inače nema šta da
+            poveže sa upitima koje ljudi kucaju ("fon raspored nastave",
+            "raspored ispita fon", "fon raspored kolokvijuma"). Ruta je
+            prerenderovana u statički HTML, dakle vidi se i bez JS-a.
             Formulacija prati ostatak aplikacije: "nastava", ne "časovi" -
             ovo je fakultet, ne škola. */}
-        {/* Isto radi pretrage: kratko šta aplikacija radi, frazama koje ljudi
-            kucaju ("raspored ispita", "ispitni rokovi", "raspored kolokvijuma"). */}
-        <ul className="mx-auto mb-4 max-w-md space-y-1 leading-relaxed text-pretty">
-          <li>Raspored nastave po grupi: predavanja i vežbe za tvoju grupu, sa salama.</li>
-          <li>Raspored ispita i ispitni rokovi: januarski, februarski, junski, julski, septembarski i oktobarski, sa datumima prijave.</li>
-          <li>Raspored kolokvijuma i izvoz u Google Calendar.</li>
-        </ul>
-        <p className="mx-auto max-w-sm leading-relaxed text-balance">
+        <p className="mx-auto max-w-md leading-relaxed text-pretty">
           <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
-          {' '}- raspored nastave, ispitni rokovi i kolokvijumi za studente
-          Fakulteta organizacionih nauka u Beogradu.
+          {' '}- raspored nastave, ispita i kolokvijuma za studente Fakulteta
+          organizacionih nauka u Beogradu. Predavanja i vežbe za tvoju grupu sa
+          salama, ispitni rokovi (januarski, februarski, junski, julski,
+          septembarski i oktobarski) sa datumima prijave i izvoz u Google Calendar.
         </p>
         <p>
           Made by{' '}
