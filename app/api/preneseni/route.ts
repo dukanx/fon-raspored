@@ -36,14 +36,23 @@ Razlog: [jedna bezlična rečenica zašto je to najbolji izbor i, ako postoji pr
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
     },
+    // gpt-oss pre odgovora kratko "razmišlja", pa mu treba više tokena nego
+    // što je sam odgovor (3 reda). Groq je llama-3.3-70b-versatile ukinuo.
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 300,
+      model: 'openai/gpt-oss-120b',
+      reasoning_effort: 'low',
+      max_completion_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }),
   })
 
   const data = await response.json()
-  const text = data.choices?.[0]?.message?.content ?? 'Nije moguće generisati preporuku trenutno.'
+  const content: string | undefined = data.choices?.[0]?.message?.content
+  if (!response.ok || !content) {
+    // U Vercel logu se vidi pravi uzrok (ključ, limit, ukinut model...).
+    console.error('Groq greška', response.status, data.error?.code, data.error?.message)
+    return NextResponse.json({ preporuka: 'Nije moguće generisati preporuku trenutno.' })
+  }
+  const text = content.split('\n').map(l => l.trim()).filter(Boolean).join('\n')
   return NextResponse.json({ preporuka: text })
 }
