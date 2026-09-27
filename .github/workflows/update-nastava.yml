@@ -4,9 +4,10 @@ name: Ažuriraj raspored nastave
 # i oktobar za zimski, februar i mart za letnji). Zakazano pokretanje prvo brzo
 # proveri ima li na FON-u nešto novo (--check): semestar noviji od objavljenog,
 # ili nova verzija objavljenog (drugi linkovi ili sadržaj nego u
-# known_nastava.json). Ako nema, tu staje. Ako ima i menjali su se samo sale i
-# termini, upisuje direktno na main. Ako je nov semestar ili su se menjali
-# predmeti, otvara PR, a merge pokreće push (notify-nastava.yml).
+# known_nastava.json). Ako nema, tu staje. Ako ima, parsira, osveži plan
+# modula i proveri podatke (scripts/validate_data.py). Provera prošla ->
+# objava direktno na main i notifikacija (notify-nastava.yml). Provera pala ->
+# PR sa izveštajem. Upozorenja (čudnosti u FON podacima) idu u GitHub issue.
 on:
   schedule:
     - cron: '*/30 * * 9,10,2,3 *'
@@ -24,6 +25,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
+  actions: write
 
 jobs:
   update:
@@ -62,10 +65,33 @@ jobs:
           fi
           python scripts/update_nastava.py $ARGS
 
-      # Isti semestar i isti spisak predmeta (FON menjao samo sale i termine)
-      # -> upis direktno na main, bez PR-a i bez notifikacije. Nov semestar ili
-      # promena predmeta -> PR, pa merge radiš ti, a on šalje push.
-      - name: Da li su se menjali predmeti?
+      # Plan modula i status predmeta sa FON sajta, da izbor predmeta uvek prati
+      # ono što piše na stranici modula. Ako sajt ne odgovori, ostaje stari plan
+      # (provera ispod to prijavi ako predmeti ne mogu da se nađu).
+      - name: Osveži plan modula i podatke o predmetima
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
+        continue-on-error: true
+        working-directory: scripts
+        run: |
+          python scrape_plan.py
+          python scrape_subjects_meta.py > /dev/null
+
+      - name: Provera podataka
+        id: validate
+        if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
+        run: |
+          set +e
+          python scripts/validate_data.py --report "$RUNNER_TEMP/provera.md"
+          OK=$?
+          set -e
+          cat "$RUNNER_TEMP/provera.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "ok=$([ $OK -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "warnings=$(grep -c '^### Upozorenja' "$RUNNER_TEMP/provera.md" || true)" >> "$GITHUB_OUTPUT"
+
+      # Provera prošla -> objava direktno na main (i nov semestar i dopuna i
+      # izmene sala), pa notifikacija. Provera pala -> PR sa izveštajem, bez
+      # objave; GitHub šalje email.
+      - name: Šta se objavljuje?
         id: diff
         if: github.event_name != 'schedule' || steps.check.outputs.semester != ''
         run: |
@@ -74,49 +100,73 @@ jobs:
           committed() { git show "HEAD:public/data/${1}god.json"; }
           if git diff --quiet -- public/data scripts/known_nastava.json; then
             KIND=none
-          elif [ "$(now 1 | jq -r .semester)" = "$(committed 1 | jq -r .semester)" ] \
-              && [ "$(subjects now)" = "$(subjects committed)" ]; then
-            KIND=direct
-          else
+          elif [ "${{ steps.validate.outputs.ok }}" != "true" ]; then
             KIND=pr
+          else
+            KIND=publish
           fi
-          echo "Izmena: $KIND"
+          NEW=$(now 1 | jq -r .semester)
+          if [ "$NEW" != "$(committed 1 | jq -r .semester)" ]; then
+            MSG="auto: objavljen raspored nastave $NEW"
+          elif [ "$(subjects now)" != "$(subjects committed)" ]; then
+            MSG="auto: dopunjen raspored nastave (novi predmeti)"
+          elif ! git diff --quiet -- 'public/data/*god*.json'; then
+            MSG="auto: izmene sala i termina u rasporedu nastave"
+          else
+            # FON ponovo okačio isti raspored (nov fajl, isti termini), ili se
+            # promenio samo plan modula / podaci o predmetima.
+            MSG="auto: osveženi podaci o rasporedu, termini isti"
+          fi
+          echo "Izmena: $KIND ($MSG)"
           echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          echo "msg=$MSG" >> "$GITHUB_OUTPUT"
 
-      - name: Upiši izmene direktno na main
-        if: steps.diff.outputs.kind == 'direct'
+      - name: Objavi (upis na main)
+        id: publish
+        if: steps.diff.outputs.kind == 'publish'
+        env:
+          MSG: ${{ steps.diff.outputs.msg }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/*god.json public/data/*god-letnji.json public/data/*god-zimski.json scripts/known_nastava.json
-          # FON ume da ponovo okači isti raspored (nov fajl, isti termini): tada
-          # se menja samo zapis o fajlovima, pa poruka to kaže.
-          if git diff --cached --quiet -- public/data; then
-            MSG="auto: FON ponovo okačio raspored nastave, termini isti"
-          else
-            MSG="auto: izmene sala i termina u rasporedu nastave"
-          fi
+          BEFORE=$(git rev-parse HEAD)
+          git add public/data scripts/known_nastava.json
           git commit -m "$MSG"
           git push
+          echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
+
+      # Push iz workflow-a ne pokreće druge workflow-e, pa se notifikacija
+      # pokreće ručno. notify-nastava.yml sam odluči da li je nov semestar,
+      # dopuna sa novim predmetima ili ništa (izmene sala ne šalju push).
+      - name: Pokreni notifikaciju
+        if: steps.diff.outputs.kind == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run notify-nastava.yml -f before=${{ steps.publish.outputs.before }}
+
+      - name: Prijavi upozorenja (issue)
+        if: steps.diff.outputs.kind != 'none' && steps.diff.outputs.kind != '' && steps.validate.outputs.warnings != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Provera rasporeda nastave: upozorenja"
+          NUM=$(gh issue list --state open --search "$TITLE in:title" --json number -q '.[0].number')
+          if [ -n "$NUM" ]; then
+            gh issue comment "$NUM" --body-file "$RUNNER_TEMP/provera.md"
+          else
+            gh issue create --title "$TITLE" --body-file "$RUNNER_TEMP/provera.md"
+          fi
 
       # Ako PR na grani auto/raspored-nastave već postoji, samo se osveži.
-      - name: Napravi Pull Request
+      - name: Napravi Pull Request (provera nije prošla)
         if: steps.diff.outputs.kind == 'pr'
         uses: peter-evans/create-pull-request@v6
         with:
           branch: auto/raspored-nastave
           delete-branch: true
-          title: 'auto: ažuriran raspored nastave'
-          commit-message: 'auto: ažuriran raspored nastave (god.json)'
-          body: |
-            Automatski regenerisan raspored nastave sa FON sajta
-            (`scripts/update_nastava.py`).
-
-            Pregledaj diff pre merge-a - posebno proveri da nije nešto
-            neočekivano nestalo. Sigurnosna provera već odbacuje regresiju
-            (manje predmeta/grupa nego u istom semestru ranije).
-
-            Merge novog semestra šalje push svim pretplatnicima.
+          title: 'auto: raspored nastave čeka pregled (provera nije prošla)'
+          commit-message: 'auto: ažuriran raspored nastave (provera nije prošla)'
+          body-path: ${{ runner.temp }}/provera.md
           # Arhive po semestru idu uz god.json: sa njima poredi sigurnosna
           # provera, a mešani Sep/Okt rokovi iz njih nude predmete.
           add-paths: |
@@ -126,4 +176,6 @@ jobs:
             public/data/4god.json
             public/data/*god-letnji.json
             public/data/*god-zimski.json
+            public/data/plan.json
+            public/data/subjects-meta.json
             scripts/known_nastava.json

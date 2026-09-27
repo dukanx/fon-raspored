@@ -48,6 +48,14 @@ MODULES = {
 
 SKIP = ("пракс", "завршни")
 
+# Isti predmet, u rasporedu napisan drugačije nego u planu. Raspored -> plan.
+# Rasporedni naziv se upiše pored planskog u isti spisak i blok, pa ga
+# aplikacija i validate_data.py prepoznaju bez posebne logike.
+ALIASES = {
+    "Internet marketing": "Internet marketing i društveni mediji",
+    "Mikroservisna arhitektura IS": "Mikroservisna arhitektura informacionih sistema",
+}
+
 
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (fon-raspored bot)"})
@@ -55,7 +63,8 @@ def fetch(url):
 
 
 def clean(text):
-    # FON ponegde piše dugu crtu ("... – osnovni koncepti"), a raspored običnu.
+    # FON ponegde piše dugu crtu (U+2013 u "Analitika performansi - osnovni
+    # koncepti"), a raspored običnu.
     text = to_latin(text).replace("\u2013", "-").replace("\u2014", "-")
     return " ".join(text.split())
 
@@ -99,6 +108,19 @@ def parse_module(html):
     return plan
 
 
+def add_aliases(plan):
+    for year in plan.values():
+        for sem in year.values():
+            for sched_name, plan_name in ALIASES.items():
+                for key in ("obavezni", "izborni"):
+                    if plan_name in sem[key] and sched_name not in sem[key]:
+                        sem[key] = sorted(sem[key] + [sched_name])
+                for block in sem["blokovi"]:
+                    if plan_name in block and sched_name not in block:
+                        block.append(sched_name)
+                        block.sort()
+
+
 def main():
     out = {}
     for program, modules in MODULES.items():
@@ -106,6 +128,7 @@ def main():
             plan = parse_module(fetch(BASE + path))
             if len(plan) != 4:
                 sys.exit(f"{name}: očekivane 4 tabele (godine), nađeno {len(plan)} - stranica promenjena?")
+            add_aliases(plan)
             out[name] = {"program": program, "godine": plan}
             n = sum(len(v) for y in plan.values() for s in y.values() for v in s.values())
             print(f"{name}: {n} stavki", file=sys.stderr)

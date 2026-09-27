@@ -102,3 +102,25 @@ describe('hasUnpublishedElectives', () => {
     expect(hasUnpublishedElectives(two, 'ISiT', 2, 'zimski', [])).toBe(true)
   })
 })
+
+describe('planStatus - razlike u nazivima i semestru', () => {
+  const P: StudyPlan = {
+    'Softversko inženjerstvo': {
+      program: 'ISiT',
+      godine: {
+        '4': {
+          zimski: { obavezni: [], izborni: ['Konkurentno i distribuirano programiranje (projekat)'] },
+          letnji: { obavezni: ['Neuronske mreže'], izborni: [] },
+        },
+      },
+    },
+  }
+
+  it('"- projekat" i "(projekat)" su isti predmet', () => {
+    expect(planStatus(P, 'Softversko inženjerstvo', 4, 'zimski', 'Konkurentno i distribuirano programiranje - projekat')).toBe('izborni')
+  })
+
+  it('predmet iz drugog semestra iste godine se prepoznaje', () => {
+    expect(planStatus(P, 'Softversko inženjerstvo', 4, 'zimski', 'Neuronske mreže')).toBe('obavezan')
+  })
+})

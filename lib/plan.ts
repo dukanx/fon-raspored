@@ -22,9 +22,13 @@ export type StudyPlan = Record<
 >
 
 // Nazivi u rasporedu i u planu se razlikuju u sitnicama: "(NA)" oznaka,
-// velika slova, razmaci.
+// velika slova, zagrade i crte ("- projekat" / "(projekat)"), razmaci.
 function norm(subject: string): string {
-  return subject.toLowerCase().replace(/\(na\)/g, '').replace(/\s+/g, ' ').trim()
+  return subject
+    .toLowerCase()
+    .replace(/\(na\)/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
 }
 
 // "obavezan" | "izborni" za predmet po planu, ili null kad plan ne zna (nema
@@ -39,13 +43,17 @@ export function planStatus(
   semester: SemesterKey,
   subject: string
 ): 'obavezan' | 'izborni' | null {
-  const sems = semesterPlans(plan, program, year, semester)
-  if (sems.length === 0) return null
-
   const n = norm(subject)
   const has = (list: string[]) => list.some(x => norm(x) === n)
-  if (sems.every(s => has(s.obavezni))) return 'obavezan'
-  return sems.some(s => has(s.obavezni) || has(s.izborni)) ? 'izborni' : null
+  const statusIn = (sem: SemesterKey): 'obavezan' | 'izborni' | null => {
+    const sems = semesterPlans(plan, program, year, sem)
+    if (sems.length === 0) return null
+    if (sems.every(s => has(s.obavezni))) return 'obavezan'
+    return sems.some(s => has(s.obavezni) || has(s.izborni)) ? 'izborni' : null
+  }
+  // FON ponekad drži predmet u drugom semestru nego što piše u planu, pa se
+  // tada gleda ista godina u drugom semestru.
+  return statusIn(semester) ?? statusIn(semester === 'zimski' ? 'letnji' : 'zimski')
 }
 
 function semesterPlans(plan: StudyPlan, program: string, year: number, semester: SemesterKey): SemesterPlan[] {

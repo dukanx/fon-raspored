@@ -52,3 +52,8 @@ jobs:
       - name: Run pytest
         working-directory: scripts
         run: python -m pytest
+
+      # Isti izveštaj kao pre automatske objave (update-nastava.yml), da ni
+      # ručna izmena public/data ne prođe sa greškom. Upozorenja ne obaraju CI.
+      - name: Provera rasporeda nastave
+        run: python scripts/validate_data.py --report "$RUNNER_TEMP/provera.md" && cat "$RUNNER_TEMP/provera.md" >> "$GITHUB_STEP_SUMMARY"
