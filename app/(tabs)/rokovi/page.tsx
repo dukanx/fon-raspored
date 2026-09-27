@@ -18,6 +18,7 @@ import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
 import { stagger } from '@/lib/stagger'
+import { dayStyle, dayBadge, DAY_KIND_STYLE, type ActivityCalendar, type CalendarDay } from '@/lib/kalendar'
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -188,6 +189,8 @@ const eventTypeLabel = (t: string) => (t === 'P' ? 'Pismeni' : t === 'U' ? 'Usme
 export default function RokoviPage() {
   const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
+  // FON kalendar aktivnosti: boje dana (ispitni rok, kolokvijumi, neradni...).
+  const [activityDays, setActivityDays] = useState<Record<string, CalendarDay>>({})
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od
   // "nema zakazanih rokova", pa ne sme da deli isti prazan prikaz.
   const [loadError, setLoadError] = useState(false)
@@ -246,6 +249,15 @@ export default function RokoviPage() {
         semester: session.semester.get() ?? '',
       }
     : { group: '', year: '', program: '', semester: '' }
+
+  // Bez kalendara (offline, fajl ne stigne) dani su samo bez boje.
+  useEffect(() => {
+    if (!isHydrated) return
+    fetch('/data/kalendar.json')
+      .then(r => (r.ok ? r.json() : null))
+      .then((d: ActivityCalendar | null) => { if (d?.dani) setActivityDays(d.dani) })
+      .catch(() => {})
+  }, [isHydrated])
 
   useEffect(() => {
     if (!isHydrated) return
@@ -872,6 +884,35 @@ export default function RokoviPage() {
   }
 
   // --- Kalendar view ---
+  // Legenda boja iz FON kalendara aktivnosti, samo za vrste dana kojih ima u
+  // prikazanom mesecu.
+  function ActivityLegend({ year, month, days }: { year: number; month: number; days: Record<string, CalendarDay> }) {
+    const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`
+    const present = new Set(
+      Object.entries(days).filter(([d]) => d.startsWith(prefix)).map(([, v]) => v.tip)
+    )
+    const kinds = (Object.keys(DAY_KIND_STYLE) as (keyof typeof DAY_KIND_STYLE)[]).filter(k => present.has(k))
+    if (kinds.length === 0) return null
+    return (
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+        {kinds.map(k => (
+          <span key={k} className="flex items-center gap-1.5">
+            <span className={`h-2.5 w-2.5 rounded-sm ${DAY_KIND_STYLE[k].dot}`} />
+            {DAY_KIND_STYLE[k].label}
+          </span>
+        ))}
+        <a
+          href="https://oas.fon.bg.ac.rs/kalendar-aktivnosti/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#024c7d]/80 hover:underline dark:text-[#60c3ad]/80"
+        >
+          FON kalendar
+        </a>
+      </div>
+    )
+  }
+
   function CalendarView() {
     const { year, month } = calendarMonth
     const firstDay = new Date(year, month, 1).getDay()
@@ -913,12 +954,6 @@ export default function RokoviPage() {
           ><IconForward className="h-4 w-4" /></button>
         </div>
 
-        {isEmpty && (
-          <p className="mb-3 text-center text-xs text-gray-400 dark:text-gray-500">
-            Nema rokova za prikaz - klikni na datum da dodaš svoj događaj.
-          </p>
-        )}
-
         <div className="mb-1 grid grid-cols-7 gap-1 sm:gap-1.5">
           {SR_DAYS_SHORT.map(d => (
             <div key={d} className="text-center text-xs text-gray-400 dark:text-gray-500 py-1 font-medium">{d}</div>
@@ -940,10 +975,14 @@ export default function RokoviPage() {
                 const hasEvents = dayEntries.length > 0
                 const isPast = isoDate < todayStr
                 const isClickable = hasEvents || !isPast
+                const activity = activityDays[isoDate]
+                const kind = dayStyle(activity)
+                const badge = dayBadge(activity)
 
                 return (
                   <div
                     key={di}
+                    title={activity?.napomena ?? kind?.label}
                     onClick={() => {
                       if (hasEvents) setTooltip(t => t?.date === isoDate ? null : { date: isoDate })
                       else if (!isPast) setEventModal({ mode: 'add', date: isoDate })
@@ -951,7 +990,7 @@ export default function RokoviPage() {
                     className={`relative min-h-13 rounded-lg p-1.5 transition-colors sm:min-h-20 sm:p-2
                       ${isClickable ? 'cursor-pointer' : ''}
                       ${isToday ? 'border-2 border-[#024c7d] dark:border-[#60c3ad]' : 'border border-gray-100 dark:border-gray-800'}
-                      ${hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
+                      ${kind ? `${kind.cell} ${hasEvents ? 'hover:brightness-[0.98] dark:hover:brightness-125' : ''}` : hasEvents ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/30'}
                       ${tooltip?.date === isoDate ? 'ring-2 ring-[#024c7d]/30 dark:ring-[#60c3ad]/30' : ''}
                     `}
                   >
@@ -959,6 +998,9 @@ export default function RokoviPage() {
                       ${isToday ? 'text-[#024c7d] dark:text-[#60c3ad]' : hasEvents ? 'text-gray-900 dark:text-gray-100' : 'text-gray-300 dark:text-gray-700'}`}>
                       {day}
                     </span>
+                    {badge && !hasEvents && (
+                      <span className="block text-[9px] leading-tight font-medium text-[#024c7d]/70 dark:text-[#60c3ad]/70">{badge}</span>
+                    )}
                     {hasEvents && (
                       <div className="flex flex-col gap-px mt-0.5">
                         {dayEntries.slice(0, 3).map((e, i) => (
@@ -986,6 +1028,14 @@ export default function RokoviPage() {
             </div>
           ))}
         </div>
+
+        <ActivityLegend year={year} month={month} days={activityDays} />
+
+        {isEmpty && (
+          <p className="mt-3 text-center text-xs text-gray-400 dark:text-gray-500">
+            Nema rokova za prikaz - klikni na datum da dodaš svoj događaj.
+          </p>
+        )}
 
         {tooltip && (byDate[tooltip.date]?.length ?? 0) > 0 && (
           <div className={`mt-4 rounded-xl p-4 ${GLASS}`}>

@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   check:
@@ -34,12 +35,35 @@ jobs:
         id: check
         run: python scripts/check_fon.py
 
+      # Kalendar aktivnosti (boje dana u Rokovima). Ako stranica ne izgleda
+      # kako očekujemo, stari kalendar ostaje, a otvara se issue (ispod).
+      - name: Osveži kalendar aktivnosti
+        id: kalendar
+        continue-on-error: true
+        working-directory: scripts
+        run: python scrape_kalendar.py
+
+      - name: Prijavi problem sa kalendarom (issue)
+        if: steps.kalendar.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Kalendar aktivnosti se ne može pročitati"
+          if [ -z "$(gh issue list --state open --search "$TITLE in:title" --json number -q '.[0].number')" ]; then
+            gh issue create --title "$TITLE" --body "scripts/scrape_kalendar.py nije uspeo (v. log u Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Aplikacija i dalje koristi poslednji ispravan kalendar."
+          fi
+
       - name: Commit if changed
         run: |
           git config user.name "FON Bot"
           git config user.email "bot@fonraspored.rs"
-          git add public/data/rokovi.json scripts/known_pdfs.json
-          git diff --staged --quiet || (git commit -m "${COMMIT_MSG:-auto: update rokova}" && git push)
+          git add public/data/rokovi.json scripts/known_pdfs.json public/data/kalendar.json
+          if git diff --staged --quiet -- public/data/rokovi.json scripts/known_pdfs.json; then
+            MSG="auto: ažuriran kalendar aktivnosti"
+          else
+            MSG="${COMMIT_MSG:-auto: update rokova}"
+          fi
+          git diff --staged --quiet || (git commit -m "$MSG" && git push)
 
       - name: Set up Node
         if: ${{ env.HAS_PUSH == 'true' }}

@@ -1,0 +1,1241 @@
+{
+ "skolska_godina": "2026/27",
+ "dani": {
+  "2026-09-28": {
+   "tip": "nastava"
+  },
+  "2026-09-29": {
+   "tip": "nastava"
+  },
+  "2026-09-30": {
+   "tip": "nastava"
+  },
+  "2026-10-01": {
+   "tip": "nastava"
+  },
+  "2026-10-02": {
+   "tip": "nastava"
+  },
+  "2026-10-03": {
+   "tip": "neradni"
+  },
+  "2026-10-04": {
+   "tip": "neradni"
+  },
+  "2026-10-05": {
+   "tip": "nastava"
+  },
+  "2026-10-06": {
+   "tip": "nastava"
+  },
+  "2026-10-07": {
+   "tip": "nastava"
+  },
+  "2026-10-08": {
+   "tip": "nastava"
+  },
+  "2026-10-09": {
+   "tip": "nastava"
+  },
+  "2026-10-10": {
+   "tip": "neradni"
+  },
+  "2026-10-11": {
+   "tip": "neradni"
+  },
+  "2026-10-12": {
+   "tip": "nastava"
+  },
+  "2026-10-13": {
+   "tip": "nastava"
+  },
+  "2026-10-14": {
+   "tip": "nastava"
+  },
+  "2026-10-15": {
+   "tip": "nastava"
+  },
+  "2026-10-16": {
+   "tip": "nastava"
+  },
+  "2026-10-17": {
+   "tip": "neradni"
+  },
+  "2026-10-18": {
+   "tip": "neradni"
+  },
+  "2026-10-19": {
+   "tip": "nastava"
+  },
+  "2026-10-20": {
+   "tip": "nastava"
+  },
+  "2026-10-21": {
+   "tip": "nastava"
+  },
+  "2026-10-22": {
+   "tip": "nastava"
+  },
+  "2026-10-23": {
+   "tip": "nastava"
+  },
+  "2026-10-24": {
+   "tip": "neradni"
+  },
+  "2026-10-25": {
+   "tip": "neradni"
+  },
+  "2026-10-26": {
+   "tip": "nastava"
+  },
+  "2026-10-27": {
+   "tip": "nastava"
+  },
+  "2026-10-28": {
+   "tip": "nastava"
+  },
+  "2026-10-29": {
+   "tip": "nastava"
+  },
+  "2026-10-30": {
+   "tip": "nastava"
+  },
+  "2026-10-31": {
+   "tip": "neradni"
+  },
+  "2026-11-01": {
+   "tip": "neradni"
+  },
+  "2026-11-02": {
+   "tip": "nastava"
+  },
+  "2026-11-03": {
+   "tip": "nastava"
+  },
+  "2026-11-04": {
+   "tip": "nastava"
+  },
+  "2026-11-05": {
+   "tip": "nastava"
+  },
+  "2026-11-06": {
+   "tip": "nastava"
+  },
+  "2026-11-07": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2026-11-08": {
+   "tip": "neradni"
+  },
+  "2026-11-09": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2026-11-10": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2026-11-11": {
+   "tip": "neradni"
+  },
+  "2026-11-12": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2026-11-13": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2026-11-14": {
+   "tip": "neradni"
+  },
+  "2026-11-15": {
+   "tip": "neradni"
+  },
+  "2026-11-16": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-17": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-18": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-19": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-20": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-21": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva zimska kolokvijumska nedelja"
+  },
+  "2026-11-22": {
+   "tip": "neradni"
+  },
+  "2026-11-23": {
+   "tip": "nastava"
+  },
+  "2026-11-24": {
+   "tip": "nastava"
+  },
+  "2026-11-25": {
+   "tip": "nastava"
+  },
+  "2026-11-26": {
+   "tip": "nastava"
+  },
+  "2026-11-27": {
+   "tip": "nastava"
+  },
+  "2026-11-28": {
+   "tip": "neradni"
+  },
+  "2026-11-29": {
+   "tip": "neradni"
+  },
+  "2026-11-30": {
+   "tip": "nastava"
+  },
+  "2026-12-01": {
+   "tip": "nastava"
+  },
+  "2026-12-02": {
+   "tip": "nastava"
+  },
+  "2026-12-03": {
+   "tip": "nastava"
+  },
+  "2026-12-04": {
+   "tip": "nastava"
+  },
+  "2026-12-05": {
+   "tip": "neradni"
+  },
+  "2026-12-06": {
+   "tip": "neradni"
+  },
+  "2026-12-07": {
+   "tip": "nastava"
+  },
+  "2026-12-08": {
+   "tip": "nastava"
+  },
+  "2026-12-09": {
+   "tip": "nastava"
+  },
+  "2026-12-10": {
+   "tip": "nastava"
+  },
+  "2026-12-11": {
+   "tip": "nastava"
+  },
+  "2026-12-12": {
+   "tip": "neradni"
+  },
+  "2026-12-13": {
+   "tip": "neradni"
+  },
+  "2026-12-14": {
+   "tip": "nastava"
+  },
+  "2026-12-15": {
+   "tip": "nastava"
+  },
+  "2026-12-16": {
+   "tip": "nastava"
+  },
+  "2026-12-17": {
+   "tip": "nastava"
+  },
+  "2026-12-18": {
+   "tip": "nastava"
+  },
+  "2026-12-19": {
+   "tip": "neradni"
+  },
+  "2026-12-20": {
+   "tip": "neradni"
+  },
+  "2026-12-21": {
+   "tip": "nastava"
+  },
+  "2026-12-22": {
+   "tip": "nastava"
+  },
+  "2026-12-23": {
+   "tip": "nastava"
+  },
+  "2026-12-24": {
+   "tip": "nastava"
+  },
+  "2026-12-25": {
+   "tip": "nastava"
+  },
+  "2026-12-26": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga zimska kolokvijumska nedelja"
+  },
+  "2026-12-27": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga zimska kolokvijumska nedelja"
+  },
+  "2026-12-28": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga zimska kolokvijumska nedelja"
+  },
+  "2026-12-29": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga zimska kolokvijumska nedelja"
+  },
+  "2026-12-30": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga zimska kolokvijumska nedelja"
+  },
+  "2026-12-31": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-01": {
+   "tip": "neradni"
+  },
+  "2027-01-02": {
+   "tip": "neradni"
+  },
+  "2027-01-03": {
+   "tip": "neradni"
+  },
+  "2027-01-04": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-05": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-06": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-07": {
+   "tip": "neradni"
+  },
+  "2027-01-08": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-09": {
+   "tip": "neradni"
+  },
+  "2027-01-10": {
+   "tip": "neradni"
+  },
+  "2027-01-11": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-12": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-13": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-14": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-15": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-16": {
+   "tip": "neradni"
+  },
+  "2027-01-17": {
+   "tip": "neradni"
+  },
+  "2027-01-18": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-19": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-20": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-21": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-22": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-23": {
+   "tip": "neradni"
+  },
+  "2027-01-24": {
+   "tip": "neradni"
+  },
+  "2027-01-25": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-26": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-27": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-28": {
+   "tip": "ispitni_rok",
+   "napomena": "Januarski ispitni rok"
+  },
+  "2027-01-29": {
+   "tip": "bez_nastave"
+  },
+  "2027-01-30": {
+   "tip": "neradni"
+  },
+  "2027-01-31": {
+   "tip": "neradni"
+  },
+  "2027-02-01": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-02": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-03": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-04": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-05": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-06": {
+   "tip": "neradni"
+  },
+  "2027-02-07": {
+   "tip": "neradni"
+  },
+  "2027-02-08": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-09": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-10": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-11": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-12": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-13": {
+   "tip": "neradni"
+  },
+  "2027-02-14": {
+   "tip": "neradni"
+  },
+  "2027-02-15": {
+   "tip": "neradni"
+  },
+  "2027-02-16": {
+   "tip": "neradni"
+  },
+  "2027-02-17": {
+   "tip": "bez_nastave"
+  },
+  "2027-02-18": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-19": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-20": {
+   "tip": "neradni"
+  },
+  "2027-02-21": {
+   "tip": "neradni"
+  },
+  "2027-02-22": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-23": {
+   "tip": "ispitni_rok",
+   "napomena": "Februarski ispitni rok"
+  },
+  "2027-02-24": {
+   "tip": "bez_nastave"
+  },
+  "2027-02-25": {
+   "tip": "bez_nastave"
+  },
+  "2027-02-26": {
+   "tip": "bez_nastave"
+  },
+  "2027-02-27": {
+   "tip": "neradni"
+  },
+  "2027-02-28": {
+   "tip": "neradni"
+  },
+  "2027-03-01": {
+   "tip": "nastava"
+  },
+  "2027-03-02": {
+   "tip": "nastava"
+  },
+  "2027-03-03": {
+   "tip": "nastava"
+  },
+  "2027-03-04": {
+   "tip": "nastava"
+  },
+  "2027-03-05": {
+   "tip": "nastava"
+  },
+  "2027-03-06": {
+   "tip": "neradni"
+  },
+  "2027-03-07": {
+   "tip": "neradni"
+  },
+  "2027-03-08": {
+   "tip": "nastava"
+  },
+  "2027-03-09": {
+   "tip": "nastava"
+  },
+  "2027-03-10": {
+   "tip": "nastava"
+  },
+  "2027-03-11": {
+   "tip": "nastava"
+  },
+  "2027-03-12": {
+   "tip": "nastava"
+  },
+  "2027-03-13": {
+   "tip": "neradni"
+  },
+  "2027-03-14": {
+   "tip": "neradni"
+  },
+  "2027-03-15": {
+   "tip": "nastava"
+  },
+  "2027-03-16": {
+   "tip": "nastava"
+  },
+  "2027-03-17": {
+   "tip": "nastava"
+  },
+  "2027-03-18": {
+   "tip": "nastava"
+  },
+  "2027-03-19": {
+   "tip": "nastava"
+  },
+  "2027-03-20": {
+   "tip": "neradni"
+  },
+  "2027-03-21": {
+   "tip": "neradni"
+  },
+  "2027-03-22": {
+   "tip": "nastava"
+  },
+  "2027-03-23": {
+   "tip": "nastava"
+  },
+  "2027-03-24": {
+   "tip": "nastava"
+  },
+  "2027-03-25": {
+   "tip": "nastava"
+  },
+  "2027-03-26": {
+   "tip": "nastava"
+  },
+  "2027-03-27": {
+   "tip": "neradni"
+  },
+  "2027-03-28": {
+   "tip": "neradni"
+  },
+  "2027-03-29": {
+   "tip": "nastava"
+  },
+  "2027-03-30": {
+   "tip": "nastava"
+  },
+  "2027-03-31": {
+   "tip": "nastava"
+  },
+  "2027-04-01": {
+   "tip": "nastava"
+  },
+  "2027-04-02": {
+   "tip": "nastava"
+  },
+  "2027-04-03": {
+   "tip": "neradni"
+  },
+  "2027-04-04": {
+   "tip": "neradni"
+  },
+  "2027-04-05": {
+   "tip": "nastava"
+  },
+  "2027-04-06": {
+   "tip": "nastava"
+  },
+  "2027-04-07": {
+   "tip": "nastava"
+  },
+  "2027-04-08": {
+   "tip": "nastava"
+  },
+  "2027-04-09": {
+   "tip": "nastava"
+  },
+  "2027-04-10": {
+   "tip": "neradni"
+  },
+  "2027-04-11": {
+   "tip": "neradni"
+  },
+  "2027-04-12": {
+   "tip": "nastava"
+  },
+  "2027-04-13": {
+   "tip": "nastava"
+  },
+  "2027-04-14": {
+   "tip": "nastava"
+  },
+  "2027-04-15": {
+   "tip": "nastava"
+  },
+  "2027-04-16": {
+   "tip": "nastava"
+  },
+  "2027-04-17": {
+   "tip": "neradni"
+  },
+  "2027-04-18": {
+   "tip": "neradni"
+  },
+  "2027-04-19": {
+   "tip": "nastava"
+  },
+  "2027-04-20": {
+   "tip": "nastava"
+  },
+  "2027-04-21": {
+   "tip": "nastava"
+  },
+  "2027-04-22": {
+   "tip": "nastava"
+  },
+  "2027-04-23": {
+   "tip": "nastava"
+  },
+  "2027-04-24": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva letnja kolokvijumska nedelja"
+  },
+  "2027-04-25": {
+   "tip": "neradni"
+  },
+  "2027-04-26": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva letnja kolokvijumska nedelja"
+  },
+  "2027-04-27": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva letnja kolokvijumska nedelja"
+  },
+  "2027-04-28": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva letnja kolokvijumska nedelja"
+  },
+  "2027-04-29": {
+   "tip": "kolokvijumi",
+   "napomena": "Prva letnja kolokvijumska nedelja"
+  },
+  "2027-04-30": {
+   "tip": "neradni"
+  },
+  "2027-05-01": {
+   "tip": "neradni"
+  },
+  "2027-05-02": {
+   "tip": "neradni"
+  },
+  "2027-05-03": {
+   "tip": "neradni"
+  },
+  "2027-05-04": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2027-05-05": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2027-05-06": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2027-05-07": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2027-05-08": {
+   "tip": "nastava",
+   "napomena": "Onlajn nastava"
+  },
+  "2027-05-09": {
+   "tip": "neradni"
+  },
+  "2027-05-10": {
+   "tip": "nastava"
+  },
+  "2027-05-11": {
+   "tip": "nastava"
+  },
+  "2027-05-12": {
+   "tip": "nastava"
+  },
+  "2027-05-13": {
+   "tip": "nastava"
+  },
+  "2027-05-14": {
+   "tip": "nastava"
+  },
+  "2027-05-15": {
+   "tip": "neradni"
+  },
+  "2027-05-16": {
+   "tip": "neradni"
+  },
+  "2027-05-17": {
+   "tip": "nastava"
+  },
+  "2027-05-18": {
+   "tip": "nastava"
+  },
+  "2027-05-19": {
+   "tip": "nastava"
+  },
+  "2027-05-20": {
+   "tip": "nastava"
+  },
+  "2027-05-21": {
+   "tip": "nastava"
+  },
+  "2027-05-22": {
+   "tip": "neradni"
+  },
+  "2027-05-23": {
+   "tip": "neradni"
+  },
+  "2027-05-24": {
+   "tip": "nastava"
+  },
+  "2027-05-25": {
+   "tip": "nastava"
+  },
+  "2027-05-26": {
+   "tip": "nastava"
+  },
+  "2027-05-27": {
+   "tip": "nastava"
+  },
+  "2027-05-28": {
+   "tip": "nastava"
+  },
+  "2027-05-29": {
+   "tip": "neradni"
+  },
+  "2027-05-30": {
+   "tip": "neradni"
+  },
+  "2027-05-31": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-01": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-02": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-03": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-04": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-05": {
+   "tip": "kolokvijumi",
+   "napomena": "Druga letnja kolokvijumska nedelja"
+  },
+  "2027-06-06": {
+   "tip": "neradni"
+  },
+  "2027-06-07": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-08": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-09": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-10": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-11": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-12": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-13": {
+   "tip": "neradni"
+  },
+  "2027-06-14": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-15": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-16": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-17": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-18": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-19": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-20": {
+   "tip": "neradni"
+  },
+  "2027-06-21": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-22": {
+   "tip": "ispitni_rok",
+   "napomena": "Junski ispitni rok"
+  },
+  "2027-06-23": {
+   "tip": "bez_nastave"
+  },
+  "2027-06-24": {
+   "tip": "bez_nastave"
+  },
+  "2027-06-25": {
+   "tip": "bez_nastave"
+  },
+  "2027-06-26": {
+   "tip": "neradni"
+  },
+  "2027-06-27": {
+   "tip": "neradni"
+  },
+  "2027-06-28": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-06-29": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-06-30": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-01": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-02": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-03": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-04": {
+   "tip": "neradni"
+  },
+  "2027-07-05": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-06": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-07": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-08": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-09": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-10": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-11": {
+   "tip": "neradni"
+  },
+  "2027-07-12": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-13": {
+   "tip": "ispitni_rok",
+   "napomena": "Julski ispitni rok"
+  },
+  "2027-07-14": {
+   "tip": "bez_nastave"
+  },
+  "2027-07-15": {
+   "tip": "bez_nastave"
+  },
+  "2027-07-16": {
+   "tip": "bez_nastave"
+  },
+  "2027-07-17": {
+   "tip": "neradni"
+  },
+  "2027-07-18": {
+   "tip": "neradni"
+  },
+  "2027-07-19": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-20": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-21": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-22": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-23": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-24": {
+   "tip": "neradni"
+  },
+  "2027-07-25": {
+   "tip": "neradni"
+  },
+  "2027-07-26": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-27": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-28": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-29": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-30": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-07-31": {
+   "tip": "neradni"
+  },
+  "2027-08-01": {
+   "tip": "neradni"
+  },
+  "2027-08-02": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-03": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-04": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-05": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-06": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-07": {
+   "tip": "neradni"
+  },
+  "2027-08-08": {
+   "tip": "neradni"
+  },
+  "2027-08-09": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-10": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-11": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-12": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-13": {
+   "tip": "neradni",
+   "napomena": "Letnja pauza"
+  },
+  "2027-08-14": {
+   "tip": "neradni"
+  },
+  "2027-08-15": {
+   "tip": "neradni"
+  },
+  "2027-08-16": {
+   "tip": "bez_nastave"
+  },
+  "2027-08-17": {
+   "tip": "bez_nastave"
+  },
+  "2027-08-18": {
+   "tip": "bez_nastave"
+  },
+  "2027-08-19": {
+   "tip": "bez_nastave"
+  },
+  "2027-08-20": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-21": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-22": {
+   "tip": "neradni"
+  },
+  "2027-08-23": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-24": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-25": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-26": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-27": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-28": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-29": {
+   "tip": "neradni"
+  },
+  "2027-08-30": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-08-31": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-09-01": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-09-02": {
+   "tip": "ispitni_rok",
+   "napomena": "Septembarski ispitni rok"
+  },
+  "2027-09-03": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-04": {
+   "tip": "neradni"
+  },
+  "2027-09-05": {
+   "tip": "neradni"
+  },
+  "2027-09-06": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-07": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-08": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-09": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-10": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-11": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-12": {
+   "tip": "neradni"
+  },
+  "2027-09-13": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-14": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-15": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-16": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-17": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-18": {
+   "tip": "ispitni_rok",
+   "napomena": "Oktobarski ispitni rok"
+  },
+  "2027-09-19": {
+   "tip": "neradni"
+  },
+  "2027-09-20": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-21": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-22": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-23": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-24": {
+   "tip": "bez_nastave"
+  },
+  "2027-09-25": {
+   "tip": "neradni"
+  },
+  "2027-09-26": {
+   "tip": "neradni"
+  },
+  "2027-09-27": {
+   "tip": "nastava"
+  },
+  "2027-09-28": {
+   "tip": "nastava"
+  },
+  "2027-09-29": {
+   "tip": "nastava"
+  },
+  "2027-09-30": {
+   "tip": "nastava"
+  }
+ }
+}
