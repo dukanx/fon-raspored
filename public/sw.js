@@ -25,7 +25,11 @@ const VERSION = 'v1' // ručni sledgehammer - ne treba dizati na svaki deploy
 const SHELL = `fon-shell-${VERSION}`   // HTML ljuska      - network-first
 const STATIC = `fon-static-${VERSION}` // /_next/static/*  - cache-first (hashovano)
 const DATA = 'fon-data'                // /data/*.json     - network-first (BEZ verzije)
-const ASSETS = 'fon-assets'            // ikonice/manifest - SWR          (BEZ verzije)
+const ASSETS = 'fon-assets'            // ikonice/manifest - cache-first  (BEZ verzije)
+// Ikonice su cache-first, a ne SWR: SWR je na svako otvaranje slao zahtev u
+// pozadini. Precache (install) ih ionako ponovo skida sa `cache: 'reload'` na
+// svaku novu verziju sw.js, pa se tada osvežavaju. Slika koja nije u
+// PRECACHE_ASSETS ostaje u kešu dok joj se ne promeni ime.
 
 // Rute čiji se HTML sme keširati. Ključ je uvek pathname bez query stringa -
 // /deli?s=... je statičan HTML koji query čita tek na klijentu, pa jedan unos
@@ -190,16 +194,6 @@ async function networkFirst(event, cacheName) {
   }
 }
 
-async function staleWhileRevalidate(event, cacheName) {
-  const cache = await caches.open(cacheName)
-  const hit = await cache.match(event.request)
-  const network = fetch(event.request)
-    .then(async (res) => { if (res.ok) await cache.put(event.request, res.clone()); return res })
-    .catch(() => null)
-  if (hit) { event.waitUntil(network); return hit }
-  return (await network) || Response.error()
-}
-
 function shellKey(url) {
   let p = url.pathname
   if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1)
@@ -267,7 +261,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
   if (p === '/manifest.webmanifest' || IMAGE_RE.test(p)) {
-    event.respondWith(staleWhileRevalidate(event, ASSETS))
+    event.respondWith(cacheFirst(event, ASSETS))
     return
   }
   // sve ostalo: ne presrećemo
