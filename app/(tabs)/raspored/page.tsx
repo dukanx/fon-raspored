@@ -1028,6 +1028,7 @@ export default function RasporedPage() {
             </p>
             <Link
               href="/izborni"
+              prefetch={false}
               className="btn-lift mt-4 inline-flex rounded-lg bg-[#024c7d] px-4 py-2 text-xs font-medium text-white
                          hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]"
             >
