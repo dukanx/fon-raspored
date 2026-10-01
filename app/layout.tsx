@@ -181,7 +181,10 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
-        <Analytics />
+        {/* Web Analytics je ugašen u Vercel dashboard-u (Hobby limit), pa bi
+            skript samo dobijao 404. Pali se sa NEXT_PUBLIC_ENABLE_ANALYTICS=true
+            (v. .env.example). */}
+        {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' && <Analytics />}
       </body>
     </html>
   );
