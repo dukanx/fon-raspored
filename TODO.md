@@ -192,6 +192,14 @@ Gde se šta čuva:
 - [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi - jasna poruka korisniku sa sugestijom
 - [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva - svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
 - [ ] Poboljšati tipove - smanjiti `any` i neeksplicitne tipove tamo gde postoje
+- [ ] **`reconcileSemester` samo unapred - URADITI PRE FEBRUARA 2027 (letnji semestar).**
+  Danas briše izbor predmeta na SVAKU razliku u `semester` stringu, i kad je stigli
+  semestar stariji od sačuvanog. Od kad `/data/*` ima `Cache-Control: max-age=600`
+  (next.config.ts), browser može 10 min posle objave novog semestra da vrati stari
+  god.json neke druge godine (npr. iz SW precache-a koji skine sve 4), pa se semestar
+  prevrne napred, nazad, pa opet napred i obriše izbor napravljen u međuvremenu.
+  Popravka: resetuj samo kad je novi semestar NOVIJI od sačuvanog (poređenje preko
+  `parseSemester`: godina, pa zimski < letnji), a stariji ignoriši. Dodati test.
 - [ ] **Scraper pada tiho - mora glasno.** `check_fon.py` nema nijedan `sys.exit` ni `raise`
   (provereno grepom), pa svaki otkaz završi kao zelen GitHub Actions run:
   - sajt se ne otvori → `check_fon.py:67-69` odštampa grešku i uradi `continue`
