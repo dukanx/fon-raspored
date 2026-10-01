@@ -64,12 +64,16 @@ export default function BottomNav() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // U instaliranoj aplikaciji (standalone) viewport-fit=cover daje pun
+  // safe-area-inset-bottom (~34px na iPhone-u), pa bi navbar lebdeo visoko
+  // iznad home indikatora. Tamo ulazi delom u tu zonu, kao sistemski tab bar;
+  // max() čuva isti razmak na uređajima bez home indikatora (inset 0).
   return (
     <nav
       className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 transition-[padding] duration-300 sm:hidden ${
         isCompact
-          ? 'px-12 pb-[calc(env(safe-area-inset-bottom)+0.35rem)]'
-          : 'px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)]'
+          ? 'px-12 pb-[calc(env(safe-area-inset-bottom)+0.35rem)] [@media(display-mode:standalone)]:pb-[max(0.35rem,env(safe-area-inset-bottom)_-_1rem)]'
+          : 'px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)] [@media(display-mode:standalone)]:pb-[max(0.575rem,env(safe-area-inset-bottom)_-_0.75rem)]'
       }`}
     >
       <div
