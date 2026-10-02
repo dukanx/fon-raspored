@@ -84,6 +84,9 @@ function AnimatedRow({ children }: { children: React.ReactNode }) {
 export default function PreneseniPage() {
   const router = useRouter()
   const [godina, setGodina] = useState<number | null>(null)
+  // Smer poslednje promene godine (-1 ka manjoj, 1 ka većoj, 0 bez klizanja):
+  // lista predmeta ulazi sa te strane, kao meseci u kalendaru Rokova.
+  const [godinaDir, setGodinaDir] = useState(0)
   const [predmeti, setPredmeti] = useState<string[]>([])
   const [odabraniPredmet, setOdabraniPredmet] = useState('')
   const [trenutniRaspored, setTrenutniRaspored] = useState<ScheduleEntry[]>([])
@@ -188,6 +191,7 @@ export default function PreneseniPage() {
   }
 
   async function handleGodinaSelect(g: number, autoSelect?: string) {
+    setGodinaDir(godina && g !== godina ? Math.sign(g - godina) : 0)
     setGodina(g)
     setOdabraniPredmet(autoSelect ?? '')
     setPredmeti([])
@@ -518,13 +522,19 @@ export default function PreneseniPage() {
                       <button
                         key={g}
                         onClick={() => handleGodinaSelect(g)}
-                        className={`btn-lift py-2 rounded-full text-sm font-medium border
-                          ${godina === g
-                            ? 'bg-[#024c7d] text-white border-[#024c7d] shadow-sm dark:bg-[#60c3ad] dark:text-[#024c7d] dark:border-[#60c3ad]'
-                            : 'bg-white/70 text-gray-700 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:text-gray-300 dark:border-white/20 dark:hover:bg-gray-800/70'
-                          }`}
+                        className={`btn-lift relative py-2 rounded-full text-sm font-medium border transition-colors duration-300
+                          bg-white/70 border-[#024c7d]/15 hover:bg-white/80 dark:bg-gray-900/55 dark:border-white/20 dark:hover:bg-gray-800/70
+                          ${godina === g ? 'text-white dark:text-[#024c7d]' : 'text-gray-700 dark:text-gray-300'}`}
                       >
-                        {g}.
+                        {/* Oznaka izabrane godine klizi sa dugmeta na dugme. */}
+                        {godina === g && (
+                          <motion.span
+                            layoutId="godinaPill"
+                            className="absolute -inset-px rounded-full bg-[#024c7d] shadow-sm dark:bg-[#60c3ad]"
+                            transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                          />
+                        )}
+                        <span className="relative">{g}.</span>
                       </button>
                     ))}
                   </div>
@@ -532,24 +542,33 @@ export default function PreneseniPage() {
 
                 {/* Predmet */}
                 {godina && (
-                  <div>
+                  <div
+                    key={godina}
+                    className={godinaDir > 0 ? 'month-in-next' : godinaDir < 0 ? 'month-in-prev' : undefined}
+                  >
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Predmet
                     </label>
                     {loadingData ? (
-                      <div className="h-10 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                      // Iste visine kao pretraga i lista ispod, da sadržaj ne
+                      // poskoči dok se godina učitava.
+                      <div className="space-y-1.5">
+                        <div className="h-10 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                        <div className="h-44 rounded-xl bg-white/60 dark:bg-gray-800/68 animate-pulse" />
+                      </div>
                     ) : odabraniPredmet ? (
                       <div className="flex items-center justify-between rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2.5 dark:border-white/20 dark:bg-gray-900/65">
                         <span className="text-sm text-gray-900 dark:text-gray-100 truncate">{odabraniPredmet}</span>
                         <button
-                          onClick={() => { setOdabraniPredmet(''); setDostupniTermini([]); setPreporuka(null); setOdabranoPredavanje(null); setOdabraneVezbe(null) }}
+                          onClick={() => { setGodinaDir(0); setOdabraniPredmet(''); setDostupniTermini([]); setPreporuka(null); setOdabranoPredavanje(null); setOdabraneVezbe(null) }}
                           className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0 ml-2 transition-colors"
                         >
                           Promeni
                         </button>
                       </div>
                     ) : (
-                      <div className="anim-up space-y-1.5">
+                      // Pri promeni godine klizi ceo blok, pa lista nema svoj ulaz.
+                      <div className={`space-y-1.5 ${godinaDir ? '' : 'anim-up'}`}>
                         <input
                           type="text"
                           value={predmetSearch}
