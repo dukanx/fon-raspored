@@ -165,6 +165,18 @@ Gde se šta čuva:
   - **Pametni predlog (bez AI):** opcioni unos težine / dana pripreme po predmetu → deterministički algoritam predlaže koje u prvi a koje u drugi rok, maksimalno razmaknuto. Uvek mora postojati i opcija za potpuno samostalno poređanje.
   - **AI sloj (kasnije, opciono):** Groq objašnjava predlog / hvata neodređene želje. Matematika datuma OSTAJE u kodu (LLM je nepouzdan za to).
   - Aktivira se tek kad scraper povuče i junski i julski rok.
+- [ ] **Rokovi bez podele na Ispiti/Kolokvijumi** - jedan prikaz za sve, jer kalendar sad boji
+  ispitne rokove i kolokvijumske nedelje, a retko se poklapaju u vremenu. Raditi na posebnoj
+  grani, ne usred početka semestra. Šta sve visi o tabu (`Tab` u rokovi/page.tsx):
+  - automatski izbor taba po datumu (efekat oko `setTab`) postaje nepotreban
+  - sopstveni događaji čuvaju `tab` u localStorage-u - prikazati sve, polje ostaviti zbog starih zapisa
+  - ICS i PNG izvoz (naziv fajla, filter po tipu, picker meseca/roka)
+  - baner prijave ("Predispitne obaveze" / "Ispiti")
+  - u kalendaru su boje po predmetu, pa treba mala oznaka ispit ili kolokvijum na terminu
+  - **Loše strane:** lista postaje duža i mešana; u septembru i oktobru se preklapaju
+    septembarski/oktobarski rok i kolokvijumi novog semestra (v. "oba semestra" logiku), pa
+    baš tada bude najgušće; ko gleda samo ispite gubi brz filter. Moguće rešenje: jedan
+    prikaz, a filter (Sve / Ispiti / Kolokvijumi) kao mali chip umesto tabova.
 - [x] **Export ispita/kolokvijuma u iCal** - `downloadICS()` u rokovi/page.tsx
 - [x] **Export ispita/kolokvijuma kao slika** - `downloadPNG()`, PNG sa pickerom (mesec/ceo rok)
 
