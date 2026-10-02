@@ -6,6 +6,7 @@ import "./globals.css";
 // Next-specifična integracija (usePathname/useSearchParams) - NE patchuje
 // history.pushState kao /react, koji je lomio navigaciju u Next 16.
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -185,6 +186,16 @@ export default function RootLayout({
             skript samo dobijao 404. Pali se sa NEXT_PUBLIC_ENABLE_ANALYTICS=true
             (v. .env.example). */}
         {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' && <Analytics />}
+        {/* Cloudflare Web Analytics: besplatan, bez kolačića, a beacon ide
+            Cloudflare-u, pa ne troši Vercel CDN zahteve. Bez tokena se ne
+            učitava. Promene ruta (pushState) hvata sam. */}
+        {process.env.NEXT_PUBLIC_CF_BEACON_TOKEN && (
+          <Script
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            strategy="afterInteractive"
+            data-cf-beacon={JSON.stringify({ token: process.env.NEXT_PUBLIC_CF_BEACON_TOKEN })}
+          />
+        )}
       </body>
     </html>
   );
