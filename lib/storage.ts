@@ -116,6 +116,8 @@ export const app = {
   // Slajd "idi u Izmenu da izabereš termin" - prikazan (kao deo tura ili
   // samostalno, ako su preneseni/drugosemestralni predmeti dodati kasnije), jednom.
   prevSubjectsIntroSeen: flag('local', 'fon_prev_subjects_intro_seen'),
+  // Obaveštenje "novo: FON kalendar u Rokovima" za postojeće korisnike, jednom.
+  kalendarIntroSeen: flag('local', 'fon_kalendar_intro_seen'),
   // Rezultat pickDefaultTab-a, zapamćen uz dan za koji je izračunat. Odluka
   // zavisi samo od datuma i rokovi.json-a, pa je u toku istog dana nepromenjena
   // - bez ovoga bi svaki ulazak u aplikaciju čekao mrežu pre preusmerenja

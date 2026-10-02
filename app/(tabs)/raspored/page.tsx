@@ -22,6 +22,7 @@ import Modal from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
+import { DAY_KIND_STYLE } from '@/lib/kalendar'
 
 const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
 const DAY_SHORT: Record<DayOfWeek, string> = {
@@ -106,9 +107,6 @@ const IconHidden = (p: IconProps) => (
 )
 const IconInfo = (p: IconProps) => (
   <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 11h1v5h1" /></svg>
-)
-const IconPlus = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
 )
 const IconClock = (p: IconProps) => (
   <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></svg>
@@ -231,6 +229,7 @@ export default function RasporedPage() {
   // Premeštanje u drugu grupu posle FON-ove ispravke opsega (v. efekat ispod).
   const [groupMoved, setGroupMoved] = useState<{ from: string; to: string } | null>(null)
   const [showTour, setShowTour] = useState(false)
+  const [showKalendarIntro, setShowKalendarIntro] = useState(false)
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
   const [loadError, setLoadError] = useState(false)
@@ -422,10 +421,30 @@ export default function RasporedPage() {
     return () => { clearTimeout(t); clearInterval(poll) }
   }, [isHydrated, meta.group])
 
+  // Jednom, postojećim korisnicima: u Rokovima je dodat FON kalendar
+  // aktivnosti. Odluka pada kad se podaci učitaju, jer se tada zna da li ide
+  // neki drugi popup (nov semestar, novi predmeti, grupa, tur, notifikacije).
+  // Ako ide, ovaj se preskače do sledećeg otvaranja, da ne stižu jedan za drugim.
+  useEffect(() => {
+    if (!loaded || app.kalendarIntroSeen.get()) return
+    const tourPending = !app.appTourSeen.get() ||
+      (hasTransferredSubjects() && !app.prevSubjectsIntroSeen.get())
+    const notifPending = !app.notifIntroSeen.get() && isStandalone() && pushSupported()
+    if (tourPending || notifPending || showFlipPopup || groupMoved || newSubjects.length > 0) return
+    const t = setTimeout(() => {
+      app.kalendarIntroSeen.set()
+      setShowKalendarIntro(true)
+    }, 700)
+    return () => clearTimeout(t)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded])
+
   const tourHasTransferredSlide = hasTransferredSubjects()
 
   function closeTour() {
     app.appTourSeen.set()
+    // Nov korisnik kalendar upozna u Rokovima, "novo" mu ne treba.
+    app.kalendarIntroSeen.set()
     if (tourHasTransferredSlide) app.prevSubjectsIntroSeen.set()
     setShowTour(false)
   }
@@ -484,7 +503,7 @@ export default function RasporedPage() {
       features: [
         { icon: IconInfo, title: 'Info o predmetu', desc: 'Klikni na termin za katedru, ESPB i vezane rokove.' },
         { icon: IconHidden, title: 'Sakrij termine', desc: 'X na terminu, u Rasporedu i u Rokovima.' },
-        { icon: IconPlus, title: 'Sopstveni rokovi', desc: 'Dodaj svoj ispit ili dogovor u Rokovi tabu.' },
+        { icon: IconCalendar, title: 'Kalendar u Rokovima', desc: 'Obojeni ispitni rokovi, kolokvijumske nedelje i neradni dani. Klik na dan dodaje tvoj događaj.' },
         { icon: IconOffline, title: 'Offline mod', desc: 'Instalirana aplikacija radi i bez interneta.' },
       ],
     },
@@ -1408,6 +1427,51 @@ export default function RasporedPage() {
             className={`w-full rounded-xl py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           >
             Ne, samo ovosemestralni
+          </button>
+        </div>
+      </Modal>
+
+      {/* Novo: FON kalendar aktivnosti u Rokovima (jednom, postojećim korisnicima) */}
+      <Modal
+        open={showKalendarIntro}
+        onClose={() => setShowKalendarIntro(false)}
+        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
+        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
+      >
+        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+          <IconCalendar className="h-5 w-5" />
+        </div>
+        <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+          Novo: FON kalendar u Rokovima
+        </h2>
+        <p className="mb-4 text-sm text-center text-pretty text-gray-600 dark:text-gray-300">
+          Kalendar u Rokovima sada boji dane po FON kalendaru aktivnosti, pa odmah vidiš šta je kada.
+        </p>
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          {Object.values(DAY_KIND_STYLE).map(k => (
+            <span key={k.label} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 ${k.cell}`}>
+              <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${k.dot}`} />
+              {k.label}
+            </span>
+          ))}
+        </div>
+        <p className="mb-6 text-xs text-center text-gray-500 dark:text-gray-400">
+          Mesec menjaš strelicama ili prevlačenjem levo-desno.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row-reverse">
+          <button
+            onClick={() => { setShowKalendarIntro(false); router.push('/rokovi') }}
+            className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
+                       bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
+                       dark:hover:bg-[#4db3a0]"
+          >
+            Pogledaj kalendar
+          </button>
+          <button
+            onClick={() => setShowKalendarIntro(false)}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
+          >
+            Zatvori
           </button>
         </div>
       </Modal>
