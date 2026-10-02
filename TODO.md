@@ -1,6 +1,41 @@
 # TODO
 
 
+## Redosled posle CDN gašenja požara (dogovoreno 2026-10-02)
+
+Pozadina: početkom semestra Vercel Hobby CDN zahtevi su išli ka limitu od 1M/30 dana.
+Urađeno: bez prefetch-a ka /izborni, `Cache-Control` za /data (10 min), manifest i
+favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_ENABLE_ANALYTICS`.
+
+1. [ ] **Push ne sme da stigne pre svežih podataka.** Od kad /data ima `max-age=600`,
+   ko je otvorio aplikaciju u 10 min pre objave, na klik vidi staro.
+   - `notify-nastava.yml`: posle koraka "Sačekaj da sajt servira novi raspored" dodati `sleep 600`.
+   - `check-fon.yml` (rokovi): push ide odmah posle `git push`, NE čeka ni Vercel deploy.
+     Dodati isto čekanje kao kod nastave (proveriti da sajt servira novi rokovi.json, sa
+     `?t=` da se zaobiđe keš), pa `sleep 600`. Dedup u send_push.mjs ostaje kakav je.
+2. [ ] **Cloudflare Web Analytics** - kod je na sajtu (app/layout.tsx), fali samo token:
+   nalog, Web Analytics -> Add a site -> `www.fonraspored.rs`, token iz snippet-a u Vercel
+   env `NEXT_PUBLIC_CF_BEACON_TOKEN` (Production), redeploy. Posle proveriti prelaze između
+   tabova (beacon dira pushState, a `@vercel/analytics/react` je zbog toga lomio navigaciju);
+   ako se nešto čudno ponaša, `spa: false`. Od ovog dana kreće brojanje za sponzore.
+3. [ ] **Praćenje CDN potrošnje** - prosek treba da bude ispod ~33K zahteva dnevno.
+   Ako do ~2026-10-10 nije, sledeći korak je Cloudflare ispred sajta (statika besplatna,
+   bez limita na zahteve), pa tek onda Vercel Pro.
+4. [ ] **`reconcileSemester` samo unapred** - ROK pre februara 2027, v. "Tehničko".
+5. [ ] **Tačkica na feedback ikonici** - jednom, dok se ne otvori, da stari korisnici
+   primete "Častiš kafu?" (Buy Me a Coffee je u FeedbackButton.tsx).
+6. [ ] **Dupli favicon** - HTML ima dva `<link rel="icon">` (automatski iz app/favicon.ico
+   i `metadata.icons` u layout.tsx); jedan je višak.
+7. [ ] **Sponzori** - tek posle 2-4 nedelje brojeva iz Cloudflare-a.
+   - Pre nego što sponzor ode uživo: Vercel Pro (Hobby ne dozvoljava reklame ni sponzore,
+     donacije su izričito dozvoljene), ugovor ili račun, porez proveriti sa knjigovođom.
+   - Kandidati: Levi9, EY, Saga New Frontier Group (FON Hakaton), Telekom Srbija,
+     Orion Innovation, Sixentix, ITum, NALED, Propulzija; FONIS preko C2S kao posrednik.
+   - Ponuda: jedna kartica "Sponzor" po semestru, nikad u notifikacijama, bez FON logoa
+     ni "partner FON-a". Kartica: `SponsorCard` iz JSON-a sa od-do datumom, `rel="sponsored"`.
+8. [ ] **Rokovi bez podele na Ispite/Kolokvijume** - posebna grana, kad se semestar
+   smiri; v. "Planirano".
+
 ## Sledeći korak
 
 Ako bude trebalo pouzdanije zakazivanje od GitHub cron-a, možeš da koristiš `cron-job.org`.
