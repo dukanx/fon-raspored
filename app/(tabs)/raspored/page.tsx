@@ -402,7 +402,7 @@ export default function RasporedPage() {
 
     let t: ReturnType<typeof setTimeout>
     let poll: ReturnType<typeof setInterval>
-    const start = () => { t = setTimeout(() => setShowTour(true), 1500) }
+    const start = () => { t = setTimeout(() => setShowTour(true), 700) }
 
     // U instaliranoj PWA prvo ide popup za notifikacije (NotificationIntro).
     // Bez ovoga tur iskoči preko njega, pa se korisnik po završetku tura vrati

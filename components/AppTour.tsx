@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 
 export type IconProps = React.SVGProps<SVGSVGElement>
@@ -50,20 +50,40 @@ export default function AppTour({
   onClose: () => void
 }) {
   const [index, setIndex] = useState(0)
+  // Smer poslednjeg prelaza (1 napred, -1 nazad preko tačkica): sadržaj ulazi
+  // sa te strane.
+  const [dir, setDir] = useState(1)
   const slide = slides[index]
   const isLast = index === slides.length - 1
 
+  function go(i: number) {
+    setDir(i >= index ? 1 : -1)
+    setIndex(i)
+  }
+
   function next() {
     if (isLast) onClose()
-    else setIndex(i => i + 1)
+    else go(index + 1)
   }
 
   // "Preskoči" ne sme da preskoči bitan slajd koji tek dolazi - skoči na njega.
   function skip() {
     const nextImportant = slides.findIndex((s, i) => i > index && s.important)
-    if (nextImportant !== -1) setIndex(nextImportant)
+    if (nextImportant !== -1) go(nextImportant)
     else onClose()
   }
+
+  // Kartica ostaje na mestu, menja se samo sadržaj. Slajdovi su različite
+  // visine, pa se visina sadržaja meri i animira, umesto da kartica skoči.
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentH, setContentH] = useState<number | 'auto'>('auto')
+  useEffect(() => {
+    const el = contentRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setContentH(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // Enter = glavno dugme (Dalje / Gotovo / sopstvena akcija slajda), Esc = zatvori.
   const primary = slide.onPrimary ?? next
@@ -84,62 +104,87 @@ export default function AppTour({
       transition={{ duration: 0.2 }}
       className="fixed inset-0 z-100 flex items-end justify-center bg-black/40 px-4 py-6 backdrop-blur-sm sm:items-center"
     >
-      <AnimatePresence mode="wait">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}
+        // Na desktopu je modal centriran, pa bi različite visine slajdova
+        // pomerale dugmad pri svakom "Dalje". Fiksna minimalna visina + mt-auto
+        // na podnožju drže tačkice i dugmad na istom mestu kroz ceo tur.
+        // Na mobilnom je modal prilepljen za dno pa problem ne postoji.
+        className="liquid-glass w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 sm:flex sm:min-h-152 sm:flex-col"
+      >
         <motion.div
-          key={slide.key}
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -16 }}
-          transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-          // Na desktopu je modal centriran, pa bi različite visine slajdova
-          // pomerale dugmad pri svakom "Dalje". Fiksna minimalna visina + mt-auto
-          // na podnožju drže tačkice i dugmad na istom mestu kroz ceo tur.
-          // Na mobilnom je modal prilepljen za dno pa problem ne postoji.
-          className="liquid-glass w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 sm:flex sm:min-h-152 sm:flex-col"
+          animate={{ height: contentH }}
+          initial={false}
+          transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}
+          className="overflow-hidden"
         >
-          <div className="flex flex-col items-center text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-              <slide.icon className="h-7 w-7" />
-            </span>
-            <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {slide.title}
-            </h2>
-            {slide.desc && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {slide.desc}
-              </p>
-            )}
-          </div>
-
-          {slide.features && slide.features.length > 0 && (
-            <div className="mt-5 space-y-2.5">
-              {slide.features.map(f => (
-                <div
-                  key={f.title}
-                  className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10"
-                >
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-                    <f.icon className="h-5 w-5" />
+          {/* relative: popLayout izlazni sadržaj apsolutno pozicionira u
+              odnosu na ovaj blok, pa stari i novi slajd idu istovremeno. */}
+          <div ref={contentRef} className="relative">
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+              <motion.div
+                key={slide.key}
+                custom={dir}
+                variants={{
+                  enter: (d: number) => ({ opacity: 0, x: 24 * d }),
+                  center: { opacity: 1, x: 0 },
+                  exit: (d: number) => ({ opacity: 0, x: -24 * d }),
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
+                className="w-full"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                    <slide.icon className="h-7 w-7" />
                   </span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{f.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{f.desc}</p>
-                  </div>
+                  <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {slide.title}
+                  </h2>
+                  {slide.desc && (
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      {slide.desc}
+                    </p>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
 
-          {/* Podnožje: sm:mt-auto ga lepi za dno kartice, pa tačkice i dugmad
-              stoje na istom mestu bez obzira na dužinu slajda. */}
-          <div className="sm:mt-auto">
+                {slide.features && slide.features.length > 0 && (
+                  <div className="mt-5 space-y-2.5">
+                    {slide.features.map(f => (
+                      <div
+                        key={f.title}
+                        className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10"
+                      >
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                          <f.icon className="h-5 w-5" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{f.title}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{f.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+
+        {/* Podnožje: sm:mt-auto ga lepi za dno kartice, pa tačkice i dugmad
+            stoje na istom mestu bez obzira na dužinu slajda. */}
+        <div className="sm:mt-auto">
           {slides.length > 1 && (
             <div className="mt-5 flex items-center justify-center gap-1.5">
               {slides.map((s, i) => (
                 <button
                   key={s.key}
                   type="button"
-                  onClick={() => setIndex(i)}
+                  onClick={() => go(i)}
                   aria-label={`Slajd ${i + 1}`}
                   className="p-1 -m-1"
                 >
@@ -171,9 +216,8 @@ export default function AppTour({
               </button>
             )}
           </div>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </motion.div>
     </motion.div>
   )
 }
