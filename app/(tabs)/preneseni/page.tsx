@@ -698,19 +698,19 @@ export default function PreneseniPage() {
             </div>
           )}
 
-          {/* AI preporuka dugme */}
+          {/* AI preporuka dugme. Sekundarno (svetla nijansa, ivica), da se ne
+              meša sa "Dodaj odabrane termine", koje je glavna akcija. */}
           {dostupniTermini.length > 0 && (
             <button
               onClick={getPreporuka}
               disabled={loading}
-              className={`btn-lift inline-flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-medium
+              className={`btn-lift inline-flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 text-[13px] font-medium transition-colors
                 ${loading
-                  ? 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
-                  : 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'}`}
+                  ? 'border-transparent bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
+                  : 'border-[#024c7d]/20 bg-[#024c7d]/[0.06] text-[#024c7d] hover:bg-[#024c7d]/10 dark:border-[#60c3ad]/30 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15'}`}
             >
-              
-              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}    
               <IconSparkle className="h-4 w-4" />
+              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}
             </button>
           )}
 
