@@ -209,6 +209,22 @@ export default function RokoviPage() {
     const t = setTimeout(() => setMonthDir(0), 350)
     return () => clearTimeout(t)
   }, [monthDir, calendarMonth])
+  function goMonth(dir: -1 | 1) {
+    setMonthDir(dir)
+    setCalendarMonth(prev => {
+      const d = new Date(prev.year, prev.month + dir)
+      return { year: d.getFullYear(), month: d.getMonth() }
+    })
+  }
+  // Prevlačenje po kalendaru menja mesec, kao strelice. Samo dodir, i samo
+  // vodoravno: uspravno skrolovanje stranice ostaje netaknuto.
+  const monthSwipe = useSwipeable({
+    onSwipedLeft: () => goMonth(1),
+    onSwipedRight: () => goMonth(-1),
+    delta: 40,
+    preventScrollOnSwipe: true,
+    trackMouse: false,
+  })
   const [tooltip, setTooltip] = useState<{ date: string } | null>(null)
   // Ključevi su `rok|povod`.
   const [dismissedBanners, setDismissedBanners] = useState<Set<string>>(new Set())
@@ -934,10 +950,7 @@ export default function RokoviPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => { setMonthDir(-1); setCalendarMonth(prev => {
-              const d = new Date(prev.year, prev.month - 1)
-              return { year: d.getFullYear(), month: d.getMonth() }
-            }) }}
+            onClick={() => goMonth(-1)}
             aria-label="Prethodni mesec"
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           ><IconBack className="h-4 w-4" /></button>
@@ -945,10 +958,7 @@ export default function RokoviPage() {
             {SR_MONTHS[month]} {year}
           </h3>
           <button
-            onClick={() => { setMonthDir(1); setCalendarMonth(prev => {
-              const d = new Date(prev.year, prev.month + 1)
-              return { year: d.getFullYear(), month: d.getMonth() }
-            }) }}
+            onClick={() => goMonth(1)}
             aria-label="Sledeći mesec"
             className={`flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
           ><IconForward className="h-4 w-4" /></button>
@@ -960,8 +970,9 @@ export default function RokoviPage() {
           ))}
         </div>
 
-        {/* Novi mesec uđe iz smera strelice. */}
+        {/* Novi mesec uđe iz smera strelice (ili prevlačenja). */}
         <div
+          {...monthSwipe}
           key={`${year}-${month}`}
           className={monthDir > 0 ? 'month-in-next' : monthDir < 0 ? 'month-in-prev' : undefined}
         >
