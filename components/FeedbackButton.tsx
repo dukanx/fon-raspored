@@ -31,6 +31,46 @@ const IconMail = (p: IconProps) => (
   </svg>
 )
 
+const IconCoffee = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M17 8h1a4 4 0 0 1 0 8h-1" />
+    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+    <path d="M7 2v2M11 2v2M15 2v2" />
+  </svg>
+)
+const IconExternal = (p: IconProps) => (
+  <svg {...baseIcon(p)}>
+    <path d="M14 4h6v6M20 4l-9 9" />
+    <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+  </svg>
+)
+
+// Link za donacije (Buy Me a Coffee). null = red se ne prikazuje.
+const DONATE_URL: string | null = 'https://buymeacoffee.com/nikoladukin'
+
+// Donacije su namerno ovde, a ne kao posebno dugme: feedback otvaraju oni
+// kojima je aplikacija bitna, a UI ostaje isti.
+function DonateRow({ className = '' }: { className?: string }) {
+  if (!DONATE_URL) return null
+  return (
+    <a
+      href={DONATE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex items-center gap-3 rounded-2xl border border-[#024c7d]/10 p-3 text-left transition-colors hover:bg-white/60 dark:border-white/10 dark:hover:bg-gray-800/50 ${className}`}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300">
+        <IconCoffee className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">Častiš kafu?</span>
+        <span className="block text-xs text-gray-500 dark:text-gray-400">Pomaže da aplikacija ostane besplatna.</span>
+      </span>
+      <IconExternal className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" />
+    </a>
+  )
+}
+
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
 // Ikonica-dugme za header svake stranice (isti stil kao dugme za temu) koje
@@ -92,6 +132,7 @@ export default function FeedbackButton({ className = '' }: { className?: string 
             </span>
             <h2 className="mt-3 text-base font-semibold text-gray-900 dark:text-gray-100">Hvala!</h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Poruka je poslata.</p>
+            <DonateRow className="mt-5" />
             <button
               onClick={close}
               className="mt-5 w-full rounded-xl bg-[#024c7d] py-2.5 text-sm font-medium text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0] transition-colors"
@@ -157,6 +198,8 @@ export default function FeedbackButton({ className = '' }: { className?: string 
                 Otkaži
               </button>
             </div>
+
+            <DonateRow className="mt-4" />
           </>
         )}
       </Modal>
