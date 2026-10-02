@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 
 export type IconProps = React.SVGProps<SVGSVGElement>
@@ -73,18 +73,6 @@ export default function AppTour({
     else onClose()
   }
 
-  // Kartica ostaje na mestu, menja se samo sadržaj. Slajdovi su različite
-  // visine, pa se visina sadržaja meri i animira, umesto da kartica skoči.
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [contentH, setContentH] = useState<number | 'auto'>('auto')
-  useEffect(() => {
-    const el = contentRef.current
-    if (!el) return
-    const ro = new ResizeObserver(() => setContentH(el.offsetHeight))
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
   // Enter = glavno dugme (Dalje / Gotovo / sopstvena akcija slajda), Esc = zatvori.
   const primary = slide.onPrimary ?? next
   useEffect(() => {
@@ -111,18 +99,22 @@ export default function AppTour({
         // Na desktopu je modal centriran, pa bi različite visine slajdova
         // pomerale dugmad pri svakom "Dalje". Fiksna minimalna visina + mt-auto
         // na podnožju drže tačkice i dugmad na istom mestu kroz ceo tur.
-        // Na mobilnom je modal prilepljen za dno pa problem ne postoji.
+        // Na mobilnom isto obezbeđuje grid sa svim slajdovima ispod.
         className="liquid-glass w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 sm:flex sm:min-h-152 sm:flex-col"
       >
-        <motion.div
-          animate={{ height: contentH }}
-          initial={false}
-          transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}
-          className="overflow-hidden"
-        >
+        {/* Kartica je stalno visoka koliko najviši slajd: svi slajdovi su
+            nevidljivo naslagani u istoj ćeliji grida, a preko njih ide vidljivi.
+            Na telefonu je kartica zalepljena za dno, pa bi joj se inače vrh
+            penjao i spuštao na svakom "Dalje". */}
+        <div className="grid overflow-hidden">
+          {slides.map(s => (
+            <div key={s.key} aria-hidden="true" className="invisible col-start-1 row-start-1">
+              <SlideContent slide={s} />
+            </div>
+          ))}
           {/* relative: popLayout izlazni sadržaj apsolutno pozicionira u
               odnosu na ovaj blok, pa stari i novi slajd idu istovremeno. */}
-          <div ref={contentRef} className="relative">
+          <div className="relative col-start-1 row-start-1">
             <AnimatePresence mode="popLayout" initial={false} custom={dir}>
               <motion.div
                 key={slide.key}
@@ -138,42 +130,11 @@ export default function AppTour({
                 transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
                 className="w-full"
               >
-                <div className="flex flex-col items-center text-center">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-                    <slide.icon className="h-7 w-7" />
-                  </span>
-                  <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {slide.title}
-                  </h2>
-                  {slide.desc && (
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      {slide.desc}
-                    </p>
-                  )}
-                </div>
-
-                {slide.features && slide.features.length > 0 && (
-                  <div className="mt-5 space-y-2.5">
-                    {slide.features.map(f => (
-                      <div
-                        key={f.title}
-                        className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10"
-                      >
-                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
-                          <f.icon className="h-5 w-5" />
-                        </span>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{f.title}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{f.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <SlideContent slide={slide} />
               </motion.div>
             </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
 
         {/* Podnožje: sm:mt-auto ga lepi za dno kartice, pa tačkice i dugmad
             stoje na istom mestu bez obzira na dužinu slajda. */}
@@ -219,5 +180,44 @@ export default function AppTour({
         </div>
       </motion.div>
     </motion.div>
+  )
+}
+
+function SlideContent({ slide }: { slide: TourSlide }) {
+  return (
+    <>
+      <div className="flex flex-col items-center text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+          <slide.icon className="h-7 w-7" />
+        </span>
+        <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {slide.title}
+        </h2>
+        {slide.desc && (
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {slide.desc}
+          </p>
+        )}
+      </div>
+
+      {slide.features && slide.features.length > 0 && (
+        <div className="mt-5 space-y-2.5">
+          {slide.features.map(f => (
+            <div
+              key={f.title}
+              className="flex items-start gap-3 rounded-2xl border border-[#024c7d]/10 p-3 dark:border-white/10"
+            >
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]">
+                <f.icon className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{f.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
