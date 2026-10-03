@@ -62,6 +62,44 @@
   "entries": [
     {
       "day": "Ponedeljak",
+      "subject": "Teorija verovatnoće",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B12",
+        "B13",
+        "B14"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje 1 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "60"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje 1 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B7"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
       "subject": "Diskretne matematičke strukture",
       "type": "Vežbe",
       "type_short": "V",
@@ -83,32 +121,6 @@
       "start": "08:15",
       "end": "10:00",
       "room": "50"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B8"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "60"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Teorija verovatnoće",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "B12",
-        "B13",
-        "B14"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "Amfiteatar 2"
     },
     {
       "day": "Ponedeljak",
@@ -134,57 +146,19 @@
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "Amfiteatar 1"
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
+      "subject": "Arhitektura računara i operativni sistemi",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B7"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "40"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Teorija verovatnoće",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "B9",
-        "B10",
-        "B11"
+        "B8"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "Amfiteatar 2"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Diskretne matematičke strukture",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B1"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "16"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B5"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "50"
+      "room": "08"
     },
     {
       "day": "Ponedeljak",
@@ -204,11 +178,23 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
+        "B5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje 1 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
         "B3"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "61"
+      "room": "60"
     },
     {
       "day": "Ponedeljak",
@@ -224,27 +210,15 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Arhitektura računara i operativni sistemi",
+      "subject": "Diskretne matematičke strukture",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B8"
+        "B1"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "08"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B5"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "40"
+      "room": "16"
     },
     {
       "day": "Ponedeljak",
@@ -258,7 +232,33 @@
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "Amfiteatar 1"
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Teorija verovatnoće",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B9",
+        "B10",
+        "B11"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje 1 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "50"
     },
     {
       "day": "Ponedeljak",
@@ -270,7 +270,19 @@
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "60"
+      "room": "61"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Programiranje 1 (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "61"
     },
     {
       "day": "Ponedeljak",
@@ -324,6 +336,20 @@
     },
     {
       "day": "Ponedeljak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B9",
+        "B10",
+        "B11"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Ponedeljak",
       "subject": "Teorija verovatnoće",
       "type": "Vežbe",
       "type_short": "V",
@@ -336,29 +362,17 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B1"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "61"
-    },
-    {
-      "day": "Ponedeljak",
       "subject": "Menadžment ljudskih resursa",
       "type": "Predavanje",
       "type_short": "P",
       "groups": [
-        "B9",
-        "B10",
-        "B11"
+        "B12",
+        "B13",
+        "B14"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "Amfiteatar 5"
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
     },
     {
       "day": "Ponedeljak",
@@ -380,20 +394,6 @@
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "Amfiteatar 2"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Menadžment ljudskih resursa",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "B12",
-        "B13",
-        "B14"
-      ],
-      "start": "14:15",
-      "end": "16:00",
       "room": "Amfiteatar 5"
     },
     {
@@ -410,6 +410,30 @@
     },
     {
       "day": "Ponedeljak",
+      "subject": "Arhitektura računara i operativni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B2"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "40"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Arhitektura računara i operativni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "20"
+    },
+    {
+      "day": "Ponedeljak",
       "subject": "Diskretne matematičke strukture",
       "type": "Vežbe",
       "type_short": "V",
@@ -422,15 +446,15 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Arhitektura računara i operativni sistemi",
+      "subject": "Programiranje 1 (NA)",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B2"
+        "B6"
       ],
       "start": "16:15",
       "end": "18:00",
-      "room": "40"
+      "room": "60"
     },
     {
       "day": "Ponedeljak",
@@ -450,23 +474,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B6"
+        "B4"
       ],
-      "start": "16:15",
-      "end": "18:00",
+      "start": "18:15",
+      "end": "20:00",
       "room": "60"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Arhitektura računara i operativni sistemi",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B1"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "20"
     },
     {
       "day": "Ponedeljak",
@@ -486,11 +498,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B4"
+        "B2"
       ],
       "start": "18:15",
       "end": "20:00",
-      "room": "60"
+      "room": "40"
     },
     {
       "day": "Ponedeljak",
@@ -503,18 +515,6 @@
       "start": "18:15",
       "end": "20:00",
       "room": "61"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Programiranje 1 (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B2"
-      ],
-      "start": "18:15",
-      "end": "20:00",
-      "room": "40"
     },
     {
       "day": "Utorak",
@@ -553,30 +553,6 @@
       "start": "10:15",
       "end": "12:00",
       "room": "15"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Osnove kvaliteta",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B14"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "16"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Menadžment ljudskih resursa",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B12"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "14"
     },
     {
       "day": "Utorak",
@@ -594,51 +570,27 @@
     },
     {
       "day": "Utorak",
-      "subject": "Osnove kvaliteta",
+      "subject": "Menadžment ljudskih resursa",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B13"
+        "B12"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "16"
+      "start": "10:15",
+      "end": "12:00",
+      "room": "14"
     },
     {
       "day": "Utorak",
-      "subject": "Menadžment ljudskih resursa",
+      "subject": "Osnove kvaliteta",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
         "B14"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "15"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Menadžment ljudskih resursa",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B9"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "14"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Računovodstvo",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B10"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "17"
+      "start": "10:15",
+      "end": "12:00",
+      "room": "16"
     },
     {
       "day": "Utorak",
@@ -654,6 +606,30 @@
     },
     {
       "day": "Utorak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B9"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "14"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "15"
+    },
+    {
+      "day": "Utorak",
       "subject": "Marketing",
       "type": "Vežbe",
       "type_short": "V",
@@ -663,6 +639,42 @@
       "start": "12:15",
       "end": "14:00",
       "room": "13"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Osnove kvaliteta",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "16"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B10"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Menadžment ljudskih resursa",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "14"
     },
     {
       "day": "Utorak",
@@ -687,30 +699,6 @@
       "start": "14:15",
       "end": "16:00",
       "room": "16"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Marketing",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B14"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "17"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Menadžment ljudskih resursa",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B11"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "14"
     },
     {
       "day": "Utorak",
@@ -738,22 +726,34 @@
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "Amfiteatar 5"
+      "room": "Amfiteatar 3"
     },
     {
       "day": "Utorak",
-      "subject": "Teorija verovatnoće",
+      "subject": "Marketing",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B14"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Diskretne matematičke strukture",
       "type": "Predavanje",
       "type_short": "P",
       "groups": [
-        "B5",
-        "B6",
-        "B7",
-        "B8"
+        "B1",
+        "B2",
+        "B3",
+        "B4"
       ],
       "start": "16:15",
       "end": "18:00",
-      "room": "Amfiteatar 5"
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Utorak",
@@ -776,18 +776,18 @@
     },
     {
       "day": "Utorak",
-      "subject": "Diskretne matematičke strukture",
+      "subject": "Teorija verovatnoće",
       "type": "Predavanje",
       "type_short": "P",
       "groups": [
-        "B1",
-        "B2",
-        "B3",
-        "B4"
+        "B5",
+        "B6",
+        "B7",
+        "B8"
       ],
       "start": "16:15",
       "end": "18:00",
-      "room": "Amfiteatar 4"
+      "room": "Amfiteatar 3"
     },
     {
       "day": "Utorak",
@@ -841,30 +841,6 @@
     {
       "day": "Sreda",
       "subject": "Arhitektura računara i operativni sistemi",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B3"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "30"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Arhitektura računara i operativni sistemi",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B4"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "07"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Arhitektura računara i operativni sistemi",
       "type": "Predavanje",
       "type_short": "P",
       "groups": [
@@ -875,7 +851,7 @@
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "Čitaonica"
+      "room": "Amfiteatar 5"
     },
     {
       "day": "Sreda",
@@ -891,6 +867,30 @@
     },
     {
       "day": "Sreda",
+      "subject": "Arhitektura računara i operativni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Arhitektura računara i operativni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "30"
+    },
+    {
+      "day": "Sreda",
       "subject": "Programiranje 1 (NA)",
       "type": "Predavanje",
       "type_short": "P",
@@ -902,7 +902,7 @@
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "Amfiteatar 1"
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Sreda",
@@ -915,6 +915,33 @@
       "start": "16:15",
       "end": "18:00",
       "room": "07"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Arhitektura računara i operativni sistemi",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B6"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "06"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Upravljanje projektima",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B1",
+        "B2",
+        "B3",
+        "B4"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Sreda",
@@ -934,33 +961,6 @@
       "type": "Predavanje",
       "type_short": "P",
       "groups": [
-        "B1",
-        "B2",
-        "B3",
-        "B4"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "Amfiteatar 4"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Arhitektura računara i operativni sistemi",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B6"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "06"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Upravljanje projektima",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
         "B5",
         "B6",
         "B7",
@@ -969,30 +969,6 @@
       "start": "18:15",
       "end": "20:00",
       "room": "Amfiteatar 4"
-    },
-    {
-      "day": "Petak",
-      "subject": "Upravljanje projektima",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B3"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "17"
-    },
-    {
-      "day": "Petak",
-      "subject": "Upravljanje projektima",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B1"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "20"
     },
     {
       "day": "Petak",
@@ -1022,6 +998,18 @@
     },
     {
       "day": "Petak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B1"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "20"
+    },
+    {
+      "day": "Petak",
       "subject": "Diskretne matematičke strukture",
       "type": "Vežbe",
       "type_short": "V",
@@ -1031,6 +1019,18 @@
       "start": "08:15",
       "end": "10:00",
       "room": "15"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B3"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "17"
     },
     {
       "day": "Petak",
@@ -1063,19 +1063,6 @@
     },
     {
       "day": "Petak",
-      "subject": "Diskretne matematičke strukture",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "B5",
-        "B6"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "Amfiteatar 5"
-    },
-    {
-      "day": "Petak",
       "subject": "Upravljanje projektima",
       "type": "Vežbe",
       "type_short": "V",
@@ -1085,18 +1072,6 @@
       "start": "10:15",
       "end": "12:00",
       "room": "30"
-    },
-    {
-      "day": "Petak",
-      "subject": "Marketing",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B13"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "Amfiteatar 1"
     },
     {
       "day": "Petak",
@@ -1114,6 +1089,31 @@
     },
     {
       "day": "Petak",
+      "subject": "Marketing",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Petak",
+      "subject": "Diskretne matematičke strukture",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "B5",
+        "B6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
       "subject": "Osnove kvaliteta",
       "type": "Vežbe",
       "type_short": "V",
@@ -1126,16 +1126,15 @@
     },
     {
       "day": "Petak",
-      "subject": "Osnove kvaliteta",
+      "subject": "Upravljanje projektima",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B9",
-        "B10"
+        "B7"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "Amfiteatar 4"
+      "room": "Čitaonica"
     },
     {
       "day": "Petak",
@@ -1150,6 +1149,18 @@
       "start": "12:15",
       "end": "14:00",
       "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Petak",
+      "subject": "Računovodstvo",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
     },
     {
       "day": "Petak",
@@ -1177,27 +1188,16 @@
     },
     {
       "day": "Petak",
-      "subject": "Računovodstvo",
+      "subject": "Osnove kvaliteta",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "B13"
+        "B9",
+        "B10"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "20"
-    },
-    {
-      "day": "Petak",
-      "subject": "Upravljanje projektima",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B7"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "Čitaonica"
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Petak",
@@ -1216,18 +1216,6 @@
     },
     {
       "day": "Petak",
-      "subject": "Upravljanje projektima",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B4"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "17"
-    },
-    {
-      "day": "Petak",
       "subject": "Diskretne matematičke strukture",
       "type": "Vežbe",
       "type_short": "V",
@@ -1237,19 +1225,6 @@
       "start": "14:15",
       "end": "16:00",
       "room": "16"
-    },
-    {
-      "day": "Petak",
-      "subject": "Teorija verovatnoće",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "B11",
-        "B14"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "Amfiteatar 2"
     },
     {
       "day": "Petak",
@@ -1275,6 +1250,31 @@
       "start": "14:15",
       "end": "16:00",
       "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Petak",
+      "subject": "Upravljanje projektima",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "17"
+    },
+    {
+      "day": "Petak",
+      "subject": "Teorija verovatnoće",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "B11",
+        "B14"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 2"
     },
     {
       "day": "Petak",

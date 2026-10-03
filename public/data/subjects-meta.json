@@ -5,6 +5,18 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-akreditacija-i-sertifikacija/"
  },
+ "Alati za izveštavanje i vizuelizaciju podataka": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-alati-za-izvestavanje-i-vizuelizaciju-podataka/"
+ },
+ "Analitika lanaca snabdevanja": {
+  "espb": "5",
+  "katedra": "Katedra za računarski integrisanu proizvodnju i logistiku",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analitika-lanaca-snabdevanja/"
+ },
  "Analitika performansi - osnovni koncepti": {
   "espb": "5",
   "katedra": "Katedra za operaciona istraživanja i statistiku",
@@ -65,6 +77,12 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-digitalni-marketing/"
  },
+ "Dinamika organizacionih sistema": {
+  "espb": "5",
+  "katedra": "Katedra za upravljanje sistemima",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-dinamika-organizacionih-sistema/"
+ },
  "Diskretne matematičke strukture": {
   "espb": "5",
   "katedra": "Katedra za matematiku",
@@ -82,6 +100,12 @@
   "katedra": "Katedra za softversko inženjerstvo",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-duboko-ucenje-i-neuronske-mreze/"
+ },
+ "E-obrazovanje": {
+  "espb": "5",
+  "katedra": null,
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-e-obrazovanje/"
  },
  "ETL i skladišta podataka": {
   "espb": "6",
@@ -216,6 +240,12 @@
   "url": "https://oas.fon.bg.ac.rs/predmet-internet-inteligentnih-uredjaja/"
  },
  "Internet marketing": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-internet-marketing-i-drustveni-mediji/"
+ },
+ "Internet marketing i društveni mediji": {
   "espb": "5",
   "katedra": "Katedra za elektronsko poslovanje",
   "status": "Izborni predmet",
@@ -437,11 +467,23 @@
   "status": "IST - Obavezan predmet, MiO - Obavezan predmet/Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-modelovanje-poslovnih-procesa/"
  },
+ "Multimedijalna produkcija": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-multimedijalna-produkcija/"
+ },
  "Multimediji": {
   "espb": "5",
   "katedra": "Katedra za informacione tehnologije",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-multimediji/"
+ },
+ "Napredna analiza podataka": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-napredna-analiza-podataka/"
  },
  "Napredne .NET tehnologije": {
   "espb": "5",
@@ -611,6 +653,12 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-pravne-osnove-informacionih-sistema/"
  },
+ "Pravo i etika obrade podataka": {
+  "espb": "5",
+  "katedra": "Katedra za organizaciju poslovnih sistema",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-pravo-i-etika-obrade-podataka/"
+ },
  "Preduzetničko upravljanje malim i srednjim preduzećima": {
   "espb": "5",
   "katedra": "Katedra za upravljanje proizvodnjom i pružanjem usluga",
@@ -640,6 +688,12 @@
   "katedra": "Katedra za softversko inženjerstvo",
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-programiranje-2/"
+ },
+ "Programiranje 3": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-programiranje-3/"
  },
  "Programiranje repozitorijuma podataka": {
   "espb": "5",
@@ -766,6 +820,12 @@
   "katedra": "Katedra za softversko inženjerstvo",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-softverski-alati/"
+ },
+ "Softverski paterni": {
+  "espb": "5",
+  "katedra": "Katedra za softversko inženjerstvo",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-softverski-paterni/"
  },
  "Standardizacija": {
   "espb": "5",
