@@ -36,6 +36,13 @@ function order({ kind, startYear }: Sem): number {
   return startYear * 2 + (kind === 'Letnji' ? 1 : 0)
 }
 
+// Da li je `a` stariji semestar od `b`. Nepoznat format -> false (ne zna se).
+export function isOlderSemester(a: string, b: string): boolean {
+  const pa = parseSemester(a)
+  const pb = parseSemester(b)
+  return !!pa && !!pb && order(pa) < order(pb)
+}
+
 // Semestar koji počinje posle roka koji se završio datog dana. Rok koji se
 // završava u avgustu-decembru (septembarski, oktobarski) vodi u zimski nove
 // školske godine, onaj u januaru-martu (januarski, februarski) u letnji. Posle

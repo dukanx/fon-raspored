@@ -21,7 +21,7 @@ favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_ENABLE_ANAL
 3. [ ] **Praćenje CDN potrošnje** - prosek treba da bude ispod ~33K zahteva dnevno.
    Ako do ~2026-10-10 nije, sledeći korak je Cloudflare ispred sajta (statika besplatna,
    bez limita na zahteve), pa tek onda Vercel Pro.
-4. [ ] **`reconcileSemester` samo unapred** - ROK pre februara 2027, v. "Tehničko".
+4. [x] **`reconcileSemester` samo unapred** - ROK pre februara 2027, v. "Tehničko".
 5. [ ] **Tačkica na feedback ikonici** - jednom, dok se ne otvori, da stari korisnici
    primete "Častiš kafu?" (Buy Me a Coffee je u FeedbackButton.tsx).
 6. [ ] **Dupli favicon** - HTML ima dva `<link rel="icon">` (automatski iz app/favicon.ico
@@ -239,7 +239,7 @@ Gde se šta čuva:
 - [ ] Bolje rukovanje greškom kada prezime ne odgovara nijednoj grupi - jasna poruka korisniku sa sugestijom
 - [x] Audit i čišćenje `localStorage`/`sessionStorage` ključeva - svi `fon_*` ključevi centralizovani u tipizovanom `lib/storage.ts` (jedan izvor istine, SSR-safe); sva pozivna mesta migrirana
 - [ ] Poboljšati tipove - smanjiti `any` i neeksplicitne tipove tamo gde postoje
-- [ ] **`reconcileSemester` samo unapred - URADITI PRE FEBRUARA 2027 (letnji semestar).**
+- [x] **`reconcileSemester` samo unapred - URADITI PRE FEBRUARA 2027 (letnji semestar).**
   Danas briše izbor predmeta na SVAKU razliku u `semester` stringu, i kad je stigli
   semestar stariji od sačuvanog. Od kad `/data/*` ima `Cache-Control: max-age=600`
   (next.config.ts), browser može 10 min posle objave novog semestra da vrati stari

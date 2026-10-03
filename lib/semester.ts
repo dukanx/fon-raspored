@@ -6,7 +6,7 @@
 // raspored - semestar string ostaje isti, nema lažnog flipa).
 
 import { saved as savedStore, app, session, resetSubjectsForNewSemester } from './storage'
-import { parseSemester } from './season'
+import { isOlderSemester, parseSemester } from './season'
 
 // Da li prelaz sa `prev` na `current` počinje novu školsku godinu (letnji ->
 // zimski sledeće godine). Tada student prelazi u višu godinu i dobija novu
@@ -42,6 +42,11 @@ export function reconcileSemester(currentSemester: string, group: string): boole
     return false
   }
   if (saved === currentSemester) return false
+  // Samo unapred. Stariji semestar znači zastareo god.json (browser ga drži do
+  // 10 min, max-age u next.config.ts), ne pravo vraćanje unazad. Bez ovoga bi
+  // se pri objavi novog semestra izbor mogao prevrnuti napred, nazad, pa opet
+  // napred i obrisati ono što je student u međuvremenu čekirao.
+  if (isOlderSemester(currentSemester, saved)) return false
 
   // Flip: obriši izbor predmeta → rokovi/raspored prelaze u fail-open (prikaži
   // sve) dok student ponovo ne izabere. Bezbedno prelazno stanje.
