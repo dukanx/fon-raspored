@@ -2,4 +2,6 @@
 # instaliraju ad-hoc u workflow-ima (vidi .github/workflows/*.yml).
 pytest>=8,<9
 pdfplumber>=0.11,<0.12
+# parse_rok.py (metapodaci roka) čita PDF preko pymupdf-a.
+pymupdf>=1.24,<2
 beautifulsoup4>=4.12,<5
