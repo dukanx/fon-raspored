@@ -43,8 +43,9 @@ RE_KOL_WEEK = re.compile(
     r"(ПРВО[JЈ]|ДРУГО[JЈ])\s+КОЛОКВИЈУМСКО[JЈ]\s+НЕДЕЉИ",
     re.IGNORECASE,
 )
+# "испитном", ali i FON-ova greška u kucanju "иситном" (septembarski 2025/26).
 RE_ISP_ROK = re.compile(
-    r"У\s+(\w+)\s+ИСПИТНОМ\s+РОКУ",
+    r"У\s+(\w+)\s+И\w{1,3}ТНОМ\s+РОКУ",
     re.IGNORECASE,
 )
 RE_YEAR = re.compile(r"(\d{4}/\d{2,4})")
