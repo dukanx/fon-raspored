@@ -43,8 +43,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  // Favicon dolazi sam iz app/favicon.ico (Next ga ubacuje sa hash-om), pa
+  // ovde stoji samo apple ikonica - inače bi favicon bio naveden dvaput.
   icons: {
-    icon: '/favicon.ico',
     apple: '/apple-icon2.png',
   },
   appleWebApp: {
