@@ -22,6 +22,7 @@ import Modal from '@/components/Modal'
 import Toast from '@/components/Toast'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
+import { todayLocalIso } from '@/lib/season'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
@@ -221,6 +222,7 @@ export default function RasporedPage() {
   const [groupMoved, setGroupMoved] = useState<{ from: string; to: string } | null>(null)
   const [showTour, setShowTour] = useState(false)
   const [showKalendarIntro, setShowKalendarIntro] = useState(false)
+  const [showIzmena2Ned, setShowIzmena2Ned] = useState(false)
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
   const [loadError, setLoadError] = useState(false)
@@ -428,6 +430,16 @@ export default function RasporedPage() {
     }, 700)
     return () => clearTimeout(t)
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded])
+
+  // FON je od 2. nedelje zimskog 2026/27 promenio sale i termine u svim
+  // godinama. Ko je aplikaciju koristio i ranije (video tur), a nema uključene
+  // notifikacije, inače ne bi znao da je raspored drugačiji nego što pamti ili
+  // nego što je izvezao. Jednom, do 12. oktobra.
+  useEffect(() => {
+    if (!loaded || !app.appTourSeen.get() || app.izmena2NedSeen.get()) return
+    if (todayLocalIso() > '2026-10-12') return
+    queueMicrotask(() => setShowIzmena2Ned(true))
   }, [loaded])
 
   const tourHasTransferredSlide = hasTransferredSubjects()
@@ -994,6 +1006,23 @@ export default function RasporedPage() {
 
       {/* ---------- Sadržaj ---------- */}
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
+
+        {showIzmena2Ned && !loadError && (
+          <div className="anim-up mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
+                          bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+            <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
+            <p className="flex-1 min-w-0 text-sm font-medium text-amber-800 dark:text-amber-300">
+              Raspored je izmenjen od 2. nedelje, proveri sale i termine.
+            </p>
+            <button
+              onClick={() => { app.izmena2NedSeen.set(); setShowIzmena2Ned(false) }}
+              className="text-amber-400 dark:text-amber-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors shrink-0 text-sm leading-none mt-0.5"
+              aria-label="Zatvori"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {loadError ? (
           <OfflineNotice />
