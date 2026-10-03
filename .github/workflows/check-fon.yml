@@ -65,6 +65,33 @@ jobs:
           fi
           git diff --staged --quiet || (git commit -m "$MSG" && git push)
 
+      # Push za nove rokove ne sme da stigne pre nego što sajt servira novi
+      # rokovi.json, ni pre nego što istekne keš browsera (/data ima max-age=600,
+      # v. next.config.ts) - inače bi korisnik na klik video stare rokove.
+      # pending_notify.json nije u repou, pa push koji ne ode u ovom run-u je
+      # izgubljen: posle 20 min bez novog deploy-a šaljemo svejedno.
+      - name: Sačekaj da sajt servira nove rokove
+        if: ${{ env.HAS_PUSH == 'true' }}
+        env:
+          SITE_URL: https://www.fonraspored.rs
+        run: |
+          if [ ! -f scripts/pending_notify.json ] || [ "$(jq length scripts/pending_notify.json)" = "0" ]; then
+            echo "Nema novih rokova za obaveštenje."
+            exit 0
+          fi
+          WANT=$(jq -S . public/data/rokovi.json | sha256sum | cut -c1-12)
+          for i in $(seq 1 40); do
+            LIVE=$(curl -fsSL "$SITE_URL/data/rokovi.json?t=$(date +%s)" | jq -S . | sha256sum | cut -c1-12 || true)
+            echo "Pokušaj $i: sajt servira $LIVE (čekamo $WANT)"
+            if [ "$LIVE" = "$WANT" ]; then
+              echo "Sajt servira nove rokove, čekamo još 10 min da istekne keš browsera."
+              sleep 600
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::warning::Sajt ni posle 20 min ne servira nove rokove, push ide svejedno."
+
       - name: Set up Node
         if: ${{ env.HAS_PUSH == 'true' }}
         uses: actions/setup-node@v4

@@ -7,7 +7,7 @@ Pozadina: početkom semestra Vercel Hobby CDN zahtevi su išli ka limitu od 1M/3
 Urađeno: bez prefetch-a ka /izborni, `Cache-Control` za /data (10 min), manifest i
 favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_ENABLE_ANALYTICS`.
 
-1. [ ] **Push ne sme da stigne pre svežih podataka.** Od kad /data ima `max-age=600`,
+1. [x] **Push ne sme da stigne pre svežih podataka.** Od kad /data ima `max-age=600`,
    ko je otvorio aplikaciju u 10 min pre objave, na klik vidi staro.
    - `notify-nastava.yml`: posle koraka "Sačekaj da sajt servira novi raspored" dodati `sleep 600`.
    - `check-fon.yml` (rokovi): push ide odmah posle `git push`, NE čeka ni Vercel deploy.

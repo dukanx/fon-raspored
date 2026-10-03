@@ -72,7 +72,9 @@ jobs:
           fi
 
       # Push ne sme da stigne pre nego što Vercel objavi novi deploy - inače bi
-      # korisnik kliknuo i video stari raspored. Čekamo do 20 min.
+      # korisnik kliknuo i video stari raspored. Čekamo do 20 min. Kad sajt
+      # servira novu verziju, još 10 min: /data ima max-age=600 (next.config.ts),
+      # pa ko je otvorio aplikaciju malo pre objave, ima staru kopiju u browseru.
       - name: Sačekaj da sajt servira novi raspored
         if: ${{ steps.sem.outputs.mode != '' && env.HAS_PUSH == 'true' }}
         env:
@@ -82,7 +84,11 @@ jobs:
           for i in $(seq 1 40); do
             LIVE=$(for y in 1 2 3 4; do live "$y" | jq -r '.entries[].subject' || true; done | sort -u | sha256sum | cut -c1-12)
             echo "Pokušaj $i: sajt servira verziju $LIVE (čekamo $VERSION)"
-            if [ "$LIVE" = "$VERSION" ]; then exit 0; fi
+            if [ "$LIVE" = "$VERSION" ]; then
+              echo "Sajt servira novu verziju, čekamo još 10 min da istekne keš browsera."
+              sleep 600
+              exit 0
+            fi
             sleep 30
           done
           echo "Sajt i dalje ne servira novu verziju - ne šaljem." >&2
