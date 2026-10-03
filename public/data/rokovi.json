@@ -723,11 +723,11 @@
       {
         "subject": "Finansijski menadžment i računovodstvo",
         "type": "U",
-        "date": "2026-09-04",
+        "date": "2026-09-05",
         "start": "08:00",
         "end": "12:00",
         "rooms": [
-          "Amfiteatar 3"
+          "Amfiteatar 5"
         ],
         "note": ""
       },
@@ -1473,8 +1473,7 @@
           "18",
           "Amfiteatar 1",
           "Amfiteatar 2",
-          "Amfiteatar",
-          "3",
+          "Amfiteatar 3",
           "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
@@ -1756,11 +1755,20 @@
         "subject": "Operaciona istraživanja 1",
         "type": "P",
         "date": "2026-08-28",
-        "start": "12:00",
-        "end": "13:45",
+        "start": "14:00",
+        "end": "15:45",
         "rooms": [
           "Amfiteatar 1",
-          "Amfiteatar 2"
+          "Amfiteatar 2",
+          "Amfiteatar 3",
+          "Amfiteatar 4",
+          "Amfiteatar 5",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18"
         ],
         "note": ""
       },
@@ -2378,8 +2386,7 @@
           "21",
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "Amfiteatar",
-          "4",
+          "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
         ],
@@ -2712,11 +2719,11 @@
       {
         "subject": "Računovodstvo",
         "type": "U",
-        "date": "2026-09-04",
-        "start": "16:00",
-        "end": "21:00",
+        "date": "2026-09-05",
+        "start": "14:00",
+        "end": "19:00",
         "rooms": [
-          "Amfiteatar 3"
+          "Amfiteatar 5"
         ],
         "note": ""
       },
@@ -3725,11 +3732,11 @@
       {
         "subject": "Analiza podataka",
         "type": "U",
-        "date": "2026-09-18",
-        "start": "16:00",
-        "end": "18:00",
+        "date": "2026-09-17",
+        "start": "18:00",
+        "end": "20:0",
         "rooms": [
-          "19"
+          "06"
         ],
         "note": ""
       },
@@ -3850,8 +3857,8 @@
         "subject": "Biostatistika",
         "type": "P",
         "date": "2026-09-07",
-        "start": "16:15",
-        "end": "18:15",
+        "start": "18:30",
+        "end": "20:30",
         "rooms": [
           "30"
         ],
@@ -4319,8 +4326,7 @@
         "start": "14:45",
         "end": "16:45",
         "rooms": [
-          "06",
-          "2"
+          "06"
         ],
         "note": ""
       },
@@ -4748,8 +4754,7 @@
         "end": "10:00",
         "rooms": [
           "Amfiteatar 4",
-          "Amfiteatar 5",
-          "3"
+          "Amfiteatar 5"
         ],
         "note": ""
       },
@@ -4878,8 +4883,7 @@
           "Amfiteatar 1",
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "Amfiteatar",
-          "4",
+          "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
         ],
@@ -5174,8 +5178,7 @@
         "rooms": [
           "Amfiteatar 2",
           "Amfiteatar 3",
-          "Čitaonica",
-          "4"
+          "Čitaonica"
         ],
         "note": ""
       },
@@ -5394,7 +5397,7 @@
           "61",
           "62"
         ],
-        "note": ""
+        "note": "3. godina MIO"
       },
       {
         "subject": "Osnove finansijskog menadžmenta",
@@ -5598,8 +5601,7 @@
         "start": "13:30",
         "end": "15:30",
         "rooms": [
-          "07",
-          "5"
+          "07"
         ],
         "note": ""
       },
@@ -6039,8 +6041,7 @@
         "start": "10:30",
         "end": "14:30",
         "rooms": [
-          "Amfiteatar 2",
-          "6"
+          "Amfiteatar 2"
         ],
         "note": ""
       },
@@ -6389,8 +6390,7 @@
         "end": "13:00",
         "rooms": [
           "60",
-          "61",
-          "7"
+          "61"
         ],
         "note": ""
       },
@@ -6831,8 +6831,7 @@
         "end": "16:30",
         "rooms": [
           "Amfiteatar 2",
-          "Amfiteatar 3",
-          "8"
+          "Amfiteatar 3"
         ],
         "note": ""
       },
@@ -6955,7 +6954,7 @@
         "rooms": [
           "Amfiteatar 4"
         ],
-        "note": ""
+        "note": "drugi deo"
       },
       {
         "subject": "Utvrđivanje normativa rada i učinka",
@@ -6986,8 +6985,7 @@
           "30",
           "Amfiteatar 1",
           "Amfiteatar 2",
-          "Amfiteatar",
-          "3",
+          "Amfiteatar 3",
           "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
@@ -7012,8 +7010,7 @@
           "30",
           "Amfiteatar 1",
           "Amfiteatar 2",
-          "Amfiteatar",
-          "3",
+          "Amfiteatar 3",
           "Amfiteatar 4",
           "Amfiteatar 5",
           "Čitaonica"
@@ -7164,8 +7161,7 @@
         "start": "15:00",
         "end": "17:00",
         "rooms": [
-          "11",
-          "9"
+          "11"
         ],
         "note": ""
       }
