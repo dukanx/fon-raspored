@@ -139,12 +139,14 @@ function nastavaPayloads(semester) {
 }
 
 // Ponovo objavljen raspored istog semestra sa novim predmetima (npr. dopuna sa
-// izbornim). `version` razlikuje dopune, pa svaka stigne jednom.
+// izbornim). Ide svima, a predmeti su obično dodati samo nekoj godini, dok su
+// ostalima uz to promenjeni termini i sale, pa tekst mora da važi za sve.
+// `version` razlikuje dopune, pa svaka stigne jednom.
 function nastavaDopunaPayloads(semester, version) {
   if (!semester || !version) return []
   return [{
-    title: 'Ponovo je objavljen raspored nastave',
-    body: 'Dodati su novi predmeti. Proveri svoje predmete i čekiraj one koje slušaš.',
+    title: 'Raspored nastave je izmenjen',
+    body: 'Proveri svoje termine i sale, a ako su dodati novi predmeti, čekiraj one koje slušaš.',
     url: '/raspored',
     tag: `nastava-dopuna-${semester}-${version}`,
   }]
