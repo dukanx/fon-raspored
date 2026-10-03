@@ -35,6 +35,30 @@ manifest i favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_
 Odustali: tačkica na feedback ikonici za "Častiš kafu?" (prenapadno; donacija ostaje u
 feedback prozoru).
 
+## Nije hitno (dogovoreno 2026-10-03)
+
+- [ ] **Detaljni baner "Raspored je izmenjen"** - pamtiti raspored GRUPE (ne samo čekirane
+  predmete, da čekiranje ne pali baner) kad ga student vidi, pa pri sledećoj FON-ovoj izmeni
+  pokazati tačne promene za njegove predmete ("Matematika 1 (P), pon 08:15: Amfiteatar 3 ->
+  Amfiteatar 1") uz "ako si izvezao u kalendar ili sačuvao sliku, uradi ponovo". Za studente
+  bez notifikacija. Sada postoji samo jednokratni opšti baner za izmenu od 2. nedelje
+  (`izmena2NedSeen`, ističe 2026-10-12) - posle toga ga obrisati.
+- [ ] **Oznaka "po planu: letnji/zimski"** na izboru predmeta, kad je predmet u planu modula
+  studenta u drugom semestru nego što ga FON drži (npr. Napredne .NET tehnologije: za SI
+  letnji, a FON ga drži zimi za D4-D7 zajedno sa TEP-om). Sad `planStatus` tiho uzme drugi
+  semestar i piše samo "izborni", pa zbunjuje.
+- [ ] **"Predmeti bez meta" se proverava pre osvežavanja meta** - update_nastava ispiše
+  upozorenje pre koraka `scrape_subjects_meta.py` u update-nastava.yml, pa summary prijavi
+  predmete kojima meta posle stigne. Proveriti posle tog koraka.
+- [ ] **GitHub Actions verzije** - `actions/checkout@v4` i `actions/setup-python@v5` su na
+  Node 20 (zastareo), a `ubuntu-latest` prelazi na Ubuntu 26 od 2026-10-19. Podići verzije u
+  svim workflow-ima i proveriti da prođu.
+- [ ] **AI druga provera rasporeda ispita** - eksperiment na grani `eksperiment/ai-provera-slika`:
+  Groq qwen3.8-27b čita sliku strane, ali na celim PDF-ovima izmišlja sale i kvari nazive
+  (19 i 32 lažne razlike na 2 PDF-a, $0.45). Ako se radi: jači model za slike (Claude, GPT,
+  Gemini, novi ključ), isti eval, i tek uz malo lažnih uzbuna u check-fon kao issue.
+  Pre eval-a proveriti cenu i keširati odgovore.
+
 
 ## Planirano
 
