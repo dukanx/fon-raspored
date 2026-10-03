@@ -13,11 +13,10 @@ favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_ENABLE_ANAL
    - `check-fon.yml` (rokovi): push ide odmah posle `git push`, NE čeka ni Vercel deploy.
      Dodati isto čekanje kao kod nastave (proveriti da sajt servira novi rokovi.json, sa
      `?t=` da se zaobiđe keš), pa `sleep 600`. Dedup u send_push.mjs ostaje kakav je.
-2. [ ] **Cloudflare Web Analytics** - kod je na sajtu (app/layout.tsx), fali samo token:
-   nalog, Web Analytics -> Add a site -> `www.fonraspored.rs`, token iz snippet-a u Vercel
-   env `NEXT_PUBLIC_CF_BEACON_TOKEN` (Production), redeploy. Posle proveriti prelaze između
+2. [ ] **Cloudflare Web Analytics** - nalog i sajt napravljeni (2026-10-03), token je
+   upisan u app/layout.tsx (javan je, nije u env-u). Posle deploy-a proveriti prelaze između
    tabova (beacon dira pushState, a `@vercel/analytics/react` je zbog toga lomio navigaciju);
-   ako se nešto čudno ponaša, `spa: false`. Od ovog dana kreće brojanje za sponzore.
+   ako se nešto čudno ponaša, `spa: false`. Od dana deploy-a kreće brojanje za sponzore.
 3. [ ] **Praćenje CDN potrošnje** - prosek treba da bude ispod ~33K zahteva dnevno.
    Ako do ~2026-10-10 nije, sledeći korak je Cloudflare ispred sajta (statika besplatna,
    bez limita na zahteve), pa tek onda Vercel Pro.

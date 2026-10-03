@@ -8,6 +8,10 @@ import "./globals.css";
 import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
 
+// Cloudflare Web Analytics. Token je javan po prirodi (stoji u HTML-u svakom
+// posetiocu, služi samo da se posete pripišu ovom sajtu), pa nije u env-u.
+const CF_BEACON_TOKEN = 'c2b0ed64199a468695dc0626fe29e089'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -188,15 +192,13 @@ export default function RootLayout({
             (v. .env.example). */}
         {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' && <Analytics />}
         {/* Cloudflare Web Analytics: besplatan, bez kolačića, a beacon ide
-            Cloudflare-u, pa ne troši Vercel CDN zahteve. Bez tokena se ne
-            učitava. Promene ruta (pushState) hvata sam. */}
-        {process.env.NEXT_PUBLIC_CF_BEACON_TOKEN && (
-          <Script
-            src="https://static.cloudflareinsights.com/beacon.min.js"
-            strategy="afterInteractive"
-            data-cf-beacon={JSON.stringify({ token: process.env.NEXT_PUBLIC_CF_BEACON_TOKEN })}
-          />
-        )}
+            Cloudflare-u, pa ne troši Vercel CDN zahteve. Promene ruta
+            (pushState) hvata sam. */}
+        <Script
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+        />
       </body>
     </html>
   );
