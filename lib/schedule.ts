@@ -1,6 +1,33 @@
 // src/lib/schedule.ts
 
-import type { SemesterData, ScheduleEntry } from './types'
+import type { SemesterData, ScheduleEntry, DayOfWeek } from './types'
+
+export const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
+export const DAY_SHORT: Record<DayOfWeek, string> = {
+  Ponedeljak: 'Pon', Utorak: 'Uto', Sreda: 'Sre', Četvrtak: 'Čet', Petak: 'Pet'
+}
+// Oblik posle "u" ("u sredu 12:15").
+export const DAY_U: Record<DayOfWeek, string> = {
+  Ponedeljak: 'ponedeljak', Utorak: 'utorak', Sreda: 'sredu', Četvrtak: 'četvrtak', Petak: 'petak'
+}
+// Početci termina na FON-u (blokovi od 2 sata).
+export const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
+
+// Logički termin: isti predmet, dan, vreme i tip (sala ne ulazi - ista vežba u
+// više sala je jedan termin). Po ovom ključu se termini i skrivaju.
+export function entryKey(e: ScheduleEntry): string {
+  return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
+}
+
+// Inicijali predmeta: "Upravljanje projektima" -> "UP", "Matematika 2" -> "M2".
+// Preskače vezničke reči (za, na, i…).
+const INITIALS_STOP = new Set(['i', 'za', 'na', 'u', 'o', 'sa', 'od', 'do', 'iz'])
+export function subjectInitials(subject: string): string {
+  const words = subject.split(/\s+/).filter(Boolean)
+  const meaningful = words.filter(w => !INITIALS_STOP.has(w.toLowerCase()))
+  const src = meaningful.length ? meaningful : words
+  return src.map(w => w[0]).join('').toUpperCase().slice(0, 3)
+}
 
 const SR_MAP: Record<string, string> = {
   'a':'01', 'b':'02', 'v':'03', 'g':'04', 'd':'05',

@@ -5,6 +5,7 @@ import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
+import { subjectInitials } from '@/lib/schedule'
 import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
@@ -38,16 +39,6 @@ const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
 const SR_DAYS_FULL = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
-// Inicijali predmeta za kalendar: "Upravljanje projektima" -> "UP",
-// "Matematika 2" -> "M2". Preskače vezničke reči (za, na, i…).
-const INITIALS_STOP = new Set(['i', 'za', 'na', 'u', 'o', 'sa', 'od', 'do', 'iz'])
-function subjectInitials(subject: string) {
-  const words = subject.split(/\s+/).filter(Boolean)
-  const meaningful = words.filter(w => !INITIALS_STOP.has(w.toLowerCase()))
-  const src = meaningful.length ? meaningful : words
-  return src.map(w => w[0]).join('').toUpperCase().slice(0, 3)
-}
 
 const GLASS = 'liquid-glass'
 

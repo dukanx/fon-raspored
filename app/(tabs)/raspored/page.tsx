@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup } from '@/lib/schedule'
+import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup, DAYS, DAY_SHORT, SLOTS, entryKey } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, forgetYearAndGroup } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
@@ -24,16 +24,11 @@ import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 
-const DAYS: DayOfWeek[] = ['Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak']
-const DAY_SHORT: Record<DayOfWeek, string> = {
-  Ponedeljak: 'Pon', Utorak: 'Uto', Sreda: 'Sre', Četvrtak: 'Čet', Petak: 'Pet'
-}
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
 }
 
 
-const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
 const SLOT_LABEL: Record<string, string> = {
   '08:15': '08:15-10:00',
   '10:15': '10:15-12:00',
@@ -138,10 +133,6 @@ const IconWeek = (p: IconProps) => (
 const IconList = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
 )
-
-function entryKey(e: ScheduleEntry) {
-  return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
-}
 
 // Isti predmet/dan/vreme/tip u više sala = jedan logički termin (npr. vežbe
 // podeljene na dve sale). Spajamo u jedan blok sa svim salama, da se ne prikazuju
