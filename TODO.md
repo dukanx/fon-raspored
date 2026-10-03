@@ -103,6 +103,12 @@ feedback prozoru).
     okida workflow i sam se žali kad izostane odgovor - jer izostanak run-a se iznutra
     ionako ne može detektovati (v. otkaz runner-a 2026-08-06/07).
 
+  - [ ] **AI kao rezervni parser** - kad parser ne prepozna PDF (FON promeni format), AI
+    čita PDF i vraća termine po strogoj JSON šemi; rezultat ide kroz `validate_data.py` kao
+    i sada. Eval već postoji: PDF-ovi i tačan JSON u `scripts/tests/fixtures/`. AI ovde ima
+    smisla (nestrukturisan ulaz), za razliku od predloga termina, gde je algoritam pobedio
+    (v. `scripts/eval-predlog.ts`).
+
   Postojeća delimična zaštita: `check_fon.py` - PDF koji se isparsira u nula unosa
   ne upisuje se kao poznat, pa se pokušava ponovo. Pokriva promenu formata PDF-a, ne i
   promenu sajta.

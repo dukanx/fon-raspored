@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry } from '@/lib/types'
-import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
+import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
 import { toggleTheme } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
+import MiniWeek from '@/components/MiniWeek'
+import { najboljiPar, razlogPoSablonu, type Par } from '@/lib/predlog'
 import { AnimatePresence, motion } from 'motion/react'
 import { stagger } from '@/lib/stagger'
 
@@ -81,6 +83,10 @@ function AnimatedRow({ children }: { children: React.ReactNode }) {
   )
 }
 
+// Predlog: izabrani termini (već čekirani u listi) i razlog; `pise` dok AI
+// prepričava razlog po šablonu.
+type Predlog = Par & { razlog: string; pise: boolean }
+
 export default function PreneseniPage() {
   const router = useRouter()
   const [godina, setGodina] = useState<number | null>(null)
@@ -91,8 +97,12 @@ export default function PreneseniPage() {
   const [odabraniPredmet, setOdabraniPredmet] = useState('')
   const [trenutniRaspored, setTrenutniRaspored] = useState<ScheduleEntry[]>([])
   const [dostupniTermini, setDostupniTermini] = useState<ScheduleEntry[]>([])
-  const [preporuka, setPreporuka] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [preporuka, setPreporuka] = useState<Predlog | null>(null)
+  // Liste termina imaju svoj skrol; izabran termin (npr. iz AI predloga) se
+  // dovede u vid pomeranjem samo te liste, ne cele stranice.
+  const listaPRef = useRef<HTMLDivElement>(null)
+  const listaVRef = useRef<HTMLDivElement>(null)
+  const predlogId = useRef(0)
   const [loadingData, setLoadingData] = useState(false)
   const [godineData, setGodineData] = useState<Record<number, SemesterData>>({})
   const [odabranoPredavanje, setOdabranoPredavanje] = useState<ScheduleEntry | null>(null)
@@ -268,47 +278,49 @@ export default function PreneseniPage() {
     void handleGodinaSelect(item.year, item.subject)
   }
 
+  useEffect(() => {
+    for (const list of [listaPRef.current, listaVRef.current]) {
+      const sel = list?.querySelector<HTMLElement>('[data-sel="true"]')
+      if (!list || !sel) continue
+      // Lista je `relative`, pa je offsetTop termina meren od vrha liste.
+      const top = sel.offsetTop
+      if (top < list.scrollTop || top + sel.offsetHeight > list.scrollTop + list.clientHeight) {
+        list.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' })
+      }
+    }
+  }, [odabranoPredavanje, odabraneVezbe])
+
   async function getPreporuka() {
     if (!odabraniPredmet || !dostupniTermini.length) return
-    setLoading(true)
-    setPreporuka(null)
+    // Termine bira algoritam (tačan, trenutan, radi i offline) i odmah ih
+    // čekira; "Dodaj" ih upisuje, a student i dalje može da promeni izbor.
+    const par = najboljiPar(vidljiviRaspored, terminiPredavanja, terminiVezbi)
+    setOdabranoPredavanje(par.p)
+    setOdabraneVezbe(par.v)
+    setDodato(false)
 
-    const trenutniStr = trenutniRaspored
-      .map(e => `${e.day} ${e.start}-${e.end}: ${e.subject} [${e.type_short}]`)
-      .join('\n')
-
-    // AI sad dobija sve termine, sa naznakom da li menjaju postojeći predmet
-    const predavanjaStr = dostupniTermini.filter(e => e.type_short === 'P')
-      .map(e => {
-        const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
-        return `${e.day} ${e.start}-${e.end} Sala ${e.room} ${preklapanje ? `(PREKLAPANJE: Mora da zameni ${preklapanje.subject})` : '(SLOBODNO)'}`
-      }).join('\n')
-
-    const vezbeStr = dostupniTermini.filter(e => e.type_short === 'V')
-      .map(e => {
-        const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
-        return `${e.day} ${e.start}-${e.end} Sala ${e.room} ${preklapanje ? `(PREKLAPANJE: Mora da zameni ${preklapanje.subject})` : '(SLOBODNO)'}`
-      }).join('\n')
-
+    // Razlog piše AI iz činjenica (razlog po šablonu). Dok piše, kartica
+    // pokazuje liniju koja pulsira; ako ne odgovori za 3 s (offline, greška),
+    // ostaje šablon. Zakasneli odgovor za stariji predlog se odbacuje.
+    const sablon = razlogPoSablonu(vidljiviRaspored, par)
+    const id = ++predlogId.current
+    setPreporuka({ ...par, razlog: '', pise: true })
+    let razlog = sablon
     try {
       const res = await fetch('/api/preneseni', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trenutniRaspored: trenutniStr,
-          dostupnaPredavanja: predavanjaStr,
-          dostupneVezbe: vezbeStr,
-          predmet: odabraniPredmet,
-        }),
+        body: JSON.stringify({ predmet: odabraniPredmet, cinjenice: sablon }),
+        signal: AbortSignal.timeout(3000),
       })
-      const data = await res.json()
-      setPreporuka(data.preporuka)
+      const data: { razlog: string | null } = await res.json()
+      if (data.razlog) razlog = data.razlog
     } catch {
-      setPreporuka('Greška pri dobijanju preporuke. Pokušaj ponovo.')
-    } finally {
-      setLoading(false)
+      // ostaje šablon
     }
+    if (id === predlogId.current) setPreporuka(prev => prev && { ...prev, razlog, pise: false })
   }
+
 
   // Više ne filtriramo izlaz, već nudimo SVE
   const terminiPredavanja = dostupniTermini.filter(e => e.type_short === 'P')
@@ -318,6 +330,10 @@ export default function PreneseniPage() {
   const canAdd = odabranoPredavanje !== null || odabraneVezbe !== null
   const extraKeys = terminKeys(extraTermini)
   const hiddenKeys = terminKeys(hiddenTermini)
+  // Raspored kakav student stvarno vidi: bez termina koje je sakrio (isti ključ
+  // kao na Rasporedu). Ide AI-ju, oznakama "Menja:" i pregledu nedelje.
+  const skriveni = new Set(hiddenTermini.map(entryKey))
+  const vidljiviRaspored = trenutniRaspored.filter(e => !skriveni.has(entryKey(e)))
 
 
   return (
@@ -609,12 +625,13 @@ export default function PreneseniPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Predavanja (P)
                   </label>
-                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                  <div ref={listaPRef} className="relative space-y-1 max-h-48 overflow-y-auto">
                     {terminiPredavanja.map((e, i) => {
-                      const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+                      const preklapanje = vidljiviRaspored.find(r => r.day === e.day && r.start === e.start)
                       return (
                         <label
                           key={`p-${i}`}
+                          data-sel={odabranoPredavanje === e}
                           style={stagger(i, 30, 8, 60)}
                           className={`anim-up flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
@@ -655,12 +672,13 @@ export default function PreneseniPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Vežbe (V)
                   </label>
-                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                  <div ref={listaVRef} className="relative space-y-1 max-h-48 overflow-y-auto">
                     {terminiVezbi.map((e, i) => {
-                      const preklapanje = trenutniRaspored.find(r => r.day === e.day && r.start === e.start)
+                      const preklapanje = vidljiviRaspored.find(r => r.day === e.day && r.start === e.start)
                       return (
                         <label
                           key={`v-${i}`}
+                          data-sel={odabraneVezbe === e}
                           style={stagger(i, 30, 8, 60)}
                           className={`anim-up flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer
                         transition-colors border
@@ -703,28 +721,53 @@ export default function PreneseniPage() {
           {dostupniTermini.length > 0 && (
             <button
               onClick={getPreporuka}
-              disabled={loading}
+              disabled={preporuka?.pise}
               className={`btn-lift inline-flex w-full items-center justify-center gap-1.5 rounded-xl border py-2 text-[13px] font-medium transition-colors
-                ${loading
+                ${preporuka?.pise
                   ? 'border-transparent bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
                   : 'border-[#024c7d]/20 bg-[#024c7d]/[0.06] text-[#024c7d] hover:bg-[#024c7d]/10 dark:border-[#60c3ad]/30 dark:bg-[#60c3ad]/10 dark:text-[#60c3ad] dark:hover:bg-[#60c3ad]/15'}`}
             >
               <IconSparkle className="h-4 w-4" />
-              {loading ? 'Traženje termina...' : 'Predloži najbolje termine'}
+              Predloži najbolje termine
             </button>
           )}
 
-          {/* Preporuka */}
+          {/* Preporuka: termini su već čekirani u listi, ovde samo šta i zašto. */}
           {preporuka && (
-            <div key={preporuka} className={`anim-up rounded-xl p-4 ${GLASS}`}>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Predlog termina</p>
-              <div className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed space-y-2">
-                {preporuka.split('\n').map((line, i) => (
-                  <p key={i} className={line.startsWith('Razlog:') ? 'text-gray-500 dark:text-gray-400 text-xs pt-1 border-t border-gray-100 dark:border-gray-700' : 'font-medium'}>
-                    {line}
+            <div className={`anim-up rounded-xl p-4 ${GLASS}`}>
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                <IconSparkle className="h-3.5 w-3.5 text-[#024c7d] dark:text-[#60c3ad]" />
+                Predlog je izabran u listi
+              </p>
+              <div className="space-y-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                {[preporuka.p, preporuka.v].filter((e): e is ScheduleEntry => !!e).map(e => (
+                  <p key={`${e.type_short}-${e.day}-${e.start}`}>
+                    {e.type_short === 'P' ? 'Predavanje' : 'Vežbe'}: {e.day} {SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}
+                    <span className="font-normal text-gray-500 dark:text-gray-400"> · Sala {e.room}</span>
                   </p>
                 ))}
               </div>
+              <div className="mt-2 border-t border-gray-100 pt-2 dark:border-gray-700">
+                {preporuka.pise ? (
+                  <div className="space-y-1.5 py-0.5" aria-label="Piše se razlog">
+                    <div className="h-2.5 w-full rounded bg-gray-200/80 animate-pulse dark:bg-white/10" />
+                    <div className="h-2.5 w-2/3 rounded bg-gray-200/80 animate-pulse dark:bg-white/10" />
+                  </div>
+                ) : (
+                  <p className="anim-up text-xs text-gray-500 dark:text-gray-400">{preporuka.razlog}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Kako izabrani termini staju u raspored - i kad se bira ručno. */}
+          {(odabranoPredavanje || odabraneVezbe) && (
+            <div className={`anim-up rounded-xl p-3 ${GLASS}`}>
+              <p className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Tvoja nedelja sa izabranim terminima</p>
+              <MiniWeek
+                current={vidljiviRaspored}
+                picks={[odabranoPredavanje, odabraneVezbe].filter((e): e is ScheduleEntry => !!e)}
+              />
             </div>
           )}
 
