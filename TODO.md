@@ -24,7 +24,7 @@ favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_ENABLE_ANAL
 4. [x] **`reconcileSemester` samo unapred** - ROK pre februara 2027, v. "Tehničko".
 5. [ ] **Tačkica na feedback ikonici** - jednom, dok se ne otvori, da stari korisnici
    primete "Častiš kafu?" (Buy Me a Coffee je u FeedbackButton.tsx).
-6. [ ] **Dupli favicon** - HTML ima dva `<link rel="icon">` (automatski iz app/favicon.ico
+6. [x] **Dupli favicon** - HTML ima dva `<link rel="icon">` (automatski iz app/favicon.ico
    i `metadata.icons` u layout.tsx); jedan je višak.
 7. [ ] **Sponzori** - tek posle 2-4 nedelje brojeva iz Cloudflare-a.
    - Pre nego što sponzor ode uživo: Vercel Pro (Hobby ne dozvoljava reklame ni sponzore,
