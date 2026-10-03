@@ -95,3 +95,12 @@ def test_precrtan_termin_se_ne_cita():
 
     bio = by[("Biostatistika", "2026-09-07")]  # bilo 16:15-18:15
     assert (bio["start"], bio["end"]) == ("18:30", "20:30")
+
+
+def test_crvena_izmena_ima_prednost():
+    """Novu vrednost FON piše crvenom; staru ponekad zaboravi da precrta. U ćeliji
+    sa crvenim tekstom važi samo crveno."""
+    entries = parser.parse_ispit(str(FIXTURES / "ispit_sept_crveno.pdf"))
+    fmr = [e for e in entries if e["subject"] == "Finansijski menadžment i računovodstvo"
+           and e["type"] == "U"]
+    assert [(e["date"], e["rooms"]) for e in fmr] == [("2026-09-05", ["Amfiteatar 5"])]  # crno 04/09 nije precrtano

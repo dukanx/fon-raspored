@@ -160,6 +160,28 @@ def _cell(c):
     return " ".join((c or "").split())
 
 
+def _crveno(c):
+    """Crveno slovo (RGB ili CMYK). FON novu vrednost posle izmene piše crvenom."""
+    boja = tuple(c.get("non_stroking_color") or ())
+    if len(boja) == 3:
+        return boja[0] > 0.7 and boja[1] < 0.3 and boja[2] < 0.3
+    if len(boja) == 4:
+        return boja[1] > 0.7 and boja[2] > 0.7 and boja[0] < 0.3 and boja[3] < 0.3
+    return False
+
+
+def _tekst_celije(page, bbox):
+    """Tekst ćelije. Ako u njoj ima crvenog teksta, važi samo on: to je izmena,
+    a ostatak ćelije je stara vrednost koju FON nekad zaboravi da precrta."""
+    if bbox is None:  # spojena ćelija
+        return ""
+    crop = page.crop(bbox)
+    crvena = sum(1 for c in crop.chars if _crveno(c))
+    if 0 < crvena < len(crop.chars):
+        crop = crop.filter(lambda o: o.get("object_type") != "char" or _crveno(o))
+    return _cell(crop.extract_text(x_tolerance=TABLE_SETTINGS["text_x_tolerance"]))
+
+
 def _table_columns(row):
     """{logička_kolona: indeks ćelije} ako je red zaglavlje tabele, inače None."""
     found = {}
@@ -179,8 +201,10 @@ def _parse_tables(pdf_path, with_type):
     cols = None  # zaglavlje važi i za nastavak tabele na sledećim stranama
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            for table in bez_precrtanog(page).extract_tables(TABLE_SETTINGS):
-                for row in table:
+            cista = bez_precrtanog(page)
+            for table in cista.find_tables(TABLE_SETTINGS):
+                for t_row in table.rows:
+                    row = [_tekst_celije(cista, bbox) for bbox in t_row.cells]
                     header = _table_columns(row)
                     if header:
                         cols = header
