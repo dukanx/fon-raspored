@@ -78,6 +78,13 @@ def _azurirano_date(text):
     return (int(m.group(2)), int(m.group(1))) if m else (0, 0)
 
 
+def _sekcija_semestra(a):
+    """'zimski'/'letnji' iz najbližeg naslova iznad linka ("зимски семестар"), ili None."""
+    naslov = a.find_previous(string=lambda t: t and "семестар" in t.lower())
+    t = (naslov or "").lower()
+    return "zimski" if "зимск" in t else "letnji" if "летњ" in t else None
+
+
 def resolve_files(html, semester):
     """Vraća {year: {'raspored': url, 'grupe': url}} za dati semestar.
 
@@ -85,15 +92,17 @@ def resolve_files(html, semester):
     pa kad FON objavi i PDF, automatski se prelazi na njega."""
     soup = BeautifulSoup(html, "html.parser")
     anchors = [
-        (" ".join(a.get_text().split()), a["href"])
+        (" ".join(a.get_text().split()), a["href"], _sekcija_semestra(a))
         for a in soup.find_all("a", href=True)
         if a["href"].lower().endswith((".pdf", ".docx"))
     ]
 
     sched = {}  # year -> ((je_pdf, ažurirano), url)
     grupe = {}  # year -> (je_pdf, url)
-    for text, href in anchors:
-        if semester not in href.lower():
+    for text, href, sekcija in anchors:
+        # Semestar iz imena fajla ("1zimski202627.docx"), a ako ga tamo nema
+        # ("1godina.docx", od 2. nedelje zimskog 2026/27), iz naslova sekcije.
+        if semester not in href.lower() and sekcija != semester:
             continue
         # preskoči nedeljne/online izmene i staru akreditaciju
         if "акредитација" in text or "online" in href.lower() \

@@ -162,3 +162,18 @@ def test_bez_sacuvanog_otiska_ne_poredi_sadrzaj():
     html = page("2026/27", docx_links("zimski"))
     assert un.check(html, "Zimski 2026/27", YEARS, _known(html), lambda url: "bilo-sta") is None
 
+
+
+def test_semestar_iz_naslova_kad_nije_u_imenu_fajla():
+    # Od 2. nedelje zimskog 2026/27 fajlovi se zovu samo "1godina.docx": semestar
+    # se tada čita iz naslova sekcije ("Распоред наставе / зимски семестар").
+    links = "".join(
+        f'<li><a href="https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/{y}godina.docx">'
+        f"Распоред наставе за {r} годину (од 2.недеље)</a></li>"
+        for y, r in enumerate(ROMAN, 1)
+    )
+    html = page("2026/27", links)
+    files = un.resolve_files(html, "zimski")
+    assert set(files) == {1, 2, 3, 4}
+    assert files[1]["raspored"].endswith("/2026/10/1godina.docx")
+    assert un.resolve_files(html, "letnji") == {}
