@@ -35,6 +35,25 @@ jobs:
         id: check
         run: python scripts/check_fon.py
 
+      # PDF koji je skinut, a nije pročitan, inače pada tiho svaki dan (ostaje u
+      # logu zelenog run-a). Po jedan issue za PDF, dok je otvoren ne otvara se novi.
+      - name: Prijavi PDF koji ne može da se pročita (issue)
+        if: ${{ !cancelled() && hashFiles('scripts/greske_citanja.json') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          jq -c '.[]' scripts/greske_citanja.json | while read -r g; do
+            PDF=$(jq -r .pdf <<<"$g")
+            TITLE="PDF sa FON-a ne može da se pročita: $PDF"
+            if [ -z "$(gh issue list --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')" ]; then
+              BODY=$(printf '%s\n\n%s\n\n```\n%s\n```\n\nLog: %s\n\nPDF se pokušava ponovo svaki dan. Kad se popravi parser ili FON ispravi PDF, zatvori issue.' \
+                "Scraper je skinuo PDF, ali ga nije pročitao, pa ti termini nisu u aplikaciji." \
+                "$(jq -r .url <<<"$g")" "$(jq -r .razlog <<<"$g")" "$RUN_URL")
+              gh issue create --title "$TITLE" --body "$BODY"
+            fi
+          done
+
       # Kalendar aktivnosti (boje dana u Rokovima). Ako stranica ne izgleda
       # kako očekujemo, stari kalendar ostaje, a otvara se issue (ispod).
       - name: Osveži kalendar aktivnosti

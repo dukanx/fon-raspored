@@ -96,6 +96,10 @@ feedback prozoru).
     Workflow tad pada, a GitHub na pao zakazani workflow šalje mejl - to je uzbuna.
     Prvi prolaz ikad (prazan `known_pdfs.json`) i uredan prolaz bez novih PDF-ova
     namerno NE pucaju.
+  - [x] **Nepročitan PDF otvara GitHub issue** (2026-10-03). PDF koji je skinut, a parser
+    ga nije pročitao (greška ili nula termina), ranije je samo ostajao u logu zelenog run-a
+    i pokušavao se svaki dan; septembarski 2025/26 je tako danima tiho padao. Sad check_fon.py
+    piše razlog u `greske_citanja.json`, a check-fon.yml otvara issue po PDF-u.
   - [ ] **„Mrtvi čovek"** - javi ako duže od N dana nema uspešnog prolaza. Namerno
     odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
     **commit i Vercel redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.

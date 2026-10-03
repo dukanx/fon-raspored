@@ -18,6 +18,10 @@ ROKOVI_FILE = SCRIPTS_DIR.parent / 'public' / 'data' / 'rokovi.json'
 MERGE_SCRIPT = SCRIPTS_DIR / 'merge_rok.py'
 # Spisak novih rokova koje send_push.mjs šalje kao notifikacije (efemerno u CI-ju).
 PENDING_NOTIFY_FILE = SCRIPTS_DIR / 'pending_notify.json'
+# PDF-ovi koji su skinuti, a nisu pročitani. check-fon.yml za svaki otvara
+# GitHub issue: takav PDF se pokušava svaki dan i bez ovoga pada tiho
+# (septembarski 2025/26 je danima padao zbog greške u kucanju u naslovu).
+GRESKE_FILE = SCRIPTS_DIR / 'greske_citanja.json'
 # Zadrži rokove kojima je makar jedan termin u poslednjih BUFFER_DANA (ili u budućnosti).
 BUFFER_DANA = 30
 
@@ -58,6 +62,8 @@ def main():
     total_entries = 0
     new_roks = []
     errors = []
+    greske = []  # nepročitani PDF-ovi -> GRESKE_FILE
+    GRESKE_FILE.unlink(missing_ok=True)
     # Za razlikovanje "nema ničeg novog" (uredno) od "sajt se promenio" (kvar).
     stranica_ok = 0
     pdf_linkova = 0
@@ -108,8 +114,11 @@ def main():
             )
 
             if result.returncode != 0:
-                print(f'  GREŠKA u merge_rok.py:\n{result.stderr}')
+                # merge_rok deo grešaka piše na stdout ("nije prepoznat tip PDF-a").
+                izlaz = (result.stdout + result.stderr).strip()
+                print(f'  GREŠKA u merge_rok.py:\n{izlaz}')
                 errors.append(href)
+                greske.append({'pdf': pdf_name, 'url': href, 'razlog': '\n'.join(izlaz.splitlines()[-8:])})
                 continue
 
             print(result.stderr.strip())
@@ -132,6 +141,7 @@ def main():
                 # da bi bio pokušan ponovo pri sledećem pokretanju.
                 print(f'  UPOZORENJE: 0 unosa iz {pdf_name} - neće biti ubeležen kao poznat (retry sledeći put).')
                 errors.append(href)
+                greske.append({'pdf': pdf_name, 'url': href, 'razlog': 'parser nije izvukao nijedan termin'})
                 continue
 
             new_roks.append({'rok': rok_name or pdf_name, 'tip': tip})
@@ -161,6 +171,8 @@ def main():
 
     if errors:
         print(f'\nGreške ({len(errors)}): {", ".join(errors)}')
+    if greske:
+        GRESKE_FILE.write_text(json.dumps(greske, indent=2, ensure_ascii=False), encoding='utf-8')
 
     # Čišćenje starih/praznih rokova radi se uvek (i kad nema novih PDF-ova).
     pruned = prune_rokovi()
