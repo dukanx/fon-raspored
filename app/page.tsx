@@ -491,10 +491,16 @@ export default function OnboardingPage() {
   }, [isHydrated, router])
 
   // Drugi korak vodi na /izborni - učitaj je unapred, da posle animacije
-  // odlaska ne bi bilo čekanja na mrežu.
+  // odlaska ne bi bilo čekanja na mrežu. Samo kad je onboarding stvarno na
+  // ekranu: godina izabrana sada, ili izmena podataka (?edit=1). Sačuvana
+  // godina povratnog korisnika nije dovoljna - njega boot odmah preusmeri na
+  // Raspored, a prefetch (stablo i segmenti, više zahteva) bi išao na svako
+  // otvaranje aplikacije.
   useEffect(() => {
-    if (selectedYear !== null) router.prefetch('/izborni')
-  }, [selectedYear, router])
+    if (selectedYear === null) return
+    const editing = new URLSearchParams(window.location.search).get('edit') === '1'
+    if (year !== undefined || editing) router.prefetch('/izborni')
+  }, [selectedYear, year, router])
 
   // Učitaj JSON kad se odabere godina
   useEffect(() => {
