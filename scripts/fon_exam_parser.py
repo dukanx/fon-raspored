@@ -123,6 +123,66 @@ def parse_rooms(words):
     return rooms
 
 
+# --- Čitanje preko ćelija tabele ---------------------------------------------
+# FON tabele imaju linije, pa pdfplumber zna ivice ćelija. To rešava ono što
+# koordinate reči ne mogu: spisak sala ili naziv prelomljen u više redova je
+# vertikalno centriran, pa je deo iznad, a deo ispod reda sa datumom, i
+# koordinatama se ne zna kom terminu pripada. Manja tolerancija vraća razmake
+# koje podrazumevana guta ("0809" -> "08 09").
+TABLE_SETTINGS = {"text_x_tolerance": 1.5}
+# Zaglavlje P/U kolone je u dva reda ("P." pa "U").
+PU_HEADER_RE = re.compile(r"^[PП][./]?\s*[UУ]$")
+
+
+def _cell(c):
+    return " ".join((c or "").split())
+
+
+def _table_columns(row):
+    """{logička_kolona: indeks ćelije} ako je red zaglavlje tabele, inače None."""
+    found = {}
+    for i, c in enumerate(row):
+        t = _cell(c)
+        for col, names in _COL_SYNONYMS.items():
+            if col not in found and t in names:
+                found[col] = i
+        if "pu" not in found and PU_HEADER_RE.match(t):
+            found["pu"] = i
+    return found if _REQUIRED_COLS.issubset(found) else None
+
+
+def _parse_tables(pdf_path, with_type):
+    """Termini iz ćelija tabele; [] ako PDF nema tabelu sa prepoznatim zaglavljem."""
+    entries = []
+    cols = None  # zaglavlje važi i za nastavak tabele na sledećim stranama
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            for table in page.extract_tables(TABLE_SETTINGS):
+                for row in table:
+                    header = _table_columns(row)
+                    if header:
+                        cols = header
+                        continue
+                    if not cols or len(row) <= max(cols.values()):
+                        continue
+                    subject = _cell(row[cols["predmet"]])
+                    date_iso = to_iso(_cell(row[cols["datum"]]))
+                    if not (subject and date_iso):
+                        continue
+                    entry = {"subject": subject}
+                    if with_type:
+                        entry["type"] = _cell(row[cols["pu"]]) if "pu" in cols else ""
+                    entry.update({
+                        "date": date_iso,
+                        "start": _cell(row[cols["od"]]),
+                        "end": _cell(row[cols["do"]]),
+                        "rooms": parse_rooms(_cell(row[cols["sale"]]).split()),
+                        "note": _cell(row[cols["napomena"]]) if "napomena" in cols else "",
+                    })
+                    entries.append(entry)
+    return entries
+
+
 def _is_header_row(texts):
     """Red zaglavlja tabele (sadrži 'Datum' i 'Sale'/'Sala')."""
     tset = set(texts)
@@ -130,7 +190,7 @@ def _is_header_row(texts):
 
 
 def _parse(pdf_path, fallback, with_type):
-    """Zajedničko jezgro za ispit i kolokvijum.
+    """Rezervno čitanje po koordinatama reči, za PDF bez linija tabele.
 
     with_type=True izdvaja P/U kolonu (pismeni/usmeni) - postoji samo kod ispita.
 
@@ -260,7 +320,7 @@ def parse_ispit(pdf_path):
     Parsira PDF sa ispitnim rokom.
     Kolone: Predmet | [P/U] | Datum | Od | Do | Sale | [Napomena]
     """
-    return _parse(pdf_path, _ISPIT_FALLBACK, with_type=True)
+    return _parse_tables(pdf_path, with_type=True) or _parse(pdf_path, _ISPIT_FALLBACK, with_type=True)
 
 
 def parse_kolokvijum(pdf_path):
@@ -268,7 +328,7 @@ def parse_kolokvijum(pdf_path):
     Parsira PDF sa kolokvijumom.
     Kolone: Predmet | Datum | Od | Do | Sale | [Napom.]
     """
-    return _parse(pdf_path, _KOL_FALLBACK, with_type=False)
+    return _parse_tables(pdf_path, with_type=False) or _parse(pdf_path, _KOL_FALLBACK, with_type=False)
 
 
 def main():

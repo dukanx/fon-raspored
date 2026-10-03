@@ -109,6 +109,13 @@ feedback prozoru).
     smisla (nestrukturisan ulaz), za razliku od predloga termina, gde je algoritam pobedio
     (v. `scripts/eval-predlog.ts`).
 
+  - [x] **Sale iz PDF-a su se cepale i curele u susedni termin** (2026-10-03). Spisak sala
+    ili naziv prelomljen u više redova je u PDF-u vertikalno centriran, pa ga čitanje po
+    koordinatama reči nije znalo kom terminu da pripiše ("Amfiteatar" i "3" odvojeno, sale
+    iz susednog reda). fon_exam_parser sad prvo čita ćelije tabele (`_parse_tables`), a
+    koordinate su rezerva za PDF bez linija tabele. Na fixture PDF-ovima 34 razlike, sve
+    proverene na slici strane; golden JSON-ovi regenerisani.
+
   Postojeća delimična zaštita: `check_fon.py` - PDF koji se isparsira u nula unosa
   ne upisuje se kao poznat, pa se pokušava ponovo. Pokriva promenu formata PDF-a, ne i
   promenu sajta.
