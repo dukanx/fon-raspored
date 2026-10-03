@@ -21,9 +21,31 @@ except ImportError:
     sys.exit(1)
 
 
+def bez_precrtanog(page):
+    """Strana bez precrtanih slova. FON izmenu termina označava tako što stari
+    termin precrta, a novi upiše ispod; precrtano je otkazano i ne sme u podatke.
+    Precrtavanje je tanka vodoravna crta preko sredine slova (podvlačenje je
+    ispod slova, a ivice tabele između redova, pa ih ovo ne hvata)."""
+    crte = [(o["x0"], o["x1"], (o["top"] + o["bottom"]) / 2)
+            for o in page.lines + page.rects
+            if o["bottom"] - o["top"] < 1.5 and o["x1"] - o["x0"] > 2]
+    if not crte:
+        return page
+
+    def precrtano(c):
+        if c.get("object_type") != "char":
+            return False
+        sredina = (c["x0"] + c["x1"]) / 2
+        h = c["bottom"] - c["top"]
+        return any(x0 <= sredina <= x1 and c["top"] + 0.3 * h <= y <= c["bottom"] - 0.3 * h
+                   for x0, x1, y in crte)
+
+    return page.filter(lambda o: not precrtano(o))
+
+
 def extract_rows(page):
     """Grupiše reči po redovima (y koordinata, zaokružena na 3px)."""
-    words = page.extract_words(x_tolerance=2, y_tolerance=3)
+    words = bez_precrtanog(page).extract_words(x_tolerance=2, y_tolerance=3)
     rows = defaultdict(list)
     for w in words:
         rows[round(w["top"] / 3) * 3].append(w)
@@ -157,7 +179,7 @@ def _parse_tables(pdf_path, with_type):
     cols = None  # zaglavlje važi i za nastavak tabele na sledećim stranama
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            for table in page.extract_tables(TABLE_SETTINGS):
+            for table in bez_precrtanog(page).extract_tables(TABLE_SETTINGS):
                 for row in table:
                     header = _table_columns(row)
                     if header:

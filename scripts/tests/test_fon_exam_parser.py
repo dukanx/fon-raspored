@@ -81,3 +81,17 @@ def test_parse_rooms_amfiteatar():
         "Čitaonica",
         "Amfiteatar 1",
     ]
+
+
+def test_precrtan_termin_se_ne_cita():
+    """FON izmenu termina označava precrtavanjem starog i upisom novog ispod.
+    Precrtano je otkazano: parser mora da vrati samo novi datum, vreme i salu."""
+    entries = parser.parse_ispit(str(FIXTURES / "ispit_okt_precrtano.pdf"))
+    by = {(e["subject"], e["date"]): e for e in entries}
+
+    analiza = by[("Analiza podataka", "2026-09-17")]  # bio 18. 9. u 16:00, sala 19
+    assert (analiza["start"], analiza["rooms"]) == ("18:00", ["06"])
+    assert ("Analiza podataka", "2026-09-18") not in by
+
+    bio = by[("Biostatistika", "2026-09-07")]  # bilo 16:15-18:15
+    assert (bio["start"], bio["end"]) == ("18:30", "20:30")
