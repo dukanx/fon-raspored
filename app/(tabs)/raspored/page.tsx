@@ -19,11 +19,13 @@ import OfflineNotice from '@/components/OfflineNotice'
 import { isStandalone, pushSupported } from '@/lib/push'
 import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
+import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { todayLocalIso } from '@/lib/season'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
+import { otisak, promene, opisPromene, type Promena } from '@/lib/izmene'
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
@@ -223,6 +225,11 @@ export default function RasporedPage() {
   const [showTour, setShowTour] = useState(false)
   const [showKalendarIntro, setShowKalendarIntro] = useState(false)
   const [showIzmena2Ned, setShowIzmena2Ned] = useState(false)
+  // Promene u rasporedu grupe od poslednjeg viđenja, i otisak koji se pamti
+  // kad ih student potvrdi.
+  const [promeneRasporeda, setPromeneRasporeda] = useState<Promena[]>([])
+  const [promeneOtvorene, setPromeneOtvorene] = useState(false)
+  const noviOtisak = useRef<{ semester: string; otisak: string[] } | null>(null)
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od praznog
   // rasporeda, pa se ne sme mešati sa `isEmpty`.
   const [loadError, setLoadError] = useState(false)
@@ -331,6 +338,25 @@ export default function RasporedPage() {
         setAllSubjects(uniqueSubjectsForGroup(data, meta.group))
         const checked = byGroup.subjects(meta.group).get()
         const hasSaved = Object.keys(checked).length > 0
+
+        // Izmene sala i termina od kad je student poslednji put video raspored
+        // grupe. Prvi put (ili nov semestar) se samo zapamti; izmene u
+        // predmetima koje ne prati se zapamte tiho.
+        const viden = byGroup.videnRaspored(meta.group)
+        const sada = { semester: data.semester, otisak: otisak(all) }
+        const ranije = viden.get()
+        if (!ranije || ranije.semester !== sada.semester) {
+          viden.set(sada)
+        } else if (ranije.otisak.join('\n') !== sada.otisak.join('\n')) {
+          const p = promene(ranije.otisak, sada.otisak, s => !hasSaved || checked[s] === true)
+          if (p.length > 0) {
+            noviOtisak.current = sada
+            setPromeneRasporeda(p)
+          } else {
+            viden.set(sada)
+          }
+        }
+
         // Predmet kog nema u sačuvanom izboru stigao je kasnije (FON dopunio
         // raspored, npr. izbornim). Ne prikazuje se dok ga student ne izabere,
         // a popup ga pita (v. newSubjects).
@@ -1007,15 +1033,53 @@ export default function RasporedPage() {
       {/* ---------- Sadržaj ---------- */}
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
 
-        {showIzmena2Ned && !loadError && (
+        {/* Izmena rasporeda: tačne promene za predmete koje student prati, a dok
+            ih nema (otisak se tek pamti), jednokratna poruka za 2. nedelju. */}
+        {(promeneRasporeda.length > 0 || showIzmena2Ned) && !loadError && (
           <div className="anim-up mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
                           bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
             <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
-            <p className="flex-1 min-w-0 text-sm font-medium text-amber-800 dark:text-amber-300">
-              Raspored je izmenjen od 2. nedelje, proveri sale i termine.
-            </p>
+            {promeneRasporeda.length > 0 ? (
+              // Sklopljeno: na telefonu bi spisak promena zauzeo pola ekrana.
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                  Raspored je izmenjen
+                  <span className="font-normal text-amber-700 dark:text-amber-400">
+                    {' '}· {promeneRasporeda.length} {[2, 3, 4].includes(promeneRasporeda.length % 10) && ![12, 13, 14].includes(promeneRasporeda.length % 100) ? 'promene' : 'promena'}
+                  </span>
+                  <button
+                    onClick={() => setPromeneOtvorene(o => !o)}
+                    className="ml-2 text-xs font-medium text-amber-700 underline underline-offset-2 dark:text-amber-400"
+                  >
+                    {promeneOtvorene ? 'Sakrij' : 'Prikaži'}
+                  </button>
+                </p>
+                <Expand open={promeneOtvorene}>
+                  <ul className="mt-1.5 space-y-1 text-xs text-amber-700 dark:text-amber-400">
+                    {promeneRasporeda.map(p => (
+                      <li key={`${p.predmet}|${p.tip}`}>{opisPromene(p)}</li>
+                    ))}
+                  </ul>
+                  <p className="mt-1.5 text-xs text-amber-700/80 dark:text-amber-400/80">
+                    Ako si raspored izvezao u kalendar ili sačuvao kao sliku, uradi to ponovo.
+                  </p>
+                </Expand>
+              </div>
+            ) : (
+              <p className="flex-1 min-w-0 text-sm font-medium text-amber-800 dark:text-amber-300">
+                Raspored je izmenjen od 2. nedelje, proveri sale i termine.
+              </p>
+            )}
             <button
-              onClick={() => { app.izmena2NedSeen.set(); setShowIzmena2Ned(false) }}
+              onClick={() => {
+                if (promeneRasporeda.length > 0) {
+                  if (noviOtisak.current) byGroup.videnRaspored(meta.group).set(noviOtisak.current)
+                  setPromeneRasporeda([])
+                } else {
+                  app.izmena2NedSeen.set()
+                  setShowIzmena2Ned(false)
+                }
+              }}
               className="text-amber-400 dark:text-amber-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors shrink-0 text-sm leading-none mt-0.5"
               aria-label="Zatvori"
             >

@@ -143,6 +143,9 @@ export const app = {
 export const byGroup = {
   subjects: (g: string) => json<Record<string, boolean>>('local', `fon_subjects_${g}`, {}),
   extra: (g: string) => json<ScheduleEntry[]>('local', `fon_extra_${g}`, []),
+  // Otisak rasporeda grupe kad ga je student poslednji put potvrdio (v. lib/izmene).
+  videnRaspored: (g: string) =>
+    json<{ semester: string; otisak: string[] } | null>('local', `fon_viden_raspored_${g}`, null),
   hidden: (g: string) => json<ScheduleEntry[]>('local', `fon_hidden_${g}`, []),
   otherSem: (g: string) => json<string[]>('local', `fon_other_sem_${g}`, []),
   prevSubjects: (g: string) =>

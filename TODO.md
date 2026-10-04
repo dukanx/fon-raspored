@@ -37,7 +37,7 @@ feedback prozoru).
 
 ## Nije hitno (dogovoreno 2026-10-03)
 
-- [ ] **Detaljni baner "Raspored je izmenjen"** - pamtiti raspored GRUPE (ne samo čekirane
+- [x] **Detaljni baner "Raspored je izmenjen"** (urađeno 2026-10-04, lib/izmene.ts) - pamtiti raspored GRUPE (ne samo čekirane
   predmete, da čekiranje ne pali baner) kad ga student vidi, pa pri sledećoj FON-ovoj izmeni
   pokazati tačne promene za njegove predmete ("Matematika 1 (P), pon 08:15: Amfiteatar 3 ->
   Amfiteatar 1") uz "ako si izvezao u kalendar ili sačuvao sliku, uradi ponovo". Za studente
