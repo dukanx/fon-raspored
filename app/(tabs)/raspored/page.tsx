@@ -492,8 +492,10 @@ export default function RasporedPage() {
 
   function closeTour() {
     app.appTourSeen.set()
-    // Nov korisnik kalendar upozna u Rokovima, "novo" mu ne treba.
+    // Nov korisnik kalendar upozna u Rokovima, "novo" mu ne treba, a ni poruka
+    // da je raspored izmenjen: za njega je ovo prvi raspored.
     app.kalendarIntroSeen.set()
+    app.izmena2NedSeen.set()
     if (tourHasTransferredSlide) app.prevSubjectsIntroSeen.set()
     setShowTour(false)
   }
