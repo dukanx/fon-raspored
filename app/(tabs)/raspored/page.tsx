@@ -27,6 +27,12 @@ import { todayLocalIso } from '@/lib/season'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 import { otisak, promene, opisPromene, type Promena } from '@/lib/izmene'
 
+// Raspored 3. i 4. godine pre FON-ove izmene od 5. 10. 2026. Baner sa izmenama je
+// uveden posle nje, pa niko nije imao zapamćen raniji raspored; postojeći
+// korisnici bez zapamćenog porede sa ovim i vide i tu izmenu. Posle 19. 10. se
+// ne koristi - tada obrisati ovo i public/data/{3,4}god-prethodni.json.
+const PRETHODNI_RASPORED = { godine: ['3', '4'], do: '2026-10-19' }
+
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
 }
@@ -344,17 +350,31 @@ export default function RasporedPage() {
         // predmetima koje ne prati se zapamte tiho.
         const viden = byGroup.videnRaspored(meta.group)
         const sada = { semester: data.semester, otisak: otisak(all) }
-        const ranije = viden.get()
-        if (!ranije || ranije.semester !== sada.semester) {
-          viden.set(sada)
-        } else if (ranije.otisak.join('\n') !== sada.otisak.join('\n')) {
-          const p = promene(ranije.otisak, sada.otisak, s => !hasSaved || checked[s] === true)
+        // Promene u praćenim predmetima idu u baner (pamte se tek kad ih student
+        // potvrdi), a ostale se zapamte tiho.
+        const uporedi = (ranijiOtisak: string[]) => {
+          const p = promene(ranijiOtisak, sada.otisak, s => !hasSaved || checked[s] === true)
           if (p.length > 0) {
             noviOtisak.current = sada
             setPromeneRasporeda(p)
           } else {
             viden.set(sada)
           }
+        }
+        const ranije = viden.get()
+        if (ranije && ranije.semester === sada.semester) {
+          if (ranije.otisak.join('\n') !== sada.otisak.join('\n')) uporedi(ranije.otisak)
+        } else if (!ranije && PRETHODNI_RASPORED.godine.includes(meta.year)
+          && todayLocalIso() <= PRETHODNI_RASPORED.do && app.appTourSeen.get()) {
+          fetch(`/data/${meta.year}god-prethodni.json`)
+            .then(r => (r.ok ? r.json() : null))
+            .then((prev: SemesterData | null) => {
+              if (prev?.semester === sada.semester) uporedi(otisak(getScheduleForGroup(prev, meta.group)))
+              else viden.set(sada)
+            })
+            .catch(() => {}) // offline: pokušava se pri sledećem otvaranju
+        } else {
+          viden.set(sada)
         }
 
         // Predmet kog nema u sačuvanom izboru stigao je kasnije (FON dopunio

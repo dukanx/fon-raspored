@@ -37,7 +37,10 @@ feedback prozoru).
 
 ## Nije hitno (dogovoreno 2026-10-03)
 
-- [x] **Detaljni baner "Raspored je izmenjen"** (urađeno 2026-10-04, lib/izmene.ts) - pamtiti raspored GRUPE (ne samo čekirane
+- [x] **Detaljni baner "Raspored je izmenjen"** (urađeno 2026-10-04, lib/izmene.ts)
+- [ ] **Posle 2026-10-19 obrisati privremeno za izmenu od 5. 10.** - `PRETHODNI_RASPORED` u
+  raspored/page.tsx i `public/data/{3,4}god-prethodni.json` (raspored pre izmene, da je
+  vide i korisnici koji još nisu imali zapamćen raspored), pa i baner `izmena2NedSeen`. - pamtiti raspored GRUPE (ne samo čekirane
   predmete, da čekiranje ne pali baner) kad ga student vidi, pa pri sledećoj FON-ovoj izmeni
   pokazati tačne promene za njegove predmete ("Matematika 1 (P), pon 08:15: Amfiteatar 3 ->
   Amfiteatar 1") uz "ako si izvezao u kalendar ili sačuvao sliku, uradi ponovo". Za studente
