@@ -59,6 +59,12 @@
   "status": "Obavezan predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-baze-podataka/"
  },
+ "Baze podataka 2": {
+  "espb": "5",
+  "katedra": "Katedra za informacione sisteme",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-baze-podataka-2/"
+ },
  "Brend menadžment": {
   "espb": "5",
   "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
@@ -88,6 +94,12 @@
   "katedra": "Katedra za matematiku",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-diskretne-matematicke-strukture/"
+ },
+ "Distribuirani računarski sistemi": {
+  "espb": "5",
+  "katedra": "Katedra za informacione tehnologije",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-distribuirani-racunarski-sistemi/"
  },
  "Dizajn korisničkog interfejsa": {
   "espb": "5",
