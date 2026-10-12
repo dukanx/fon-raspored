@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { otisak, promene, opisPromene } from './izmene'
-import type { DayOfWeek, ScheduleEntry } from './types'
+import { otisak, promene, opisPromene, izmenjeneGrupe } from './izmene'
+import type { DayOfWeek, ScheduleEntry, SemesterData } from './types'
 
 const T = (subject: string, type_short: 'P' | 'V', day: DayOfWeek, start: string, room: string): ScheduleEntry => ({
   subject, type_short, day, start, room, end: '', groups: ['A1'],
@@ -55,5 +55,31 @@ describe('promene', () => {
     ])
     expect(promene(stari, novi, svi).map(opisPromene))
       .toEqual(['Ekonomija (P): više nije u rasporedu (Sre 12:15, Amfiteatar 1)'])
+  })
+})
+
+describe('izmenjeneGrupe', () => {
+  const sa = (entries: ScheduleEntry[]): SemesterData => ({ semester: 'Zimski 2026/27', year: 3, groups: {}, entries })
+  const grupe = (e: ScheduleEntry, ...groups: string[]) => ({ ...e, groups })
+  const mat = T('Matematika 1', 'P', 'Ponedeljak', '08:15', 'Amfiteatar 3')
+  const eko = T('Ekonomija', 'P', 'Sreda', '12:15', 'Amfiteatar 1')
+  const stari = sa([grupe(mat, 'A1', 'A2'), grupe(eko, 'A3')])
+
+  it('bez promena nema grupa', () => {
+    expect(izmenjeneGrupe(stari, stari)).toEqual([])
+  })
+
+  it('promenjena sala pogađa samo grupe tog termina', () => {
+    const novi = sa([grupe({ ...mat, room: 'Amfiteatar 1' }, 'A1', 'A2'), grupe(eko, 'A3')])
+    expect(izmenjeneGrupe(stari, novi)).toEqual(['A1', 'A2'])
+  })
+
+  it('termin prebačen drugoj grupi menja obe', () => {
+    const novi = sa([grupe(mat, 'A1'), grupe(eko, 'A3'), grupe(mat, 'A3')])
+    expect(izmenjeneGrupe(stari, novi)).toEqual(['A2', 'A3'])
+  })
+
+  it('isti termini drugim redom nisu promena', () => {
+    expect(izmenjeneGrupe(stari, sa([...stari.entries].reverse()))).toEqual([])
   })
 })

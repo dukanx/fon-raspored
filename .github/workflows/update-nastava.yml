@@ -136,8 +136,8 @@ jobs:
           echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
 
       # Push iz workflow-a ne pokreće druge workflow-e, pa se notifikacija
-      # pokreće ručno. notify-nastava.yml sam odluči da li je nov semestar,
-      # dopuna sa novim predmetima ili ništa (izmene sala ne šalju push).
+      # pokreće ručno. notify-nastava.yml sam odluči da li je nov semestar
+      # (svima) ili izmena (samo grupama kojima se raspored promenio).
       - name: Pokreni notifikaciju
         if: steps.diff.outputs.kind == 'publish'
         env:

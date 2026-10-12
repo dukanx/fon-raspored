@@ -4,15 +4,24 @@
 // Raspored pamti otisak rasporeda GRUPE (ne samo čekiranih predmeta, da čekiranje
 // ne bi izgledalo kao izmena), pa kad FON promeni sale ili termine, baner na
 // Rasporedu pokaže tačne promene za predmete koje student prati. Bez ovoga je
-// izmena tiha za sve bez notifikacija, a i notifikacija ide samo kad je dodat
-// predmet (v. notify-nastava.yml).
+// izmena tiha za sve bez notifikacija. Notifikacija ide samo grupama kojima se
+// raspored promenio (`izmenjeneGrupe`, v. notify-nastava.yml).
 
-import type { ScheduleEntry } from './types'
-import { DAY_SHORT } from './schedule'
+import type { ScheduleEntry, SemesterData } from './types'
+import { DAY_SHORT, getScheduleForGroup } from './schedule'
 
 // Jedan termin kao string; sala je deo otiska, jer je i ona izmena.
 export function otisak(entries: ScheduleEntry[]): string[] {
   return [...new Set(entries.map(e => [e.subject, e.type_short, e.day, e.start, e.room].join('|')))].sort()
+}
+
+// Grupe kojima se raspored promenio između dve objave, za ciljane notifikacije.
+// Grupa koja je dodata ili nestala računa se kao promenjena.
+export function izmenjeneGrupe(stari: SemesterData, novi: SemesterData): string[] {
+  const grupe = new Set([...stari.entries, ...novi.entries].flatMap(e => e.groups))
+  const isti = (g: string) =>
+    otisak(getScheduleForGroup(stari, g)).join('\n') === otisak(getScheduleForGroup(novi, g)).join('\n')
+  return [...grupe].filter(g => !isti(g)).sort()
 }
 
 export interface Promena {

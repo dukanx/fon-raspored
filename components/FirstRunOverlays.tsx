@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import NotificationIntro from './NotificationIntro'
+import { osveziGrupuPretplate } from '@/lib/push'
 
 // TODO(tutorial): Tutorial.tsx (story-carousel walkthrough) je izgrađen ali
 // namerno ISKLJUČEN - slike unutar slajda (flex-1 + object-contain) su
@@ -25,6 +26,9 @@ export default function FirstRunOverlays() {
   useEffect(() => {
     // queueMicrotask: izbegava setState sinhrono u efektu (react-hooks pravilo).
     queueMicrotask(() => setStage('notif'))
+    // Montira se na svakom tabu, pa je ovo jedno mesto za sve: backend dobije
+    // grupu postojeće pretplate (i novu kad student promeni grupu).
+    osveziGrupuPretplate()
   }, [])
 
   if (stage === 'loading') return null

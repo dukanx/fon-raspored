@@ -25,7 +25,12 @@ export type WebPushSubscription = {
   keys: { p256dh: string; auth: string }
 }
 
-export const subscribeUser = (sub: WebPushSubscription) => posalji('/api/push', 'POST', sub)
+// Uz pretplatu ide i grupa, da notifikacija o izmeni rasporeda stigne samo
+// grupama kojima se raspored promenio.
+export type PushGrupa = { godina: string; grupa: string }
+
+export const subscribeUser = (sub: WebPushSubscription, grupa: PushGrupa | null) =>
+  posalji('/api/push', 'POST', { ...sub, ...grupa })
 
 export const unsubscribeUser = (endpoint: string) => posalji('/api/push', 'DELETE', { endpoint })
 

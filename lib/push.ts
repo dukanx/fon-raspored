@@ -2,7 +2,8 @@
 //
 // Koriste ga i NotificationBell (na /rokovi) i NotificationIntro (prvi-put modal),
 // da se logika oko dozvola, VAPID-a i service workera ne duplira na dva mesta.
-import { subscribeUser, unsubscribeUser } from '@/lib/backend'
+import { subscribeUser, unsubscribeUser, type PushGrupa } from '@/lib/backend'
+import { app, saved, session } from '@/lib/storage'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -65,6 +66,14 @@ export async function getPushSubscription(): Promise<PushSubscription | null> {
   }
 }
 
+// Studentova godina i grupa: sačuvana, a ako je nema, iz sesije.
+function mojaGrupa(): PushGrupa | null {
+  const godina = saved.year.get() ?? session.year.get()
+  const grupa = saved.group.get() ?? session.group.get()
+  return godina && grupa ? { godina, grupa } : null
+}
+const oznakaGrupe = (g: PushGrupa | null) => (g ? `${g.godina}:${g.grupa}` : '')
+
 export type PushResult = { ok: true } | { ok: false; error: string }
 
 // Traži dozvolu, pretplati se i pošalji pretplatu backend-u.
@@ -84,8 +93,10 @@ export async function enablePush(): Promise<PushResult> {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapidKey),
     })
-    const res = await subscribeUser(JSON.parse(JSON.stringify(sub)))
+    const grupa = mojaGrupa()
+    const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), grupa)
     if (!res.success) return { ok: false, error: res.error || 'Greška' }
+    app.pushGrupa.set(oznakaGrupe(grupa))
     return { ok: true }
   } catch (e) {
     console.error(e)
@@ -104,9 +115,23 @@ export async function disablePush(): Promise<PushResult> {
       await unsubscribeUser(sub.endpoint)
       await sub.unsubscribe()
     }
+    app.pushGrupa.remove()
     return { ok: true }
   } catch (e) {
     console.error(e)
     return { ok: false, error: 'Nije uspelo isključivanje.' }
   }
+}
+
+// Backend zna grupu pretplatnika, pa notifikacija o izmeni rasporeda stiže samo
+// grupama kojima se raspored promenio. Šalje se samo kad se grupa promeni (i
+// jednom za pretplate od pre nego što se grupa pamtila).
+export async function osveziGrupuPretplate(): Promise<void> {
+  if (isLocalNotificationPreview() || notificationPermission() !== 'granted') return
+  const grupa = mojaGrupa()
+  if (!grupa || app.pushGrupa.get() === oznakaGrupe(grupa)) return
+  const sub = await getPushSubscription()
+  if (!sub) return
+  const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), grupa)
+  if (res.success) app.pushGrupa.set(oznakaGrupe(grupa))
 }

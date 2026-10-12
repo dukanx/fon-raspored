@@ -6,8 +6,9 @@
 //   node scripts/send_push.mjs reminders   -> podsetnici dan pred početak/kraj prijave (čita rokovi.json)
 //   node scripts/send_push.mjs nastava "Zimski 2026/27"
 //                                          -> "objavljen je raspored nastave" (jednom po semestru)
-//   node scripts/send_push.mjs nastava-dopuna "Zimski 2026/27" "<oznaka verzije>"
-//                                          -> "ponovo je objavljen raspored" (jednom po verziji)
+//   node scripts/send_push.mjs nastava-izmena "Zimski 2026/27" "<oznaka verzije>" "3:C13 3:C14"
+//                                          -> "raspored nastave je izmenjen" samo tim grupama
+//                                             (jednom po verziji)
 //
 // Env: NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:),
 //      UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
@@ -138,18 +139,30 @@ function nastavaPayloads(semester) {
   }]
 }
 
-// Ponovo objavljen raspored istog semestra sa novim predmetima (npr. dopuna sa
-// izbornim). Ide svima, a predmeti su obično dodati samo nekoj godini, dok su
-// ostalima uz to promenjeni termini i sale, pa tekst mora da važi za sve.
-// `version` razlikuje dopune, pa svaka stigne jednom.
-function nastavaDopunaPayloads(semester, version) {
+// Izmenjen raspored istog semestra (sale, termini, novi predmeti). `version`
+// razlikuje izmene, pa svaka stigne jednom.
+function nastavaIzmenaPayloads(semester, version) {
   if (!semester || !version) return []
   return [{
     title: 'Raspored nastave je izmenjen',
     body: 'Proveri svoje termine i sale, a ako su dodati novi predmeti, čekiraj one koje slušaš.',
     url: '/raspored',
-    tag: `nastava-dopuna-${semester}-${version}`,
+    tag: `nastava-izmena-${semester}-${version}`,
   }]
+}
+
+// Izmena ide samo grupama iz `grupe` ("3:C13 3:C14"). Pretplata bez grupe (od
+// pre nego što se pamtila, ili student bez izabrane grupe) dobija opštu poruku.
+function zaIzmenjeneGrupe(grupe) {
+  const pogodjene = new Set(grupe.split(/\s+/).filter(Boolean))
+  return (payload, sub) => {
+    if (!sub.grupa) return payload
+    if (!pogodjene.has(`${sub.godina}:${sub.grupa}`)) return null
+    return {
+      ...payload,
+      body: `Promenjen je raspored grupe ${sub.grupa}. Proveri termine i sale, a ako su dodati novi predmeti, čekiraj one koje slušaš.`,
+    }
+  }
 }
 
 // --- slanje -----------------------------------------------------------------
@@ -163,7 +176,8 @@ async function getSubscriptions() {
   }))
 }
 
-async function sendAll(payloads) {
+// `za` bira poruku za pretplatu (null = preskoči); podrazumevano svima ista.
+async function sendAll(payloads, za = (payload) => payload) {
   if (payloads.length === 0) {
     console.log('Nema notifikacija za slanje.')
     return
@@ -174,11 +188,16 @@ async function sendAll(payloads) {
 
   const dead = []
   let sent = 0
+  let preskoceno = 0
   for (const payload of payloads) {
-    const data = JSON.stringify(payload)
     for (const { endpoint, sub } of subs) {
+      const poruka = za(payload, sub)
+      if (!poruka) {
+        preskoceno++
+        continue
+      }
       try {
-        await webpush.sendNotification(sub, data)
+        await webpush.sendNotification(sub, JSON.stringify(poruka))
         sent++
       } catch (err) {
         const code = err?.statusCode
@@ -192,7 +211,7 @@ async function sendAll(payloads) {
     await redis.hdel(SUBS_KEY, ...dead)
     console.log(`Uklonjeno ${dead.length} mrtvih pretplata.`)
   }
-  console.log(`Poslato ${sent} notifikacija.`)
+  console.log(`Poslato ${sent} notifikacija${preskoceno ? `, preskočeno ${preskoceno} (druge grupe)` : ''}.`)
 }
 
 // Dedup: workflow se pokreće više puta dnevno (zbog nepouzdanog GitHub cron-a),
@@ -226,13 +245,16 @@ async function dedupeNastava(payloads) {
 
 const mode = process.argv[2]
 let payloads = []
+let za
 if (mode === 'new') payloads = newRokPayloads()
 else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads())
 else if (mode === 'nastava') payloads = await dedupeNastava(nastavaPayloads(process.argv[3]))
-else if (mode === 'nastava-dopuna') payloads = await dedupeNastava(nastavaDopunaPayloads(process.argv[3], process.argv[4]))
-else {
-  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>"|nastava-dopuna "<semestar>" "<verzija>">')
+else if (mode === 'nastava-izmena') {
+  payloads = await dedupeNastava(nastavaIzmenaPayloads(process.argv[3], process.argv[4]))
+  za = zaIzmenjeneGrupe(process.argv[5] ?? '')
+} else {
+  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>"|nastava-izmena "<semestar>" "<verzija>" "<grupe>">')
   process.exit(1)
 }
 
-await sendAll(payloads)
+await sendAll(payloads, za)

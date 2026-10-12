@@ -10,27 +10,32 @@ manifest i favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_
 1. [x] **Push ne sme da stigne pre svežih podataka.** Od kad /data ima `max-age=600`,
    ko je otvorio aplikaciju u 10 min pre objave, na klik vidi staro. `notify-nastava.yml`
    i `check-fon.yml` sad čekaju da sajt servira nove podatke, pa još 10 min.
-2. [ ] **Cloudflare Web Analytics** - nalog i sajt napravljeni (2026-10-03), token je
-   upisan u app/layout.tsx (javan je, nije u env-u). Posle deploy-a proveriti prelaze između
-   tabova (beacon dira pushState, a `@vercel/analytics/react` je zbog toga lomio navigaciju);
-   ako se nešto čudno ponaša, `spa: false`. Od dana deploy-a kreće brojanje za sponzore.
-3. [ ] **Praćenje CDN potrošnje** - prosek treba da bude ispod ~33K zahteva dnevno.
-   Odluka ~2026-10-10, sa brojevima posle ispravke prefetch-a /izborni (bila najveća
-   stavka). Ako nije ispod, plan B je Cloudflare kao CDN ispred sajta: domen na Cloudflare
-   DNS, pravila keša (posebno /data), uz rizik da loše podešavanje obori sajt; Vercel ne
-   preporučuje proxy ispred sebe. Tek posle toga Vercel Pro.
-4. [x] **`reconcileSemester` samo unapred** - v. "Tehničko".
-5. [x] **Dupli favicon** - sad samo jedan `<link rel="icon">`, i to naša ikonica kalendara
-   umesto FON-ovog loga.
-6. [ ] **Sponzori** - tek posle 2-4 nedelje brojeva iz Cloudflare-a.
-   - Pre nego što sponzor ode uživo: Vercel Pro (Hobby ne dozvoljava reklame ni sponzore,
-     donacije su izričito dozvoljene), ugovor ili račun, porez proveriti sa knjigovođom.
+2. [x] **Cloudflare Web Analytics** - radi od 2026-10-03 (token u app/layout.tsx, javan je).
+   Od tog dana kreće brojanje za sponzore.
+3. [x] **Prelazak na Cloudflare Pages** (2026-10-12, na 970K od 1M Vercel zahteva). Statički
+   izvoz, serverski deo u `functions/api`, headeri u `public/_headers`; `www` je CNAME na
+   `fon-raspored.pages.dev` u Vercel DNS-u.
+4. [ ] **Nameserver-i na Cloudflare, pa gašenje Vercel-a.** Sad Vercel još drži DNS i
+   preusmerenja `fonraspored.rs` i `fonraspored.online` na `www`. Redom:
+   - na Cloudflare-u dodati domene `fonraspored.rs` i `fonraspored.online` (Free plan); uvoz
+     zapisa proveriti ručno (CNAME `www`, MX i TXT za mejl ako postoje)
+   - pravilo preusmerenja (Redirect Rules) gola adresa i `.online` -> `https://www.fonraspored.rs`
+   - kod registra domena zameniti Vercel nameserver-e Cloudflare-ovim; dok se ne propagira
+     (do 24h) rade i stari i novi, pa sajt ne pada
+   - provera: `curl -I` za sve tri adrese, sertifikati, notifikacija stiže
+   - tek onda na Vercel-u obrisati projekat (i env promenljive u njemu)
+   - obrisati granu `feat/cloudflare-pages` na GitHub-u
+5. [x] **`reconcileSemester` samo unapred** - v. "Tehničko".
+6. [x] **Dupli favicon** - sad samo jedan `<link rel="icon">`, sa našim logom.
+7. [ ] **Sponzori** - tek posle 2-4 nedelje brojeva iz Cloudflare-a.
+   - Cloudflare Pages dozvoljava komercijalnu upotrebu i na Free planu, pa Vercel Pro više
+     nije uslov. Ostaje: ugovor ili račun, porez proveriti sa knjigovođom.
    - Kandidati: Levi9, EY, Saga New Frontier Group (FON Hakaton), Telekom Srbija,
      Orion Innovation, Sixentix, ITum, NALED, Propulzija; FONIS preko C2S kao posrednik.
    - Ponuda: jedna kartica "Sponzor" po semestru, nikad u notifikacijama, bez FON logoa
      ni "partner FON-a". Kartica: `SponsorCard` iz JSON-a sa od-do datumom, `rel="sponsored"`.
-7. [ ] **Rokovi bez podele na Ispite/Kolokvijume** - nedelja od 2026-10-05, na posebnoj
-   grani, pre kolokvijumske nedelje (po FON kalendaru od 2026-11-16). V. "Planirano".
+8. [ ] **Rokovi bez podele na Ispite/Kolokvijume** - na posebnoj grani, pre kolokvijumske
+   nedelje (po FON kalendaru od 2026-11-16). V. "Planirano".
 
 Odustali: tačkica na feedback ikonici za "Častiš kafu?" (prenapadno; donacija ostaje u
 feedback prozoru).
@@ -38,6 +43,13 @@ feedback prozoru).
 ## Nije hitno (dogovoreno 2026-10-03)
 
 - [x] **Detaljni baner "Raspored je izmenjen"** (urađeno 2026-10-04, lib/izmene.ts)
+- [x] **Ciljane notifikacije o izmeni rasporeda** (2026-10-13) - pretplata pamti godinu i
+  grupu, a "Raspored nastave je izmenjen" ide samo grupama kojima se raspored promenio, i za
+  izmene sala i termina (ranije samo za nove predmete, i to svima). Pretplate od ranije
+  dobiju grupu kad student otvori aplikaciju; do tada dobijaju sve.
+  - [ ] Možda kasnije: samo studentima čiji su ČEKIRANI predmeti promenjeni (sad je po
+    grupi, pa izmena izbornog koji student ne sluša i dalje stigne). Traži slanje izbora
+    predmeta uz pretplatu pri svakoj promeni.
 - [ ] **Posle 2026-10-19 obrisati privremeno za izmenu od 5. 10.** - `PRETHODNI_RASPORED` u
   raspored/page.tsx i `public/data/{3,4}god-prethodni.json` (raspored pre izmene, da je
   vide i korisnici koji još nisu imali zapamćen raspored), pa i baner `izmena2NedSeen`. - pamtiti raspored GRUPE (ne samo čekirane
@@ -129,7 +141,7 @@ feedback prozoru).
     piše razlog u `greske_citanja.json`, a check-fon.yml otvara issue po PDF-u.
   - [ ] **„Mrtvi čovek"** - javi ako duže od N dana nema uspešnog prolaza. Namerno
     odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
-    **commit i Vercel redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.
+    **commit i redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.
     Pravo mesto za ovo je spoljni pinger (`cron-job.org`, v. uputstvo na dnu) koji
     okida workflow i sam se žali kad izostane odgovor - jer izostanak run-a se iznutra
     ionako ne može detektovati (v. otkaz runner-a 2026-08-06/07).
@@ -199,8 +211,9 @@ feedback prozoru).
    provera pala  → PR sa izveštajem; upozorenja → GitHub issue
 
 3) notify-nastava.yml  -  posle objave god.json na main
-   nov semestar → "Objavljen je raspored"; isti semestar sa novim predmetima → "Ponovo je
-   objavljen"; samo ispravke → ništa. Čeka da sajt servira novu verziju, pa još 10 min.
+   nov semestar → "Objavljen je raspored", svima; isti semestar, a izmenjeni termini, sale ili
+   predmeti → "Raspored nastave je izmenjen", samo izmenjenim grupama (izmenjene-grupe.ts).
+   Čeka da sajt servira novu verziju, pa još 10 min.
 
 4) osvezi-plan.yml  -  ponedeljkom ~7:17
    plan.json + subjects-meta.json sa FON sajta; posle provere objava sama, ako padne GitHub mejl
@@ -212,7 +225,7 @@ Gde se šta čuva:
 - `public/data/kalendar.json` - FON kalendar aktivnosti (boje dana u Rokovima)
 - `public/data/plan.json`, `subjects-meta.json` - plan modula i podaci o predmetima
 - `scripts/known_pdfs.json`, `scripts/known_nastava.json` - već viđeni PDF-ovi (da zna šta je „novo")
-- Upstash Redis - pretplate (`push:subs`) + dedup markeri (`sent:<datum>:<tag>` za podsetnike, `sent:<tag>` za nastavu)
+- Upstash Redis - pretplate sa godinom i grupom (`push:subs`) + dedup markeri (`sent:<datum>:<tag>` za podsetnike, `sent:<tag>` za nastavu)
 
 
 ## Uputstvo: cron-job.org (ako zatreba pouzdaniji cron)
