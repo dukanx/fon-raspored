@@ -25,10 +25,10 @@ flowchart TB
     SW["Service Worker (sw.js)"]
   end
 
-  subgraph vercel["Vercel - Next.js app"]
-    UI["App Router pages<br/>raspored · rokovi · preneseni"]
-    SA["Server Actions<br/>subscribeUser / unsubscribeUser"]
-    API["/api/preneseni (route handler)"]
+  subgraph cf["Cloudflare Pages"]
+    UI["Static export of the Next.js app<br/>raspored · rokovi · preneseni"]
+    SA["Pages Function /api/push<br/>subscribe / unsubscribe"]
+    API["Pages Function /api/preneseni"]
   end
 
   subgraph gh["GitHub"]
@@ -44,7 +44,7 @@ flowchart TB
 
   B <-->|"static JSON + HTML"| UI
   B -->|"subscribe / unsubscribe"| SA --> REDIS
-  B -->|"POST slot request"| API --> GROQ
+  B -->|"POST picked slots"| API --> GROQ
   SW -->|"shows notification"| B
 
   A1 -->|"scrape + parse"| FON
@@ -53,7 +53,7 @@ flowchart TB
   A2 -->|"scrape + parse"| FON
   A2 -->|"commit if valid, else PR"| REPO
   A2 -->|"trigger notify-nastava"| SEND
-  REPO -->|"build + deploy (CDN)"| vercel
+  REPO -->|"build + deploy (CDN)"| cf
   SEND -->|"read subscriptions"| REDIS
   SEND -->|"Web Push (VAPID)"| SW
 ```
@@ -70,8 +70,9 @@ flowchart TB
 | **Ingestion pipeline** | Python (`check_fon.py`, `fon_parser`, `fon_docx`, `update_nastava.py`, `scrape_plan.py`, `scrape_kalendar.py`) run in GitHub Actions | Scrape FON PDFs/Word files/pages → parse → validate (`validate_data.py`) → commit JSON |
 | **Notifications** | Web Push (VAPID) + Service Worker + `send_push.mjs` + Upstash Redis | Subscribe on the client, fan-out delivery from CI, prune dead endpoints |
 | **Offline** | Service Worker cache (`public/sw.js`) registered for every visitor | Precaches the app shell, hashed assets and `public/data/*.json`; serves them when the network fails |
-| **AI helper** | `/api/preneseni` → Groq (LLM) | Recommends the best lecture/lab slots for a carried-over course under strict constraints |
-| **CI/CD** | GitHub Actions (`ci.yml`) + Vercel | Lint, typecheck, unit tests (Vitest + pytest), build, deploy |
+| **Server functions** | Cloudflare Pages Functions (`functions/api/*`) | Push subscriptions, feedback email (Resend), AI reason text |
+| **AI helper** | `lib/predlog.ts` + `/api/preneseni` → Groq (LLM) | A deterministic algorithm picks the best lecture/lab slots for a carried-over course; the model only explains the pick |
+| **CI/CD** | GitHub Actions (`ci.yml`) + Cloudflare Pages | Lint, typecheck, unit tests (Vitest + pytest), build, deploy |
 
 ---
 
@@ -80,7 +81,7 @@ flowchart TB
 ### 3.1 Ingestion → notification (the pipeline)
 
 A scheduled job checks FON for new/changed schedules and exam dates. When
-something changes, it commits the new JSON (which triggers a Vercel redeploy) and
+something changes, it commits the new JSON (which triggers a Cloudflare Pages redeploy) and
 pushes a notification to subscribers. GitHub Actions is used as **both the
 scheduler and the worker**.
 
@@ -123,7 +124,8 @@ did the files of the published one change (links and sha256 are remembered in
 `.docx`. Before publishing it refreshes the study plan (`plan.json`) and subject
 metadata, and runs `validate_data.py` (see ADR-9). A valid result is committed
 straight to `main` and `notify-nastava.yml` decides what to send: a new semester
-and a supplement with new subjects notify everyone, room/time fixes do not.
+notifies everyone; any other change (rooms, times, new subjects) notifies only
+the groups whose schedule changed (see §3.2).
 
 ### 3.2 Push subscription lifecycle
 
@@ -134,11 +136,19 @@ that discovers a dead subscription, so pruning happens there.
 ```mermaid
 flowchart LR
   A["Client grants permission"] --> B["pushManager.subscribe()"]
-  B --> C["Server Action: subscribeUser"]
+  B --> C["POST /api/push<br/>subscription + year + group"]
   C --> D[("Redis hash push:subs<br/>endpoint → subscription")]
   E["send_push.mjs delivers"] -->|"404 / 410 Gone"| F["hdel endpoint"]
   F --> D
 ```
+
+The subscription carries the student's year and group, and the client sends it
+again whenever the group changes (`osveziGrupuPretplate` in `lib/push.ts`). When
+the class schedule changes mid-semester, `scripts/izmenjene-grupe.ts` compares
+each group's schedule before and after (`izmenjeneGrupe` in `lib/izmene.ts`, the
+same fingerprint the in-app "schedule changed" banner uses), and `send_push.mjs`
+notifies only those groups. Subscriptions without a group (created before this
+existed) get the generic message.
 
 ### 3.3 Stateless schedule sharing
 
@@ -147,13 +157,16 @@ year, group, subject count, selected indices) - no backend row, no ID to store.
 The `/deli` route decodes it, guards against schedule drift (subject count
 mismatch), and applies it to local storage. See `lib/share.ts`.
 
-### 3.4 AI slot recommendation
+### 3.4 Slot recommendation
 
-When a student carries a course from a previous year, `/api/preneseni` builds a
-tightly constrained prompt (the model may only pick from the exact slots
-provided, must avoid gaps, then prefer certain times) and calls Groq. The
-constraints live in the prompt and the candidate list is pre-filtered
-server-side, so the model ranks rather than invents.
+When a student carries a course from a previous year, `lib/predlog.ts` picks the
+lecture/lab pair in the browser: fewest overlaps, then the least added idle time
+(one gap beats a new day on campus, two gaps do not), then preferred times.
+`/api/preneseni` then asks Groq to put the computed facts into one natural
+sentence; on timeout or error a template sentence is used. An eval
+(`scripts/eval-predlog.ts`) showed the model picking slots itself was right in
+3-4 of 12 scenarios against 12 of 12 for the algorithm, which is why it only
+writes the reason.
 
 ---
 
@@ -162,7 +175,7 @@ server-side, so the model ranks rather than invents.
 ### ADR-1 - Git + static JSON as the data store (no database)
 **Context:** the schedule is read by many, written ~4×/year by one automated job.
 **Decision:** precompute the schedule into JSON committed to the repo; serve it
-as static assets over Vercel's CDN.
+as static assets over a CDN (Cloudflare Pages, see ADR-11).
 **Consequences:** essentially free reads, infinite horizontal scale on the read
 path, every data change is a reviewable diff with full history, trivial rollback
 (`git revert`). Trade-off: writes are coarse (a whole-file commit + redeploy) and
@@ -197,7 +210,7 @@ schedule changes - mitigated by a drift check on `/deli`.
 ### ADR-5 - Upstash Redis, only for push subscriptions
 **Context:** the *one* thing that must persist server-side is who to notify.
 **Decision:** store subscriptions in a serverless Redis hash keyed by endpoint;
-reach it over HTTP from both Server Actions and the CI sender.
+reach it over HTTP from both the Pages Function and the CI sender.
 **Consequences:** HTTP access works from edge functions and Actions alike,
 idempotent upserts, O(1) delete on prune. Trade-off: a second managed dependency,
 but scoped to a single tiny concern.
@@ -210,13 +223,14 @@ notification and routes clicks.
 app. Trade-off: iOS only supports Web Push from an installed PWA (16.4+), which
 shaped the install/onboarding UX.
 
-### ADR-7 - LLM as a constrained ranker, not a source of truth
-**Context:** picking non-overlapping carried-over slots is a fiddly optimization.
-**Decision:** pre-filter valid candidates server-side and ask the model to *rank*
-within an explicit rule set, returning a fixed format.
-**Consequences:** the model can't hallucinate invalid slots (it only sees legal
-ones), output is parseable, and the feature degrades gracefully. Trade-off:
-dependence on an external LLM for a non-critical convenience feature.
+### ADR-7 - Algorithm decides, LLM only explains
+**Context:** picking non-overlapping carried-over slots is a small optimization
+with clear rules. The first version asked the model to rank pre-filtered slots.
+**Decision:** a deterministic scorer (`lib/predlog.ts`) picks the slots; the
+model gets the computed facts and writes one sentence of reasoning.
+**Consequences:** the pick is always optimal and testable (unit tests plus an
+eval against the model), and works offline and without the API. Trade-off: the
+reason text still depends on an external LLM, with a template fallback.
 
 ### ADR-8 - Hand-rolled Service Worker cache, network-first for data
 **Context:** students check the schedule on campus where connectivity is poor, so
@@ -267,6 +281,19 @@ schedule show a note that FON hasn't published those electives yet.
 in the schedule and the plan sometimes differ ("Internet marketing" vs. "...i
 društveni mediji"), handled by normalization plus a short alias list in
 `scrape_plan.py`; the validator warns about any subject it still can't place.
+
+### ADR-11 - Static export on Cloudflare Pages
+**Context:** on Vercel Hobby the app hit the limit of 1M CDN requests per 30
+days in the first weeks of the semester; going over means waiting for the window
+to reset, and the paid plan was not an option.
+**Decision:** build with `output: 'export'` (every page is already client-side)
+and host the result on Cloudflare Pages, which does not count static requests.
+The small server part (push subscriptions, feedback, AI reason) moved from
+Server Actions and a Route Handler to Pages Functions in `functions/api/`;
+headers moved from `next.config` to `public/_headers`.
+**Consequences:** no request quota for the static site, and the same JSON-in-Git
+model. Trade-off: no Next server features (Server Actions, ISR, image
+optimization), and local development of the functions needs `wrangler pages dev`.
 
 ---
 

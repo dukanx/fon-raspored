@@ -2,7 +2,7 @@
 
 Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet organizacionih nauka (FON).
 
-**https://fon-raspored-five.vercel.app/**
+**https://www.fonraspored.rs/**
 
 ## Funkcionalnosti
 
@@ -16,11 +16,11 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Čekamo raspored** - između kraja ispitnog roka i objave novog rasporeda početna jasno kaže da raspored još nije objavljen, umesto da prikazuje stari, i nudi uključivanje notifikacija da student sazna čim izađe
 - **Obavezni i izborni po modulu** - pri izboru predmeta čekirani su samo obavezni predmeti za studentov modul, po planu sa sajta modula; ako FON još nije objavio raspored nekog izbornog bloka, aplikacija to napomene
 - **Izborni, preneseni i drugosemestralni predmeti** - tok pri onboardingu za izbor izbornih predmeta, dodavanje prenesenih predmeta iz prethodnih godina i štikliranje predmeta iz drugog semestra (radi tačnih rokova); sve se kasnije može menjati i iz Izmena taba ("Moji predmeti"), ne samo pri onboardingu
-- **Izmena rasporeda** - ručno biranje termina (predavanje/vežbe) za prenesene predmete ili alternativnog termina za tekući predmet, uz AI predlog termina bez preklapanja (Groq/Llama)
+- **Izmena rasporeda** - ručno biranje termina (predavanje/vežbe) za prenesene predmete ili alternativnog termina za tekući predmet, uz predlog termina bez preklapanja (algoritam bira, AI objasni izbor)
 - **Onboarding tur** - posle prvog izbora predmeta, kratak multi-slajd vodič kroz glavne funkcije (Izmena tab, skrivanje, info o predmetu, deljenje, izvoz, rokovi, notifikacije); ako korisnik ima prenesene predmete, dodatni slajd ga upućuje da im ručno podesi termin
 - **Glass dizajn** - responzivni "liquid glass" UI, mobilni donji navbar i jasnije razdvojene akcije za raspored, rokove i izmenu termina
 - **Notifikacija o prijavi** - baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
-- **Push notifikacije (PWA)** - aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, i na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu)
+- **Push notifikacije (PWA)** - aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu), kad izađe raspored nastave, i kad se izmeni raspored studentove grupe (samo grupama kojima se promenio)
 - **Offline rad** - posle prve posete raspored i rokovi se učitavaju i bez interneta; service worker čuva ljusku aplikacije i podatke, a sveže podatke uvek prvo traži sa mreže kad je veza dostupna
 - **Onboarding** - pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
 - **Dark/light mode**
@@ -35,15 +35,17 @@ app/
   page.tsx            # Onboarding (godina, program, grupa) + nalepi deljeni link
   izborni/page.tsx     # Izbor izbornih/prenesenih/drugosemestralnih predmeta (pri onboardingu i kasnije, iz "Moji predmeti")
   deli/page.tsx        # Primena deljenog rasporeda sa /deli?s=... linka
-  actions.ts           # Server akcije - upis/brisanje push pretplata (Upstash Redis)
   manifest.ts          # PWA manifest (instalacija na home screen)
-  api/
-    preneseni/route.ts # AI predlog termina za prenesene predmete (Groq/Llama)
   (tabs)/
     layout.tsx         # Layout za tabove - donji navbar + first-run popup-ovi
     raspored/page.tsx  # Nedeljni raspored (lista/sedmica), export, deljenje, onboarding tur
     rokovi/page.tsx    # Rokovi (ispiti/kolokvijumi, kalendar/lista), sopstveni događaji, notifikacije
     preneseni/page.tsx # Izmena rasporeda - dodavanje termina, skriveni termini, "Moji predmeti"
+
+functions/api/         # Serverski deo (Cloudflare Pages Functions)
+  push.ts              # Upis/brisanje push pretplata, uz godinu i grupu (Upstash Redis)
+  feedback.ts          # Feedback na mejl (Resend)
+  preneseni.ts         # AI obrazloženje predloga termina (Groq)
 
 components/
   OfflineNotice.tsx       # Kartica kad podaci nisu keširani, a nema veze
@@ -97,7 +99,8 @@ scripts/
   scrape_plan.py        # Plan studija po modulima sa sajta → plan.json
   scrape_kalendar.py    # FON kalendar aktivnosti → kalendar.json
   known_nastava.json    # Linkovi i otisci fajlova iz kojih je napravljen objavljeni raspored
-  send_push.mjs         # Slanje Web Push notifikacija (novi rokovi + podsetnici za prijavu)
+  send_push.mjs         # Slanje Web Push notifikacija (rokovi, podsetnici, raspored nastave)
+  izmenjene-grupe.ts    # Grupe kojima se raspored promenio, za ciljane notifikacije
   known_pdfs.json       # Lista već viđenih PDF URL-ova
 
   tests/                # pytest testovi parsera + PDF fixtures (golden + strukturne provere)
@@ -106,7 +109,7 @@ scripts/
   ci.yml                # CI - lint/typecheck/build (Node) + pytest (Python) na PR/push
   check-fon.yml         # Dnevna automatizacija ispita/kolokvijuma i kalendara aktivnosti
   update-nastava.yml    # Raspored nastave: provera na 30 min u sezoni, provera podataka, objava
-  notify-nastava.yml    # Notifikacija kad izađe nov semestar ili dopuna sa novim predmetima
+  notify-nastava.yml    # Notifikacija za nov semestar (svima) ili izmenu (samo izmenjenim grupama)
   osvezi-plan.yml       # Nedeljno osvežavanje plana modula i podataka o predmetima
 ```
 
@@ -117,7 +120,7 @@ npm install
 npm run dev
 ```
 
-Aplikacija se otvara na [http://localhost:3000](http://localhost:3000).
+Aplikacija se otvara na [http://localhost:3000](http://localhost:3000). Serverske funkcije (notifikacije, feedback, AI obrazloženje) rade samo uz Cloudflare-ov lokalni server: `npm run build && npx wrangler pages dev out`.
 
 ## Testovi i CI
 
@@ -167,7 +170,7 @@ PDF se po potrebi može parsirati i ručno (`merge_rok.py` detektuje tip, izvla�
 
 Raspored nastave (`1god.json`-`4god.json`) se objavljuje nekoliko puta godišnje, uz povremene dopune i ispravke. U septembru, oktobru, februaru i martu `update-nastava.yml` na svakih 30 minuta brzo proverava stranicu [raspored-nastave](https://oas.fon.bg.ac.rs/raspored-nastave/): da li je objavljen semestar noviji od trenutnog, ili su se promenili fajlovi objavljenog (pamte se linkovi i otisak sadržaja). Za proveru nove školske godine gleda se i naslov stranice, da prošlogodišnji fajlovi ne bi bili objavljeni kao novi.
 
-Kad ima nečeg novog, fajlovi se parsiraju: PDF preko `fon_parser.py`, a kad FON objavi samo Word, preko `fon_docx.py`. Pre objave se osveže plan modula i podaci o predmetima, pa `validate_data.py` proveri rezultat. Ako je sve u redu, raspored se objavljuje sam, a notifikacija ide za nov semestar i za dopunu sa novim predmetima (ne i za izmene sala i termina). Ako provera nađe grešku u čitanju, ništa se ne objavljuje, nego se otvara Pull Request sa izveštajem; čudnosti u samim FON podacima (npr. opsezi prezimena koji se preklapaju) objavljuju se, uz GitHub issue. Plan modula i podaci o predmetima osvežavaju se i jednom nedeljno (`osvezi-plan.yml`), da izmene plana usred semestra ne bi čekale sledeći raspored.
+Kad ima nečeg novog, fajlovi se parsiraju: PDF preko `fon_parser.py`, a kad FON objavi samo Word, preko `fon_docx.py`. Pre objave se osveže plan modula i podaci o predmetima, pa `validate_data.py` proveri rezultat. Ako je sve u redu, raspored se objavljuje sam, a notifikacija ide svima za nov semestar, a za izmenu (sale, termini, novi predmeti) samo grupama kojima se raspored promenio. Ako provera nađe grešku u čitanju, ništa se ne objavljuje, nego se otvara Pull Request sa izveštajem; čudnosti u samim FON podacima (npr. opsezi prezimena koji se preklapaju) objavljuju se, uz GitHub issue. Plan modula i podaci o predmetima osvežavaju se i jednom nedeljno (`osvezi-plan.yml`), da izmene plana usred semestra ne bi čekale sledeći raspored.
 
 ## Push notifikacije
 
@@ -177,11 +180,11 @@ Potrebne promenljive okruženja:
 
 | Promenljiva | Gde | Opis |
 |---|---|---|
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Vercel + GitHub Secrets | Javni VAPID ključ (koristi ga i browser) |
-| `VAPID_PRIVATE_KEY` | Vercel + GitHub Secrets | Privatni VAPID ključ |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Cloudflare Pages + GitHub Secrets | Javni VAPID ključ (koristi ga i browser) |
+| `VAPID_PRIVATE_KEY` | Cloudflare Pages + GitHub Secrets | Privatni VAPID ključ |
 | `VAPID_SUBJECT` | GitHub Secrets | `mailto:` adresa kontakta |
-| `UPSTASH_REDIS_REST_URL` | Vercel + GitHub Secrets | Upstash REST URL |
-| `UPSTASH_REDIS_REST_TOKEN` | Vercel + GitHub Secrets | Upstash REST token |
+| `UPSTASH_REDIS_REST_URL` | Cloudflare Pages + GitHub Secrets | Upstash REST URL |
+| `UPSTASH_REDIS_REST_TOKEN` | Cloudflare Pages + GitHub Secrets | Upstash REST token |
 
 VAPID ključevi se generišu sa `npx web-push generate-vapid-keys`.
 
@@ -191,17 +194,17 @@ Plutajuće dugme u aplikaciji šalje poruku na mejl preko [Resend](https://resen
 
 | Promenljiva | Gde | Opis |
 |---|---|---|
-| `RESEND_API_KEY` | Vercel | API ključ sa resend.com |
-| `FEEDBACK_EMAIL` | Vercel | Mejl na koji stiže feedback |
-| `RESEND_FROM_EMAIL` | Vercel (opciono) | Pošiljalac, npr. `FON Raspored <feedback@tvojdomen.com>`. Bez ovoga koristi se Resend-ov sandbox pošiljalac (`onboarding@resend.dev`), koji radi bez verifikacije domena. |
+| `RESEND_API_KEY` | Cloudflare Pages | API ključ sa resend.com |
+| `FEEDBACK_EMAIL` | Cloudflare Pages | Mejl na koji stiže feedback |
+| `RESEND_FROM_EMAIL` | Cloudflare Pages (opciono) | Pošiljalac, npr. `FON Raspored <feedback@tvojdomen.com>`. Bez ovoga koristi se Resend-ov sandbox pošiljalac (`onboarding@resend.dev`), koji radi bez verifikacije domena. |
 
 ## AI predlog termina
 
-U Izmeni, kad student dodaje termin za preneseni predmet, može da zatraži predlog - model dobija trenutni raspored i dostupne termine (sa naznakom preklapanja) i vraća predavanje/vežbe bez preklapanja ili sa najmanje pauza, uz kratko obrazloženje.
+U Izmeni, kad student dodaje termin za preneseni predmet, može da zatraži predlog. Termine bira algoritam (`lib/predlog.ts`): najmanje preklapanja, pa najmanje dodatnog čekanja (jedna pauza je bolja od novog dana na fakultetu, dve nisu), pa omiljena vremena. Model samo napiše jednu rečenicu obrazloženja od izračunatih činjenica, a ako ne odgovori za 3 sekunde, ide rečenica po šablonu. Eval (`scripts/eval-predlog.ts`): model koji sam bira bio je u pravu u 3-4 od 12 scenarija, algoritam u 12 od 12.
 
 | Promenljiva | Gde | Opis |
 |---|---|---|
-| `GROQ_API_KEY` | Vercel | API ključ za [Groq](https://groq.com) (`llama-3.3-70b-versatile`) |
+| `GROQ_API_KEY` | Cloudflare Pages | API ključ za [Groq](https://groq.com) (`openai/gpt-oss-120b`) |
 
 ## Verzije
 
