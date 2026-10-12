@@ -177,3 +177,21 @@ def test_semestar_iz_naslova_kad_nije_u_imenu_fajla():
     assert set(files) == {1, 2, 3, 4}
     assert files[1]["raspored"].endswith("/2026/10/1godina.docx")
     assert un.resolve_files(html, "letnji") == {}
+
+
+def test_dupla_adresa_u_linku():
+    # 3. godina od 3. nedelje zimskog 2026/27: FON je u linku zalepio adresu dvaput.
+    los = "https://oas.fon.bg.ac.https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/3god3nedelja202627.docx"
+    dobar = "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/3god3nedelja202627.docx"
+    assert un._popravi_link(los) == dobar
+    assert un._popravi_link(dobar) == dobar
+    links = f'<li><a href="{los}">Распоред наставе за III годину (од 3.недеље)</a></li>'
+    assert un.resolve_files(page("2026/27", links), "zimski")[3]["raspored"] == dobar
+
+
+def test_stara_akreditacija_se_preskace():
+    linije = [
+        "Simulacija i simulacioni jezici P Akr-2014 14:15-16:00 62",
+        "Menadžment totalnog kvaliteta P D15 08:15-10:00 11",
+    ]
+    assert un.bez_stare_akreditacije(linije) == ["Menadžment totalnog kvaliteta P D15 08:15-10:00 11"]

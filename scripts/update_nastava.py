@@ -78,6 +78,24 @@ def _azurirano_date(text):
     return (int(m.group(2)), int(m.group(1))) if m else (0, 0)
 
 
+# Termini za staru akreditaciju 2014 umesto grupe imaju oznaku "Akr-2014" (4. god
+# od 3. nedelje zimskog 2026/27). Aplikacija prati samo akreditaciju 2022, kao i
+# check_fon.py za ispite, pa se ti redovi preskaču pre parsiranja i brojanja.
+STARA_AKREDITACIJA = re.compile(r"\bAkr\.?-?\s*2014\b", re.IGNORECASE)
+
+
+def bez_stare_akreditacije(lines):
+    return [l for l in lines if not STARA_AKREDITACIJA.search(l)]
+
+
+def _popravi_link(href):
+    """FON ume da zalepi adresu dvaput ("https://oas.fon.bg.ac.https://oas.fon.bg.ac.rs/
+    .../3god3nedelja202627.docx", 3. godina od 3. nedelje 2026/27). Važi poslednja."""
+    i = href.rfind("://")
+    j = href.rfind("http", 0, i) if i > 0 else -1
+    return href[j:] if j > 0 else href
+
+
 def _sekcija_semestra(a):
     """'zimski'/'letnji' iz najbližeg naslova iznad linka ("зимски семестар"), ili None."""
     naslov = a.find_previous(string=lambda t: t and "семестар" in t.lower())
@@ -92,7 +110,7 @@ def resolve_files(html, semester):
     pa kad FON objavi i PDF, automatski se prelazi na njega."""
     soup = BeautifulSoup(html, "html.parser")
     anchors = [
-        (" ".join(a.get_text().split()), a["href"], _sekcija_semestra(a))
+        (" ".join(a.get_text().split()), _popravi_link(a["href"]), _sekcija_semestra(a))
         for a in soup.find_all("a", href=True)
         if a["href"].lower().endswith((".pdf", ".docx"))
     ]
@@ -256,7 +274,7 @@ def build_year(raspored_url, grupe_url, year, semester_str):
                 groups = fon_docx.parse_groups(str(gp))
             rp = Path(td) / "raspored.docx"
             rp.write_bytes(download(raspored_url))
-            lines = fon_docx.extract_lines(str(rp))
+            lines = bez_stare_akreditacije(fon_docx.extract_lines(str(rp)))
             entries = fon_parser.parse_schedule_lines(lines, groups or None)
             # Word je rezervni put: ako ijedna linija sa vremenom nije postala
             # termin, FON je promenio format i radije ne upisujemo ništa.
