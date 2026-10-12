@@ -41,6 +41,12 @@
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-analiza-pouzdanosti-i-rizika/"
  },
+ "Analiza procesa i Petrijeve mreže": {
+  "espb": "5",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-analiza-procesa-i-petrijeve-mreze/"
+ },
  "Arhitektura računara i operativni sistemi": {
   "espb": "6",
   "katedra": "Katedra za informacione tehnologije",
@@ -64,6 +70,12 @@
   "katedra": "Katedra za informacione sisteme",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-baze-podataka-2/"
+ },
+ "Big data infrastruktura i servisi": {
+  "espb": "5",
+  "katedra": "Katedra za elektronsko poslovanje",
+  "status": "Izborni predmet",
+  "url": "https://oas.fon.bg.ac.rs/predmet-big-data-infrastruktura-i-servisi/"
  },
  "Brend menadžment": {
   "espb": "5",
@@ -400,6 +412,12 @@
   "katedra": "Katedra za marketing menadžment i odnose sa javnošću",
   "status": "Izborni predmet",
   "url": "https://oas.fon.bg.ac.rs/predmet-medijske-komunikacije/"
+ },
+ "Meko racunanje": {
+  "espb": "4",
+  "katedra": "Katedra za operaciona istraživanja i statistiku",
+  "status": "Izborni",
+  "url": "https://oas.fon.bg.ac.rs/predmet-meko-racunanje/"
  },
  "Menadžment": {
   "espb": "6",

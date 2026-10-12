@@ -78,21 +78,6 @@
   "entries": [
     {
       "day": "Ponedeljak",
-      "subject": "Matematika 1",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "A9",
-        "A10",
-        "A11",
-        "A12"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "Amfiteatar 3"
-    },
-    {
-      "day": "Ponedeljak",
       "subject": "Osnove informaciono komunikacionih tehnologija",
       "type": "Predavanje",
       "type_short": "P",
@@ -116,6 +101,62 @@
       ],
       "start": "08:15",
       "end": "10:00",
+      "room": "13"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Matematika 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A9",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Matematika 1",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A13",
+        "A14",
+        "A15"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Matematika 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A17"
+      ],
+      "start": "10:15",
+      "end": "12:00",
       "room": "13"
     },
     {
@@ -132,32 +173,6 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A17"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "13"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Matematika 1",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "A13",
-        "A14",
-        "A15"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "Amfiteatar 3"
-    },
-    {
-      "day": "Ponedeljak",
       "subject": "Engleski jezik u informatici",
       "type": "Vežbe",
       "type_short": "V",
@@ -170,21 +185,6 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "A1",
-        "A2",
-        "A3",
-        "A4"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "Amfiteatar 1"
-    },
-    {
-      "day": "Ponedeljak",
       "subject": "Elektronsko poslovanje (NA)",
       "type": "Vežbe",
       "type_short": "V",
@@ -193,7 +193,7 @@
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "06"
+      "room": "62"
     },
     {
       "day": "Ponedeljak",
@@ -221,6 +221,33 @@
     },
     {
       "day": "Ponedeljak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "06"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A9",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
       "subject": "Ekonomija",
       "type": "Predavanje",
       "type_short": "P",
@@ -240,11 +267,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A14"
+        "A17"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "06"
+      "room": "62"
     },
     {
       "day": "Ponedeljak",
@@ -260,30 +287,51 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Elektronsko poslovanje (NA)",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A17"
+        "A10"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "62"
+      "start": "14:15",
+      "end": "16:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Matematika 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "16"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Matematika 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A15"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "18"
     },
     {
       "day": "Ponedeljak",
       "subject": "Menadžment",
-      "type": "Predavanje",
-      "type_short": "P",
+      "type": "Vežbe",
+      "type_short": "V",
       "groups": [
-        "A9",
-        "A10",
-        "A11",
-        "A12"
+        "A13"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "Amfiteatar 3"
+      "start": "14:15",
+      "end": "16:00",
+      "room": "15"
     },
     {
       "day": "Ponedeljak",
@@ -314,54 +362,6 @@
     },
     {
       "day": "Ponedeljak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A10"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "07"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A13"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "15"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A15"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "18"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A18"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "16"
-    },
-    {
-      "day": "Ponedeljak",
       "subject": "Engleski jezik u informatici",
       "type": "Vežbe",
       "type_short": "V",
@@ -371,44 +371,6 @@
       "start": "14:15",
       "end": "16:00",
       "room": "30"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A8"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "06"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A8"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "07"
-    },
-    {
-      "day": "Ponedeljak",
-      "subject": "Menadžment",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "A13",
-        "A14",
-        "A15"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "Amfiteatar 4"
     },
     {
       "day": "Ponedeljak",
@@ -427,6 +389,30 @@
     },
     {
       "day": "Ponedeljak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "06"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "07"
+    },
+    {
+      "day": "Ponedeljak",
       "subject": "Matematika 1",
       "type": "Predavanje",
       "type_short": "P",
@@ -437,6 +423,34 @@
       ],
       "start": "16:15",
       "end": "18:00",
+      "room": "Amfiteatar 3"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A13",
+        "A14",
+        "A15"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "Amfiteatar 4"
+    },
+    {
+      "day": "Ponedeljak",
+      "subject": "Menadžment",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "start": "18:15",
+      "end": "20:00",
       "room": "Amfiteatar 3"
     },
     {
@@ -455,18 +469,16 @@
       "room": "Amfiteatar 4"
     },
     {
-      "day": "Ponedeljak",
-      "subject": "Menadžment",
-      "type": "Predavanje",
-      "type_short": "P",
+      "day": "Utorak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
       "groups": [
-        "A16",
-        "A17",
-        "A18"
+        "A1"
       ],
-      "start": "18:15",
-      "end": "20:00",
-      "room": "Amfiteatar 3"
+      "start": "08:15",
+      "end": "10:00",
+      "room": "40"
     },
     {
       "day": "Utorak",
@@ -485,18 +497,6 @@
     },
     {
       "day": "Utorak",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "15"
-    },
-    {
-      "day": "Utorak",
       "subject": "Osnove informaciono komunikacionih tehnologija",
       "type": "Vežbe",
       "type_short": "V",
@@ -505,7 +505,7 @@
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "40"
+      "room": "50"
     },
     {
       "day": "Utorak",
@@ -524,15 +524,15 @@
     },
     {
       "day": "Utorak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Matematika 1",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A1"
+        "A4"
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "50"
+      "room": "15"
     },
     {
       "day": "Utorak",
@@ -560,6 +560,19 @@
     },
     {
       "day": "Utorak",
+      "subject": "Osnovi organizacije",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A11",
+        "A12"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
+    },
+    {
+      "day": "Utorak",
       "subject": "Matematika 1",
       "type": "Predavanje",
       "type_short": "P",
@@ -575,40 +588,15 @@
     },
     {
       "day": "Utorak",
-      "subject": "Engleski jezik u informatici",
+      "subject": "Elektronsko poslovanje (NA)",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A8"
+        "A7"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "13"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Engleski jezik u informatici",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A6"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "18"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Osnovi organizacije",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A11",
-        "A12"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "Amfiteatar 1"
+      "room": "60"
     },
     {
       "day": "Utorak",
@@ -620,19 +608,7 @@
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "50"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A7"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "60"
+      "room": "40"
     },
     {
       "day": "Utorak",
@@ -656,19 +632,43 @@
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "40"
+      "room": "50"
     },
     {
       "day": "Utorak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Engleski jezik u informatici",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A15"
+        "A6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Engleski jezik u informatici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "13"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Ekonomija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "07"
+      "room": "30"
     },
     {
       "day": "Utorak",
@@ -684,15 +684,16 @@
     },
     {
       "day": "Utorak",
-      "subject": "Ekonomija",
+      "subject": "Osnovi organizacije",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A8"
+        "A13",
+        "A14"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "30"
+      "room": "Amfiteatar 2"
     },
     {
       "day": "Utorak",
@@ -711,16 +712,15 @@
     },
     {
       "day": "Utorak",
-      "subject": "Osnovi organizacije",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A13",
-        "A14"
+        "A15"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "Amfiteatar 2"
+      "room": "06"
     },
     {
       "day": "Utorak",
@@ -747,43 +747,7 @@
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "06"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Engleski jezik u informatici",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A10"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "13"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A9"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "50"
-    },
-    {
-      "day": "Utorak",
-      "subject": "Ekonomija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A1"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "12"
+      "room": "07"
     },
     {
       "day": "Utorak",
@@ -799,17 +763,15 @@
     },
     {
       "day": "Utorak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Predavanje",
-      "type_short": "P",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
       "groups": [
-        "A16",
-        "A17",
-        "A18"
+        "A9"
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "Amfiteatar 1"
+      "room": "50"
     },
     {
       "day": "Utorak",
@@ -825,6 +787,44 @@
       "start": "14:15",
       "end": "16:00",
       "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Engleski jezik u informatici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A10"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "13"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Ekonomija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "12"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "Amfiteatar 1"
     },
     {
       "day": "Utorak",
@@ -853,6 +853,20 @@
       "start": "16:15",
       "end": "18:00",
       "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Utorak",
+      "subject": "Ekonomija",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A13",
+        "A14",
+        "A15"
+      ],
+      "start": "18:15",
+      "end": "20:00",
+      "room": "Amfiteatar 4"
     },
     {
       "day": "Utorak",
@@ -872,30 +886,16 @@
       "room": "Amfiteatar 3"
     },
     {
-      "day": "Utorak",
-      "subject": "Ekonomija",
-      "type": "Predavanje",
-      "type_short": "P",
-      "groups": [
-        "A13",
-        "A14",
-        "A15"
-      ],
-      "start": "18:15",
-      "end": "20:00",
-      "room": "Amfiteatar 4"
-    },
-    {
       "day": "Sreda",
-      "subject": "Menadžment",
+      "subject": "Matematika 1",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A1"
+        "A13"
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "13"
+      "room": "16"
     },
     {
       "day": "Sreda",
@@ -911,27 +911,15 @@
     },
     {
       "day": "Sreda",
-      "subject": "Matematika 1",
+      "subject": "Ekonomija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A13"
+        "A3"
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "16"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A2"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "14"
+      "room": "15"
     },
     {
       "day": "Sreda",
@@ -946,6 +934,30 @@
       "start": "08:15",
       "end": "10:00",
       "room": "Amfiteatar 5"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "13"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A2"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "14"
     },
     {
       "day": "Sreda",
@@ -975,15 +987,15 @@
     },
     {
       "day": "Sreda",
-      "subject": "Ekonomija",
+      "subject": "Menadžment",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A3"
+        "A4"
       ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "15"
+      "start": "10:15",
+      "end": "12:00",
+      "room": "14"
     },
     {
       "day": "Sreda",
@@ -996,6 +1008,32 @@
       "start": "10:15",
       "end": "12:00",
       "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A16"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Engleski jezik u informatici",
+      "type": "Predavanje",
+      "type_short": "P",
+      "groups": [
+        "A8",
+        "A9",
+        "A10"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "Amfiteatar 1"
     },
     {
       "day": "Sreda",
@@ -1025,17 +1063,27 @@
     },
     {
       "day": "Sreda",
-      "subject": "Engleski jezik u informatici",
-      "type": "Predavanje",
-      "type_short": "P",
+      "subject": "Matematika 1",
+      "type": "Vežbe",
+      "type_short": "V",
       "groups": [
-        "A8",
-        "A9",
-        "A10"
+        "A2"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "Amfiteatar 1"
+      "room": "16"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A3"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "13"
     },
     {
       "day": "Sreda",
@@ -1055,11 +1103,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A16"
+        "A10"
       ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "09"
+      "start": "12:15",
+      "end": "14:00",
+      "room": "20"
     },
     {
       "day": "Sreda",
@@ -1067,34 +1115,10 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A3"
+        "A6"
       ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "13"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A2"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "16"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "10:15",
-      "end": "12:00",
+      "start": "12:15",
+      "end": "14:00",
       "room": "14"
     },
     {
@@ -1111,30 +1135,6 @@
     },
     {
       "day": "Sreda",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A2"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "62"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A10"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "20"
-    },
-    {
-      "day": "Sreda",
       "subject": "Osnove informaciono komunikacionih tehnologija",
       "type": "Vežbe",
       "type_short": "V",
@@ -1144,6 +1144,18 @@
       "start": "12:15",
       "end": "14:00",
       "room": "08"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Ekonomija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A13"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "17"
     },
     {
       "day": "Sreda",
@@ -1159,15 +1171,15 @@
     },
     {
       "day": "Sreda",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Menadžment",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A9"
+        "A5"
       ],
       "start": "12:15",
       "end": "14:00",
-      "room": "09"
+      "room": "13"
     },
     {
       "day": "Sreda",
@@ -1183,39 +1195,51 @@
     },
     {
       "day": "Sreda",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A9"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "09"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A2"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "62"
+    },
+    {
+      "day": "Sreda",
       "subject": "Menadžment",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A5"
+        "A12"
       ],
-      "start": "12:15",
-      "end": "14:00",
+      "start": "14:15",
+      "end": "16:00",
       "room": "13"
     },
     {
       "day": "Sreda",
-      "subject": "Menadžment",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A6"
+        "A8"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "14"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Ekonomija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A13"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "17"
+      "start": "14:15",
+      "end": "16:00",
+      "room": "08"
     },
     {
       "day": "Sreda",
@@ -1239,43 +1263,7 @@
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "Čitaonica"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A12"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "13"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A8"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "08"
-    },
-    {
-      "day": "Sreda",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A7"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "20"
+      "room": "21"
     },
     {
       "day": "Sreda",
@@ -1307,11 +1295,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A8"
+        "A7"
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "09"
+      "room": "20"
     },
     {
       "day": "Sreda",
@@ -1324,6 +1312,18 @@
       "start": "14:15",
       "end": "16:00",
       "room": "15"
+    },
+    {
+      "day": "Sreda",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "09"
     },
     {
       "day": "Sreda",
@@ -1352,15 +1352,15 @@
     },
     {
       "day": "Četvrtak",
-      "subject": "Menadžment",
+      "subject": "Elektronsko poslovanje (NA)",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A8"
+        "A4"
       ],
       "start": "08:15",
       "end": "10:00",
-      "room": "18"
+      "room": "06"
     },
     {
       "day": "Četvrtak",
@@ -1373,30 +1373,6 @@
       "start": "08:15",
       "end": "10:00",
       "room": "17"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "07"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "08:15",
-      "end": "10:00",
-      "room": "06"
     },
     {
       "day": "Četvrtak",
@@ -1413,15 +1389,87 @@
     },
     {
       "day": "Četvrtak",
-      "subject": "Ekonomija",
+      "subject": "Elektronsko poslovanje (NA)",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A16"
+        "A4"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A8"
+      ],
+      "start": "08:15",
+      "end": "10:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A6"
       ],
       "start": "10:15",
       "end": "12:00",
-      "room": "12"
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A6"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "06"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Engleski jezik u informatici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A4"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A5"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1"
+      ],
+      "start": "10:15",
+      "end": "12:00",
+      "room": "60"
     },
     {
       "day": "Četvrtak",
@@ -1439,136 +1487,15 @@
     },
     {
       "day": "Četvrtak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A1"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "09"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A6"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "06"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A6"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "07"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A1"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "08"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A5"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "30"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Engleski jezik u informatici",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "10:15",
-      "end": "12:00",
-      "room": "18"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A14"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "18"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Elektronsko poslovanje (NA)",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A3"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "07"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Menadžment",
+      "subject": "Ekonomija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
         "A16"
       ],
-      "start": "12:15",
-      "end": "14:00",
+      "start": "10:15",
+      "end": "12:00",
       "room": "12"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Engleski jezik u informatici",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A1"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "Čitaonica"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Ekonomija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A15",
-        "A18"
-      ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "Amfiteatar 2"
     },
     {
       "day": "Četvrtak",
@@ -1576,11 +1503,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A3"
+        "A1"
       ],
-      "start": "12:15",
-      "end": "14:00",
-      "room": "06"
+      "start": "10:15",
+      "end": "12:00",
+      "room": "61"
     },
     {
       "day": "Četvrtak",
@@ -1593,6 +1520,18 @@
       "start": "12:15",
       "end": "14:00",
       "room": "14"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A16"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "12"
     },
     {
       "day": "Četvrtak",
@@ -1612,11 +1551,84 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A12"
+        "A15",
+        "A18"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Amfiteatar 2"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Engleski jezik u informatici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A1"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "Čitaonica"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "06"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Elektronsko poslovanje (NA)",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A3"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A14"
+      ],
+      "start": "12:15",
+      "end": "14:00",
+      "room": "18"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A4"
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "18"
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A4"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "06"
     },
     {
       "day": "Četvrtak",
@@ -1636,18 +1648,6 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A17"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "15"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Menadžment",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
         "A9"
       ],
       "start": "14:15",
@@ -1656,27 +1656,15 @@
     },
     {
       "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Ekonomija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A4"
+        "A12"
       ],
       "start": "14:15",
       "end": "16:00",
-      "room": "06"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A4"
-      ],
-      "start": "14:15",
-      "end": "16:00",
-      "room": "07"
+      "room": "18"
     },
     {
       "day": "Četvrtak",
@@ -1696,11 +1684,71 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
+        "A17"
+      ],
+      "start": "14:15",
+      "end": "16:00",
+      "room": "15"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Menadžment",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
         "A18"
       ],
       "start": "14:15",
       "end": "16:00",
       "room": "12"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Engleski jezik u informatici",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A3"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "21"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A11"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "30"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A12"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "07"
+    },
+    {
+      "day": "Četvrtak",
+      "subject": "Matematika 1",
+      "type": "Vežbe",
+      "type_short": "V",
+      "groups": [
+        "A10"
+      ],
+      "start": "16:15",
+      "end": "18:00",
+      "room": "15"
     },
     {
       "day": "Četvrtak",
@@ -1716,15 +1764,15 @@
     },
     {
       "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
+      "subject": "Ekonomija",
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A12"
+        "A9"
       ],
       "start": "16:15",
       "end": "18:00",
-      "room": "07"
+      "room": "14"
     },
     {
       "day": "Četvrtak",
@@ -1747,47 +1795,11 @@
       "type": "Vežbe",
       "type_short": "V",
       "groups": [
-        "A9"
+        "A2"
       ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "14"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Engleski jezik u informatici",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A3"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "21"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Matematika 1",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A10"
-      ],
-      "start": "16:15",
-      "end": "18:00",
+      "start": "18:15",
+      "end": "20:00",
       "room": "15"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Osnove informaciono komunikacionih tehnologija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A11"
-      ],
-      "start": "16:15",
-      "end": "18:00",
-      "room": "30"
     },
     {
       "day": "Četvrtak",
@@ -1807,18 +1819,6 @@
       "start": "18:15",
       "end": "20:00",
       "room": "Amfiteatar 1"
-    },
-    {
-      "day": "Četvrtak",
-      "subject": "Ekonomija",
-      "type": "Vežbe",
-      "type_short": "V",
-      "groups": [
-        "A2"
-      ],
-      "start": "18:15",
-      "end": "20:00",
-      "room": "15"
     },
     {
       "day": "Četvrtak",

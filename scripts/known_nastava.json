@@ -2,27 +2,27 @@
   "semester": "Zimski 2026/27",
   "files": {
     "1": {
-      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/1godina.docx",
+      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/1god3nedelja202627.docx",
       "grupe": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/09/01-Grupe-za-nastavu-PRVA-godina-2026-2027-ZIMSKI.docx",
-      "raspored_sha": "f7a784d6da4a07f5c5a1da9353ac83adbecaf46db355ee1e343ddfb9c19934e9",
+      "raspored_sha": "f78af2d4d32d71127c2244728b9e98468855d8dcd4f2271b2b6c9ebaae5fe506",
       "grupe_sha": "81571b5832532b8008c6493fccb7d8f3bcf5c7e92c41a2604f108fc690dfdb88"
     },
     "2": {
-      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/2godina.docx",
+      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/2god3nedelja202627.docx",
       "grupe": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/09/02-Grupe-za-nastavu-DRUGA-godina-2026-2027-ZIMSKI.docx",
-      "raspored_sha": "143de5697a4ffb4256050b45bf495b807b3b6d8bd945a17fa0b3fe022a406080",
+      "raspored_sha": "c696bca5d07dfa20d9fbaaf6ec5f1e2e8c1b7032b7dbe0d492ba6979236186a4",
       "grupe_sha": "cbd614d20cba942a9390735d5493a9ef0a2a5b9c4ffffdcb1950801797e09a31"
     },
     "3": {
-      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/3godina.docx",
+      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/3god3nedelja202627.docx",
       "grupe": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/09/03-Grupe-za-nastavu-TRECA-godina-2026-2027-ZIMSKI.docx",
-      "raspored_sha": "e28fb4b1b98ac8b3c6d2944413806d980dc57c87777e1a6690b3d938340a4fa8",
+      "raspored_sha": "98868e4e1a8817f5452bbb645fcb27d24617a9232d7afd8198059475a04c2c1e",
       "grupe_sha": "07a66c34453cfeebe9218f5bb92bd994d1f87d3129628ac71087c1272f5e1d45"
     },
     "4": {
-      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/4godina.docx",
+      "raspored": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/10/4god3nedelja202627.docx",
       "grupe": "https://oas.fon.bg.ac.rs/wp-content/uploads/2026/09/04-Grupe-za-nastavu-CETVRTA-godina-2026-2027-ZIMSKI.docx",
-      "raspored_sha": "90818f9d39cb03a590696acd1c4d81ddd3a9236ffad31c8117825124f5d47ae1",
+      "raspored_sha": "e426dc97e9e153e266c8e3490383d167c25496c187ce462cc4fc6a151abb0544",
       "grupe_sha": "1ff7fa3b98db3fe064f57903ca64b27b15c4a1be44f80ee1a8b6136109691566"
     }
   }
