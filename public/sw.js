@@ -20,7 +20,7 @@
 //    sam radi MPA (hard) navigaciju (ppr-navigations.js:919), koju onda uhvati
 //    navigation handler ispod i servira keširan HTML.
 
-const VERSION = 'v1' // ručni sledgehammer - ne treba dizati na svaki deploy
+const VERSION = 'v2'// ručni sledgehammer - ne treba dizati na svaki deploy
 
 const SHELL = `fon-shell-${VERSION}`   // HTML ljuska      - network-first
 const STATIC = `fon-static-${VERSION}` // /_next/static/*  - cache-first (hashovano)
@@ -36,11 +36,13 @@ const ASSETS = 'fon-assets'            // ikonice/manifest - cache-first  (BEZ v
 // pokriva sve podeljene linkove.
 const SHELL_ROUTES = ['/', '/raspored', '/rokovi', '/preneseni', '/izborni', '/deli']
 
+// apple-icon.png i icon.svg nisu ovde: Next ih iz app/ servira sa ?hash, pa
+// unos bez hash-a ne bi pogodio nijedan zahtev.
 const PRECACHE_ASSETS = [
   '/manifest.webmanifest',
   '/icon-192.png',
   '/icon-512.png',
-  '/apple-icon2.png',
+  '/icon-maskable-512.png',
   '/favicon.ico',
   '/sun.png',
   '/moon.png',

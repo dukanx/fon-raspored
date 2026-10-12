@@ -2,6 +2,7 @@
 
 import { Fragment, useState, useEffect, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import type { SemesterData } from '@/lib/types'
 import { resolveGroup, formatRange, getProgramsForYear } from '@/lib/schedule'
 import { session, saved, app } from '@/lib/storage'
@@ -31,23 +32,41 @@ const HEADING_STYLE = 'blur' as HeadingStyle
 const TITLE_CLASS =
   'text-2xl font-semibold text-[#024c7d] lg:text-4xl lg:leading-[44px] lg:tracking-[-0.01em] dark:text-[#60c3ad]'
 
+// Znak levo od naslova, visok tačno koliko i red naslova (32px / lg 44px).
+// Malo podignut: centriran po redu deluje niže od slova naslova.
+function Logo() {
+  return (
+    <Image
+      src="/logo.svg"
+      alt="FON Raspored"
+      width={34}
+      height={30}
+      loading="eager"
+      className="h-8 w-auto shrink-0 -translate-y-0.5 lg:h-11 lg:-translate-y-1"
+    />
+  )
+}
+
 function BlurHeading() {
   return (
     <div className="mb-4 lg:mb-[22px]">
-      {/* Ovo je pravi <h1> strane, ne dekoracija. Animacija je i dalje slovo po
-          slovo, ali su spanovi u normalnom inline toku (v. BlurText), pa i
-          čitač i pretraživač vide frazu "FON Raspored", a `ariaLabel` skida
-          rizik da je neki čitač ipak izgovori slovkajući. */}
-      <BlurText
-        as="h1"
-        ariaLabel="FON Raspored"
-        text="FON Raspored"
-        animateBy="letters"
-        direction="top"
-        delay={60}
-        stepDuration={0.3}
-        className={TITLE_CLASS}
-      />
+      <div className="flex items-center gap-2.5 lg:gap-3">
+        <Logo />
+        {/* Ovo je pravi <h1> strane, ne dekoracija. Animacija je i dalje slovo po
+            slovo, ali su spanovi u normalnom inline toku (v. BlurText), pa i
+            čitač i pretraživač vide frazu "FON Raspored", a `ariaLabel` skida
+            rizik da je neki čitač ipak izgovori slovkajući. */}
+        <BlurText
+          as="h1"
+          ariaLabel="FON Raspored"
+          text="FON Raspored"
+          animateBy="letters"
+          direction="top"
+          delay={60}
+          stepDuration={0.3}
+          className={TITLE_CLASS}
+        />
+      </div>
       <p className="mt-2 text-[15px] leading-[22px] text-pretty text-gray-500 lg:mt-2.5 lg:text-base dark:text-gray-400">
         Tvoj raspored nastave, ispita i kolokvijuma
       </p>
@@ -66,35 +85,38 @@ function TypedHeading() {
           bi ga svejedno razlomio na stavke. Kucanje ostaje aria-hidden
           dekoracija. */}
       <h1 className="sr-only">FON Raspored</h1>
-      <div aria-hidden="true" className="mb-4 flex flex-wrap items-baseline gap-x-2 lg:mb-[22px]">
-        <TextType
-          as="p"
-          text="FON Raspored"
-          typingSpeed={70}
-          initialDelay={150}
-          loop={false}
-          showCursor={false}
-          className={`shrink-0 ${TITLE_CLASS}`}
-        />
-        {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
-            (150ms + 12 znakova × 70ms), pa da krene ovaj - inače se dva kucanja
-            preklapaju i deluje nervozno. */}
-        <TextType
-          as="span"
-          text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
-          typingSpeed={55}
-          deletingSpeed={30}
-          pauseDuration={1800}
-          initialDelay={1100}
-          loop
-          cursorCharacter="|"
-          /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
-             Bez nje odluka o prelomu reda zavisi od reči koja se trenutno kuca, pa
-             na uskim ekranima (320px) sadržaj ispod poskakuje na svakom ciklusu.
-             Ovako je red ili uvek jedan, ili uvek dva. */
-          className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
-          cursorClassName="text-gray-400 dark:text-gray-500"
-        />
+      <div aria-hidden="true" className="mb-4 flex items-center gap-2.5 lg:mb-[22px] lg:gap-3">
+        <Logo />
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <TextType
+            as="p"
+            text="FON Raspored"
+            typingSpeed={70}
+            initialDelay={150}
+            loop={false}
+            showCursor={false}
+            className={`shrink-0 ${TITLE_CLASS}`}
+          />
+          {/* `initialDelay` je taman toliko da naslov levo prvo otkuca do kraja
+              (150ms + 12 znakova × 70ms), pa da krene ovaj - inače se dva kucanja
+              preklapaju i deluje nervozno. */}
+          <TextType
+            as="span"
+            text={['predavanja', 'vežbi', 'ispita', 'kolokvijuma']}
+            typingSpeed={55}
+            deletingSpeed={30}
+            pauseDuration={1800}
+            initialDelay={1100}
+            loop
+            cursorCharacter="|"
+            /* Rezervisana širina najduže reči ("kolokvijuma" = 73px + kursor 8px).
+               Bez nje odluka o prelomu reda zavisi od reči koja se trenutno kuca, pa
+               na uskim ekranima (320px) sadržaj ispod poskakuje na svakom ciklusu.
+               Ovako je red ili uvek jedan, ili uvek dva. */
+            className="min-w-21 text-sm text-gray-500 dark:text-gray-400"
+            cursorClassName="text-gray-400 dark:text-gray-500"
+          />
+        </div>
       </div>
     </>
   )

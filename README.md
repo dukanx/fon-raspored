@@ -75,6 +75,8 @@ public/
   sw.js                  # Service worker - prima Web Push i prikazuje notifikaciju
   icon-192.png           # Ikonice za PWA manifest
   icon-512.png
+  icon-maskable-512.png  # Android maskable ikonica
+  logo.svg               # Znak (logo-mono.svg je jednobojna verzija)
   data/
     1god.json-4god.json               # Raspored po godinama, trenutno aktivan semestar
     1god-zimski.json / -letnji.json    # Arhiva po semestru (za rokove koji mešaju oba)

@@ -47,11 +47,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  // Favicon dolazi sam iz app/favicon.ico (Next ga ubacuje sa hash-om), pa
-  // ovde stoji samo apple ikonica - inače bi favicon bio naveden dvaput.
-  icons: {
-    apple: '/apple-icon2.png',
-  },
+  // Nema `icons` ovde: favicon.ico, icon.svg i apple-icon.png u app/ Next sam
+  // pretvara u <link> tagove (sa hash-om), pa bi svaka ikonica ovde bila dupla.
   appleWebApp: {
     capable: true,
     title: 'FON Raspored',
