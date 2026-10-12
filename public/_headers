@@ -1,0 +1,21 @@
+# Cloudflare Pages headeri (ranije headers() u next.config.ts).
+
+# Service worker se proverava pri svakom ažuriranju, nikad iz keša.
+/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Browser drži podatke u HTTP kešu 10 min. Kratko, jer SW za /data ostaje
+# network-first (v. pravilo 2 u public/sw.js) - ovo ograničava zastarelost god.json-a.
+/data/*
+  Cache-Control: public, max-age=600
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+
+# Hashovani JS i CSS se nikad ne menjaju pod istim imenom.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

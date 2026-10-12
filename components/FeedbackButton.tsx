@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { submitFeedback } from '@/app/actions'
+import { submitFeedback } from '@/lib/backend'
 import Modal from './Modal'
 
 const GLASS = 'liquid-glass'
@@ -75,7 +75,7 @@ type Status = 'idle' | 'sending' | 'sent' | 'error'
 
 // Ikonica-dugme za header svake stranice (isti stil kao dugme za temu) koje
 // otvara mali formular i šalje poruku developeru na mejl preko Resend-a
-// (app/actions.ts submitFeedback).
+// (lib/backend.ts submitFeedback -> functions/api/feedback.ts).
 export default function FeedbackButton({ className = '' }: { className?: string }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)

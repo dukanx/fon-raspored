@@ -2,7 +2,7 @@
 //
 // Koriste ga i NotificationBell (na /rokovi) i NotificationIntro (prvi-put modal),
 // da se logika oko dozvola, VAPID-a i service workera ne duplira na dva mesta.
-import { subscribeUser, unsubscribeUser } from '@/app/actions'
+import { subscribeUser, unsubscribeUser } from '@/lib/backend'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)

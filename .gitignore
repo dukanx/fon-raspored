@@ -50,3 +50,6 @@ __pycache__/
 
 # dizajn handoff za novu pocetnu, lokalna referenca
 /FON Raspored početna redizajn/
+
+# Cloudflare wrangler (lokalni pages dev)
+.wrangler/

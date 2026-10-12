@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { toLatin } from '@/lib/schedule'
-
+// AI prepričava razlog predloga termina (ranije Next ruta app/api/preneseni).
 // Termine bira algoritam (lib/predlog.ts), AI samo prepričava zašto su dobri,
 // prirodnim jezikom (padeži, red reči). Bira kod jer je tačniji: v.
-// scripts/eval-predlog.ts. Kad ova ruta ne odgovori, aplikacija ostaje na
+// scripts/eval-predlog.ts. Kad ova funkcija ne odgovori, aplikacija ostaje na
 // razlogu po šablonu.
-export async function POST(req: NextRequest) {
-  const { predmet, cinjenice } = await req.json()
+import { toLatin } from '../../lib/schedule'
+import { json, type Ctx } from '../../lib/funkcije'
+
+export async function onRequestPost({ request, env }: Ctx) {
+  const { predmet, cinjenice } = (await request.json()) as { predmet: string; cinjenice: string }
 
   const prompt = `Student dodaje predmet "${predmet}" u raspored. Za njega su već izabrani termini, uz
 tačne činjenice o svakom:
@@ -26,7 +27,7 @@ Odgovor: Predavanje u sredu 12:15 je slobodno i nadovezuje se na Matematiku 3, a
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      'Authorization': `Bearer ${env.GROQ_API_KEY}`,
     },
     // gpt-oss pre odgovora kratko "razmišlja", pa mu treba više tokena nego
     // što je sam odgovor. Groq je llama-3.3-70b-versatile ukinuo.
@@ -38,13 +39,16 @@ Odgovor: Predavanje u sredu 12:15 je slobodno i nadovezuje se na Matematiku 3, a
     }),
   })
 
-  const data = await response.json()
-  const content: string | undefined = data.choices?.[0]?.message?.content?.trim()
+  const data = (await response.json()) as {
+    choices?: { message?: { content?: string } }[]
+    error?: { code?: string; message?: string }
+  }
+  const content = data.choices?.[0]?.message?.content?.trim()
   if (!response.ok || !content) {
-    // U Vercel logu se vidi pravi uzrok (ključ, limit, ukinut model...).
+    // U Cloudflare logu se vidi pravi uzrok (ključ, limit, ukinut model...).
     console.error('Groq greška', response.status, data.error?.code, data.error?.message)
-    return NextResponse.json({ razlog: null })
+    return json({ razlog: null })
   }
   // Model ume da ubaci ćirilično slovo u latinični tekst ("predmetа").
-  return NextResponse.json({ razlog: toLatin(content) })
+  return json({ razlog: toLatin(content) })
 }

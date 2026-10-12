@@ -1,6 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/site'
 
+// Statički izvoz (output: 'export') traži da metadata ruta bude izričito statična.
+export const dynamic = 'force-static'
+
 // Next od ovoga generiše /sitemap.xml.
 //
 // Samo početna. Ostale rute (`/raspored`, `/rokovi`, `/preneseni`, `/izborni`,

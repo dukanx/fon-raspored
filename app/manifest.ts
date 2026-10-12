@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next'
 
+// Statički izvoz (output: 'export') traži da metadata ruta bude izričito statična.
+export const dynamic = 'force-static'
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'FON Raspored',
