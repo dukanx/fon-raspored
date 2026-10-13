@@ -69,6 +69,21 @@ def clean(text):
     return " ".join(text.split())
 
 
+def row_cells(row):
+    """Ćelije reda po kolonama tabele, None za kolonu koju pokriva colspan.
+
+    Semestar se čita po koloni (VII / VIII SEM), a FON ponegde raširi naziv
+    preko prazne kolone (Informaciono inženjerstvo, ДС2: colspan="2" preko
+    VII SEM). Bez razvijanja bi kolona VIII bila na mestu VII i red bi završio
+    u zimskom semestru."""
+    cells = []
+    for td in row.find_all("td"):
+        cells.append(td)
+        span = td.get("colspan", "1")
+        cells += [None] * (int(span) - 1 if span.isdigit() else 0)
+    return cells
+
+
 def parse_module(html):
     """{godina: {"zimski"|"letnji": {"obavezni": [...], "izborni": [...], "blokovi": [[...], ...]}}}.
 
@@ -82,13 +97,14 @@ def parse_module(html):
         sems = {"zimski": {"obavezni": set(), "izborni": set(), "blokovi": []},
                 "letnji": {"obavezni": set(), "izborni": set(), "blokovi": []}}
         for row in table.find_all("tr")[1:]:
-            tds = row.find_all("td")
-            if len(tds) < 4:
+            tds = row_cells(row)
+            if len(tds) < 4 or tds[1] is None:
                 continue
             label = " ".join(tds[1].get_text().split())
             if any(s in label.lower() for s in SKIP):
                 continue
-            sem = "zimski" if tds[2].get_text(strip=True) else "letnji" if tds[3].get_text(strip=True) else None
+            filled = [td is not None and td.get_text(strip=True) for td in tds[2:4]]
+            sem = "zimski" if filled[0] else "letnji" if filled[1] else None
             if not sem:
                 continue
             link = tds[1].find("a", href=True)

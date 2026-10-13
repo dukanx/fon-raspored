@@ -748,6 +748,14 @@
        "Teorija igara"
       ],
       [
+       "Implementacija aplikacija za analitiku",
+       "Neuronske mreže",
+       "Odabrana poglavlja iz IS",
+       "Simulacija u poslovnom odlučivanju",
+       "Uvod u matematičko programiranje",
+       "Zaštita računarskih sistema"
+      ],
+      [
        "Analiza podataka",
        "Ekonometrijski modeli i predviđanje",
        "Elementi teorije algoritama",
@@ -762,17 +770,23 @@
       "Ekonometrijski modeli i predviđanje",
       "Ekonomika poslovanja i planiranje",
       "Elementi teorije algoritama",
+      "Implementacija aplikacija za analitiku",
       "Inteligentni sistemi",
       "Internet inteligentnih uređaja",
       "Mikroservisna arhitektura IS",
       "Mikroservisna arhitektura informacionih sistema",
       "Mobilno računarstvo",
+      "Neuronske mreže",
+      "Odabrana poglavlja iz IS",
       "Osnove naučnog izračunavanja",
       "Osnove računarske inteligencije",
       "Poslovna analitika",
       "Preduzetništvo",
+      "Simulacija u poslovnom odlučivanju",
       "Sistemi za preporučivanje",
-      "Teorija igara"
+      "Teorija igara",
+      "Uvod u matematičko programiranje",
+      "Zaštita računarskih sistema"
      ],
      "obavezni": [
       "Mašinsko učenje",
@@ -800,14 +814,6 @@
        "Multimediji",
        "Softverski paterni",
        "Teorija odlučivanja"
-      ],
-      [
-       "Implementacija aplikacija za analitiku",
-       "Neuronske mreže",
-       "Odabrana poglavlja iz IS",
-       "Simulacija u poslovnom odlučivanju",
-       "Uvod u matematičko programiranje",
-       "Zaštita računarskih sistema"
       ]
      ],
      "izborni": [
@@ -816,21 +822,15 @@
       "Biostatistika",
       "Dinamika organizacionih sistema",
       "Distribuirani računarski sistemi",
-      "Implementacija aplikacija za analitiku",
       "Internet marketing",
       "Internet marketing i društveni mediji",
       "Menadžment ljudskih resursa",
       "Multimediji",
-      "Neuronske mreže",
-      "Odabrana poglavlja iz IS",
       "Osnove kvaliteta",
       "Otkrivanje zakonitosti u procesima",
       "Pravo i etika obrade podataka",
-      "Simulacija u poslovnom odlučivanju",
       "Softverski paterni",
-      "Teorija odlučivanja",
-      "Uvod u matematičko programiranje",
-      "Zaštita računarskih sistema"
+      "Teorija odlučivanja"
      ],
      "obavezni": [
       "Internet tehnologije",
