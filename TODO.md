@@ -15,16 +15,11 @@ manifest i favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_
 3. [x] **Prelazak na Cloudflare Pages** (2026-10-12, na 970K od 1M Vercel zahteva). Statički
    izvoz, serverski deo u `functions/api`, headeri u `public/_headers`; `www` je CNAME na
    `fon-raspored.pages.dev` u Vercel DNS-u.
-4. [ ] **Nameserver-i na Cloudflare, pa gašenje Vercel-a.** Sad Vercel još drži DNS i
-   preusmerenja `fonraspored.rs` i `fonraspored.online` na `www`. Redom:
-   - na Cloudflare-u dodati domene `fonraspored.rs` i `fonraspored.online` (Free plan); uvoz
-     zapisa proveriti ručno (CNAME `www`, MX i TXT za mejl ako postoje)
-   - pravilo preusmerenja (Redirect Rules) gola adresa i `.online` -> `https://www.fonraspored.rs`
-   - kod registra domena zameniti Vercel nameserver-e Cloudflare-ovim; dok se ne propagira
-     (do 24h) rade i stari i novi, pa sajt ne pada
-   - provera: `curl -I` za sve tri adrese, sertifikati, notifikacija stiže
-   - tek onda na Vercel-u obrisati projekat (i env promenljive u njemu)
-   - obrisati granu `feat/cloudflare-pages` na GitHub-u
+4. [x] **Nameserver-i na Cloudflare** (2026-10-14). `fonraspored.rs` i `fonraspored.online` su
+   Cloudflare zone: gola adresa i `.online` preusmeravaju na `www` pravilom (301), uz Always
+   Use HTTPS. Vercel projekat ostaje do kraja semestra samo zbog
+   `fon-raspored-five.vercel.app` (prva adresa sajta, na njoj može da je neko instalirao
+   aplikaciju ili uključio notifikacije); posle toga ga obrisati.
 5. [x] **`reconcileSemester` samo unapred** - v. "Tehničko".
 6. [x] **Dupli favicon** - sad samo jedan `<link rel="icon">`, sa našim logom.
 7. [ ] **Sponzori** - tek posle 2-4 nedelje brojeva iz Cloudflare-a.
@@ -65,9 +60,9 @@ feedback prozoru).
 - [ ] **"Predmeti bez meta" se proverava pre osvežavanja meta** - update_nastava ispiše
   upozorenje pre koraka `scrape_subjects_meta.py` u update-nastava.yml, pa summary prijavi
   predmete kojima meta posle stigne. Proveriti posle tog koraka.
-- [ ] **GitHub Actions verzije** - `actions/checkout@v4` i `actions/setup-python@v5` su na
-  Node 20 (zastareo), a `ubuntu-latest` prelazi na Ubuntu 26 od 2026-10-19. Podići verzije u
-  svim workflow-ima i proveriti da prođu.
+- [x] **GitHub Actions verzije** (2026-10-15) - checkout, setup-python i setup-node na v7,
+  create-pull-request na v8 (sve na Node 24), Node za skripte 24. Python 3.11 ima build za
+  Ubuntu 26.
 - [ ] **AI druga provera rasporeda ispita** - eksperiment na grani `eksperiment/ai-provera-slika`:
   Groq qwen3.8-27b čita sliku strane, ali na celim PDF-ovima izmišlja sale i kvari nazive
   (19 i 32 lažne razlike na 2 PDF-a, $0.45). Ako se radi: jači model za slike (Claude, GPT,
