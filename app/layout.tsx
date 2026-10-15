@@ -8,6 +8,7 @@ import "./globals.css";
 // history.pushState kao /react, koji je lomio navigaciju u Next 16.
 import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
+import IntroAnimacija from '@/components/IntroAnimacija'
 
 // Cloudflare Web Analytics. Token je javan po prirodi (stoji u HTML-u svakom
 // posetiocu, služi samo da se posete pripišu ovom sajtu), pa nije u env-u.
@@ -185,6 +186,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <IntroAnimacija />
         {/* Web Analytics je ugašen u Vercel dashboard-u (Hobby limit), pa bi
             skript samo dobijao 404. Pali se sa NEXT_PUBLIC_ENABLE_ANALYTICS=true
             (v. .env.example). */}

@@ -13,6 +13,7 @@ import BlurText from '@/components/BlurText'
 import TextType from '@/components/TextType'
 import InstallPrompt from '@/components/InstallPrompt'
 import WaitingForSchedule from '@/components/WaitingForSchedule'
+import { LogoAnimacija } from '@/components/IntroAnimacija'
 
 const GLASS = 'liquid-glass'
 
@@ -36,14 +37,17 @@ const TITLE_CLASS =
 // Malo podignut: centriran po redu deluje niže od slova naslova.
 function Logo() {
   return (
-    <Image
-      src="/logo.svg"
-      alt="FON Raspored"
-      width={34}
-      height={30}
-      loading="eager"
-      className="h-8 w-auto shrink-0 -translate-y-0.5 lg:h-11 lg:-translate-y-1"
-    />
+    <>
+      <Image
+        src="/logo.svg"
+        alt="FON Raspored"
+        width={34}
+        height={30}
+        loading="eager"
+        className="h-8 w-auto shrink-0 -translate-y-0.5 lg:hidden"
+      />
+      <LogoAnimacija className="hidden lg:inline-block" />
+    </>
   )
 }
 
@@ -60,10 +64,13 @@ function BlurHeading() {
           as="h1"
           ariaLabel="FON Raspored"
           text="FON Raspored"
-          animateBy="letters"
-          direction="top"
-          delay={60}
+          animateBy="words"
+          delay={0}
           stepDuration={0.3}
+          // Samo se kratko pojavi, bez pomeranja: animira se logo pored, a dve
+          // animacije u isto vreme se takmiče za pažnju.
+          animationFrom={{ opacity: 0 }}
+          animationTo={[{ opacity: 1 }]}
           className={TITLE_CLASS}
         />
       </div>
