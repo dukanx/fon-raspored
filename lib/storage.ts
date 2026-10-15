@@ -121,6 +121,9 @@ export const app = {
   // Grupa ("3:C13") koju je backend poslednji put zapamtio uz push pretplatu,
   // da se šalje samo kad se promeni (v. lib/push.ts).
   pushGrupa: str('local', 'fon_push_grupa'),
+  // Kad je baner "Instaliraj aplikaciju" zatvoren (ISO datum); vraća se posle
+  // nedelju dana (v. InstallBanner).
+  installBannerSkriven: str('local', 'fon_install_banner_skriven'),
   // Baner "Raspored je izmenjen od 2. nedelje" (zimski 2026/27) zatvoren.
   izmena2NedSeen: flag('local', 'fon_izmena_2ned_seen'),
   // Rezultat pickDefaultTab-a, zapamćen uz dan za koji je izračunat. Odluka

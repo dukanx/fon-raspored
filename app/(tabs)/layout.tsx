@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import BottomNav from '@/components/BottomNav'
 import FirstRunOverlays from '@/components/FirstRunOverlays'
+import InstallBanner from '@/components/InstallBanner'
 
 // Ove rute su personalizovane na klijentu - bez identiteta u localStorage-u
 // robot vidi samo preusmerenje na `/`. Kao rezultat pretrage bile bi prazne
@@ -18,6 +19,7 @@ export default function TabsLayout({
 }>) {
   return (
     <>
+      <InstallBanner />
       {children}
       <BottomNav />
       <FirstRunOverlays />
