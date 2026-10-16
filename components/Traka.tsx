@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { IshodIzvoza } from '@/lib/shareOrDownload'
 import Popover, { POPOVER_STAVKA } from './Popover'
 import { IconCalendarExport, IconImage, IconIzvoz } from './Ikone'
 
@@ -16,8 +17,9 @@ export const dugmeTrake = (saNazivom: boolean, aktivan = false) => saNazivom
 export const ikonaTrake = (saNazivom: boolean) => (saNazivom ? 'h-4 w-4 opacity-80' : 'h-[18px] w-[18px]')
 
 // Slika i kalendar su oba izvoz, pa su jedno dugme sa menijem.
-export function IzvozDugme({ saNazivom = false, disabled = false, onSlika, onKalendar }: {
+export function IzvozDugme({ saNazivom = false, natpis = 'Izvezi', disabled = false, onSlika, onKalendar }: {
   saNazivom?: boolean
+  natpis?: string
   disabled?: boolean
   onSlika: () => void
   onKalendar: () => void
@@ -29,11 +31,11 @@ export function IzvozDugme({ saNazivom = false, disabled = false, onSlika, onKal
         onClick={() => setOpen(o => !o)}
         disabled={disabled}
         aria-expanded={open}
-        aria-label="Izvezi"
+        aria-label={natpis}
         className={dugmeTrake(saNazivom)}
       >
         <IconIzvoz className={ikonaTrake(saNazivom)} />
-        {saNazivom && 'Izvezi'}
+        {saNazivom && natpis}
       </button>
       <Popover open={open} onClose={() => setOpen(false)}>
         <button onClick={() => { setOpen(false); onSlika() }} className={POPOVER_STAVKA}>
@@ -48,3 +50,20 @@ export function IzvozDugme({ saNazivom = false, disabled = false, onSlika, onKal
     </div>
   )
 }
+
+// Poruka posle izvoza samo kad je fajl preuzet. Kad telefon otvori share ili
+// Kalendar, korisnik već vidi šta se desilo, pa potvrda ne treba.
+export function useIzvozPoruka() {
+  const [poruka, setPoruka] = useState<string | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const javi = (ishod: IshodIzvoza, tekst: string) => {
+    if (ishod !== 'preuzeto') return
+    setPoruka(tekst)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setPoruka(null), 3500)
+  }
+  return [poruka, javi] as const
+}
+
+export const PORUKA_SLIKA = 'Slika je sačuvana'
+export const PORUKA_KALENDAR = 'Otvori preuzeti fajl da dodaš termine u kalendar'
