@@ -8,7 +8,7 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 
 - **Raspored nastave** - filtriran po godini, programu i grupi; lista ili nedeljni prikaz; na desktopu ravnopravan prekidač između Rasporeda i Rokova
 - **Skrivanje termina** - swipe na mobilnom ili klik na termin ga sakriva iz rasporeda (i iz Rokova); bira se koji termini su relevantni; čuva se u localStorage, uz mogućnost vraćanja
-- **Ispiti i kolokvijumi** - lista i kalendarski prikaz; prikazuju se samo predmeti koje student sluša; aplikacija se pri otvaranju sama postavlja na Raspored ili Rokove u zavisnosti da li je u toku/blizu stvaran ispitni period
+- **Ispiti i kolokvijumi** - jedan prikaz (lista ili kalendar) sa filterom za vrstu; prikazuju se samo predmeti koje student sluša; aplikacija se pri otvaranju sama postavlja na Raspored ili Rokove u zavisnosti da li je u toku/blizu stvaran ispitni period
 - **Kalendar aktivnosti** - kalendar u Rokovima je obojen po FON kalendaru aktivnosti: ispitni rokovi, kolokvijumske nedelje, neradni dani i dani bez nastave, uz oznaku za onlajn nastavu
 - **Sopstveni događaji u Rokovima** - dodavanje, izmena i brisanje ličnih ispita/kolokvijuma/dogovora koji nisu na FON sajtu (npr. dogovor sa profesorom), sa sopstvenim datumom, vremenom i salom
 - **Rokovi kroz oba semestra** - septembarski i oktobarski rok mešaju predmete oba semestra; aplikacija pamti izbor po semestru i (u letnjem) nudi dodavanje zimskih predmeta radi ponavljanja u septembru
@@ -17,13 +17,14 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Obavezni i izborni po modulu** - pri izboru predmeta čekirani su samo obavezni predmeti za studentov modul, po planu sa sajta modula; ako FON još nije objavio raspored nekog izbornog bloka, aplikacija to napomene
 - **Izborni, preneseni i drugosemestralni predmeti** - tok pri onboardingu za izbor izbornih predmeta, dodavanje prenesenih predmeta iz prethodnih godina i štikliranje predmeta iz drugog semestra (radi tačnih rokova); sve se kasnije može menjati i iz Izmena taba ("Moji predmeti"), ne samo pri onboardingu
 - **Izmena rasporeda** - ručno biranje termina (predavanje/vežbe) za prenesene predmete ili alternativnog termina za tekući predmet, uz predlog termina bez preklapanja (algoritam bira, AI objasni izbor)
-- **Onboarding tur** - posle prvog izbora predmeta, kratak multi-slajd vodič kroz glavne funkcije (Izmena tab, skrivanje, info o predmetu, deljenje, izvoz, rokovi, notifikacije); ako korisnik ima prenesene predmete, dodatni slajd ga upućuje da im ručno podesi termin
+- **Onboarding tur** - posle prvog izbora predmeta, četiri kratka slajda (Izmena, deljenje i izvoz, notifikacije, korisne sitnice); ako korisnik ima prenesene predmete, dodatni slajd ga upućuje da im ručno podesi termin
+- **Navigacija** - Raspored i Rokovi su glavni tabovi, a Izmena je odvojeno okruglo dugme pored njih, isto na telefonu (donji meni) i na računaru (zaglavlje); izabrani prikazi (lista, kalendar, filter) se pamte
+- **Tema** - svetla, tamna ili automatski po telefonu, bira se u Izmeni
 - **Glass dizajn** - responzivni "liquid glass" UI, mobilni donji navbar i jasnije razdvojene akcije za raspored, rokove i izmenu termina
 - **Notifikacija o prijavi** - baner na stranici ispita/kolokvijuma koji se prikazuje kada se bliži ili otvori period prijave; sadrži datume prijave i reklamacija; može se odbaciti za sesiju
 - **Push notifikacije (PWA)** - aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu), kad izađe raspored nastave, i kad se izmeni raspored studentove grupe (samo grupama kojima se promenio)
 - **Offline rad** - posle prve posete raspored i rokovi se učitavaju i bez interneta; service worker čuva ljusku aplikacije i podatke, a sveže podatke uvek prvo traži sa mreže kad je veza dostupna
 - **Onboarding** - pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
-- **Dark/light mode**
 - **Export u sliku i iCal** - raspored ili rokovi se mogu sačuvati kao PNG slika ili uvesti u Google Calendar, Apple Calendar i sl.
 - **Deljenje putem linka** - dugme „Podeli" pravi link (`/deli`) sa enkodiranom grupom i izborom predmeta, uz opciju da pošiljalac uključi i prenesene/drugosemestralne predmete; ko ga otvori dobija taj raspored posle potvrde, bez onboardinga
 - **Automatsko ažuriranje** - GitHub Actions svaki dan proverava ispite, kolokvijume i kalendar aktivnosti, a u mesecima kad se objavljuje raspored nastave proverava ga na svakih 30 minuta; posle automatske provere podataka izmene se objavljuju same
@@ -39,7 +40,7 @@ app/
   (tabs)/
     layout.tsx         # Layout za tabove - donji navbar + first-run popup-ovi
     raspored/page.tsx  # Nedeljni raspored (lista/sedmica), export, deljenje, onboarding tur
-    rokovi/page.tsx    # Rokovi (ispiti/kolokvijumi, kalendar/lista), sopstveni događaji, notifikacije
+    rokovi/page.tsx    # Rokovi (ispiti i kolokvijumi sa filterom, kalendar/lista), sopstveni događaji, notifikacije
     preneseni/page.tsx # Izmena rasporeda - dodavanje termina, skriveni termini, "Moji predmeti"
 
 functions/api/         # Serverski deo (Cloudflare Pages Functions)

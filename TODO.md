@@ -29,8 +29,10 @@ manifest i favicon, ikonice cache-first u SW, Vercel Analytics iza `NEXT_PUBLIC_
      Orion Innovation, Sixentix, ITum, NALED, Propulzija; FONIS preko C2S kao posrednik.
    - Ponuda: jedna kartica "Sponzor" po semestru, nikad u notifikacijama, bez FON logoa
      ni "partner FON-a". Kartica: `SponsorCard` iz JSON-a sa od-do datumom, `rel="sponsored"`.
-8. [ ] **Rokovi bez podele na Ispite/Kolokvijume** - na posebnoj grani, pre kolokvijumske
-   nedelje (po FON kalendaru od 2026-11-16). V. "Planirano".
+8. [x] **Rokovi bez podele na Ispite/Kolokvijume** (2026-10-16, grana `feat/rokovi-bez-podele`).
+9. [ ] **Animacija logoa** (grana `feat/animacija-logoa`, nije spojena): na računaru v3 sa
+   natpisom umesto logoa i naslova, na telefonu kratak splash (v2). User isprobava pa odlučuje;
+   grana je od starijeg main-a, pre spajanja je uskladiti.
 
 Odustali: tačkica na feedback ikonici za "Častiš kafu?" (prenapadno; donacija ostaje u
 feedback prozoru).
@@ -67,18 +69,11 @@ feedback prozoru).
 
 ## Planirano
 
-- [ ] **Rokovi bez podele na Ispiti/Kolokvijumi** - jedan prikaz za sve, jer kalendar sad boji
-  ispitne rokove i kolokvijumske nedelje, a retko se poklapaju u vremenu. Šta sve visi o tabu
-  (`Tab` u rokovi/page.tsx):
-  - automatski izbor taba po datumu (efekat oko `setTab`) postaje nepotreban
-  - sopstveni događaji čuvaju `tab` u localStorage-u - prikazati sve, polje ostaviti zbog starih zapisa
-  - ICS i PNG izvoz (naziv fajla, filter po tipu, picker meseca/roka)
-  - baner prijave ("Predispitne obaveze" / "Ispiti")
-  - u kalendaru su boje po predmetu, pa treba mala oznaka ispit ili kolokvijum na terminu
-  - **Loše strane:** lista postaje duža i mešana; u septembru i oktobru se preklapaju
-    septembarski/oktobarski rok i kolokvijumi novog semestra (v. "oba semestra" logiku), pa
-    baš tada bude najgušće; ko gleda samo ispite gubi brz filter. Moguće rešenje: jedan
-    prikaz, a filter (Sve / Ispiti / Kolokvijumi) kao mali chip umesto tabova.
+- [x] **Rokovi bez podele na Ispiti/Kolokvijumi** - jedan prikaz, a filter (Sve / Samo ispiti /
+  Samo kolokvijumi) i skriveni termini u meniju dugmeta za filter; vrsta piše na svakom terminu
+  ("Kolokvijum", "Pismeni ispit"). Lista i Kalendar i filter se pamte. Skriveni termini po tabu
+  su spojeni u jednu listu, sopstveni događaji se vide uvek (polje `tab` samo za stare zapise).
+  Logika u `lib/rokovi.ts`, slika u `lib/rokSlika.ts`.
 - [ ] **Organizacija junskog i julskog roka** - isti predmet je i u junskom i u julskom roku;
   student bira u kom roku polaže koji. Ima smisla tek kad scraper povuče oba roka (maj/jun),
   pa se odlučuje tada. Dve varijante, druga se gradi na prvoj:
