@@ -8,6 +8,7 @@ import { session, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import { TabPrekidac } from '@/components/Navigacija'
+import { IconHidden } from '@/components/Ikone'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
 import MiniWeek from '@/components/MiniWeek'
@@ -55,13 +56,26 @@ const IconBook = (p: IconProps) => (
 const IconCalendarPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M8 2.5v3M16 2.5v3M3 9.5h18M12 13v5M9.5 15.5h5" /></svg>
 )
-// Obojen kvadrat sa ikonicom levo od reda, kao u iOS Podešavanjima.
-const RED_IKONA = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-white'
+// Ikonica levo od reda: tanka, u boji aplikacije, bez podloge.
+const RED_IKONA = 'h-[18px] w-[18px] shrink-0 text-[#024c7d] dark:text-[#60c3ad]'
+
+// Grupa redova kao u iOS listama: mali naslov sa brojem, pa jedan stakleni
+// okvir u kome su redovi odvojeni tankom crtom.
+const GRUPA_NASLOV = 'mb-1.5 flex items-center gap-1.5 px-1 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400'
+const GRUPA_IKONA = 'h-4 w-4 shrink-0'
+const GRUPA_OKVIR = 'divide-y divide-[#024c7d]/10 overflow-hidden rounded-2xl border border-[#024c7d]/10 bg-white/45 dark:divide-white/10 dark:border-white/15 dark:bg-gray-900/35'
+const GRUPA_RED = 'flex items-center gap-3 px-3 py-2.5'
+
+// "Sala 09", ali "Amfiteatar 5" (ne "Sala Amfiteatar 5").
+const sala = (room: string) => (/^\d/.test(room) ? `Sala ${room}` : room)
 const IconChevronDown = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
 )
 const IconForward = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+)
+const IconPlusCircle = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
 )
 const IconPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
@@ -94,7 +108,7 @@ function AnimatedRow({ children }: { children: React.ReactNode }) {
       transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}
       className="overflow-hidden"
     >
-      <div className="pb-1">{children}</div>
+      {children}
     </motion.div>
   )
 }
@@ -401,7 +415,7 @@ export default function PreneseniPage() {
               className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
             >
               <div className="flex items-center gap-3">
-                <span className={`${RED_IKONA} bg-[#024c7d]`}><IconBook className="h-4 w-4" /></span>
+                <IconBook className={RED_IKONA} />
                 <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
                   Moji predmeti
                 </p>
@@ -415,48 +429,41 @@ export default function PreneseniPage() {
           {/* Dodati termini */}
           <Expand open={extraTermini.length > 0}>
             <div style={stagger(1, 50)} className="anim-up">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Dodati termini
-              </label>
-              <div>
+              <p className={GRUPA_NASLOV}><IconPlusCircle className={GRUPA_IKONA} />Dodati termini · {extraTermini.length}</p>
+              <div className={GRUPA_OKVIR}>
                 <AnimatePresence initial={false}>
                   {extraTermini.map((e, i) => (
                     <AnimatedRow key={extraKeys[i]}>
-                      <div
-                        className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
-                      >
+                      <div className={GRUPA_RED}>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {e.subject}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {e.day} · {e.start}-{e.end} [{e.type_short}] · Sala {e.room}
+                            {e.day} · {e.start}-{e.end} · {e.type_short} · {sala(e.room)}
                           </p>
                         </div>
                         <button
                           onClick={() => obrisiTermin(i)}
-                          aria-label="Obriši termin"
-                          className="w-7 h-7 flex items-center justify-center rounded-lg
-                           text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500
-                           transition-colors shrink-0"
+                          className="shrink-0 text-xs font-medium text-red-500 transition-colors hover:text-red-600 dark:text-red-400"
                         >
-                          ✕
+                          Ukloni
                         </button>
                       </div>
                     </AnimatedRow>
                   ))}
                 </AnimatePresence>
               </div>
-              <div className="mt-2 border-t border-[#024c7d]/15 pt-2 dark:border-white/20">
+              <div className="mt-1.5 px-1 text-right">
                 <button
                   onClick={() => {
                     setExtraTermini([])
                     byGroup.extra(session.group.get() ?? '').remove()
                     void refreshTrenutniRaspored([])
                   }}
-                  className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                  className="text-xs text-gray-400 transition-colors hover:text-red-500 dark:text-gray-500"
                 >
-                  Obriši sve
+                  Ukloni sve
                 </button>
               </div>
             </div>
@@ -465,27 +472,23 @@ export default function PreneseniPage() {
           {/* Skriveni termini */}
           <Expand open={hiddenTermini.length > 0}>
             <div style={stagger(2, 50)} className="anim-up">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Skriveni termini
-              </label>
-              <div>
+              <p className={GRUPA_NASLOV}><IconHidden className={GRUPA_IKONA} />Skriveni termini · {hiddenTermini.length}</p>
+              <div className={GRUPA_OKVIR}>
                 <AnimatePresence initial={false}>
                   {hiddenTermini.map((e, i) => (
                     <AnimatedRow key={hiddenKeys[i]}>
-                      <div
-                        className="flex items-center gap-3 rounded-xl border border-[#024c7d]/15 bg-white/70 px-3 py-2 dark:border-white/20 dark:bg-gray-800/68"
-                      >
+                      <div className={GRUPA_RED}>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {e.subject}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
-                            {e.day} · {e.start}-{e.end} [{e.type_short}] · Sala {e.room}
+                            {e.day} · {e.start}-{e.end} · {e.type_short} · {sala(e.room)}
                           </p>
                         </div>
                         <button
                           onClick={() => vratiTermin(i)}
-                          className="text-xs text-gray-400 hover:text-[#024c7d] dark:hover:text-[#60c3ad] transition-colors shrink-0"
+                          className="shrink-0 text-xs font-medium text-[#024c7d] transition-colors hover:text-[#013d6a] dark:text-[#60c3ad]"
                         >
                           Vrati
                         </button>
@@ -500,9 +503,7 @@ export default function PreneseniPage() {
           {/* Prethodno odabrani predmeti iz podešavanja */}
           {prevSubjects.length > 0 && (
             <div style={stagger(3, 50)} className="anim-up">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Preneseni predmeti
-              </label>
+              <p className={GRUPA_NASLOV}>Preneseni predmeti</p>
               <div className="flex flex-wrap gap-1.5">
                 {prevSubjects.map((p, i) => {
                   const active = odabraniPredmet === p.subject && godina === p.year
@@ -532,7 +533,7 @@ export default function PreneseniPage() {
               className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
             >
               <div className="flex items-center gap-3">
-                <span className={`${RED_IKONA} bg-[#3f9e8b]`}><IconCalendarPlus className="h-4 w-4" /></span>
+                <IconCalendarPlus className={RED_IKONA} />
                 <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
                   Dodaj ili promeni termin
                 </p>
@@ -668,7 +669,7 @@ export default function PreneseniPage() {
                           />
                           <span className={`text-xs flex-1 ${odabranoPredavanje === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
                             <span className="font-medium">{e.day}</span>
-                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
+                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · {sala(e.room)}
                             {preklapanje && (
                               <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium leading-none 
                                 ${odabranoPredavanje === e ? 'bg-white/20 text-white dark:bg-[#024c7d]/20 dark:text-[#024c7d]' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
@@ -715,7 +716,7 @@ export default function PreneseniPage() {
                           />
                           <span className={`text-xs flex-1 ${odabraneVezbe === e ? 'text-white dark:text-[#024c7d]' : 'text-gray-600 dark:text-gray-300'}`}>
                             <span className="font-medium">{e.day}</span>
-                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · Sala {e.room}
+                            {' '}{SLOT_LABEL[e.start]} [{e.type_short}] · {sala(e.room)}
                             {preklapanje && (
                               <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium leading-none 
                                 ${odabraneVezbe === e ? 'bg-white/20 text-white dark:bg-[#024c7d]/20 dark:text-[#024c7d]' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
@@ -755,7 +756,7 @@ export default function PreneseniPage() {
                 {[preporuka.p, preporuka.v].filter((e): e is ScheduleEntry => !!e).map(e => (
                   <p key={`${e.type_short}-${e.day}-${e.start}`}>
                     {e.type_short === 'P' ? 'Predavanje' : 'Vežbe'}: {e.day} {SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}
-                    <span className="font-normal text-gray-500 dark:text-gray-400"> · Sala {e.room}</span>
+                    <span className="font-normal text-gray-500 dark:text-gray-400"> · {sala(e.room)}</span>
                   </p>
                 ))}
               </div>
