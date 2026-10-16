@@ -25,7 +25,6 @@ Personalizovani pregled rasporeda nastave, ispita i kolokvijuma za Fakultet orga
 - **Push notifikacije (PWA)** - aplikacija se može instalirati na home screen (iOS 16.4+, Android, desktop) i primati Web Push obaveštenja: kada scraper doda nov ispitni/kolokvijumski rok, na dan početka i na dan kraja prijave (u 10h, sa linkom ka eStudentu), kad izađe raspored nastave, i kad se izmeni raspored studentove grupe (samo grupama kojima se promenio)
 - **Offline rad** - posle prve posete raspored i rokovi se učitavaju i bez interneta; service worker čuva ljusku aplikacije i podatke, a sveže podatke uvek prvo traži sa mreže kad je veza dostupna
 - **Onboarding** - pri prvom posetu student bira godinu, program i grupu; aplikacija pamti izbor
-- **Dark/light mode**
 - **Export u sliku i iCal** - raspored ili rokovi se mogu sačuvati kao PNG slika ili uvesti u Google Calendar, Apple Calendar i sl.
 - **Deljenje putem linka** - dugme „Podeli" pravi link (`/deli`) sa enkodiranom grupom i izborom predmeta, uz opciju da pošiljalac uključi i prenesene/drugosemestralne predmete; ko ga otvori dobija taj raspored posle potvrde, bez onboardinga
 - **Automatsko ažuriranje** - GitHub Actions svaki dan proverava ispite, kolokvijume i kalendar aktivnosti, a u mesecima kad se objavljuje raspored nastave proverava ga na svakih 30 minuta; posle automatske provere podataka izmene se objavljuju same
