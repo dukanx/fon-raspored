@@ -21,6 +21,7 @@ import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
+import { IconHidden } from '@/components/Ikone'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { todayLocalIso } from '@/lib/season'
@@ -105,9 +106,6 @@ const IconBell = (p: IconProps) => (
     <path d="M6 9a6 6 0 0 1 12 0v.75a8.97 8.97 0 0 0 2.31 6.02c.3.33.06.86-.38.98A23.85 23.85 0 0 1 12 18a23.85 23.85 0 0 1-7.93-1.25c-.44-.12-.68-.65-.38-.98A8.97 8.97 0 0 0 6 9.75Z" />
     <path d="M9.5 20a2.5 2.5 0 0 0 5 0" />
   </svg>
-)
-const IconHidden = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
 )
 const IconInfo = (p: IconProps) => (
   <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 11h1v5h1" /></svg>
@@ -207,6 +205,9 @@ export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
   const [hiddenEntries, setHiddenEntries] = useState<ScheduleEntry[]>([])
+  // Poslednji sakriven termin, za "Vrati" u poruci (par sekundi).
+  const [sakriven, setSakriven] = useState<ScheduleEntry | null>(null)
+  const sakrivenTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [loaded, setLoaded] = useState(false)
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
   const [showIcsHelp, setShowIcsHelp] = useState(false)
@@ -706,6 +707,18 @@ export default function RasporedPage() {
     const next = [...hiddenEntries, e]
     setHiddenEntries(next)
     byGroup.hidden(meta.group).set(next)
+    setSakriven(e)
+    clearTimeout(sakrivenTimer.current)
+    sakrivenTimer.current = setTimeout(() => setSakriven(null), 4000)
+  }
+
+  function vratiSakriven() {
+    if (!sakriven) return
+    const key = entryKey(sakriven)
+    const next = hiddenEntries.filter(h => entryKey(h) !== key)
+    setHiddenEntries(next)
+    byGroup.hidden(meta.group).set(next)
+    setSakriven(null)
   }
 
   async function downloadPNG() {
@@ -1302,9 +1315,10 @@ export default function RasporedPage() {
             {/* Termini u nedelji */}
             <div className="mb-4">
               <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">Termini</h4>
-              <div className="space-y-1.5">
+              {/* Redovi sa razmakom i crtom između, da se P i V lako pogode prstom. */}
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 {subjectTermine.map((e, i) => (
-                  <div key={i} className="flex items-center gap-2.5 text-sm">
+                  <div key={i} className="flex items-center gap-2.5 py-1.5 text-sm">
                     <span className="w-8 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">{DAY_SHORT[e.day]}</span>
                     <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}</span>
                     <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{e.type_short}</span>
@@ -1312,9 +1326,9 @@ export default function RasporedPage() {
                     <button
                       onClick={() => hideEntry(e)}
                       aria-label="Sakrij termin"
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-gray-300 transition-colors hover:bg-red-50 hover:text-red-400 dark:text-gray-600 dark:hover:bg-red-950/40"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                     >
-                      <IconClose className="h-3.5 w-3.5" />
+                      <IconHidden className="h-[18px] w-[18px]" />
                     </button>
                   </div>
                 ))}
@@ -1564,6 +1578,11 @@ export default function RasporedPage() {
       <Toast show={showDownloadToast}>Slika rasporeda je uspešno preuzeta!</Toast>
 
       <Toast show={showShareToast}>Link je kopiran!</Toast>
+
+      <Toast show={!!sakriven}>
+        Termin sakriven
+        <button onClick={vratiSakriven} className="font-semibold text-[#60c3ad] dark:text-[#024c7d]">Vrati</button>
+      </Toast>
 
       <AnimatePresence>
         {showTour && <AppTour slides={tourSlides} onClose={closeTour} />}
