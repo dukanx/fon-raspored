@@ -64,6 +64,29 @@ export function promene(stari: string[], novi: string[], prati: (predmet: string
   return out.sort((a, b) => a.predmet.localeCompare(b.predmet, 'sr') || a.tip.localeCompare(b.tip))
 }
 
+export type VidenRaspored = { semester: string; otisak: string[] }
+
+export type OdlukaOIzmeni =
+  | { tip: 'nista' }
+  | { tip: 'zapamti' }
+  | { tip: 'baner'; promene: Promena[] }
+
+// Šta Raspored radi kad ga student otvori, poredeći sa onim što je video:
+// - prvi put, ili nov semestar: samo zapamti (nema šta da se poredi)
+// - isti raspored: ništa
+// - promene u predmetima koje prati: baner (pamti se tek kad ga zatvori)
+// - promene samo u predmetima koje ne prati: zapamti tiho
+export function odlukaOIzmeni(
+  ranije: VidenRaspored | null,
+  sada: VidenRaspored,
+  prati: (predmet: string) => boolean
+): OdlukaOIzmeni {
+  if (!ranije || ranije.semester !== sada.semester) return { tip: 'zapamti' }
+  if (ranije.otisak.join('\n') === sada.otisak.join('\n')) return { tip: 'nista' }
+  const p = promene(ranije.otisak, sada.otisak, prati)
+  return p.length > 0 ? { tip: 'baner', promene: p } : { tip: 'zapamti' }
+}
+
 // "Matematika 1 (P): Pon 08:15, Amfiteatar 3 → Pon 08:15, Amfiteatar 1"
 export function opisPromene(p: Promena): string {
   const naziv = `${p.predmet} (${p.tip})`

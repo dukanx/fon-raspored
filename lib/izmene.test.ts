@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { otisak, promene, opisPromene, izmenjeneGrupe } from './izmene'
+import { otisak, promene, opisPromene, izmenjeneGrupe, odlukaOIzmeni } from './izmene'
 import type { DayOfWeek, ScheduleEntry, SemesterData } from './types'
 
 const T = (subject: string, type_short: 'P' | 'V', day: DayOfWeek, start: string, room: string): ScheduleEntry => ({
@@ -81,5 +81,39 @@ describe('izmenjeneGrupe', () => {
 
   it('isti termini drugim redom nisu promena', () => {
     expect(izmenjeneGrupe(stari, sa([...stari.entries].reverse()))).toEqual([])
+  })
+})
+
+describe('odlukaOIzmeni', () => {
+  const ZIMSKI = 'Zimski 2026/27'
+  const mat = T('Matematika 1', 'P', 'Ponedeljak', '08:15', 'Amfiteatar 3')
+  const eko = T('Ekonomija', 'P', 'Sreda', '12:15', 'Amfiteatar 1')
+  const videno = { semester: ZIMSKI, otisak: otisak([mat, eko]) }
+  const sviPredmeti = () => true
+  const samoMatematika = (p: string) => p === 'Matematika 1'
+
+  it('nov korisnik (ništa zapamćeno): samo zapamti, bez banera', () => {
+    expect(odlukaOIzmeni(null, videno, sviPredmeti)).toEqual({ tip: 'zapamti' })
+  })
+
+  it('nov semestar: samo zapamti, bez banera', () => {
+    const letnji = { semester: 'Letnji 2026/27', otisak: otisak([eko]) }
+    expect(odlukaOIzmeni(videno, letnji, sviPredmeti)).toEqual({ tip: 'zapamti' })
+  })
+
+  it('isti raspored: ništa', () => {
+    expect(odlukaOIzmeni(videno, { ...videno }, sviPredmeti)).toEqual({ tip: 'nista' })
+  })
+
+  it('izmena u predmetu koji prati: baner sa tačnom promenom', () => {
+    const sada = { semester: ZIMSKI, otisak: otisak([{ ...mat, room: 'Amfiteatar 1' }, eko]) }
+    const odluka = odlukaOIzmeni(videno, sada, samoMatematika)
+    expect(odluka.tip).toBe('baner')
+    if (odluka.tip === 'baner') expect(odluka.promene.map(p => p.predmet)).toEqual(['Matematika 1'])
+  })
+
+  it('izmena samo u predmetu koji ne prati: zapamti tiho', () => {
+    const sada = { semester: ZIMSKI, otisak: otisak([mat, { ...eko, start: '14:15' }]) }
+    expect(odlukaOIzmeni(videno, sada, samoMatematika)).toEqual({ tip: 'zapamti' })
   })
 })

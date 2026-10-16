@@ -25,7 +25,7 @@ import { IconHidden } from '@/components/Ikone'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
-import { otisak, promene, opisPromene, type Promena } from '@/lib/izmene'
+import { otisak, odlukaOIzmeni, opisPromene, type Promena } from '@/lib/izmene'
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
@@ -333,25 +333,14 @@ export default function RasporedPage() {
         const hasSaved = Object.keys(checked).length > 0
 
         // Izmene sala i termina od kad je student poslednji put video raspored
-        // grupe. Prvi put (ili nov semestar) se samo zapamti; izmene u
-        // predmetima koje ne prati se zapamte tiho.
+        // grupe (v. odlukaOIzmeni u lib/izmene).
         const viden = byGroup.videnRaspored(meta.group)
         const sada = { semester: data.semester, otisak: otisak(all) }
-        // Promene u praćenim predmetima idu u baner (pamte se tek kad ih student
-        // potvrdi), a ostale se zapamte tiho.
-        const uporedi = (ranijiOtisak: string[]) => {
-          const p = promene(ranijiOtisak, sada.otisak, s => !hasSaved || checked[s] === true)
-          if (p.length > 0) {
-            noviOtisak.current = sada
-            setPromeneRasporeda(p)
-          } else {
-            viden.set(sada)
-          }
-        }
-        const ranije = viden.get()
-        if (ranije && ranije.semester === sada.semester) {
-          if (ranije.otisak.join('\n') !== sada.otisak.join('\n')) uporedi(ranije.otisak)
-        } else {
+        const odluka = odlukaOIzmeni(viden.get(), sada, s => !hasSaved || checked[s] === true)
+        if (odluka.tip === 'baner') {
+          noviOtisak.current = sada
+          setPromeneRasporeda(odluka.promene)
+        } else if (odluka.tip === 'zapamti') {
           viden.set(sada)
         }
 
