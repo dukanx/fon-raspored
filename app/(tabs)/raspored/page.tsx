@@ -441,9 +441,9 @@ export default function RasporedPage() {
     key: 'prenesene',
     icon: IconLayers,
     title: 'Podesi termine',
-    desc: 'Prenesenim predmetima termin biraš sam.',
+    desc: 'Predmetima iz prethodnih godina termin biraš sam.',
     features: [
-      { icon: IconEdit, title: 'Olovka pored tabova', desc: 'Dodaj ili promeni termin.' },
+      { icon: IconEdit, title: 'Olovka pored tabova', desc: 'Tu dodaješ termin za svaki takav predmet.' },
     ],
     primaryLabel: 'Idi na Izmenu',
     onPrimary: () => { closeTour(); router.push('/preneseni') },
@@ -457,10 +457,10 @@ export default function RasporedPage() {
       key: 'izmena',
       icon: IconEdit,
       title: 'Izmena',
-      desc: 'Olovka pored tabova.',
+      desc: 'Olovka pored tabova, za sve što menjaš.',
       features: [
-        { icon: IconList, title: 'Moji predmeti', desc: 'Izborni, kad god hoćeš.' },
-        { icon: IconCalendar, title: 'Dodaj ili promeni termin', desc: 'Uz predlog bez preklapanja.' },
+        { icon: IconList, title: 'Moji predmeti', desc: 'Promeni koje izborne predmete slušaš.' },
+        { icon: IconCalendar, title: 'Dodaj ili promeni termin', desc: 'Za predmet iz prošle godine ili drugu grupu, uz predlog bez preklapanja.' },
       ],
     },
     {
@@ -468,18 +468,18 @@ export default function RasporedPage() {
       icon: IconShare,
       title: 'Podeli i izvezi',
       features: [
-        { icon: IconShare, title: 'Podeli', desc: 'Link ka tvom rasporedu.' },
-        { icon: IconIzvoz, title: 'Izvezi', desc: 'Slika ili kalendar telefona.' },
+        { icon: IconShare, title: 'Podeli', desc: 'Pošalji link, a drugi dobija tvoj raspored.' },
+        { icon: IconIzvoz, title: 'Izvezi', desc: 'Sačuvaj kao sliku ili dodaj u kalendar telefona.' },
       ],
     },
     {
       key: 'notifikacije',
       icon: IconBell,
       title: 'Notifikacije',
-      desc: 'Zvonce na Rokovima.',
+      desc: 'Uključuješ ih zvoncem na Rokovima.',
       features: [
-        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Čim ih FON objavi.' },
-        { icon: IconClock, title: 'Prijava ispita', desc: 'Prvog i poslednjeg dana.' },
+        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Javimo čim FON objavi ispite ili kolokvijume.' },
+        { icon: IconClock, title: 'Prijava ispita', desc: 'Podsetnik prvog i poslednjeg dana prijave.' },
       ],
     },
     {
@@ -487,9 +487,9 @@ export default function RasporedPage() {
       icon: IconBulb,
       title: 'Dobro je znati',
       features: [
-        { icon: IconInfo, title: 'Tap na termin', desc: 'ESPB, katedra i rokovi predmeta.' },
-        { icon: IconHidden, title: 'Sakrij termin', desc: 'Oko na terminu; vraćaš ga odmah ili u Izmeni.' },
-        { icon: IconOffline, title: 'Bez interneta', desc: 'Instalirana aplikacija radi i offline.' },
+        { icon: IconInfo, title: 'Tap na termin', desc: 'Vidiš ESPB, katedru i rokove tog predmeta.' },
+        { icon: IconHidden, title: 'Sakrij termin', desc: 'Termine koje ne pohađaš skloni; vraćaš ih u Izmeni.' },
+        { icon: IconOffline, title: 'Bez interneta', desc: 'Instalirana aplikacija radi i kad nemaš vezu.' },
       ],
     },
   ]
