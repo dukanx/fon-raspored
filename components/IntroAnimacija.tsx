@@ -1,11 +1,11 @@
 'use client'
 
-// Animacija logoa: FON-ovi krugovi se sklope u kalendar (2,5 s, bela
-// pozadina). Telefon: preko cele aplikacije pri ulasku (dodir preskače).
-// Računar: umesto logoa pored naslova na početnoj.
+// Animacija logoa: FON-ovi krugovi se sklope u kalendar. Telefon: kratka
+// (v2, 2,5 s) preko cele aplikacije pri ulasku, dodir preskače. Računar: v3,
+// sa natpisom, umesto logoa i naslova na početnoj.
 import { useEffect, useRef, useState } from 'react'
 
-const VIDEO = '/logo-animacija.mp4'
+const VIDEO = '/logo-animacija.mp4' // telefon, splash
 
 export default function IntroAnimacija() {
   const [faza, setFaza] = useState<'pusta' | 'nestaje' | 'gotovo'>('pusta')
@@ -36,16 +36,26 @@ export default function IntroAnimacija() {
   )
 }
 
-// Deo kadra u kome se animacija dešava (krugovi su najviši oko 0,5 s, gotov
-// kalendar je 34% x 52% kadra, centriran).
-const ISECAK = { x: 0.31, y: 0.19, w: 0.38, h: 0.62 }
-const W = 120
-const H = Math.round(W * (ISECAK.h * 1080) / (ISECAK.w * 1920))
+// Računar: v3, krugovi -> kalendar -> logo i natpis "FON Raspored" (3 s).
+// Udeli kadra (16:9): ISECAK je deo u kome se sve dešava (krugovi su na
+// početku veći od gotovog logoa), KRAJ je gotov logo sa natpisom. Mesto na
+// strani je veličine KRAJ, a canvas sa ISECAK-om viri preko ivica.
+const NASLOV_VIDEO = '/logo-naslov-animacija.mp4'
+const ISECAK = { x: 0.11, y: 0.2, w: 0.77, h: 0.6 }
+const KRAJ = { x: 0.117, y: 0.35, w: 0.755, h: 0.3 }
+const W = 300
+const H = Math.round(W * (ISECAK.h * 9) / (ISECAK.w * 16))
+// U tamnoj temi tamnoplavi natpis i obrisi postaju tirkizni, kao naslov
+// (dark:text-[#60c3ad]), inače se ne vide na tamnoj pozadini.
+const TIRKIZNA = [96, 195, 173]
 
-// Video se crta u canvas, a bela pozadina se briše piksel po piksel: koliko je
-// piksel daleko od belog, toliko je neproziran, pa radi na svakoj pozadini i u
-// tamnoj temi.
-export function LogoAnimacija({ className = '' }: { className?: string }) {
+// Visina gotovog logoa sa natpisom (kao h-11 naslova).
+const VISINA = 44
+
+// Video se crta u canvas, a bela pozadina se briše piksel po piksel. Providno
+// postaje samo ono što je skoro belo (pozadina sa šumom kompresije); boje
+// ostaju pune, pa se vide i na tamnoj pozadini.
+export function NaslovAnimacija({ className = '' }: { className?: string }) {
   const video = useRef<HTMLVideoElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
 
@@ -55,20 +65,25 @@ export function LogoAnimacija({ className = '' }: { className?: string }) {
     if (!v || !ctx) return
     let rafId = 0
     const crtaj = () => {
-      if (v.videoWidth) {
-        const vw = v.videoWidth, vh = v.videoHeight
-        ctx.clearRect(0, 0, W, H)
-        ctx.drawImage(v, ISECAK.x * vw, ISECAK.y * vh, ISECAK.w * vw, ISECAK.h * vh, 0, 0, W, H)
-        const slika = ctx.getImageData(0, 0, W, H)
-        const d = slika.data
-        for (let i = 0; i < d.length; i += 4) {
-          const a = Math.max(0, ((255 - Math.min(d[i], d[i + 1], d[i + 2])) / 255 - 0.04) / 0.96)
-          if (a === 0) { d[i + 3] = 0; continue }
-          for (let k = 0; k < 3; k++) d[i + k] = Math.max(0, 255 - (255 - d[i + k]) / a)
-          d[i + 3] = Math.round(a * 255)
+      if (!v.videoWidth) return
+      const vw = v.videoWidth, vh = v.videoHeight
+      const tamno = document.documentElement.classList.contains('dark')
+      ctx.clearRect(0, 0, W, H)
+      ctx.drawImage(v, ISECAK.x * vw, ISECAK.y * vh, ISECAK.w * vw, ISECAK.h * vh, 0, 0, W, H)
+      const slika = ctx.getImageData(0, 0, W, H)
+      const d = slika.data
+      for (let i = 0; i < d.length; i += 4) {
+        // Pozadina videa sa šumom kompresije ide do ~240 (izmereno), pa je
+        // sve svetlije od 236 providno, a do 206 se postepeno puni.
+        const a = Math.min(1, Math.max(0, (236 - Math.min(d[i], d[i + 1], d[i + 2])) / 30))
+        if (a === 0) { d[i + 3] = 0; continue }
+        for (let k = 0; k < 3; k++) d[i + k] = Math.max(0, 255 - (255 - d[i + k]) / a)
+        if (tamno && d[i] < 60 && d[i + 1] < 120 && d[i + 2] < 170) {
+          d[i] = TIRKIZNA[0]; d[i + 1] = TIRKIZNA[1]; d[i + 2] = TIRKIZNA[2]
         }
-        ctx.putImageData(slika, 0, 0)
+        d[i + 3] = Math.round(a * 255)
       }
+      ctx.putImageData(slika, 0, 0)
     }
     // Petlja crta dok video ide; posle kraja ostaje poslednji kadar.
     const petlja = () => {
@@ -81,28 +96,45 @@ export function LogoAnimacija({ className = '' }: { className?: string }) {
       v.muted = true
       v.play().catch(() => crtaj())
     }
+    // Promena teme posle kraja: poslednji kadar se preboji.
+    const tema = new MutationObserver(crtaj)
+    tema.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     v.addEventListener('playing', petlja)
-    v.addEventListener('seeked', crtaj)
     if (v.readyState >= 1) kreni()
     else v.addEventListener('loadedmetadata', kreni, { once: true })
     return () => {
       cancelAnimationFrame(rafId)
+      tema.disconnect()
       v.pause()
       v.removeEventListener('playing', petlja)
-      v.removeEventListener('seeked', crtaj)
       v.removeEventListener('loadedmetadata', kreni)
     }
   }, [])
 
   return (
-    <span className={`relative h-8 w-9 shrink-0 lg:h-11 lg:w-[50px] ${className}`} style={{ top: -3 }}>
-      <video ref={video} src={VIDEO} muted playsInline preload="auto" aria-hidden="true" className="pointer-events-none absolute size-px opacity-0" />
+    // Ispod se ostavlja mesto koliko krugovi na početku vire ispod gotovog
+    // logoa, da ne pređu preko podnaslova; gore viri u prazan prostor kartice.
+    <span
+      className={`relative shrink-0 ${className}`}
+      style={{
+        height: VISINA,
+        aspectRatio: `${(KRAJ.w * 16) / (KRAJ.h * 9)}`,
+        marginBottom: ((ISECAK.y + ISECAK.h - KRAJ.y - KRAJ.h) / KRAJ.h) * VISINA,
+      }}
+    >
+      <video ref={video} src={NASLOV_VIDEO} muted playsInline preload="auto" aria-hidden="true" className="pointer-events-none absolute size-px opacity-0" />
       <canvas
         ref={canvas}
         width={W}
         height={H}
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-1/2 h-[119%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute max-w-none"
+        style={{
+          left: `${((ISECAK.x - KRAJ.x) / KRAJ.w) * 100}%`,
+          top: `${((ISECAK.y - KRAJ.y) / KRAJ.h) * 100}%`,
+          width: `${(ISECAK.w / KRAJ.w) * 100}%`,
+          height: `${(ISECAK.h / KRAJ.h) * 100}%`,
+        }}
       />
     </span>
   )

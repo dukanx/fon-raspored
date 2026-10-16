@@ -13,7 +13,7 @@ import BlurText from '@/components/BlurText'
 import TextType from '@/components/TextType'
 import InstallPrompt from '@/components/InstallPrompt'
 import WaitingForSchedule from '@/components/WaitingForSchedule'
-import { LogoAnimacija } from '@/components/IntroAnimacija'
+import { NaslovAnimacija } from '@/components/IntroAnimacija'
 
 const GLASS = 'liquid-glass'
 
@@ -37,17 +37,14 @@ const TITLE_CLASS =
 // Malo podignut: centriran po redu deluje niže od slova naslova.
 function Logo() {
   return (
-    <>
-      <Image
-        src="/logo.svg"
-        alt="FON Raspored"
-        width={34}
-        height={30}
-        loading="eager"
-        className="h-8 w-auto shrink-0 -translate-y-0.5 lg:hidden"
-      />
-      <LogoAnimacija className="hidden lg:inline-block" />
-    </>
+    <Image
+      src="/logo.svg"
+      alt="FON Raspored"
+      width={34}
+      height={30}
+      loading="eager"
+      className="h-8 w-auto shrink-0 -translate-y-0.5 lg:h-11 lg:-translate-y-1"
+    />
   )
 }
 
@@ -55,7 +52,10 @@ function BlurHeading() {
   return (
     <div className="mb-4 lg:mb-[22px]">
       <div className="flex items-center gap-2.5 lg:gap-3">
-        <Logo />
+        {/* Računar: animacija sa logoom i natpisom umesto oba; naslov ispod
+            ostaje za pretraživač i čitač ekrana, samo se ne vidi. */}
+        <span className="flex lg:hidden"><Logo /></span>
+        <NaslovAnimacija className="hidden lg:block" />
         {/* Ovo je pravi <h1> strane, ne dekoracija. Animacija je i dalje slovo po
             slovo, ali su spanovi u normalnom inline toku (v. BlurText), pa i
             čitač i pretraživač vide frazu "FON Raspored", a `ariaLabel` skida
@@ -71,7 +71,7 @@ function BlurHeading() {
           // animacije u isto vreme se takmiče za pažnju.
           animationFrom={{ opacity: 0 }}
           animationTo={[{ opacity: 1 }]}
-          className={TITLE_CLASS}
+          className={`${TITLE_CLASS} lg:sr-only`}
         />
       </div>
       <p className="mt-2 text-[15px] leading-[22px] text-pretty text-gray-500 lg:mt-2.5 lg:text-base dark:text-gray-400">
