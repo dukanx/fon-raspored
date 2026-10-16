@@ -10,7 +10,7 @@ import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, f
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
 import { session, saved as savedStore, app, byGroup, note as noteStore, resetSubjectsForNewSemester } from '@/lib/storage'
-import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
+import { useIsDark, useIsHydrated } from '@/lib/theme'
 import { formatDateSr } from '@/lib/date'
 import Link from 'next/link'
 import FeedbackButton from '@/components/FeedbackButton'
@@ -120,15 +120,6 @@ const IconBulb = (p: IconProps) => (
 )
 const IconOffline = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M5 12.5a10 10 0 0 1 4-2.4" /><path d="M1.4 8.8a15 15 0 0 1 5-3.3" /><path d="M17.6 13.4A10 10 0 0 0 12 10" /><path d="M22.6 8.8a15 15 0 0 0-8.7-4.2" /><path d="M8.8 16.3a5 5 0 0 1 6.4 0" /><path d="M12 20h.01" /></svg>
-)
-const IconBack = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
-)
-const IconMoon = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
-)
-const IconSun = (p: IconProps) => (
-  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
 )
 const IconExternal = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
@@ -954,21 +945,6 @@ export default function RasporedPage() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
-              <button
-                onClick={() => router.push('/izborni')}
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                aria-label="Predmeti"
-              >
-                <IconBack className="h-4 w-4 opacity-80" />
-              </button>
-              <button
-                onClick={toggleTheme}
-                aria-label="Promeni temu"
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-              >
-                <IconMoon className="h-[18px] w-[18px] dark:hidden" />
-                <IconSun className="hidden h-[18px] w-[18px] dark:block" />
-              </button>
               <FeedbackButton />
               <a
                 href="https://oas.fon.bg.ac.rs/raspored-nastave/"

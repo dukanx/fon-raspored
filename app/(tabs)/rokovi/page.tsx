@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
 import { session, app, byGroup } from '@/lib/storage'
-import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
+import { useIsDark, useIsHydrated } from '@/lib/theme'
 import { formatDateSr, getDaySr, SR_MONTHS, SR_DAYS_SHORT, cap } from '@/lib/date'
 import {
   COLORS, FILTER_NAZIV, aktivniRokovi, buildColorMap, eventTypeLabel, napraviICS, odgovaraFilteru,
@@ -44,12 +44,6 @@ const IconBack = (p: IconProps) => (
 )
 const IconForward = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-)
-const IconMoon = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
-)
-const IconSun = (p: IconProps) => (
-  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
 )
 const IconExternal = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
@@ -1030,21 +1024,6 @@ export default function RokoviPage() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
-              <button
-                onClick={() => router.push('/izborni')}
-                aria-label="Predmeti"
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-              >
-                <IconBack className="h-4 w-4 opacity-80" />
-              </button>
-              <button
-                onClick={toggleTheme}
-                aria-label="Promeni temu"
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-              >
-                <IconMoon className="h-[18px] w-[18px] dark:hidden" />
-                <IconSun className="hidden h-[18px] w-[18px] dark:block" />
-              </button>
               <FeedbackButton />
               {/* Ispiti i kolokvijumi su na FON-u dve strane, pa se bira svaki put. */}
               <div className="relative">

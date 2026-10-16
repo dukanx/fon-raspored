@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { app } from './storage'
+import { PODRAZUMEVANA_TEMA, type Tema } from './temaOsnova'
 
 // Prati `dark` klasu na <html> reaktivno - za inline stilove zavisne od teme
 // (npr. boje kartica koje se ne mogu izraziti Tailwind klasama).
@@ -22,10 +23,45 @@ export function useIsHydrated(): boolean {
   return useSyncExternalStore(() => () => {}, () => true, () => false)
 }
 
-// Prebaci temu i upamti izbor u localStorage.
-export function toggleTheme(): void {
-  const root = document.documentElement
-  const willBeDark = !root.classList.contains('dark')
-  root.classList.toggle('dark', willBeDark)
-  app.theme.set(willBeDark ? 'dark' : 'light')
+// Tema: ručni izbor iz Izmene ili prati telefon ('auto'). Tamni izgled
+// vozi isključivo `dark` klasa na <html> (globals.css).
+export type { Tema }
+
+const SISTEM_TAMNO = '(prefers-color-scheme: dark)'
+const PROMENA = 'fon-tema'
+
+export function izabranaTema(): Tema {
+  const t = app.theme.get()
+  return t === 'auto' || t === 'light' || t === 'dark' ? t : PODRAZUMEVANA_TEMA
+}
+
+export function primeniTemu(): void {
+  const t = izabranaTema()
+  const tamno = t === 'dark' || (t === 'auto' && window.matchMedia(SISTEM_TAMNO).matches)
+  document.documentElement.classList.toggle('dark', tamno)
+}
+
+export function postaviTemu(t: Tema): void {
+  app.theme.set(t)
+  primeniTemu()
+  window.dispatchEvent(new Event(PROMENA))
+}
+
+// Kad telefon sam pređe u tamno (npr. uveče), i aplikacija prati, ako je 'auto'.
+export function pratiSistemskuTemu(): () => void {
+  const media = window.matchMedia(SISTEM_TAMNO)
+  const promena = () => { if (izabranaTema() === 'auto') primeniTemu() }
+  media.addEventListener('change', promena)
+  return () => media.removeEventListener('change', promena)
+}
+
+export function useTema(): Tema {
+  return useSyncExternalStore(
+    (onChange) => {
+      window.addEventListener(PROMENA, onChange)
+      return () => window.removeEventListener(PROMENA, onChange)
+    },
+    izabranaTema,
+    () => PODRAZUMEVANA_TEMA,
+  )
 }

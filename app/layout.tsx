@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import { SITE_URL } from "@/lib/site";
+import { PODRAZUMEVANA_TEMA } from "@/lib/temaOsnova";
 import "./globals.css";
 // Next-specifična integracija (usePathname/useSearchParams) - NE patchuje
 // history.pushState kao /react, koji je lomio navigaciju u Next 16.
@@ -153,11 +154,11 @@ export default function RootLayout({
             tek u useEffect-u (providers.tsx), pa svaki pun reload bljesne belo.
             Offline je to posebno vidljivo jer tada svaka navigacija postaje
             hard reload (RSC fetch padne -> Next radi MPA navigaciju).
-            Mora da preslikava applyTheme() iz providers.tsx: samo localStorage,
-            bez prefers-color-scheme (CSS tamu vozi isključivo `.dark` klasa). */}
+            Mora da preslikava primeniTemu() iz lib/theme.ts (CSS tamu vozi
+            isključivo `.dark` klasa). */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('fon_theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
+            __html: `try{var t=localStorage.getItem('fon_theme')||'${PODRAZUMEVANA_TEMA}';if(t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}`,
           }}
         />
         {/* Ista tehnika, drugi problem: `/` je prerenderovana kao onboarding, pa

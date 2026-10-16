@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry } from '@/lib/types'
 import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
-import { toggleTheme } from '@/lib/theme'
+import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
@@ -32,14 +32,32 @@ const baseIcon = (props: IconProps) => ({
   strokeLinejoin: 'round' as const,
   ...props,
 })
-const IconBack = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
+// Pola kruga = prati telefon, kao "Automatski" u iOS podešavanjima.
+const IconAuto = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" /></svg>
+)
+const IconSun = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
 )
 const IconMoon = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
 )
-const IconSun = (p: IconProps) => (
-  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+
+const TEME = [
+  ['auto', 'Automatski, kao telefon', IconAuto],
+  ['light', 'Svetla tema', IconSun],
+  ['dark', 'Tamna tema', IconMoon],
+] as const satisfies readonly (readonly [Tema, string, (p: IconProps) => React.JSX.Element])[]
+const IconBook = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z" /><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" /></svg>
+)
+const IconCalendarPlus = (p: IconProps) => (
+  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M8 2.5v3M16 2.5v3M3 9.5h18M12 13v5M9.5 15.5h5" /></svg>
+)
+// Obojen kvadrat sa ikonicom levo od reda, kao u iOS Podešavanjima.
+const RED_IKONA = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-white'
+const IconBack = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
 )
 const IconChevronDown = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
@@ -89,6 +107,7 @@ type Predlog = Par & { razlog: string; pise: boolean }
 
 export default function PreneseniPage() {
   const router = useRouter()
+  const tema = useTema()
   const [godina, setGodina] = useState<number | null>(null)
   // Smer poslednje promene godine (-1 ka manjoj, 1 ka većoj, 0 bez klizanja):
   // lista predmeta ulazi sa te strane, kao meseci u kalendaru Rokova.
@@ -345,19 +364,26 @@ export default function PreneseniPage() {
             <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
               Izmena rasporeda
             </h1>
-            <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-              Dodaj <strong>termine za predmete iz prethodnih godina</strong>, promeni termin postojećeg predmeta, ili vrati sakrivene termine.
-            </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              aria-label="Promeni temu"
-              className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-            >
-              <IconMoon className="h-[18px] w-[18px] dark:hidden" />
-              <IconSun className="hidden h-[18px] w-[18px] dark:block" />
-            </button>
+            {/* Tema: ovo je jedino mesto (zaglavlja ostalih tabova je nemaju). */}
+            <div className="inline-flex rounded-full bg-gray-200/60 p-0.5 dark:bg-white/10">
+              {TEME.map(([t, naziv, Icon]) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => postaviTemu(t)}
+                  aria-label={naziv}
+                  aria-pressed={tema === t}
+                  className={`no-hover-lift flex h-8 w-8 items-center justify-center rounded-full transition-colors
+                    ${tema === t
+                      ? 'bg-white text-gray-900 shadow-[0_1px_3px_rgba(0,0,0,0.12)] dark:bg-gray-600 dark:text-white'
+                      : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                </button>
+              ))}
+            </div>
             <FeedbackButton />
             <button
               onClick={() => router.push('/raspored')}
@@ -380,12 +406,10 @@ export default function PreneseniPage() {
               onClick={() => router.push('/izborni')}
               className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
             >
-              <div>
+              <div className="flex items-center gap-3">
+                <span className={`${RED_IKONA} bg-[#024c7d]`}><IconBook className="h-4 w-4" /></span>
                 <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
                   Moji predmeti
-                </p>
-                <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                  Promeni koje izborne predmete pratiš.
                 </p>
               </div>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
@@ -513,12 +537,10 @@ export default function PreneseniPage() {
               onClick={toggleManualOpen}
               className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
             >
-              <div>
+              <div className="flex items-center gap-3">
+                <span className={`${RED_IKONA} bg-[#3f9e8b]`}><IconCalendarPlus className="h-4 w-4" /></span>
                 <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
-                  Dodatni termini
-                </p>
-                <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                  Ručno izaberi godinu i pronađi termin.
+                  Dodaj ili promeni termin
                 </p>
               </div>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
@@ -531,7 +553,7 @@ export default function PreneseniPage() {
                 {/* Godina prenesenog predmeta */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Godina slušanja predmeta
+                    Godina
                   </label>
                   <div className="grid grid-cols-4 gap-2">
                     {[1, 2, 3, 4].map(g => (
@@ -735,10 +757,6 @@ export default function PreneseniPage() {
           {/* Preporuka: termini su već čekirani u listi, ovde samo šta i zašto. */}
           {preporuka && (
             <div className={`anim-up rounded-xl p-4 ${GLASS}`}>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                <IconSparkle className="h-3.5 w-3.5 text-[#024c7d] dark:text-[#60c3ad]" />
-                Predlog je izabran u listi
-              </p>
               <div className="space-y-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                 {[preporuka.p, preporuka.v].filter((e): e is ScheduleEntry => !!e).map(e => (
                   <p key={`${e.type_short}-${e.day}-${e.start}`}>
@@ -763,7 +781,6 @@ export default function PreneseniPage() {
           {/* Kako izabrani termini staju u raspored - i kad se bira ručno. */}
           {(odabranoPredavanje || odabraneVezbe) && (
             <div className={`anim-up rounded-xl p-3 ${GLASS}`}>
-              <p className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">Tvoja nedelja sa izabranim terminima</p>
               <MiniWeek
                 current={vidljiviRaspored}
                 picks={[odabranoPredavanje, odabraneVezbe].filter((e): e is ScheduleEntry => !!e)}
