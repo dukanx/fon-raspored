@@ -55,7 +55,10 @@ function BlurHeading() {
         {/* Računar: animacija sa logoom i natpisom umesto oba; naslov ispod
             ostaje za pretraživač i čitač ekrana, samo se ne vidi. */}
         <span className="flex lg:hidden"><Logo /></span>
-        <NaslovAnimacija className="hidden lg:block" />
+        <NaslovAnimacija
+          className="hidden lg:block"
+          rezerva={<span aria-hidden="true" className={`hidden items-center gap-3 lg:flex ${TITLE_CLASS}`}><Logo />FON Raspored</span>}
+        />
         {/* Ovo je pravi <h1> strane, ne dekoracija. Animacija je i dalje slovo po
             slovo, ali su spanovi u normalnom inline toku (v. BlurText), pa i
             čitač i pretraživač vide frazu "FON Raspored", a `ariaLabel` skida

@@ -3,7 +3,7 @@
 // Animacija logoa: FON-ovi krugovi se sklope u kalendar. Telefon: kratka
 // (v2, 2,5 s) preko cele aplikacije pri ulasku, dodir preskače. Računar: v3,
 // sa natpisom, umesto logoa i naslova na početnoj.
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 const VIDEO = '/logo-animacija.mp4' // telefon, splash
 
@@ -52,26 +52,42 @@ const TIRKIZNA = [96, 195, 173]
 // Visina gotovog logoa sa natpisom (kao h-11 naslova).
 const VISINA = 44
 
+// Kadar sa gotovim logoom je uglavnom bela pozadina, pa posle brisanja
+// ostaje mali deo neprovidnih piksela (izmereno ~15%). Više od ovoga znači
+// da browser ne daje prave piksele (zaštita od praćenja preko canvas-a,
+// video koji se dekodira u crno), pa se umesto animacije prikazuje rezerva.
+const NAJVISE_PUNO = 0.5
+// Ako za ovoliko nijedan kadar nije nacrtan (video ne može da krene), isto.
+const CEKANJE_MS = 3000
+
 // Video se crta u canvas, a bela pozadina se briše piksel po piksel. Providno
 // postaje samo ono što je skoro belo (pozadina sa šumom kompresije); boje
 // ostaju pune, pa se vide i na tamnoj pozadini.
-export function NaslovAnimacija({ className = '' }: { className?: string }) {
+export function NaslovAnimacija({ className = '', rezerva }: { className?: string; rezerva: ReactNode }) {
   const video = useRef<HTMLVideoElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
+  const [radi, setRadi] = useState(true)
 
   useEffect(() => {
     const v = video.current
     const ctx = canvas.current?.getContext('2d', { willReadFrequently: true })
     if (!v || !ctx) return
     let rafId = 0
+    let nacrtano = false
+    const odustani = () => setRadi(false)
+    const tajmer = setTimeout(() => { if (!nacrtano) odustani() }, CEKANJE_MS)
     const crtaj = () => {
-      if (!v.videoWidth) return
+      // Pre prvog kadra drawImage ne nacrta ništa, a providno crni pikseli bi
+      // posle brisanja bele postali puni crni pravougaonik.
+      if (v.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !v.videoWidth) return
       const vw = v.videoWidth, vh = v.videoHeight
       const tamno = document.documentElement.classList.contains('dark')
       ctx.clearRect(0, 0, W, H)
       ctx.drawImage(v, ISECAK.x * vw, ISECAK.y * vh, ISECAK.w * vw, ISECAK.h * vh, 0, 0, W, H)
-      const slika = ctx.getImageData(0, 0, W, H)
+      let slika: ImageData
+      try { slika = ctx.getImageData(0, 0, W, H) } catch { odustani(); return }
       const d = slika.data
+      let puni = 0
       for (let i = 0; i < d.length; i += 4) {
         // Pozadina videa sa šumom kompresije ide do ~240 (izmereno), pa je
         // sve svetlije od 236 providno, a do 206 se postepeno puni.
@@ -82,6 +98,11 @@ export function NaslovAnimacija({ className = '' }: { className?: string }) {
           d[i] = TIRKIZNA[0]; d[i + 1] = TIRKIZNA[1]; d[i + 2] = TIRKIZNA[2]
         }
         d[i + 3] = Math.round(a * 255)
+        puni++
+      }
+      if (!nacrtano) {
+        nacrtano = true
+        if (puni / (W * H) > NAJVISE_PUNO) { odustani(); return }
       }
       ctx.putImageData(slika, 0, 0)
     }
@@ -100,17 +121,21 @@ export function NaslovAnimacija({ className = '' }: { className?: string }) {
     const tema = new MutationObserver(crtaj)
     tema.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     v.addEventListener('playing', petlja)
+    v.addEventListener('error', odustani)
     if (v.readyState >= 1) kreni()
     else v.addEventListener('loadedmetadata', kreni, { once: true })
     return () => {
+      clearTimeout(tajmer)
       cancelAnimationFrame(rafId)
       tema.disconnect()
       v.pause()
       v.removeEventListener('playing', petlja)
       v.removeEventListener('loadedmetadata', kreni)
+      v.removeEventListener('error', odustani)
     }
   }, [])
 
+  if (!radi) return rezerva
   return (
     // Ispod se ostavlja mesto koliko krugovi na početku vire ispod gotovog
     // logoa, da ne pređu preko podnaslova; gore viri u prazan prostor kartice.
