@@ -3,7 +3,9 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
+  /* Nijansa pozadine sa lukovima, ne čisto belo: Safari ovom bojom boji traku
+     sa satom i prostor oko svoje donje trake, pa bi belo štrčalo. */
+  --background: #f8fafb;
   --foreground: #171717;
   --fon-blue: #024c7d;
   --fon-blue-hover: #013d6a;
@@ -44,6 +46,10 @@
   --wallpaper-accent-1: radial-gradient(at 15% 20%, rgba(2, 76, 125, 0.20) 0px, transparent 55%);
   --wallpaper-accent-2: radial-gradient(at 85% 8%, rgba(96, 195, 173, 0.12) 0px, transparent 50%);
   --wallpaper-accent-3: radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.10) 0px, transparent 50%);
+}
+
+html {
+  background: var(--background);
 }
 
 body {
