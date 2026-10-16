@@ -916,11 +916,10 @@ export default function OnboardingPage() {
             ovo je fakultet, ne škola. */}
         <p className="mx-auto max-w-md leading-relaxed text-pretty lg:max-w-3xl">
           <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
-          {' '}- lični raspored nastave, ispita i kolokvijuma za studente Fakulteta
+          {' '}- raspored nastave, ispita i kolokvijuma za studente Fakulteta
           organizacionih nauka u Beogradu. Predavanja i vežbe tvoje grupe sa salama,
           ispitni rokovi (januarski, februarski, junski, julski, septembarski i
-          oktobarski) i kolokvijumske nedelje sa datumima prijave, podsetnici za
-          prijavu ispita i izvoz u kalendar telefona ili kao slika.
+          oktobarski) sa datumima prijave i izvoz u kalendar telefona.
         </p>
         <p>
           Made by{' '}

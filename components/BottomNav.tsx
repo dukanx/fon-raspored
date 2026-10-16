@@ -54,11 +54,11 @@ export default function BottomNav() {
           : 'px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)] [@media(display-mode:standalone)]:pb-[max(0.575rem,env(safe-area-inset-bottom)_-_0.75rem)]'
       }`}
     >
-      {/* Krug je visok koliko i traka sa tabovima (65px, a 46px skupljena pri skrolu). */}
-      <div className={`mx-auto flex items-center gap-2 transition-all duration-300 ${isCompact ? 'max-w-72' : 'max-w-md'}`}>
+      {/* Krug je visok koliko i traka sa tabovima (59px, a 40px skupljena pri skrolu). */}
+      <div className={`mx-auto flex items-center gap-2 transition-all duration-300 ${isCompact ? 'max-w-64' : 'max-w-80'}`}>
         <div
           className={`liquid-glass liquid-glass-nav pointer-events-auto flex flex-1 items-stretch transition-all duration-300 ${
-            isCompact ? 'gap-0.5 rounded-[1.65rem] px-1.5 py-1.5' : 'gap-1 rounded-[2rem] px-2 py-1.5'
+            isCompact ? 'gap-0.5 rounded-[1.65rem] px-1.5 py-1.5' : 'gap-1 rounded-[1.75rem] px-1.5 py-1.5'
           }`}
         >
           {GLAVNI_TABOVI.map(({ key, href, short, Icon }) => {
@@ -68,7 +68,7 @@ export default function BottomNav() {
                 key={key}
                 onClick={() => idi(href)}
                 className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
-                  isCompact ? 'gap-0 px-1.5 py-1.5' : 'gap-0.5 px-2 py-1.5'
+                  isCompact ? 'gap-0 px-1.5 py-1' : 'gap-0.5 px-2 py-1'
                 } ${
                   active
                     ? 'text-[#024c7d] dark:text-[#60c3ad]'
@@ -84,7 +84,7 @@ export default function BottomNav() {
                 )}
                 <Icon
                   className={`relative transition-all duration-300 ${
-                    isCompact ? 'h-5 w-5' : 'h-[22px] w-[22px]'
+                    isCompact ? 'h-[18px] w-[18px]' : 'h-5 w-5'
                   }`}
                 />
                 <span
@@ -104,7 +104,7 @@ export default function BottomNav() {
           onClick={() => idi(IZMENA.href)}
           aria-label={IZMENA.short}
           className={`liquid-glass liquid-glass-nav pointer-events-auto flex shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
-            isCompact ? 'h-[46px] w-[46px]' : 'h-[65px] w-[65px]'
+            isCompact ? 'h-[40px] w-[40px]' : 'h-[59px] w-[59px]'
           } ${
             pathname === IZMENA.href
               ? 'text-[#024c7d] dark:text-[#60c3ad]'
@@ -112,9 +112,9 @@ export default function BottomNav() {
           }`}
         >
           {pathname === IZMENA.href && (
-            <span className="absolute inset-1.5 rounded-full bg-[#024c7d]/10 dark:bg-[#60c3ad]/15" />
+            <span className="absolute inset-1.5 rounded-full bg-[#024c7d]/20 dark:bg-[#60c3ad]/25" />
           )}
-          <IZMENA.Icon className={`relative transition-all duration-300 ${isCompact ? 'h-5 w-5' : 'h-[22px] w-[22px]'}`} />
+          <IZMENA.Icon className={`relative transition-all duration-300 ${isCompact ? 'h-[18px] w-[18px]' : 'h-5 w-5'}`} />
         </button>
       </div>
     </nav>
