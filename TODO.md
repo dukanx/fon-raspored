@@ -45,14 +45,9 @@ feedback prozoru).
   - [ ] Možda kasnije: samo studentima čiji su ČEKIRANI predmeti promenjeni (sad je po
     grupi, pa izmena izbornog koji student ne sluša i dalje stigne). Traži slanje izbora
     predmeta uz pretplatu pri svakoj promeni.
-- [ ] **Posle 2026-10-19 obrisati privremeno za izmenu od 5. 10.** - `PRETHODNI_RASPORED` u
-  raspored/page.tsx i `public/data/{3,4}god-prethodni.json` (raspored pre izmene, da je
-  vide i korisnici koji još nisu imali zapamćen raspored), pa i baner `izmena2NedSeen`. - pamtiti raspored GRUPE (ne samo čekirane
-  predmete, da čekiranje ne pali baner) kad ga student vidi, pa pri sledećoj FON-ovoj izmeni
-  pokazati tačne promene za njegove predmete ("Matematika 1 (P), pon 08:15: Amfiteatar 3 ->
-  Amfiteatar 1") uz "ako si izvezao u kalendar ili sačuvao sliku, uradi ponovo". Za studente
-  bez notifikacija. Sada postoji samo jednokratni opšti baner za izmenu od 2. nedelje
-  (`izmena2NedSeen`, ističe 2026-10-12) - posle toga ga obrisati.
+- [x] **Obrisano privremeno za izmenu od 5. 10.** (2026-10-16, ranije nego 19. 10.) -
+  poređenje sa rasporedom pre izmene je novom korisniku koji brzo preskoči tur pokazivalo
+  "izmenu" koju nikad nije video (stari korisnik se prepoznavao samo po pređenom turu).
 - [ ] **Oznaka "po planu: letnji/zimski"** na izboru predmeta, kad je predmet u planu modula
   studenta u drugom semestru nego što ga FON drži (npr. Napredne .NET tehnologije: za SI
   letnji, a FON ga drži zimi za D4-D7 zajedno sa TEP-om). Sad `planStatus` tiho uzme drugi

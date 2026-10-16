@@ -24,15 +24,8 @@ import Toast from '@/components/Toast'
 import { IconHidden } from '@/components/Ikone'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
-import { todayLocalIso } from '@/lib/season'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 import { otisak, promene, opisPromene, type Promena } from '@/lib/izmene'
-
-// Raspored 3. i 4. godine pre FON-ove izmene od 5. 10. 2026. Baner sa izmenama je
-// uveden posle nje, pa niko nije imao zapamćen raniji raspored; postojeći
-// korisnici bez zapamćenog porede sa ovim i vide i tu izmenu. Posle 19. 10. se
-// ne koristi - tada obrisati ovo i public/data/{3,4}god-prethodni.json.
-const PRETHODNI_RASPORED = { godine: ['3', '4'], do: '2026-10-19' }
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
@@ -222,7 +215,6 @@ export default function RasporedPage() {
   const [groupMoved, setGroupMoved] = useState<{ from: string; to: string } | null>(null)
   const [showTour, setShowTour] = useState(false)
   const [showKalendarIntro, setShowKalendarIntro] = useState(false)
-  const [showIzmena2Ned, setShowIzmena2Ned] = useState(false)
   // Promene u rasporedu grupe od poslednjeg viđenja, i otisak koji se pamti
   // kad ih student potvrdi.
   const [promeneRasporeda, setPromeneRasporeda] = useState<Promena[]>([])
@@ -359,15 +351,6 @@ export default function RasporedPage() {
         const ranije = viden.get()
         if (ranije && ranije.semester === sada.semester) {
           if (ranije.otisak.join('\n') !== sada.otisak.join('\n')) uporedi(ranije.otisak)
-        } else if (!ranije && PRETHODNI_RASPORED.godine.includes(meta.year)
-          && todayLocalIso() <= PRETHODNI_RASPORED.do && app.appTourSeen.get()) {
-          fetch(`/data/${meta.year}god-prethodni.json`)
-            .then(r => (r.ok ? r.json() : null))
-            .then((prev: SemesterData | null) => {
-              if (prev?.semester === sada.semester) uporedi(otisak(getScheduleForGroup(prev, meta.group)))
-              else viden.set(sada)
-            })
-            .catch(() => {}) // offline: pokušava se pri sledećem otvaranju
         } else {
           viden.set(sada)
         }
@@ -473,24 +456,12 @@ export default function RasporedPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
 
-  // FON je od 2. nedelje zimskog 2026/27 promenio sale i termine u svim
-  // godinama. Ko je aplikaciju koristio i ranije (video tur), a nema uključene
-  // notifikacije, inače ne bi znao da je raspored drugačiji nego što pamti ili
-  // nego što je izvezao. Jednom, do 12. oktobra.
-  useEffect(() => {
-    if (!loaded || !app.appTourSeen.get() || app.izmena2NedSeen.get()) return
-    if (todayLocalIso() > '2026-10-12') return
-    queueMicrotask(() => setShowIzmena2Ned(true))
-  }, [loaded])
-
   const tourHasTransferredSlide = hasTransferredSubjects()
 
   function closeTour() {
     app.appTourSeen.set()
-    // Nov korisnik kalendar upozna u Rokovima, "novo" mu ne treba, a ni poruka
-    // da je raspored izmenjen: za njega je ovo prvi raspored.
+    // Nov korisnik kalendar upozna u Rokovima, pa mu "novo" ne treba.
     app.kalendarIntroSeen.set()
-    app.izmena2NedSeen.set()
     if (tourHasTransferredSlide) app.prevSubjectsIntroSeen.set()
     setShowTour(false)
   }
@@ -1047,15 +1018,13 @@ export default function RasporedPage() {
       {/* ---------- Sadržaj ---------- */}
       <main className="mx-auto w-full max-w-6xl px-3 pt-5 pb-32 sm:px-6 sm:pb-10">
 
-        {/* Izmena rasporeda: tačne promene za predmete koje student prati, a dok
-            ih nema (otisak se tek pamti), jednokratna poruka za 2. nedelju. */}
-        {(promeneRasporeda.length > 0 || showIzmena2Ned) && !loadError && (
+        {/* Izmena rasporeda: tačne promene za predmete koje student prati. */}
+        {promeneRasporeda.length > 0 && !loadError && (
           <div className="anim-up mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
                           bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
             <IconInfo className="mt-0.5 h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
-            {promeneRasporeda.length > 0 ? (
-              // Sklopljeno: na telefonu bi spisak promena zauzeo pola ekrana.
-              <div className="flex-1 min-w-0">
+            {/* Sklopljeno: na telefonu bi spisak promena zauzeo pola ekrana. */}
+            <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
                   Raspored je izmenjen
                   <span className="font-normal text-amber-700 dark:text-amber-400">
@@ -1078,21 +1047,11 @@ export default function RasporedPage() {
                     Ako si raspored izvezao u kalendar ili sačuvao kao sliku, uradi to ponovo.
                   </p>
                 </Expand>
-              </div>
-            ) : (
-              <p className="flex-1 min-w-0 text-sm font-medium text-amber-800 dark:text-amber-300">
-                Raspored je izmenjen od 2. nedelje, proveri sale i termine.
-              </p>
-            )}
+            </div>
             <button
               onClick={() => {
-                if (promeneRasporeda.length > 0) {
-                  if (noviOtisak.current) byGroup.videnRaspored(meta.group).set(noviOtisak.current)
-                  setPromeneRasporeda([])
-                } else {
-                  app.izmena2NedSeen.set()
-                  setShowIzmena2Ned(false)
-                }
+                if (noviOtisak.current) byGroup.videnRaspored(meta.group).set(noviOtisak.current)
+                setPromeneRasporeda([])
               }}
               className="text-amber-400 dark:text-amber-600 hover:text-amber-600 dark:hover:text-amber-400 transition-colors shrink-0 text-sm leading-none mt-0.5"
               aria-label="Zatvori"
