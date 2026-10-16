@@ -906,7 +906,7 @@ export default function OnboardingPage() {
         <LandingPreview leaving={leaving} />
       </div>
 
-      <footer className={`w-full space-y-1.5 pt-7 text-center text-xs text-gray-400 lg:pt-3 dark:text-gray-600 ${leaving ? 'leave-fade' : ''}`}>
+      <footer className={`w-full space-y-1.5 pt-7 text-center text-xs text-gray-400 lg:pt-10 dark:text-gray-600 ${leaving ? 'leave-fade' : ''}`}>
         {/* Bezličan opis, jedini pravi tekst na stranici. Postoji radi pretrage:
             osim <h1> sve ostalo su dugmad i polja, pa Google inače nema šta da
             poveže sa upitima koje ljudi kucaju ("fon raspored nastave",
@@ -914,12 +914,13 @@ export default function OnboardingPage() {
             prerenderovana u statički HTML, dakle vidi se i bez JS-a.
             Formulacija prati ostatak aplikacije: "nastava", ne "časovi" -
             ovo je fakultet, ne škola. */}
-        <p className="mx-auto max-w-md leading-relaxed text-pretty">
+        <p className="mx-auto max-w-md leading-relaxed text-pretty lg:max-w-3xl">
           <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
-          {' '}- raspored nastave, ispita i kolokvijuma za studente Fakulteta
-          organizacionih nauka u Beogradu. Predavanja i vežbe za tvoju grupu sa
-          salama, ispitni rokovi (januarski, februarski, junski, julski,
-          septembarski i oktobarski) sa datumima prijave i izvoz u Google Calendar.
+          {' '}- lični raspored nastave, ispita i kolokvijuma za studente Fakulteta
+          organizacionih nauka u Beogradu. Predavanja i vežbe tvoje grupe sa salama,
+          ispitni rokovi (januarski, februarski, junski, julski, septembarski i
+          oktobarski) i kolokvijumske nedelje sa datumima prijave, podsetnici za
+          prijavu ispita i izvoz u kalendar telefona ili kao slika.
         </p>
         <p>
           Made by{' '}
