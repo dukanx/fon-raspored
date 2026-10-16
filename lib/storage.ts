@@ -124,8 +124,6 @@ export const app = {
   // Kad je baner "Instaliraj aplikaciju" zatvoren (ISO datum); vraća se posle
   // nedelju dana (v. InstallBanner).
   installBannerSkriven: str('local', 'fon_install_banner_skriven'),
-  // Baner "Raspored je izmenjen od 2. nedelje" (zimski 2026/27) zatvoren.
-  izmena2NedSeen: flag('local', 'fon_izmena_2ned_seen'),
   // Rezultat pickDefaultTab-a, zapamćen uz dan za koji je izračunat. Odluka
   // zavisi samo od datuma i rokovi.json-a, pa je u toku istog dana nepromenjena
   // - bez ovoga bi svaki ulazak u aplikaciju čekao mrežu pre preusmerenja
