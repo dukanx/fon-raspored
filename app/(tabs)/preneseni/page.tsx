@@ -7,6 +7,7 @@ import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/sch
 import { session, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
+import { TabPrekidac } from '@/components/Navigacija'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
 import MiniWeek from '@/components/MiniWeek'
@@ -56,9 +57,6 @@ const IconCalendarPlus = (p: IconProps) => (
 )
 // Obojen kvadrat sa ikonicom levo od reda, kao u iOS Podešavanjima.
 const RED_IKONA = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-white'
-const IconBack = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
-)
 const IconChevronDown = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m6 9 6 6 6-6" /></svg>
 )
@@ -357,15 +355,15 @@ export default function PreneseniPage() {
 
   return (
     <main className="min-h-screen pb-32 sm:pb-0">
-      <div className="mx-auto max-w-lg px-3 py-3 sm:px-4 sm:py-8">
+      <header className="mx-auto max-w-6xl px-3 pt-3 sm:px-6 sm:pt-8">
+        <div className="flex items-start justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
+          <h1 className="min-w-0 text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+            Izmena rasporeda
+          </h1>
 
-        <header className="mb-6 flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-              Izmena rasporeda
-            </h1>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <TabPrekidac />
+
+          <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
             {/* Tema: ovo je jedino mesto (zaglavlja ostalih tabova je nemaju). */}
             <div className="inline-flex rounded-full bg-gray-200/60 p-0.5 dark:bg-white/10">
               {TEME.map(([t, naziv, Icon]) => (
@@ -385,15 +383,11 @@ export default function PreneseniPage() {
               ))}
             </div>
             <FeedbackButton />
-            <button
-              onClick={() => router.push('/raspored')}
-              className={`hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 sm:inline-flex ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-            >
-              <IconBack className="h-4 w-4" />
-              Nazad
-            </button>
           </div>
-        </header>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-lg px-3 pt-6 pb-3 sm:px-4 sm:pt-8">
 
         {loadError && <OfflineNotice />}
 

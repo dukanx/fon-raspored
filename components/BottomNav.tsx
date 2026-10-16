@@ -3,33 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
-
-/* ---------- Ikonice (stroke, currentColor - rade u obe teme) ---------- */
-type IconProps = React.SVGProps<SVGSVGElement>
-const baseIcon = (props: IconProps) => ({
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.75,
-  strokeLinecap: 'round' as const,
-  strokeLinejoin: 'round' as const,
-  ...props,
-})
-const IconSchedule = (p: IconProps) => (
-  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
-)
-const IconEdit = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-)
-const IconExam = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
-)
-
-const TABS = [
-  { key: 'raspored', href: '/raspored', short: 'Raspored', Icon: IconSchedule },
-  { key: 'preneseni', href: '/preneseni', short: 'Izmena', Icon: IconEdit },
-  { key: 'rokovi', href: '/rokovi', short: 'Rokovi', Icon: IconExam },
-] as const
+import { GLAVNI_TABOVI, IZMENA } from './Navigacija'
 
 export default function BottomNav() {
   const pathname = usePathname()
@@ -64,6 +38,10 @@ export default function BottomNav() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Klik na tab na kome si vraća na vrh strane.
+  const idi = (href: string) =>
+    pathname === href ? window.scrollTo({ top: 0, behavior: 'smooth' }) : router.push(href)
+
   // U instaliranoj aplikaciji (standalone) viewport-fit=cover daje pun
   // safe-area-inset-bottom (~34px na iPhone-u), pa bi navbar lebdeo visoko
   // iznad home indikatora. Tamo ulazi delom u tu zonu, kao sistemski tab bar;
@@ -76,55 +54,68 @@ export default function BottomNav() {
           : 'px-3.5 pb-[calc(env(safe-area-inset-bottom)+0.575rem)] [@media(display-mode:standalone)]:pb-[max(0.575rem,env(safe-area-inset-bottom)_-_0.75rem)]'
       }`}
     >
-      <div
-        className={`liquid-glass liquid-glass-nav pointer-events-auto mx-auto flex items-stretch transition-all duration-300 ${
-          isCompact
-            ? 'max-w-64 gap-0.5 rounded-[1.65rem] px-1.5 py-1.5'
-            : 'max-w-md gap-1 rounded-[2rem] px-2 py-1.5'
-        }`}
-      >
-        {TABS.map(({ key, href, short, Icon }) => {
-          const active = pathname === href
-          return (
-            <button
-              key={key}
-              onClick={() =>
-                active
-                  ? window.scrollTo({ top: 0, behavior: 'smooth' })
-                  : router.push(href)
-              }
-              className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
-                isCompact ? 'gap-0 py-1.5' : 'gap-0.5 py-1.5'
-              } ${
-                isCompact ? 'px-1.5' : 'px-2'
-              } ${
-                active
-                  ? 'text-[#024c7d] dark:text-[#60c3ad]'
-                  : 'text-gray-500 dark:text-gray-400 active:scale-90 transition-transform'
-              }`}
-            >
-              {active && (
-                <motion.span
-                  layoutId="navPill"
-                  className="absolute inset-0 rounded-[1.5625rem] bg-[#024c7d]/10 dark:bg-[#60c3ad]/15"
-                  transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-                />
-              )}
-              <Icon
-                className={`relative transition-all duration-300 ${
-                  isCompact ? 'h-5 w-5' : 'h-[22px] w-[22px]'
+      {/* Krug je visok koliko i traka sa tabovima (59px, a 40px skupljena pri skrolu). */}
+      <div className={`mx-auto flex items-center transition-all duration-300 ${isCompact ? 'max-w-[16.5rem] gap-4' : 'max-w-[21rem] gap-6'}`}>
+        <div
+          className={`liquid-glass liquid-glass-nav pointer-events-auto flex flex-1 items-stretch transition-all duration-300 ${
+            isCompact ? 'gap-0.5 rounded-[1.65rem] px-1.5 py-1.5' : 'gap-1 rounded-[1.75rem] px-1.5 py-1.5'
+          }`}
+        >
+          {GLAVNI_TABOVI.map(({ key, href, short, Icon }) => {
+            const active = pathname === href
+            return (
+              <button
+                key={key}
+                onClick={() => idi(href)}
+                className={`relative flex flex-1 flex-col items-center rounded-[1.5625rem] transition-all duration-300 ${
+                  isCompact ? 'gap-0 px-1.5 py-1' : 'gap-0.5 px-2 py-1'
+                } ${
+                  active
+                    ? 'text-[#024c7d] dark:text-[#60c3ad]'
+                    : 'text-gray-500 dark:text-gray-400 active:scale-90 transition-transform'
                 }`}
-              />
-              <span
-                className={`relative overflow-hidden text-[10px] transition-all duration-300 ${
-                  isCompact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100'
-                } ${active ? 'font-semibold' : 'font-medium'}`}
               >
-                {short}
-              </span>
-            </button>
-          )
-        })}
+                {active && (
+                  <motion.span
+                    layoutId="navPill"
+                    className="absolute inset-0 rounded-[1.5625rem] bg-[#024c7d]/10 dark:bg-[#60c3ad]/15"
+                    transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                  />
+                )}
+                <Icon
+                  className={`relative transition-all duration-300 ${
+                    isCompact ? 'h-[18px] w-[18px]' : 'h-5 w-5'
+                  }`}
+                />
+                <span
+                  className={`relative overflow-hidden text-[10px] transition-all duration-300 ${
+                    isCompact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100'
+                  } ${active ? 'font-semibold' : 'font-medium'}`}
+                >
+                  {short}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Izmena je sporedna: odvojeno okruglo dugme, bez natpisa. */}
+        <button
+          onClick={() => idi(IZMENA.href)}
+          aria-label={IZMENA.short}
+          className={`liquid-glass liquid-glass-nav pointer-events-auto flex shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+            isCompact ? 'h-[40px] w-[40px]' : 'h-[59px] w-[59px]'
+          } ${
+            pathname === IZMENA.href
+              ? 'text-[#024c7d] dark:text-[#60c3ad]'
+              : 'text-gray-500 dark:text-gray-400 active:scale-90'
+          }`}
+        >
+          {pathname === IZMENA.href && (
+            <span className="absolute inset-1.5 rounded-full bg-[#024c7d]/20 dark:bg-[#60c3ad]/25" />
+          )}
+          <IZMENA.Icon className={`relative transition-all duration-300 ${isCompact ? 'h-[18px] w-[18px]' : 'h-5 w-5'}`} />
+        </button>
       </div>
     </nav>
   )

@@ -21,7 +21,9 @@ import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
-import { IconHidden } from '@/components/Ikone'
+import { IconHidden, IconImage, IconEdit } from '@/components/Ikone'
+import { TabPrekidac } from '@/components/Navigacija'
+import { dugmeTrake, ikonaTrake, IzvozDugme } from '@/components/Traka'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
@@ -69,27 +71,8 @@ const IconCalendar = (p: IconProps) => (
 )
 // Izvoz u kalendar - kalendar sa strelicom nadole. Ista ikonica kao u Rokovima,
 // da ista radnja svuda izgleda isto.
-const IconCalendarExport = (p: IconProps) => (
-  <svg {...baseIcon(p)}>
-    <path d="M21 11V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
-    <path d="M16 2v4M8 2v4M3 10h18" />
-    <path d="M17 14v6M14.5 17.5 17 20l2.5-2.5" />
-  </svg>
-)
-const IconImage = (p: IconProps) => (
-  <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-4.5-4.5L5 22" /></svg>
-)
 const IconShare = (p: IconProps) => (
   <svg {...baseIcon(p)}><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></svg>
-)
-const IconEdit = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-)
-const IconExam = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
-)
-const IconSchedule = (p: IconProps) => (
-  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
 )
 const IconLayers = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 13 9 5 9-5" /></svg>
@@ -865,21 +848,11 @@ export default function RasporedPage() {
 
   }
 
-  // Export akcije (skidanje slike / kalendar) - NISU navigacija, stoje uz kontrole
-  const exportActions = [
-    { key: 'podeli', short: 'Podeli', long: 'Podeli raspored', Icon: IconShare, onClick: openShareFlow },
-    { key: 'slika', short: 'Slika', long: 'Slika', Icon: IconImage, onClick: () => { void downloadPNG() } },
-    { key: 'kalendar', short: 'Kalendar', long: 'Izvezi u kalendar', Icon: IconCalendarExport, onClick: () => { downloadICS(); setShowIcsHelp(true) } },
-  ]
-  // Navigacija (desktop toolbar) - Rokovi ide kroz pageSwitch ispod, ne odavde
-  const navActions = [
-    { key: 'izmena', short: 'Izmena', long: 'Izmena termina', Icon: IconEdit, onClick: () => router.push('/preneseni') },
-  ]
-  // Raspored/Rokovi - ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
-  const pageSwitch = [
-    { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: true, onClick: () => {} },
-    { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: false, onClick: () => router.push('/rokovi') },
-  ] as const
+  // Slika i kalendar su u meniju "Izvezi" (isto kao na Rokovima).
+  const izvoz = {
+    onSlika: () => { void downloadPNG() },
+    onKalendar: () => { downloadICS(); setShowIcsHelp(true) },
+  }
 
   const isLoading = !isHydrated || !loaded
   const isEmpty = loaded && visibleEntries.length === 0
@@ -901,21 +874,7 @@ export default function RasporedPage() {
               </p>
             </div>
 
-            <div className={`hidden rounded-full p-1 sm:flex sm:justify-self-center ${GLASS}`}>
-              {pageSwitch.map(({ key, label, Icon, active, onClick }) => (
-                <button
-                  key={key}
-                  onClick={onClick}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
-                    ${active
-                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
-                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </button>
-              ))}
-            </div>
+            <TabPrekidac />
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <FeedbackButton />
@@ -958,47 +917,19 @@ export default function RasporedPage() {
               ))}
             </div>
 
-            {/* Export (mobilni): male staklene ikonice */}
+            {/* Telefon: podeli i izvoz kao okrugle ikonice; računar: sa nazivima. */}
             <div className="flex items-center gap-2 sm:hidden">
-              {exportActions.map(({ key, long, Icon, onClick }) => (
-                <button
-                  key={key}
-                  onClick={onClick}
-                  aria-label={long}
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                >
-                  <Icon className="h-[18px] w-[18px]" />
-                </button>
-              ))}
+              <button onClick={openShareFlow} aria-label="Podeli raspored" className={dugmeTrake(false)}>
+                <IconShare className={ikonaTrake(false)} />
+              </button>
+              <IzvozDugme {...izvoz} />
             </div>
-
-            {/* Desktop toolbar */}
-            <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex">
-              <div className="flex items-center gap-2">
-                {exportActions.map(({ key, long, Icon, onClick }) => (
-                  <button
-                    key={key}
-                    onClick={onClick}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                  >
-                    <Icon className="h-4 w-4 opacity-80" />
-                    {long}
-                  </button>
-                ))}
-              </div>
-              <div className="mx-1 h-6 w-px bg-white/70 dark:bg-white/15" />
-              <div className="flex items-center gap-2">
-                {navActions.map(({ key, long, Icon, onClick }) => (
-                  <button
-                    key={key}
-                    onClick={onClick}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                  >
-                    <Icon className="h-4 w-4 opacity-80" />
-                    {long}
-                  </button>
-                ))}
-              </div>
+            <div className="hidden items-center gap-2 sm:flex">
+              <button onClick={openShareFlow} className={dugmeTrake(true)}>
+                <IconShare className={ikonaTrake(true)} />
+                Podeli raspored
+              </button>
+              <IzvozDugme saNazivom {...izvoz} />
             </div>
           </div>
         </div>
