@@ -248,9 +248,12 @@ export default function RasporedPage() {
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
 
-  // Default je uvek "Sedmica" (grid) - i na telefonu i na desktopu; korisnik
-  // može ručno na "Lista".
-  const view: 'grid' | 'list' = manualView ?? 'grid'
+  // Prikaz ostaje kakav je bio pri prošlom ulasku (prvi put: Sedmica).
+  const view: 'grid' | 'list' = manualView ?? (isHydrated ? app.rasporedPrikaz.get() : 'grid')
+  function izaberiPrikaz(v: 'grid' | 'list') {
+    setManualView(v)
+    app.rasporedPrikaz.set(v)
+  }
   const meta = isHydrated
     ? {
       group: session.group.get() ?? '',
@@ -986,7 +989,7 @@ export default function RasporedPage() {
               {([['list', 'Lista', IconList], ['grid', 'Sedmica', IconWeek]] as const).map(([v, label, Icon]) => (
                 <button
                   key={v}
-                  onClick={() => setManualView(v)}
+                  onClick={() => izaberiPrikaz(v)}
                   className={`no-hover-lift relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
                     ${view === v
                       ? 'text-[#024c7d] dark:text-[#60c3ad]'

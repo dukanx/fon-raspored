@@ -51,11 +51,10 @@ export interface RokData {
 // type: 'P' | 'U' (isto kao RokEntry) ili slobodni label 'Kolokvijum' / 'Ostalo' -
 // postojeći render kod već ispisuje e.type sirovo kad nije 'P'/'U', pa nema
 // potrebe da se dira nijedno mesto koje prikazuje RokEntry.
-// tab: fiksira se pri dodavanju na tab u kom si tad bio (Ispiti/Kolokvijumi) -
-// NE izvodi se iz `type`, jer bi promena tipa (npr. u "Kolokvijum") inače
-// tiho preselila event u drugi tab.
+// tab: samo u zapisima od pre oktobra 2026, kad su Rokovi imali tabove; sada
+// se sopstveni događaji vide uvek, bez obzira na filter.
 export interface CustomRokEntry extends RokEntry {
   id: string
   custom: true
-  tab: 'ispiti' | 'kolokvijumi'
+  tab?: 'ispiti' | 'kolokvijumi'
 }

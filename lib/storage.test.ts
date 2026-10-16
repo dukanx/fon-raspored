@@ -1,32 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { session, saved, app, byGroup, note, resetSubjectsForNewSemester } from './storage'
+import { postaviMemStorage, ukloniStorage } from './testStorage'
 
-// In-memory Storage mock (node env nema DOM). Guard u storage.ts gleda `window`.
-class MemStorage {
-  private m = new Map<string, string>()
-  getItem(k: string) { return this.m.has(k) ? this.m.get(k)! : null }
-  setItem(k: string, v: string) { this.m.set(k, String(v)) }
-  removeItem(k: string) { this.m.delete(k) }
-  clear() { this.m.clear() }
-  key(i: number) { return [...this.m.keys()][i] ?? null }
-  get length() { return this.m.size }
-}
-
-// Postavi/ukloni globalni `window` bez sudaranja sa DOM `Window` tipom.
-function setWindow(v: { localStorage: Storage; sessionStorage: Storage } | undefined) {
-  ;(globalThis as Record<string, unknown>).window = v
-}
-
-beforeEach(() => {
-  setWindow({
-    localStorage: new MemStorage() as unknown as Storage,
-    sessionStorage: new MemStorage() as unknown as Storage,
-  })
-})
-
-afterEach(() => {
-  setWindow(undefined)
-})
+beforeEach(postaviMemStorage)
+afterEach(ukloniStorage)
 
 describe('str accessor (session)', () => {
   it('get/set/remove', () => {
@@ -104,7 +81,7 @@ describe('resetSubjectsForNewSemester', () => {
 
 describe('SSR-safe (window undefined)', () => {
   it('get vraća fallback, set je no-op bez bacanja', () => {
-    setWindow(undefined)
+    ukloniStorage()
     expect(session.group.get()).toBeNull()
     expect(byGroup.extra('C1').get()).toEqual([])
     expect(() => byGroup.subjects('C1').set({ A: true })).not.toThrow()

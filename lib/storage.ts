@@ -121,6 +121,10 @@ export const app = {
   // Grupa ("3:C13") koju je backend poslednji put zapamtio uz push pretplatu,
   // da se šalje samo kad se promeni (v. lib/push.ts).
   pushGrupa: str('local', 'fon_push_grupa'),
+  // Izabrani prikazi, da ostanu isti pri sledećem ulasku.
+  rokoviFilter: json<'sve' | 'ispiti' | 'kolokvijumi'>('local', 'fon_rokovi_filter', 'sve'),
+  rokoviPrikaz: json<'list' | 'calendar'>('local', 'fon_rokovi_prikaz', 'calendar'),
+  rasporedPrikaz: json<'grid' | 'list'>('local', 'fon_raspored_prikaz', 'grid'),
   // Kad je baner "Instaliraj aplikaciju" zatvoren (ISO datum); vraća se posle
   // nedelju dana (v. InstallBanner).
   installBannerSkriven: str('local', 'fon_install_banner_skriven'),
@@ -156,8 +160,11 @@ export const byGroup = {
   otherSem: (g: string) => json<string[]>('local', `fon_other_sem_${g}`, []),
   prevSubjects: (g: string) =>
     json<{ year: number; subject: string }[]>('local', `fon_prev_subjects_${g}`, []),
-  rokHidden: (tab: string, g: string) =>
-    json<RokEntry[]>('local', `fon_rok_hidden_${tab}_${g}`, []),
+  // Skriveni termini u Rokovima. Do oktobra 2026. su se čuvali posebno za
+  // ispite i kolokvijume; stare ključeve jednom spaja `skriveniTermini` (lib/rokovi).
+  rokHidden: (g: string) => json<RokEntry[]>('local', `fon_rok_hidden_${g}`, []),
+  rokHiddenStaro: (g: string) =>
+    (['ispiti', 'kolokvijumi'] as const).map(t => json<RokEntry[]>('local', `fon_rok_hidden_${t}_${g}`, [])),
   // Korisnikovi sopstveni unosi u rokovi kalendar (nisu sa FON sajta).
   customRokovi: (g: string) =>
     json<CustomRokEntry[]>('local', `fon_custom_rok_${g}`, []),

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { isNewAcademicYear, reconcileSemester } from './semester'
 import { saved, byGroup } from './storage'
+import { postaviMemStorage, ukloniStorage } from './testStorage'
 
 describe('isNewAcademicYear', () => {
   it('letnji -> zimski sledeće godine je nova školska godina', () => {
@@ -22,27 +23,9 @@ describe('isNewAcademicYear', () => {
   })
 })
 
-// In-memory Storage mock (node env nema DOM), isto kao u storage.test.ts.
-class MemStorage {
-  private m = new Map<string, string>()
-  getItem(k: string) { return this.m.has(k) ? this.m.get(k)! : null }
-  setItem(k: string, v: string) { this.m.set(k, String(v)) }
-  removeItem(k: string) { this.m.delete(k) }
-  clear() { this.m.clear() }
-  key(i: number) { return [...this.m.keys()][i] ?? null }
-  get length() { return this.m.size }
-}
-
 describe('reconcileSemester', () => {
-  beforeEach(() => {
-    ;(globalThis as Record<string, unknown>).window = {
-      localStorage: new MemStorage() as unknown as Storage,
-      sessionStorage: new MemStorage() as unknown as Storage,
-    }
-  })
-  afterEach(() => {
-    ;(globalThis as Record<string, unknown>).window = undefined
-  })
+  beforeEach(postaviMemStorage)
+  afterEach(ukloniStorage)
 
   const pick = () => byGroup.subjects('G1').set({ OIKT: true })
   const picked = () => byGroup.subjects('G1').get()

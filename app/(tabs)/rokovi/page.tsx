@@ -5,10 +5,14 @@ import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
-import { subjectInitials } from '@/lib/schedule'
 import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated, toggleTheme } from '@/lib/theme'
-import { formatDateSr } from '@/lib/date'
+import { formatDateSr, getDaySr, SR_MONTHS, SR_DAYS_SHORT, cap } from '@/lib/date'
+import {
+  COLORS, FILTER_NAZIV, aktivniRokovi, buildColorMap, eventTypeLabel, napraviICS, odgovaraFilteru,
+  opisVrste, poDatumu, predmetiStudenta, rokEntryKey, skriveniTermini, type Filter, type Termin,
+} from '@/lib/rokovi'
+import { slikaRokova, meseciSaTerminima, type IzborSlike } from '@/lib/rokSlika'
 import { pickPrijavaPovod, SVI_POVODI, POVOD_NASLOV, type PrijavaPovod } from '@/lib/prijavaBanner'
 import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
@@ -18,27 +22,10 @@ import { motion } from 'motion/react'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
+import { IconHidden, IconIzvoz } from '@/components/Ikone'
+import Popover, { POPOVER_STAVKA } from '@/components/Popover'
 import { stagger } from '@/lib/stagger'
 import { dayStyle, dayBadge, DAY_KIND_STYLE, type ActivityCalendar, type CalendarDay } from '@/lib/kalendar'
-
-const COLORS = [
-  { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
-  { bg: '#cce0f0', text: '#012f4e', bar: '#024c7d', darkBg: '#051e30', darkText: '#7ab5d8' },
-  { bg: '#fff4d6', text: '#7a5a00', bar: '#ffcd67', darkBg: '#3d3200', darkText: '#ffd97a' },
-  { bg: '#e8e7f5', text: '#44408a', bar: '#9a95c9', darkBg: '#1e1b3d', darkText: '#b8b4e0' },
-  { bg: '#fde6e5', text: '#892d2a', bar: '#f48580', darkBg: '#3d1512', darkText: '#f4a09c' },
-  { bg: '#f0d9ec', text: '#7a2e5a', bar: '#d264a7', darkBg: '#3d1a30', darkText: '#e8a8d0' },
-]
-
-const SR_MONTHS = [
-  'januar', 'februar', 'mart', 'april', 'maj', 'jun',
-  'jul', 'avgust', 'septembar', 'oktobar', 'novembar', 'decembar',
-]
-const SR_DAYS_SHORT = ['pon', 'uto', 'sre', 'čet', 'pet', 'sub', 'ned']
-
-const SR_DAYS_FULL = ['ned', 'pon', 'uto', 'sre', 'čet', 'pet', 'sub']
-
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 const GLASS = 'liquid-glass'
 
@@ -86,8 +73,11 @@ const IconList = (p: IconProps) => (
 const IconImage = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-4.5-4.5L5 21" /></svg>
 )
-const IconHidden = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 9 5 9 5s-.9 1.1-2.3 2.4" /><path d="M6.6 6.6C4.4 8 3 10 3 10s4 5 9 5c1.2 0 2.3-.2 3.3-.6" /></svg>
+const IconFilter = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M4 7h16M7 12h10M10 17h4" /></svg>
+)
+const IconCheck = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="m5 12 5 5 9-10" /></svg>
 )
 const IconPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
@@ -101,37 +91,6 @@ const IconSchedule = (p: IconProps) => (
 const IconExam = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
 )
-
-function getDaySr(isoDate: string) {
-  return SR_DAYS_FULL[new Date(isoDate + 'T00:00:00').getDay()]
-}
-
-function buildColorMap(entries: RokEntry[]) {
-  const map: Record<string, number> = {}
-  let i = 0
-  for (const e of entries) {
-    if (!(e.subject in map)) { map[e.subject] = i % COLORS.length; i++ }
-  }
-  return map
-}
-
-function rokEntryKey(e: RokEntry) {
-  return `${e.date}|${e.start}|${e.subject}|${e.type ?? ''}`
-}
-
-// Dodaje predmete drugog semestra u set za filtriranje rokova:
-// - fon_other_sem_${group}: predmeti drugog semestra koje je student ručno štiklirao
-// - fon_subjects_history: akumulirani izbor po semestrima (za mešane Sep/Okt rokove)
-function addOtherSemesterSubjects(set: Set<string>, group: string) {
-  for (const s of byGroup.otherSem(group).get()) set.add(s)
-  for (const arr of Object.values(app.subjectsHistory.get())) {
-    for (const s of arr) set.add(s)
-  }
-}
-
-function escapeICS(s: string) {
-  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
-}
 
 function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -168,14 +127,18 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
   )
 }
 
-type Tab = 'kolokvijumi' | 'ispiti'
-
 type EventModalState =
   | { mode: 'add'; date?: string }
   | { mode: 'edit'; entry: CustomRokEntry }
 
 const EVENT_TYPES = ['P', 'U', 'Kolokvijum', 'Ostalo'] as const
-const eventTypeLabel = (t: string) => (t === 'P' ? 'Pismeni' : t === 'U' ? 'Usmeni' : t)
+
+const FILTER_MENI: Record<Filter, string> = { sve: 'Sve', ispiti: 'Samo ispiti', kolokvijumi: 'Samo kolokvijumi' }
+
+const FON_STRANE = [
+  { naziv: 'Raspored ispita', href: 'https://oas.fon.bg.ac.rs/raspored-ispita/' },
+  { naziv: 'Raspored kolokvijuma', href: 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/' },
+]
 
 export default function RokoviPage() {
   const router = useRouter()
@@ -185,8 +148,12 @@ export default function RokoviPage() {
   // Podaci se nisu učitali (offline i nikad keširano) - razlikuje se od
   // "nema zakazanih rokova", pa ne sme da deli isti prazan prikaz.
   const [loadError, setLoadError] = useState(false)
-  const [tab, setTab] = useState<Tab>('kolokvijumi')
+  // Izbor iz ove posete; dok ga nema, važi zapamćeni sa prethodne (storage).
+  const [manualFilter, setManualFilter] = useState<Filter | null>(null)
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
+  const [fonMeni, setFonMeni] = useState(false)
+  const [filterMeni, setFilterMeni] = useState(false)
+  const [izvozMeni, setIzvozMeni] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date()
     return { year: now.getFullYear(), month: now.getMonth() }
@@ -234,9 +201,20 @@ export default function RokoviPage() {
   const isDark = useIsDark()
   const isHydrated = useIsHydrated()
 
-  // Default je uvek "Kalendar" - i na telefonu i na desktopu; korisnik može
-  // ručno na "Lista".
-  const view: 'list' | 'calendar' = manualView ?? 'calendar'
+  // Prikaz i filter ostaju kakvi su bili pri prošlom ulasku (prvi put:
+  // Kalendar i Sve).
+  const view: 'list' | 'calendar' = manualView ?? (isHydrated ? app.rokoviPrikaz.get() : 'calendar')
+  const filter: Filter = manualFilter ?? (isHydrated ? app.rokoviFilter.get() : 'sve')
+  function izaberiPrikaz(v: 'list' | 'calendar') {
+    setManualView(v)
+    app.rokoviPrikaz.set(v)
+  }
+  function izaberiFilter(f: Filter) {
+    setManualFilter(f)
+    app.rokoviFilter.set(f)
+    setTooltip(null)
+    setFilterMeni(false)
+  }
 
   // Stavke liste ulaze jedna za drugom samo prvi put kad se lista prikaže.
   // ListView je definisan unutar strane pa se montira iznova na svaki render,
@@ -268,42 +246,12 @@ export default function RokoviPage() {
 
   useEffect(() => {
     if (!isHydrated) return
-    const today = new Date().toISOString().split('T')[0]
     fetch('/data/rokovi.json')
       .then(r => { if (!r.ok) throw new Error('http'); return r.json() })
       .then((d: RokData[]) => {
         const data = Array.isArray(d) ? d : []
         setAllRokovi(data)
         setLoadError(false)
-        const savedSubjects = meta.group ? byGroup.subjects(meta.group).get() : {}
-        const subjectSet: Set<string> | null = Object.keys(savedSubjects).length > 0
-          ? new Set(Object.entries(savedSubjects).filter(([, v]) => v !== false).map(([k]) => k))
-          : null
-        if (subjectSet && meta.group) {
-          for (const e of byGroup.extra(meta.group).get()) subjectSet.add(e.subject)
-          for (const e of byGroup.prevSubjects(meta.group).get()) subjectSet.add(e.subject)
-          addOtherSemesterSubjects(subjectSet, meta.group)
-        }
-
-        const nearestDate = (tip: string) =>
-          data
-            .filter(r => r.tip === tip)
-            .flatMap(r => r.entries.filter(e => !subjectSet || subjectSet.has(e.subject)).map(e => e.date))
-            .filter(d => d >= today)
-            .sort()[0] ?? null
-
-        const nearestKol = nearestDate('kolokvijum')
-        const nearestIsp = nearestDate('ispit')
-
-        if (!nearestKol && !nearestIsp) {
-          setTab('kolokvijumi')
-        } else if (!nearestKol) {
-          setTab('ispiti')
-        } else if (!nearestIsp) {
-          setTab('kolokvijumi')
-        } else {
-          setTab(nearestIsp <= nearestKol ? 'ispiti' : 'kolokvijumi')
-        }
         // Ključ je rok + povod, pa odbacivanje jednog podsetnika ne guta i one
         // kasnije (npr. "poslednji dan prijave").
         const dismissed = new Set<string>()
@@ -317,51 +265,31 @@ export default function RokoviPage() {
       // Prazan niz sam po sebi renderuje "Nema podataka za prikaz", što se ne
       // razlikuje od "nema zakazanih ispita" - zato zaseban loadError.
       .catch(() => { setAllRokovi([]); setLoadError(true) })
-  }, [isHydrated, meta.group])
+  }, [isHydrated])
 
-  // Skup predmeta koje student sluša (regularni + preneseni iz prošlih godina)
-  const userSubjects: Set<string> | null = isHydrated && meta.group
-    ? (() => {
-        const checked = byGroup.subjects(meta.group).get()
-        if (Object.keys(checked).length === 0) return null
-        const subjects = new Set(
-          Object.entries(checked).filter(([, v]) => v !== false).map(([k]) => k)
-        )
-        for (const e of byGroup.extra(meta.group).get()) subjects.add(e.subject)
-        for (const e of byGroup.prevSubjects(meta.group).get()) subjects.add(e.subject)
-        addOtherSemesterSubjects(subjects, meta.group)
-        return subjects
-      })()
-    : null
+  const userSubjects = isHydrated && meta.group ? predmetiStudenta(meta.group) : null
 
   const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(rokEntryKey)), [hiddenEntries])
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
 
-  // Skriveni termini se čuvaju odvojeno po tabu i grupi. Kad rok prođe više
-  // nema šta da se sakriva - izbaci ga i iz prikaza i iz storage-a (inače bi
-  // se gomilali zauvek).
   useEffect(() => {
     if (!isHydrated || !meta.group) { setHiddenEntries([]); return }
-    const stored = byGroup.rokHidden(tab, meta.group).get()
-    const active = stored.filter(e => e.date >= todayStr)
-    if (active.length !== stored.length) byGroup.rokHidden(tab, meta.group).set(active)
-    setHiddenEntries(active)
-    setShowHidden(false)
-  }, [isHydrated, tab, meta.group, todayStr])
+    setHiddenEntries(skriveniTermini(meta.group, todayStr))
+  }, [isHydrated, meta.group, todayStr])
 
   function hideEntry(e: RokEntry) {
     if (hiddenKeys.has(rokEntryKey(e))) return
     const next = [...hiddenEntries, e]
     setHiddenEntries(next)
-    byGroup.rokHidden(tab, meta.group).set(next)
+    byGroup.rokHidden(meta.group).set(next)
   }
 
   function restoreEntry(e: RokEntry) {
     const key = rokEntryKey(e)
     const next = hiddenEntries.filter(h => rokEntryKey(h) !== key)
     setHiddenEntries(next)
-    byGroup.rokHidden(tab, meta.group).set(next)
+    byGroup.rokHidden(meta.group).set(next)
   }
 
   // Korisnikovi sopstveni unosi (nisu sa FON sajta) - učitaju se po grupi.
@@ -394,313 +322,56 @@ export default function RokoviPage() {
     })
   }
 
-  const activeRokovi = useMemo(() => allRokovi.filter(r => {
-    if (tab === 'ispiti' ? r.tip !== 'ispit' : r.tip !== 'kolokvijum') return false
-    if (r.entries.length === 0) return false
-    return r.entries.some(e => e.date >= todayStr)
-  }), [allRokovi, tab, todayStr])
+  const activeRokovi = useMemo(() => aktivniRokovi(allRokovi, filter, todayStr), [allRokovi, filter, todayStr])
 
-  // Tab je fiksiran pri dodavanju (vidi CustomRokEntry.tab) - ne zavisi od tipa.
-  const customForTab = useMemo(
-    () => customEntries.filter(e => e.date >= todayStr && e.tab === tab),
-    [customEntries, tab, todayStr]
+  // Sopstveni događaji se vide uvek, bez obzira na filter: student ih je sam dodao.
+  const mojiDogadjaji = useMemo(
+    () => customEntries.filter(e => e.date >= todayStr),
+    [customEntries, todayStr]
   )
 
-  const allFilteredEntries = useMemo(
-    () => [...activeRokovi.flatMap(r => filterEntries(r.entries)), ...customForTab],
-    [activeRokovi, userSubjects, hiddenKeys, customForTab] // eslint-disable-line react-hooks/exhaustive-deps
+  const allFilteredEntries: Termin[] = useMemo(
+    () => [...activeRokovi.flatMap(r => filterEntries(r.entries).map(e => ({ ...e, tip: r.tip }))), ...mojiDogadjaji],
+    [activeRokovi, userSubjects, hiddenKeys, mojiDogadjaji] // eslint-disable-line react-hooks/exhaustive-deps
   )
+
+  const imeFajla = filter === 'sve' ? 'rokovi' : filter
 
   function downloadICS() {
     if (!allFilteredEntries.length) return
-    const lines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//FON Raspored//SR',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-    ]
-    const sorted = [...allFilteredEntries].sort(
-      (a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)
-    )
-    for (const e of sorted) {
-      const dateStr = e.date.replace(/-/g, '')
-      const [sh, sm] = e.start.split(':')
-      const [eh, em] = e.end.split(':')
-      const typeLabel = e.type ? eventTypeLabel(e.type) : ''
-      const desc = [tab === 'ispiti' ? 'Ispit' : 'Kolokvijum', e.note].filter(Boolean).join(' · ')
-      lines.push('BEGIN:VEVENT')
-      lines.push(`UID:${dateStr}-${sh}${sm}-${e.subject.replace(/\s/g, '')}-${e.type ?? ''}@fonraspored`)
-      lines.push(`DTSTART;TZID=Europe/Belgrade:${dateStr}T${sh}${sm}00`)
-      lines.push(`DTEND;TZID=Europe/Belgrade:${dateStr}T${eh}${em}00`)
-      lines.push(`SUMMARY:${escapeICS(e.subject + (typeLabel ? ` [${typeLabel}]` : ''))}`)
-      if (e.rooms.length) lines.push(`LOCATION:${escapeICS(e.rooms.join(', '))}`)
-      lines.push(`DESCRIPTION:${escapeICS(desc)}`)
-      // Podsetnik dan ranije
-      lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Podsetnik', 'TRIGGER:-P1D', 'END:VALARM')
-      lines.push('END:VEVENT')
-    }
-    lines.push('END:VCALENDAR')
-
-    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const blob = new Blob([napraviICS(allFilteredEntries)], { type: 'text/calendar;charset=utf-8' })
     const link = document.createElement('a')
-    link.download = `${tab}-${meta.group}.ics`
+    link.download = `${imeFajla}-${meta.group}.ics`
     link.href = URL.createObjectURL(blob)
     link.click()
     setDownloadToast(true)
     setTimeout(() => setDownloadToast(false), 3500)
   }
 
-  // Izvoz aktivnog taba kao PNG. sel = 'all' (svi meseci u kolonama) ili
-  // { year, month } (jedan mesec: veliki kalendar levo + agenda desno).
-  async function downloadRokImage(sel: 'all' | { year: number; month: number }) {
-    if (!allFilteredEntries.length) return
-    const sorted = [...allFilteredEntries].sort(
-      (a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)
-    )
-    const monthsMap = new Map<string, { year: number; month: number; exams: RokEntry[] }>()
-    for (const e of sorted) {
-      const d = new Date(e.date + 'T00:00:00')
-      const key = `${d.getFullYear()}-${d.getMonth()}`
-      if (!monthsMap.has(key)) monthsMap.set(key, { year: d.getFullYear(), month: d.getMonth(), exams: [] })
-      monthsMap.get(key)!.exams.push(e)
-    }
-    const allMonths = [...monthsMap.values()]
-    const selected =
-      sel === 'all' ? allMonths : allMonths.filter(m => m.year === sel.year && m.month === sel.month)
-    if (!selected.length) return
-
-    const dpr = 2
-    const dayNames = ['Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub', 'Ned']
-
-    const monthWeeks = (mo: { year: number; month: number }) => {
-      const firstOffset = (new Date(mo.year, mo.month, 1).getDay() + 6) % 7
-      return Math.ceil((firstOffset + new Date(mo.year, mo.month + 1, 0).getDate()) / 7)
-    }
-
-    // Visina agende: red po ispitu + 6px razmak/crta između različitih dana.
-    const listHeight = (exams: RokEntry[], rowH: number) =>
-      exams.length * rowH + (new Set(exams.map(e => e.date)).size - 1) * 6
-
-    const setup = (w: number, h: number) => {
-      const canvas = document.createElement('canvas')
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      const ctx = canvas.getContext('2d')!
-      ctx.scale(dpr, dpr)
-      ctx.fillStyle = '#f9fafb'
-      ctx.fillRect(0, 0, w, h)
-      return { canvas, ctx }
-    }
-
-    const truncate = (ctx: CanvasRenderingContext2D, text: string, maxW: number) => {
-      if (ctx.measureText(text).width <= maxW) return text
-      let t = text
-      while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1)
-      return t + '…'
-    }
-
-    // Kalendar jednog meseca na (ox, oy). Vraća visinu (header + mreža).
-    const drawGrid = (
-      ctx: CanvasRenderingContext2D, ox: number, oy: number,
-      mo: { year: number; month: number; exams: RokEntry[] },
-      cw: number, ch: number, numSize: number, daySize: number, initialsSize: number
-    ) => {
-      const firstOffset = (new Date(mo.year, mo.month, 1).getDay() + 6) % 7
-      const daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate()
-      ctx.textAlign = 'center'
-      ctx.font = `500 ${daySize}px system-ui, sans-serif`
-      ctx.fillStyle = '#9ca3af'
-      dayNames.forEach((d, i) => ctx.fillText(d, ox + cw * i + cw / 2, oy + daySize))
-      const top = oy + daySize + 10
-      const cornerSize = Math.max(8, daySize - 2)
-      for (let day = 1; day <= daysInMonth; day++) {
-        const idx = firstOffset + (day - 1)
-        const cx = ox + (idx % 7) * cw
-        const cy = top + Math.floor(idx / 7) * ch
-        const dayExams = mo.exams.filter(e => new Date(e.date + 'T00:00:00').getDate() === day)
-        if (dayExams.length) {
-          const c = COLORS[colorMap[dayExams[0].subject] ?? 0]
-          ctx.fillStyle = c.bg
-          ctx.beginPath(); ctx.roundRect(cx + 2, cy + 2, cw - 4, ch - 4, 8); ctx.fill()
-          // broj dana u gornjem levom ćošku
-          ctx.fillStyle = c.text
-          ctx.globalAlpha = 0.7
-          ctx.font = `600 ${cornerSize}px system-ui, sans-serif`
-          ctx.textAlign = 'left'
-          ctx.fillText(String(day), cx + 6, cy + cornerSize + 5)
-          ctx.globalAlpha = 1
-          // inicijali svih predmeta tog dana (zarezom), uz auto-smanjenje da stanu
-          const label = [...new Set(dayExams.map(e => subjectInitials(e.subject)))].join(', ')
-          const maxW = cw - 10
-          let size = initialsSize
-          ctx.font = `700 ${size}px system-ui, sans-serif`
-          while (size > 7 && ctx.measureText(label).width > maxW) {
-            size -= 1
-            ctx.font = `700 ${size}px system-ui, sans-serif`
-          }
-          ctx.fillStyle = c.text
-          ctx.textAlign = 'center'
-          ctx.fillText(truncate(ctx, label, maxW), cx + cw / 2, cy + ch / 2 + size / 2 + 3)
-        } else {
-          ctx.fillStyle = '#9ca3af'
-          ctx.font = `${numSize}px system-ui, sans-serif`
-          ctx.textAlign = 'center'
-          ctx.fillText(String(day), cx + cw / 2, cy + ch / 2 + numSize / 3)
-        }
-      }
-      return daySize + 10 + monthWeeks(mo) * ch
-    }
-
-    // Agenda, grupisana po danu: datum levo (jednom), ispiti desno, crta
-    // razdvaja različite dane (isti dan → bez crte, vizuelno zajedno).
-    const drawList = (
-      ctx: CanvasRenderingContext2D, ox: number, oy: number, width: number,
-      exams: RokEntry[], rowH: number, dateSize: number, subjSize: number,
-      detailSize: number, dateColW: number
-    ) => {
-      const groups: RokEntry[][] = []
-      for (const e of exams) {
-        const last = groups[groups.length - 1]
-        if (last && last[0].date === e.date) last.push(e)
-        else groups.push([e])
-      }
-      const textW = width - dateColW - 14
-      let ly = oy
-      groups.forEach((grp, gi) => {
-        if (gi > 0) {
-          ly += 6
-          ctx.strokeStyle = '#e5e7eb'
-          ctx.lineWidth = 1
-          ctx.beginPath(); ctx.moveTo(ox, ly - 3); ctx.lineTo(ox + width, ly - 3); ctx.stroke()
-        }
-        const d = new Date(grp[0].date + 'T00:00:00')
-        ctx.textAlign = 'left'
-        ctx.fillStyle = '#111827'
-        ctx.font = `600 ${dateSize}px system-ui, sans-serif`
-        ctx.fillText(`${SR_DAYS_SHORT[(d.getDay() + 6) % 7]} ${d.getDate()}.`, ox, ly + 10)
-        grp.forEach(e => {
-          const c = COLORS[colorMap[e.subject] ?? 0]
-          const rx = ox + dateColW
-          ctx.fillStyle = c.bar
-          ctx.beginPath(); ctx.arc(rx + 4, ly + 6, 3.5, 0, Math.PI * 2); ctx.fill()
-          ctx.textAlign = 'left'
-          ctx.fillStyle = '#1f2937'
-          ctx.font = `600 ${subjSize}px system-ui, sans-serif`
-          ctx.fillText(truncate(ctx, e.subject, textW), rx + 14, ly + 10)
-          const typeLabel = e.type ? eventTypeLabel(e.type).toLowerCase() : ''
-          const details = [e.start, e.rooms.join(', '), typeLabel].filter(Boolean).join(' · ')
-          ctx.fillStyle = '#6b7280'
-          ctx.font = `${detailSize}px system-ui, sans-serif`
-          ctx.fillText(truncate(ctx, details, textW), rx + 14, ly + 10 + detailSize + 5)
-          ly += rowH
-        })
-      })
-    }
-
-    const tabLabel = tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'
+  // Izvoz kao PNG: jedan mesec ili ceo rok (v. lib/rokSlika).
+  async function downloadRokImage(izbor: IzborSlike) {
     const ident = `${meta.program ? `${meta.program} · ` : ''}Grupa ${meta.group}`
-
-    let canvas: HTMLCanvasElement
-
-    if (sel === 'all' && selected.length > 1) {
-      // Svi meseci kao kolone jedan pored drugog.
-      const pad = 24
-      const cw = 40, ch = 40, gridW = cw * 7
-      const daySize = 11, numSize = 13, initialsSize = 10
-      const rowH = 32, dateSize = 11, subjSize = 12, detailSize = 11, dateColW = 44
-      const gap = 30
-      const colTop = pad + 34
-
-      const measure = selected.map(mo => {
-        const calH = daySize + 10 + monthWeeks(mo) * ch
-        return { mo, calH, colH: 24 + calH + 12 + listHeight(mo.exams, rowH) }
-      })
-      const bodyH = Math.max(...measure.map(m => m.colH))
-      const W = pad + selected.length * gridW + (selected.length - 1) * gap + pad
-      const H = colTop + bodyH + pad
-
-      const s = setup(W, H)
-      canvas = s.canvas
-      const ctx = s.ctx
-      ctx.textAlign = 'left'
-      ctx.fillStyle = '#111827'
-      ctx.font = '600 16px system-ui, sans-serif'
-      ctx.fillText(tabLabel, pad, pad + 16)
-      ctx.fillStyle = '#6b7280'
-      ctx.font = '12px system-ui, sans-serif'
-      ctx.fillText(ident, pad + ctx.measureText(tabLabel).width + 10, pad + 16)
-
-      measure.forEach(({ mo, calH }, i) => {
-        const ox = pad + i * (gridW + gap)
-        ctx.fillStyle = '#111827'
-        ctx.font = '600 14px system-ui, sans-serif'
-        ctx.textAlign = 'left'
-        ctx.fillText(`${cap(SR_MONTHS[mo.month])} ${mo.year}`, ox, colTop + 12)
-        const gy = colTop + 24
-        drawGrid(ctx, ox, gy, mo, cw, ch, numSize, daySize, initialsSize)
-        drawList(ctx, ox, gy + calH + 12, gridW, mo.exams, rowH, dateSize, subjSize, detailSize, dateColW)
-      })
-    } else {
-      // Jedan mesec: veliki kalendar levo + agenda desno.
-      const mo = selected[0]
-      const pad = 26
-      const cw = 54, ch = 48, gridW = cw * 7
-      const daySize = 12, numSize = 15, initialsSize = 13
-      const agendaW = 320, gap = 32
-      const rowH = 40, dateSize = 13, subjSize = 13, detailSize = 12, dateColW = 58
-      const titleH = 50
-
-      const calH = daySize + 10 + monthWeeks(mo) * ch
-      const bodyH = Math.max(calH, listHeight(mo.exams, rowH))
-      const W = pad + gridW + gap + agendaW + pad
-      const H = pad + titleH + bodyH + pad
-
-      const s = setup(W, H)
-      canvas = s.canvas
-      const ctx = s.ctx
-      ctx.textAlign = 'left'
-      ctx.fillStyle = '#111827'
-      ctx.font = '600 20px system-ui, sans-serif'
-      ctx.fillText(`${cap(SR_MONTHS[mo.month])} ${mo.year}`, pad, pad + 18)
-      ctx.fillStyle = '#6b7280'
-      ctx.font = '13px system-ui, sans-serif'
-      ctx.fillText(`${tabLabel} · ${ident}`, pad, pad + 40)
-
-      const bodyY = pad + titleH
-      drawGrid(ctx, pad, bodyY, mo, cw, ch, numSize, daySize, initialsSize)
-      drawList(ctx, pad + gridW + gap, bodyY, agendaW, mo.exams, rowH, dateSize, subjSize, detailSize, dateColW)
-    }
-
-    const namePart = sel === 'all' ? 'ceo-rok' : `${SR_MONTHS[selected[0].month]}-${selected[0].year}`
-    const file = await canvasToFile(canvas, `${tab}-${namePart}-${meta.group}.png`)
-    await shareOrDownloadFile(file, tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi')
+    const slika = slikaRokova(allFilteredEntries, izbor, { naslov: FILTER_NAZIV[filter], ident, colorMap })
+    if (!slika) return
+    const file = await canvasToFile(slika.canvas, `${imeFajla}-${slika.ime}-${meta.group}.png`)
+    await shareOrDownloadFile(file, FILTER_NAZIV[filter])
     setImageToast(true)
     setTimeout(() => setImageToast(false), 3500)
   }
 
   const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
 
-  // Meseci sa ispitima (za picker slike), hronološki.
-  const imageMonths = useMemo(() => {
-    const m = new Map<string, { year: number; month: number }>()
-    for (const e of allFilteredEntries) {
-      const d = new Date(e.date + 'T00:00:00')
-      m.set(`${d.getFullYear()}-${d.getMonth()}`, { year: d.getFullYear(), month: d.getMonth() })
-    }
-    return [...m.values()].sort((a, b) => a.year - b.year || a.month - b.month)
-  }, [allFilteredEntries])
+  const imageMonths = useMemo(() => meseciSaTerminima(allFilteredEntries), [allFilteredEntries])
 
   // Baner prijave se ranije prikazivao sve dok prijava ne prođe, pa je iskakao
   // pri svakom otvaranju aplikacije. Sad ima četiri povoda i van njih ćuti.
   const prijavaNotice = useMemo(() => {
-    const tipFilter = tab === 'kolokvijumi' ? 'kolokvijum' : 'ispit'
     // Prazan snimak = korisnik koji je aplikaciju koristio i pre ove logike.
     // Njemu svi zatečeni rokovi nisu "novi", inače bi mu baner iskočio za sve odjednom.
     const prviPut = Object.keys(seenSnapshot).length === 0
 
     for (const r of allRokovi) {
-      if (r.tip !== tipFilter) continue
+      if (!odgovaraFilteru(r.tip, filter)) continue
       const povod = pickPrijavaPovod({
         prijavaDatumi: r.prijava_datumi,
         todayStr,
@@ -712,7 +383,7 @@ export default function RokoviPage() {
       return { rok: r, povod }
     }
     return null
-  }, [allRokovi, tab, todayStr, seenSnapshot, dismissedBanners])
+  }, [allRokovi, filter, todayStr, seenSnapshot, dismissedBanners])
 
   // Upis "prvi put viđeno" ide u efekat, ne u memo - memo sme samo da čita.
   useEffect(() => {
@@ -733,7 +404,7 @@ export default function RokoviPage() {
   }
 
   const byDate = useMemo(() => {
-    const map: Record<string, RokEntry[]> = {}
+    const map: Record<string, Termin[]> = {}
     for (const e of allFilteredEntries) {
       if (!e.date) continue
       if (!map[e.date]) map[e.date] = []
@@ -742,7 +413,7 @@ export default function RokoviPage() {
     return map
   }, [allFilteredEntries])
 
-  const isEmpty = activeRokovi.length === 0 && customForTab.length === 0
+  const isEmpty = activeRokovi.length === 0 && mojiDogadjaji.length === 0
 
   // Raspored/Rokovi - ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
   const pageSwitch = [
@@ -750,47 +421,87 @@ export default function RokoviPage() {
     { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: true, onClick: () => {} },
   ] as const
 
+  // Dugmad u traci: na telefonu okrugla ikonica, na računaru ikonica i naziv.
+  const dugme = (saNazivom: boolean, aktivan = false) => saNazivom
+    ? `inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed
+       ${aktivan ? 'bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]' : `text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70`}`
+    : `flex h-9 w-9 items-center justify-center rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed
+       ${aktivan ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]' : `text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70`}`
+  const ikona = (saNazivom: boolean) => (saNazivom ? 'h-4 w-4 opacity-80' : 'h-[18px] w-[18px]')
+
+  // Šta se vidi: vrsta rokova i skriveni termini. Kad nešto nije prikazano,
+  // dugme je obojeno.
+  function FilterDugme({ saNazivom = false }: { saNazivom?: boolean }) {
+    const aktivan = filter !== 'sve'
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setFilterMeni(o => !o)}
+          aria-expanded={filterMeni}
+          aria-label={`Filter: ${FILTER_MENI[filter]}`}
+          className={dugme(saNazivom, aktivan)}
+        >
+          <IconFilter className={ikona(saNazivom)} />
+          {saNazivom && (aktivan ? FILTER_NAZIV[filter] : 'Filter')}
+        </button>
+        <Popover open={filterMeni} onClose={() => setFilterMeni(false)}>
+          {(Object.keys(FILTER_MENI) as Filter[]).map(f => (
+            <button key={f} onClick={() => izaberiFilter(f)} className={POPOVER_STAVKA}>
+              {FILTER_MENI[f]}
+              {filter === f && <IconCheck className="h-4 w-4 text-[#024c7d] dark:text-[#60c3ad]" />}
+            </button>
+          ))}
+          {hiddenEntries.length > 0 && (
+            <>
+              <div className="mx-2 my-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <button onClick={() => { setShowHidden(o => !o); setFilterMeni(false) }} className={POPOVER_STAVKA}>
+                Skriveni termini ({hiddenEntries.length})
+                <IconHidden className="h-4 w-4 opacity-50" />
+              </button>
+            </>
+          )}
+        </Popover>
+      </div>
+    )
+  }
+
+  // Slika i kalendar su oba izvoz, pa su jedno dugme.
+  function IzvozDugme({ saNazivom = false }: { saNazivom?: boolean }) {
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIzvozMeni(o => !o)}
+          disabled={allFilteredEntries.length === 0}
+          aria-expanded={izvozMeni}
+          aria-label="Izvezi"
+          className={dugme(saNazivom)}
+        >
+          <IconIzvoz className={ikona(saNazivom)} />
+          {saNazivom && 'Izvezi'}
+        </button>
+        <Popover open={izvozMeni} onClose={() => setIzvozMeni(false)}>
+          <button onClick={() => { setIzvozMeni(false); setShowImageMenu(true) }} className={POPOVER_STAVKA}>
+            Sačuvaj kao sliku
+            <IconImage className="h-4 w-4 opacity-50" />
+          </button>
+          <button onClick={() => { setIzvozMeni(false); downloadICS() }} className={POPOVER_STAVKA}>
+            Dodaj u kalendar
+            <IconCalendarExport className="h-4 w-4 opacity-50" />
+          </button>
+        </Popover>
+      </div>
+    )
+  }
+
   function ActionButtons() {
     return (
       <>
-        <button
-          onClick={() => setEventModal({ mode: 'add' })}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
-            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-        >
-          <IconPlus className="h-4 w-4 opacity-80" />
+        <FilterDugme saNazivom />
+        <button onClick={() => setEventModal({ mode: 'add' })} className={dugme(true)}>
+          <IconPlus className={ikona(true)} />
           Dodaj
         </button>
-        <button
-          onClick={() => setShowImageMenu(true)}
-          disabled={allFilteredEntries.length === 0}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
-            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70
-            disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
-        >
-          <IconImage className="h-4 w-4 opacity-80" />
-          Slika
-        </button>
-        <button
-          onClick={downloadICS}
-          disabled={allFilteredEntries.length === 0}
-          className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
-            text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70
-            disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
-        >
-          <IconCalendarExport className="h-4 w-4 opacity-80" />
-          Izvezi u kalendar
-        </button>
-        {hiddenEntries.length > 0 && (
-          <button
-            onClick={() => setShowHidden(s => !s)}
-            className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium
-              text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-          >
-            <IconHidden className="h-4 w-4 opacity-80" />
-            Skriveni ({hiddenEntries.length})
-          </button>
-        )}
+        <IzvozDugme saNazivom />
       </>
     )
   }
@@ -798,8 +509,8 @@ export default function RokoviPage() {
   // --- Lista view ---
   function ListView() {
     const groups = [
-      ...activeRokovi.map(r => ({ label: r.rok, entries: filterEntries(r.entries).sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)) as RokEntry[] })),
-      { label: 'Moji događaji', entries: [...customForTab].sort((a, b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start)) as RokEntry[] },
+      ...activeRokovi.map(r => ({ label: r.rok, entries: filterEntries(r.entries).map(e => ({ ...e, tip: r.tip })).sort(poDatumu) as Termin[] })),
+      { label: 'Moji događaji', entries: [...mojiDogadjaji].sort(poDatumu) as Termin[] },
     ].filter(g => g.entries.length > 0)
 
     if (!groups.length) {
@@ -839,6 +550,7 @@ export default function RokoviPage() {
                   {dateEntries.map((e, i) => {
                     const c = COLORS[colorMap[e.subject]]
                     const isCustom = 'custom' in e && e.custom
+                    const vrsta = opisVrste(e)
                     const row = (
                       <div
                         onClick={isCustom ? () => setEventModal({ mode: 'edit', entry: e as CustomRokEntry }) : undefined}
@@ -853,12 +565,12 @@ export default function RokoviPage() {
                             {e.note ? ` · ${e.note}` : ''}
                           </span>
                         </div>
-                        {e.type && (
+                        {vrsta && (
                           <span
                             style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }}
                             className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0"
                           >
-                            {eventTypeLabel(e.type)}
+                            {vrsta}
                           </span>
                         )}
                         <button
@@ -1073,7 +785,7 @@ export default function RokoviPage() {
                       <p className="text-sm text-gray-900 dark:text-gray-100">{e.subject}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">
                         {e.start}-{e.end} · {e.rooms.join(', ')}
-                        {e.type && ` · ${eventTypeLabel(e.type)}`}
+                        {opisVrste(e) && ` · ${opisVrste(e)}`}
                       </p>
                       {e.note && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{e.note}</p>}
                     </div>
@@ -1141,7 +853,7 @@ export default function RokoviPage() {
       saveCustomEntry({
         id: existing?.id ?? crypto.randomUUID(),
         custom: true,
-        tab: existing?.tab ?? tab,
+        ...(existing?.tab && { tab: existing.tab }),
         subject: subject.trim(),
         type,
         date,
@@ -1334,18 +1046,33 @@ export default function RokoviPage() {
                 <IconSun className="hidden h-[18px] w-[18px] dark:block" />
               </button>
               <FeedbackButton />
-              <a
-                href={tab === 'kolokvijumi'
-                  ? 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/'
-                  : 'https://oas.fon.bg.ac.rs/raspored-ispita/'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#024c7d]/20 dark:border-[#60c3ad]/25
-                           bg-[#024c7d]/10 dark:bg-[#60c3ad]/10 px-3 py-2 text-xs font-semibold backdrop-blur-2xl
-                           text-[#024c7d] dark:text-[#60c3ad] hover:bg-[#024c7d]/15 dark:hover:bg-[#60c3ad]/15 transition-colors"
-              >
-                FON <IconExternal className="h-3.5 w-3.5" />
-              </a>
+              {/* Ispiti i kolokvijumi su na FON-u dve strane, pa se bira svaki put. */}
+              <div className="relative">
+                <button
+                  onClick={() => setFonMeni(o => !o)}
+                  aria-expanded={fonMeni}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#024c7d]/20 dark:border-[#60c3ad]/25
+                             bg-[#024c7d]/10 dark:bg-[#60c3ad]/10 px-3 py-2 text-xs font-semibold backdrop-blur-2xl
+                             text-[#024c7d] dark:text-[#60c3ad] hover:bg-[#024c7d]/15 dark:hover:bg-[#60c3ad]/15 transition-colors"
+                >
+                  FON <IconExternal className="h-3.5 w-3.5" />
+                </button>
+                <Popover open={fonMeni} onClose={() => setFonMeni(false)}>
+                  {FON_STRANE.map(f => (
+                    <a
+                      key={f.href}
+                      href={f.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setFonMeni(false)}
+                      className={POPOVER_STAVKA}
+                    >
+                      {f.naziv}
+                      <IconExternal className="h-3.5 w-3.5 opacity-40" />
+                    </a>
+                  ))}
+                </Popover>
+              </div>
             </div>
           </div>
 
@@ -1367,7 +1094,7 @@ export default function RokoviPage() {
               {([['list', 'Lista', IconList], ['calendar', 'Kalendar', IconCalendar]] as const).map(([v, label, Icon]) => (
                 <button
                   key={v}
-                  onClick={() => setManualView(v)}
+                  onClick={() => izaberiPrikaz(v)}
                   className={`no-hover-lift relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
                     ${view === v
                       ? 'text-[#024c7d] dark:text-[#60c3ad]'
@@ -1387,45 +1114,14 @@ export default function RokoviPage() {
               ))}
             </div>
 
-            {/* Export (mobilni): male staklene ikonice, isto kao raspored */}
+            {/* Telefon: tri okrugla dugmeta (filter, dodaj, izvoz). */}
             {isHydrated && (
               <div className="flex items-center gap-2 sm:hidden">
-                {hiddenEntries.length > 0 && (
-                  <button
-                    onClick={() => setShowHidden(s => !s)}
-                    aria-label={`Skriveni (${hiddenEntries.length})`}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                  >
-                    <IconHidden className="h-[18px] w-[18px]" />
-                  </button>
-                )}
-                <button
-                  onClick={() => setEventModal({ mode: 'add' })}
-                  aria-label="Dodaj događaj"
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-                >
-                  <IconPlus className="h-[18px] w-[18px]" />
+                <FilterDugme />
+                <button onClick={() => setEventModal({ mode: 'add' })} aria-label="Dodaj događaj" className={dugme(false)}>
+                  <IconPlus className={ikona(false)} />
                 </button>
-                {!isEmpty && (
-                  <>
-                    <button
-                      onClick={() => setShowImageMenu(true)}
-                      disabled={allFilteredEntries.length === 0}
-                      aria-label="Slika"
-                      className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
-                    >
-                      <IconImage className="h-[18px] w-[18px]" />
-                    </button>
-                    <button
-                      onClick={downloadICS}
-                      disabled={allFilteredEntries.length === 0}
-                      aria-label="Izvezi u kalendar"
-                      className={`flex h-9 w-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors`}
-                    >
-                      <IconCalendarExport className="h-[18px] w-[18px]" />
-                    </button>
-                  </>
-                )}
+                <IzvozDugme />
               </div>
             )}
 
@@ -1437,31 +1133,7 @@ export default function RokoviPage() {
           </div>
         </header>
 
-        <div className="mb-6 flex items-center justify-between gap-3 border-b border-gray-200/70 dark:border-gray-800/80">
-          <div className="flex items-end gap-6">
-            {(['ispiti', 'kolokvijumi'] as Tab[]).map(t => (
-              <button
-                key={t}
-                onClick={() => { setTab(t); setTooltip(null) }}
-                className={`no-hover-lift relative pb-2 text-sm font-semibold transition-colors capitalize
-                  ${tab === t
-                    ? 'text-[#024c7d] dark:text-[#60c3ad]'
-                    : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'}`}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-                {tab === t && (
-                  <motion.span
-                    layoutId="rokovi-tab"
-                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#024c7d] dark:bg-[#60c3ad]"
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Baner za prijavu kolokvijuma */}
+        {/* Baner za prijavu ispita ili kolokvijuma */}
         {prijavaNotice && (
           <div className="anim-up mb-4 flex items-start gap-3 px-4 py-3 rounded-xl
                           bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
@@ -1474,7 +1146,7 @@ export default function RokoviPage() {
                 {POVOD_NASLOV[prijavaNotice.povod]}
               </p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                {tab === 'kolokvijumi' ? 'Predispitne obaveze' : 'Ispiti'} · {prijavaNotice.rok.rok} · {prijavaNotice.rok.prijava_datumi!.join(' - ')}
+                {prijavaNotice.rok.tip === 'kolokvijum' ? 'Predispitne obaveze' : 'Ispiti'} · {prijavaNotice.rok.rok} · {prijavaNotice.rok.prijava_datumi!.join(' - ')}
                 {prijavaNotice.rok.reklamacija_datum && ` · Reklamacije: ${prijavaNotice.rok.reklamacija_datum}`}
               </p>
             </div>
@@ -1500,7 +1172,7 @@ export default function RokoviPage() {
                     <span className="text-sm text-gray-700 dark:text-gray-300 block truncate">{e.subject}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                       {getDaySr(e.date)}, {formatDateSr(e.date)} · {e.start}
-                      {e.type && ` · ${eventTypeLabel(e.type)}`}
+                      {opisVrste(e) && ` · ${opisVrste(e)}`}
                     </span>
                   </div>
                   <button
@@ -1522,9 +1194,9 @@ export default function RokoviPage() {
         ) : loadError ? (
           <OfflineNotice />
         ) : (
-          // Ključ je prikaz i tab, pa se omotač (i njegova animacija) menja
+          // Ključ je prikaz i filter, pa se omotač (i njegova animacija) menja
           // samo pri promeni jednog od njih, ne na svaki render.
-          <div key={`${view}-${tab}`} className="view-in">
+          <div key={`${view}-${filter}`} className="view-in">
             {view === 'list' ? <ListView /> : <CalendarView />}
           </div>
         )}
@@ -1542,9 +1214,7 @@ export default function RokoviPage() {
         className={`w-full max-w-xs rounded-2xl p-4 ring-1 ring-[#024c7d]/15 dark:ring-white/15 ${GLASS}`}
       >
         <p className="mb-1 px-1 text-sm font-semibold text-gray-900 dark:text-gray-100">Skini kao sliku</p>
-        <p className="mb-3 px-1 text-xs text-gray-500 dark:text-gray-400">
-          {tab === 'ispiti' ? 'Ispiti' : 'Kolokvijumi'} · izaberi mesec ili ceo rok
-        </p>
+        <p className="mb-3 px-1 text-xs text-gray-500 dark:text-gray-400">{FILTER_NAZIV[filter]}</p>
         <div className="space-y-1">
           {imageMonths.length > 1 && (
             <button
