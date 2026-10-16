@@ -71,18 +71,20 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  /* Prvi sloj: pri vrhu se pozadina meko pretopi u ravnu osnovnu boju, istu
-     kojom Safari boji traku sa satom, pa između njih nema vidljivog šava. */
+  /* Prva dva sloja: pri vrhu i dnu se pozadina meko pretopi u ravnu osnovnu
+     boju. Safari njom boji traku sa satom, a dole kroz svoju staklenu traku
+     pokazuje dno strane, pa bi tu inače bilo skoro belo. */
   background-image:
     linear-gradient(to bottom, var(--background), transparent 120px),
+    linear-gradient(to top, var(--background), transparent 120px),
     var(--wallpaper-overlay),
     var(--wallpaper-accent-1),
     var(--wallpaper-accent-2),
     var(--wallpaper-accent-3),
     url("/FONWallpaper.png");
-  background-position: top, center, 15% 20%, 85% 8%, 65% 88%, center;
+  background-position: top, bottom, center, 15% 20%, 85% 8%, 65% 88%, center;
   background-repeat: no-repeat;
-  background-size: 100% 120px, auto, auto, auto, auto, cover;
+  background-size: 100% 120px, 100% 120px, auto, auto, auto, auto, cover;
 }
 
 .dark body {
