@@ -387,7 +387,9 @@ function LandingPreview({ leaving }: { leaving: boolean }) {
       aria-hidden="true"
       data-nosnippet=""
       style={{ maskImage: fade, WebkitMaskImage: fade }}
-      className={`pointer-events-none relative min-h-[240px] flex-1 overflow-hidden select-none [--fade:35%] lg:mt-10 lg:h-[620px] lg:flex-none lg:[--fade:55%] ${leaving ? 'leave-down' : ''}`}
+      // Stalna visina (najviši prikaz je ~360px na telefonu), da opis ispod ne
+      // skrati pregled na manjim ekranima; strana se tada malo skroluje.
+      className={`pointer-events-none relative h-[360px] flex-none overflow-hidden select-none [--fade:35%] lg:mt-10 lg:h-[620px] lg:[--fade:55%] ${leaving ? 'leave-down' : ''}`}
     >
       {layers.map((layer, i) => (
         <div key={i} style={layerStyle(i)} className="absolute inset-x-0 top-0 px-2 lg:px-0">
@@ -916,10 +918,11 @@ export default function OnboardingPage() {
             ovo je fakultet, ne škola. */}
         <p className="mx-auto max-w-md leading-relaxed text-pretty lg:max-w-3xl">
           <strong className="font-medium text-gray-500 dark:text-gray-500">FON Raspored</strong>
-          {' '}- raspored nastave, ispita i kolokvijuma za studente Fakulteta
+          {' '}- lični raspored nastave, ispita i kolokvijuma za studente Fakulteta
           organizacionih nauka u Beogradu. Predavanja i vežbe tvoje grupe sa salama,
           ispitni rokovi (januarski, februarski, junski, julski, septembarski i
-          oktobarski) sa datumima prijave i izvoz u kalendar telefona.
+          oktobarski) i kolokvijumske nedelje sa datumima prijave, podsetnici za
+          prijavu ispita i izvoz u kalendar telefona ili kao slika.
         </p>
         <p>
           Made by{' '}
