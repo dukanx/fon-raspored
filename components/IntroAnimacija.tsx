@@ -1,21 +1,11 @@
 'use client'
 
-// LOKALNI PREGLED, ne commit-ovati. Telefon: video logoa preko cele aplikacije
-// pri svakom ulasku (dodir preskače). Računar: isti video umesto logoa pored
-// naslova na početnoj.
-import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
+// Animacija logoa: FON-ovi krugovi se sklope u kalendar (2,5 s, bela
+// pozadina). Telefon: preko cele aplikacije pri ulasku (dodir preskače).
+// Računar: umesto logoa pored naslova na početnoj.
+import { useEffect, useRef, useState } from 'react'
 
-const VIDEO = '/fon-raspored-potez-pera.mp4'
-// Isečak videa u sekundama: na početku se krugovi već crtaju, a gotov
-// kalendar u originalu stoji od 3,6 s do kraja (5 s).
-const POCETAK = 0.3
-const KRAJ = 4.0
-// 2 = duplo brže, pa isečak traje ~1,9 s.
-const BRZINA = 2
-
-const ubrzaj = (e: SyntheticEvent<HTMLVideoElement>) => {
-  e.currentTarget.playbackRate = BRZINA
-}
+const VIDEO = '/logo-animacija.mp4'
 
 export default function IntroAnimacija() {
   const [faza, setFaza] = useState<'pusta' | 'nestaje' | 'gotovo'>('pusta')
@@ -34,13 +24,10 @@ export default function IntroAnimacija() {
       style={{ opacity: faza === 'nestaje' ? 0 : 1 }}
     >
       <video
-        src={`${VIDEO}#t=${POCETAK}`}
+        src={VIDEO}
         autoPlay
         muted
         playsInline
-        onLoadedMetadata={ubrzaj}
-        onPlay={ubrzaj}
-        onTimeUpdate={e => { if (e.currentTarget.currentTime >= KRAJ) zavrsi() }}
         onEnded={zavrsi}
         onError={zavrsi}
         className="h-full w-full object-contain"
@@ -82,9 +69,8 @@ export function LogoAnimacija({ className = '' }: { className?: string }) {
         }
         ctx.putImageData(slika, 0, 0)
       }
-      if (v.currentTime >= KRAJ) v.pause()
     }
-    // Petlja crta dok video ide; posle pauze na KRAJ ostaje poslednji kadar.
+    // Petlja crta dok video ide; posle kraja ostaje poslednji kadar.
     const petlja = () => {
       crtaj()
       if (!v.paused && !v.ended) rafId = requestAnimationFrame(petlja)
@@ -93,8 +79,6 @@ export function LogoAnimacija({ className = '' }: { className?: string }) {
     // koji se ne vidi, a ovaj je skriven jer se vidi samo canvas.
     const kreni = () => {
       v.muted = true
-      v.currentTime = POCETAK
-      v.playbackRate = BRZINA
       v.play().catch(() => crtaj())
     }
     v.addEventListener('playing', petlja)
