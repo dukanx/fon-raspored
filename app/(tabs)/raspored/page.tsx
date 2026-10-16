@@ -17,13 +17,13 @@ import FeedbackButton from '@/components/FeedbackButton'
 import AppTour, { type TourSlide } from '@/components/AppTour'
 import OfflineNotice from '@/components/OfflineNotice'
 import { isStandalone, pushSupported } from '@/lib/push'
-import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
+import { canvasToFile, shareOrDownloadFile, preuzmiKalendar } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
-import { IconHidden, IconImage, IconEdit } from '@/components/Ikone'
+import { IconHidden, IconEdit, IconIzvoz } from '@/components/Ikone'
 import { TabPrekidac } from '@/components/Navigacija'
-import { dugmeTrake, ikonaTrake, IzvozDugme } from '@/components/Traka'
+import { dugmeTrake, ikonaTrake, IzvozDugme, useIzvozPoruka, PORUKA_SLIKA, PORUKA_KALENDAR } from '@/components/Traka'
 import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
@@ -186,8 +186,7 @@ export default function RasporedPage() {
   const sakrivenTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [loaded, setLoaded] = useState(false)
   const [manualView, setManualView] = useState<'grid' | 'list' | null>(null)
-  const [showIcsHelp, setShowIcsHelp] = useState(false)
-  const [showDownloadToast, setShowDownloadToast] = useState(false)
+  const [izvozPoruka, javiIzvoz] = useIzvozPoruka()
   const [showShareToast, setShowShareToast] = useState(false)
   const [showShareChoice, setShowShareChoice] = useState(false)
   const [allSubjects, setAllSubjects] = useState<string[]>([])
@@ -364,7 +363,7 @@ export default function RasporedPage() {
         setHiddenEntries(byGroup.hidden(meta.group).get())
       })
       // NE zovemo setLoaded(true) - to bi okinulo `isEmpty` i prikazalo
-      // "Nema termina za prikaz", što je netačna poruka kad je uzrok offline.
+      // "Nema termina", što je netačna poruka kad je uzrok offline.
       .catch(() => setLoadError(true))
   }, [isHydrated, meta.group, meta.year, router])
 
@@ -442,9 +441,9 @@ export default function RasporedPage() {
     key: 'prenesene',
     icon: IconLayers,
     title: 'Podesi termine',
-    desc: 'Za prenesene predmete iz prethodnih godina termin biraš ručno.',
+    desc: 'Predmetima iz prethodnih godina termin biraš sam.',
     features: [
-      { icon: IconEdit, title: 'Izmena tab', desc: 'Tu biraš termin za svaki takav predmet.' },
+      { icon: IconEdit, title: 'Olovka pored tabova', desc: 'Tu dodaješ termin za svaki takav predmet.' },
     ],
     primaryLabel: 'Idi na Izmenu',
     onPrimary: () => { closeTour(); router.push('/preneseni') },
@@ -452,37 +451,35 @@ export default function RasporedPage() {
     important: true,
   }
 
+  // Kratko: jedan red po stvari, samo ono što se ne vidi na prvi pogled.
   const generalSlides: TourSlide[] = [
     {
       key: 'izmena',
       icon: IconEdit,
-      title: 'Izmena tab',
-      desc: 'Promeni predmete, dodaj termin ili vrati sakrivene.',
+      title: 'Izmena',
+      desc: 'Olovka pored tabova, za sve što menjaš.',
       features: [
-        { icon: IconList, title: 'Promeni predmete', desc: 'Uključi/isključi izborne, u bilo kom trenutku.' },
-        { icon: IconEdit, title: 'Dodaj termin', desc: 'Za prenesene predmete ili drugi termin za trenutni, uz predlog bez preklapanja.' },
-        { icon: IconHidden, title: 'Vrati skrivene', desc: 'Termine koje si ranije sakrio/la.' },
+        { icon: IconList, title: 'Moji predmeti', desc: 'Promeni koje izborne predmete slušaš.' },
+        { icon: IconCalendar, title: 'Dodaj ili promeni termin', desc: 'Za predmet iz prošle godine ili drugu grupu, uz predlog bez preklapanja.' },
       ],
     },
     {
       key: 'deljenje',
       icon: IconShare,
-      title: 'Izvezi raspored',
-      desc: 'Podeli raspored, sačuvaj ga kao sliku ili izvezi u kalendar telefona.',
+      title: 'Podeli i izvezi',
       features: [
-        { icon: IconShare, title: 'Podeli', desc: 'Dugme u alatkama iznad rasporeda.' },
-        { icon: IconImage, title: 'Slika', desc: 'Cela nedelja kao PNG za brzo deljenje.' },
-        { icon: IconCalendar, title: 'Kalendar', desc: 'Uvezi termine u Google/Apple kalendar.' },
+        { icon: IconShare, title: 'Podeli', desc: 'Pošalji link, a drugi dobija tvoj raspored.' },
+        { icon: IconIzvoz, title: 'Izvezi', desc: 'Sačuvaj kao sliku ili dodaj u kalendar telefona.' },
       ],
     },
     {
       key: 'notifikacije',
       icon: IconBell,
       title: 'Notifikacije',
-      desc: 'Uključi ih na zvonce u Rokovi tabu.',
+      desc: 'Uključuješ ih zvoncem na Rokovima.',
       features: [
-        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Čim izađu ispitni rokovi i kolokvijumi.' },
-        { icon: IconClock, title: 'Prijava ispita', desc: 'Na dan kad počne i kad se završava prijava.' },
+        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Javimo čim FON objavi ispite ili kolokvijume.' },
+        { icon: IconClock, title: 'Prijava ispita', desc: 'Podsetnik prvog i poslednjeg dana prijave.' },
       ],
     },
     {
@@ -490,10 +487,9 @@ export default function RasporedPage() {
       icon: IconBulb,
       title: 'Dobro je znati',
       features: [
-        { icon: IconInfo, title: 'Info o predmetu', desc: 'Klikni na termin za katedru, ESPB i vezane rokove.' },
-        { icon: IconHidden, title: 'Sakrij termine', desc: 'X na terminu, u Rasporedu i u Rokovima.' },
-        { icon: IconCalendar, title: 'Kalendar u Rokovima', desc: 'Obojeni ispitni rokovi, kolokvijumske nedelje i neradni dani. Klik na dan dodaje tvoj događaj.' },
-        { icon: IconOffline, title: 'Offline mod', desc: 'Instalirana aplikacija radi i bez interneta.' },
+        { icon: IconInfo, title: 'Tap na termin', desc: 'Vidiš ESPB, katedru i rokove tog predmeta.' },
+        { icon: IconHidden, title: 'Sakrij termin', desc: 'Termine koje ne pohađaš skloni; vraćaš ih u Izmeni.' },
+        { icon: IconOffline, title: 'Bez interneta', desc: 'Instalirana aplikacija radi i kad nemaš vezu.' },
       ],
     },
   ]
@@ -786,9 +782,7 @@ export default function RasporedPage() {
     ctx.fillText(`${meta.lastName} · Grupa ${meta.group} · ${meta.semester}`, padding + timeW, padding - 4)
 
     const file = await canvasToFile(canvas, `raspored-${meta.group}.png`)
-    await shareOrDownloadFile(file, 'Raspored')
-    setShowDownloadToast(true)
-    setTimeout(() => setShowDownloadToast(false), 3000)
+    javiIzvoz(await shareOrDownloadFile(file, 'Raspored'), PORUKA_SLIKA)
   }
 
   function downloadICS() {
@@ -839,19 +833,13 @@ export default function RasporedPage() {
 
     lines.push('END:VCALENDAR')
 
-    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
-    const link = document.createElement('a')
-    link.download = `raspored-${meta.group}.ics`
-    link.href = URL.createObjectURL(blob)
-    link.click()
-
-
+    javiIzvoz(preuzmiKalendar(lines.join('\r\n'), `raspored-${meta.group}.ics`), PORUKA_KALENDAR)
   }
 
   // Slika i kalendar su u meniju "Izvezi" (isto kao na Rokovima).
   const izvoz = {
     onSlika: () => { void downloadPNG() },
-    onKalendar: () => { downloadICS(); setShowIcsHelp(true) },
+    onKalendar: downloadICS,
   }
 
   const isLoading = !isHydrated || !loaded
@@ -963,9 +951,10 @@ export default function RasporedPage() {
                       <li key={`${p.predmet}|${p.tip}`}>{opisPromene(p)}</li>
                     ))}
                   </ul>
-                  <p className="mt-1.5 text-xs text-amber-700/80 dark:text-amber-400/80">
-                    Ako si raspored izvezao u kalendar ili sačuvao kao sliku, uradi to ponovo.
-                  </p>
+                  {/* Ko je izvezao raspored (slika, kalendar), ima staru verziju. */}
+                  <div className="mt-2">
+                    <IzvozDugme saNazivom natpis="Izvezi ponovo" {...izvoz} />
+                  </div>
                 </Expand>
             </div>
             <button
@@ -1018,10 +1007,7 @@ export default function RasporedPage() {
           )
         ) : isEmpty ? (
           <div className={`mx-auto mt-10 max-w-sm rounded-2xl border-dashed p-8 text-center ${GLASS}`}>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Nema termina za prikaz</p>
-            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-              Svi termini su sakriveni ili predmeti nisu izabrani. Proveri korak „2. Predmeti“.
-            </p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Nema termina</p>
             <Link
               href="/izborni"
               prefetch={false}
@@ -1258,17 +1244,9 @@ export default function RasporedPage() {
         overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
         className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
       >
-        <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
-          Nov semestar - Proveri predmete
+        <h2 className="mb-5 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
+          Nov semestar
         </h2>
-        <p className="mb-6 text-sm text-center text-gray-600 dark:text-gray-300">
-          Objavljen je raspored za novi semestar. 
-          </p>
-        <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
-          Ranije izabrani predmeti su
-          resetovani, izaberi svoje predmete ponovo da ti raspored i rokovi
-          budu tačni.
-        </p>
         <div className="flex flex-col gap-2 sm:flex-row-reverse">
           <button
             onClick={goPickSubjects}
@@ -1319,9 +1297,6 @@ export default function RasporedPage() {
         <h2 className="mb-2 text-base font-semibold text-center text-gray-900 dark:text-gray-100">
           Dodati su novi predmeti
         </h2>
-        <p className="mb-3 text-sm text-center text-gray-600 dark:text-gray-300">
-          FON je dopunio raspored tvoje grupe. Čekiraj one koje slušaš.
-        </p>
         <ul className="mb-6 max-h-40 space-y-1 overflow-y-auto text-sm text-gray-700 dark:text-gray-300">
           {newSubjects.map(s => (
             <li key={s} className="rounded-lg bg-[#024c7d]/5 px-3 py-1.5 dark:bg-white/5">{s}</li>
@@ -1345,45 +1320,6 @@ export default function RasporedPage() {
         </div>
       </Modal>
 
-      {/* ICS tutorial modal */}
-      <Modal
-        open={showIcsHelp}
-        onClose={() => setShowIcsHelp(false)}
-        overlayClassName="z-50 flex items-end justify-center bg-black/50 px-4 pb-4 sm:items-center sm:pb-0"
-        className="w-full max-w-sm rounded-2xl border border-white/75 bg-white/92 p-6 backdrop-blur-2xl dark:border-white/15 dark:bg-gray-900/90"
-      >
-        <h2 className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
-          Kako dodati u kalendar
-        </h2>
-
-        <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
-          <div className="flex gap-3">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">1</span>
-            <p>Fajl <strong className="text-gray-900 dark:text-gray-100">raspored.ics</strong> je upravo preuzet na tvoj uređaj.</p>
-          </div>
-          <div className="flex gap-3">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">2</span>
-            <p>Otvori <strong className="text-gray-900 dark:text-gray-100">Google Calendar</strong> na računaru ili telefonu.</p>
-          </div>
-          <div className="flex gap-3">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">3</span>
-            <p>Na računaru: klikni <strong className="text-gray-900 dark:text-gray-100">Podešavanja → Uvoz i izvoz</strong> i odaberi preuzeti fajl.</p>
-          </div>
-          <div className="flex gap-3">
-            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs text-white dark:bg-gray-100 dark:text-gray-900">4</span>
-            <p>Na telefonu: pronađi fajl u Downloads i klikni na njega - kalendar će se otvoriti automatski.</p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => setShowIcsHelp(false)}
-          className="btn-lift mt-6 w-full rounded-lg py-2.5 text-sm font-medium
-                     bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
-                     dark:hover:bg-[#4db3a0]"
-        >
-          Razumem
-        </button>
-      </Modal>
 
       {/* Šta uključiti u link za deljenje */}
       <Modal
@@ -1423,9 +1359,9 @@ export default function RasporedPage() {
           Novo: FON kalendar u Rokovima
         </h2>
         <p className="mb-4 text-sm text-center text-pretty text-gray-600 dark:text-gray-300">
-          Kalendar u Rokovima sada boji dane po FON kalendaru aktivnosti, pa odmah vidiš šta je kada.
+          Dani su obojeni po FON kalendaru aktivnosti.
         </p>
-        <div className="mb-4 grid grid-cols-2 gap-2">
+        <div className="mb-6 grid grid-cols-2 gap-2">
           {Object.values(DAY_KIND_STYLE).map(k => (
             <span key={k.label} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 ${k.cell}`}>
               <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${k.dot}`} />
@@ -1433,9 +1369,6 @@ export default function RasporedPage() {
             </span>
           ))}
         </div>
-        <p className="mb-6 text-xs text-center text-gray-500 dark:text-gray-400">
-          Mesec menjaš strelicama ili prevlačenjem levo-desno.
-        </p>
         <div className="flex flex-col gap-2 sm:flex-row-reverse">
           <button
             onClick={() => { setShowKalendarIntro(false); router.push('/rokovi') }}
@@ -1454,7 +1387,7 @@ export default function RasporedPage() {
         </div>
       </Modal>
 
-      <Toast show={showDownloadToast}>Slika rasporeda je uspešno preuzeta!</Toast>
+      <Toast show={!!izvozPoruka}>{izvozPoruka}</Toast>
 
       <Toast show={showShareToast}>Link je kopiran!</Toast>
 

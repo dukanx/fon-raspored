@@ -16,14 +16,14 @@ import { pickPrijavaPovod, SVI_POVODI, POVOD_NASLOV, type PrijavaPovod } from '@
 import NotificationBell from '@/components/NotificationBell'
 import FeedbackButton from '@/components/FeedbackButton'
 import OfflineNotice from '@/components/OfflineNotice'
-import { canvasToFile, shareOrDownloadFile } from '@/lib/shareOrDownload'
+import { canvasToFile, shareOrDownloadFile, preuzmiKalendar } from '@/lib/shareOrDownload'
 import { motion } from 'motion/react'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
 import { IconHidden, IconImage, IconEdit } from '@/components/Ikone'
 import { TabPrekidac } from '@/components/Navigacija'
-import { dugmeTrake, ikonaTrake, IzvozDugme } from '@/components/Traka'
+import { dugmeTrake, ikonaTrake, IzvozDugme, useIzvozPoruka, PORUKA_SLIKA, PORUKA_KALENDAR } from '@/components/Traka'
 import Popover, { POPOVER_STAVKA } from '@/components/Popover'
 import { stagger } from '@/lib/stagger'
 import { dayStyle, dayBadge, DAY_KIND_STYLE, type ActivityCalendar, type CalendarDay } from '@/lib/kalendar'
@@ -168,8 +168,7 @@ export default function RokoviPage() {
   const [seenSnapshot] = useState<Record<string, string>>(() => app.rokFirstSeen.get())
   const [hiddenEntries, setHiddenEntries] = useState<RokEntry[]>([])
   const [showHidden, setShowHidden] = useState(false)
-  const [downloadToast, setDownloadToast] = useState(false)
-  const [imageToast, setImageToast] = useState(false)
+  const [izvozPoruka, javiIzvoz] = useIzvozPoruka()
   const [showImageMenu, setShowImageMenu] = useState(false)
   const [customEntries, setCustomEntries] = useState<CustomRokEntry[]>([])
   const [eventModal, setEventModal] = useState<EventModalState | null>(null)
@@ -315,13 +314,7 @@ export default function RokoviPage() {
 
   function downloadICS() {
     if (!allFilteredEntries.length) return
-    const blob = new Blob([napraviICS(allFilteredEntries)], { type: 'text/calendar;charset=utf-8' })
-    const link = document.createElement('a')
-    link.download = `${imeFajla}-${meta.group}.ics`
-    link.href = URL.createObjectURL(blob)
-    link.click()
-    setDownloadToast(true)
-    setTimeout(() => setDownloadToast(false), 3500)
+    javiIzvoz(preuzmiKalendar(napraviICS(allFilteredEntries), `${imeFajla}-${meta.group}.ics`), PORUKA_KALENDAR)
   }
 
   // Izvoz kao PNG: jedan mesec ili ceo rok (v. lib/rokSlika).
@@ -330,9 +323,7 @@ export default function RokoviPage() {
     const slika = slikaRokova(allFilteredEntries, izbor, { naslov: FILTER_NAZIV[filter], ident, colorMap })
     if (!slika) return
     const file = await canvasToFile(slika.canvas, `${imeFajla}-${slika.ime}-${meta.group}.png`)
-    await shareOrDownloadFile(file, FILTER_NAZIV[filter])
-    setImageToast(true)
-    setTimeout(() => setImageToast(false), 3500)
+    javiIzvoz(await shareOrDownloadFile(file, FILTER_NAZIV[filter]), PORUKA_SLIKA)
   }
 
   const colorMap = useMemo(() => buildColorMap(allFilteredEntries), [allFilteredEntries])
@@ -389,7 +380,6 @@ export default function RokoviPage() {
     return map
   }, [allFilteredEntries])
 
-  const isEmpty = activeRokovi.length === 0 && mojiDogadjaji.length === 0
 
   // Šta se vidi: vrsta rokova i skriveni termini. Kad nešto nije prikazano,
   // dugme je obojeno.
@@ -685,12 +675,6 @@ export default function RokoviPage() {
 
         <ActivityLegend year={year} month={month} days={activityDays} />
 
-        {isEmpty && (
-          <p className="mt-3 text-center text-xs text-gray-400 dark:text-gray-500">
-            Nema rokova za prikaz - klikni na datum da dodaš svoj događaj.
-          </p>
-        )}
-
         {tooltip && (byDate[tooltip.date]?.length ?? 0) > 0 && (
           <div className={`mt-4 rounded-xl p-4 ${GLASS}`}>
             <div className="flex items-center justify-between mb-3">
@@ -761,7 +745,7 @@ export default function RokoviPage() {
   function EmptyState() {
     return (
       <div className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">
-        Nema podataka za prikaz.
+        Nema rokova
       </div>
     )
   }
@@ -922,10 +906,7 @@ export default function RokoviPage() {
     return (
       <main className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Prvo izaberi grupu</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            Da bi video svoje ispite i kolokvijume, potrebno je da prođeš kroz onboarding.
-          </p>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-5">Prvo izaberi grupu</h1>
           <Link
             href="/"
             className="btn-lift inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium
@@ -1119,9 +1100,7 @@ export default function RokoviPage() {
         </div>
       </div>
 
-      <Toast show={downloadToast}>Kalendar (.ics) preuzet - otvori fajl da dodaš termine.</Toast>
-
-      <Toast show={imageToast}>Slika rokova je preuzeta!</Toast>
+      <Toast show={!!izvozPoruka}>{izvozPoruka}</Toast>
 
       <Modal
         open={showImageMenu}
