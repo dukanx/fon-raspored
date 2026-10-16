@@ -55,7 +55,7 @@ export default function BottomNav() {
       }`}
     >
       {/* Krug je visok koliko i traka sa tabovima (59px, a 40px skupljena pri skrolu). */}
-      <div className={`mx-auto flex items-center gap-2 transition-all duration-300 ${isCompact ? 'max-w-64' : 'max-w-80'}`}>
+      <div className={`mx-auto flex items-center transition-all duration-300 ${isCompact ? 'max-w-[16.5rem] gap-4' : 'max-w-[21rem] gap-6'}`}>
         <div
           className={`liquid-glass liquid-glass-nav pointer-events-auto flex flex-1 items-stretch transition-all duration-300 ${
             isCompact ? 'gap-0.5 rounded-[1.65rem] px-1.5 py-1.5' : 'gap-1 rounded-[1.75rem] px-1.5 py-1.5'
