@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import type { RokData, RokEntry, CustomRokEntry } from '@/lib/types'
 import { session, app, byGroup } from '@/lib/storage'
 import { useIsDark, useIsHydrated } from '@/lib/theme'
@@ -22,12 +21,16 @@ import { motion } from 'motion/react'
 import Modal from '@/components/Modal'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
-import { IconHidden, IconIzvoz } from '@/components/Ikone'
+import { IconHidden, IconImage, IconEdit } from '@/components/Ikone'
+import { TabPrekidac } from '@/components/Navigacija'
+import { dugmeTrake, ikonaTrake, IzvozDugme } from '@/components/Traka'
 import Popover, { POPOVER_STAVKA } from '@/components/Popover'
 import { stagger } from '@/lib/stagger'
 import { dayStyle, dayBadge, DAY_KIND_STYLE, type ActivityCalendar, type CalendarDay } from '@/lib/kalendar'
 
 const GLASS = 'liquid-glass'
+// Širina kalendara i liste, ispod zaglavlja.
+const UZE = 'mx-auto max-w-4xl'
 
 type IconProps = React.SVGProps<SVGSVGElement>
 const baseIcon = (props: IconProps) => ({
@@ -54,18 +57,8 @@ const IconCalendar = (p: IconProps) => (
 // Izvoz u kalendar - isti okvir kao IconCalendar, ali sa strelicom nadole.
 // Namerno različita od IconCalendar (koja je prikaz „Kalendar"), jer su stajale
 // jedna do druge i izgledale kao isto dugme.
-const IconCalendarExport = (p: IconProps) => (
-  <svg {...baseIcon(p)}>
-    <path d="M21 11V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
-    <path d="M16 2v4M8 2v4M3 10h18" />
-    <path d="M17 14v6M14.5 17.5 17 20l2.5-2.5" />
-  </svg>
-)
 const IconList = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
-)
-const IconImage = (p: IconProps) => (
-  <svg {...baseIcon(p)}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-4.5-4.5L5 21" /></svg>
 )
 const IconFilter = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M4 7h16M7 12h10M10 17h4" /></svg>
@@ -75,15 +68,6 @@ const IconCheck = (p: IconProps) => (
 )
 const IconPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M12 5v14M5 12h14" /></svg>
-)
-const IconEdit = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-)
-const IconSchedule = (p: IconProps) => (
-  <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4M7.5 13h4M7.5 17h7" /></svg>
-)
-const IconExam = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
 )
 
 function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
@@ -135,7 +119,6 @@ const FON_STRANE = [
 ]
 
 export default function RokoviPage() {
-  const router = useRouter()
   const [allRokovi, setAllRokovi] = useState<RokData[]>([])
   // FON kalendar aktivnosti: boje dana (ispitni rok, kolokvijumi, neradni...).
   const [activityDays, setActivityDays] = useState<Record<string, CalendarDay>>({})
@@ -147,7 +130,6 @@ export default function RokoviPage() {
   const [manualView, setManualView] = useState<'list' | 'calendar' | null>(null)
   const [fonMeni, setFonMeni] = useState(false)
   const [filterMeni, setFilterMeni] = useState(false)
-  const [izvozMeni, setIzvozMeni] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date()
     return { year: now.getFullYear(), month: now.getMonth() }
@@ -409,20 +391,6 @@ export default function RokoviPage() {
 
   const isEmpty = activeRokovi.length === 0 && mojiDogadjaji.length === 0
 
-  // Raspored/Rokovi - ravnopravan prekidač na desktopu (bez "nazad" hijerarhije)
-  const pageSwitch = [
-    { key: 'raspored', label: 'Raspored', Icon: IconSchedule, active: false, onClick: () => router.push('/raspored') },
-    { key: 'rokovi', label: 'Rokovi', Icon: IconExam, active: true, onClick: () => {} },
-  ] as const
-
-  // Dugmad u traci: na telefonu okrugla ikonica, na računaru ikonica i naziv.
-  const dugme = (saNazivom: boolean, aktivan = false) => saNazivom
-    ? `inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed
-       ${aktivan ? 'bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]' : `text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70`}`
-    : `flex h-9 w-9 items-center justify-center rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed
-       ${aktivan ? 'bg-[#024c7d] text-white dark:bg-[#60c3ad] dark:text-[#024c7d]' : `text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70`}`
-  const ikona = (saNazivom: boolean) => (saNazivom ? 'h-4 w-4 opacity-80' : 'h-[18px] w-[18px]')
-
   // Šta se vidi: vrsta rokova i skriveni termini. Kad nešto nije prikazano,
   // dugme je obojeno.
   function FilterDugme({ saNazivom = false }: { saNazivom?: boolean }) {
@@ -433,9 +401,9 @@ export default function RokoviPage() {
           onClick={() => setFilterMeni(o => !o)}
           aria-expanded={filterMeni}
           aria-label={`Filter: ${FILTER_MENI[filter]}`}
-          className={dugme(saNazivom, aktivan)}
+          className={dugmeTrake(saNazivom, aktivan)}
         >
-          <IconFilter className={ikona(saNazivom)} />
+          <IconFilter className={ikonaTrake(saNazivom)} />
           {saNazivom && (aktivan ? FILTER_NAZIV[filter] : 'Filter')}
         </button>
         <Popover open={filterMeni} onClose={() => setFilterMeni(false)}>
@@ -459,43 +427,21 @@ export default function RokoviPage() {
     )
   }
 
-  // Slika i kalendar su oba izvoz, pa su jedno dugme.
-  function IzvozDugme({ saNazivom = false }: { saNazivom?: boolean }) {
-    return (
-      <div className="relative">
-        <button
-          onClick={() => setIzvozMeni(o => !o)}
-          disabled={allFilteredEntries.length === 0}
-          aria-expanded={izvozMeni}
-          aria-label="Izvezi"
-          className={dugme(saNazivom)}
-        >
-          <IconIzvoz className={ikona(saNazivom)} />
-          {saNazivom && 'Izvezi'}
-        </button>
-        <Popover open={izvozMeni} onClose={() => setIzvozMeni(false)}>
-          <button onClick={() => { setIzvozMeni(false); setShowImageMenu(true) }} className={POPOVER_STAVKA}>
-            Sačuvaj kao sliku
-            <IconImage className="h-4 w-4 opacity-50" />
-          </button>
-          <button onClick={() => { setIzvozMeni(false); downloadICS() }} className={POPOVER_STAVKA}>
-            Dodaj u kalendar
-            <IconCalendarExport className="h-4 w-4 opacity-50" />
-          </button>
-        </Popover>
-      </div>
-    )
+  const izvoz = {
+    disabled: allFilteredEntries.length === 0,
+    onSlika: () => setShowImageMenu(true),
+    onKalendar: downloadICS,
   }
 
   function ActionButtons() {
     return (
       <>
         <FilterDugme saNazivom />
-        <button onClick={() => setEventModal({ mode: 'add' })} className={dugme(true)}>
-          <IconPlus className={ikona(true)} />
+        <button onClick={() => setEventModal({ mode: 'add' })} className={dugmeTrake(true)}>
+          <IconPlus className={ikonaTrake(true)} />
           Dodaj
         </button>
-        <IzvozDugme saNazivom />
+        <IzvozDugme saNazivom {...izvoz} />
       </>
     )
   }
@@ -996,7 +942,9 @@ export default function RokoviPage() {
 
   return (
     <main className="min-h-screen pb-32 sm:pb-0">
-      <div className="mx-auto max-w-4xl px-3 py-3 sm:px-4 sm:py-8">
+      {/* Zaglavlje je široko kao na Rasporedu i u Izmeni, da ne skače pri
+          prelasku; kalendar i lista su uži, jer su tako čitljiviji. */}
+      <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6 sm:py-8">
 
         <header className="mb-6">
           <div className="flex items-start justify-between gap-3 sm:grid sm:grid-cols-[1fr_auto_1fr]">
@@ -1007,21 +955,7 @@ export default function RokoviPage() {
               </p>
             </div>
 
-            <div className={`hidden rounded-full p-1 sm:flex sm:justify-self-center ${GLASS}`}>
-              {pageSwitch.map(({ key, label, Icon, active, onClick }) => (
-                <button
-                  key={key}
-                  onClick={onClick}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors
-                    ${active
-                      ? 'bg-white text-[#024c7d] shadow-sm dark:bg-gray-700 dark:text-[#60c3ad]'
-                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </button>
-              ))}
-            </div>
+            <TabPrekidac />
 
             <div className="flex shrink-0 items-center gap-2 sm:justify-self-end">
               <FeedbackButton />
@@ -1097,10 +1031,10 @@ export default function RokoviPage() {
             {isHydrated && (
               <div className="flex items-center gap-2 sm:hidden">
                 <FilterDugme />
-                <button onClick={() => setEventModal({ mode: 'add' })} aria-label="Dodaj događaj" className={dugme(false)}>
-                  <IconPlus className={ikona(false)} />
+                <button onClick={() => setEventModal({ mode: 'add' })} aria-label="Dodaj događaj" className={dugmeTrake(false)}>
+                  <IconPlus className={ikonaTrake(false)} />
                 </button>
-                <IzvozDugme />
+                <IzvozDugme {...izvoz} />
               </div>
             )}
 
@@ -1111,6 +1045,8 @@ export default function RokoviPage() {
             )}
           </div>
         </header>
+
+        <div className={UZE}>
 
         {/* Baner za prijavu ispita ili kolokvijuma */}
         {prijavaNotice && (
@@ -1180,6 +1116,7 @@ export default function RokoviPage() {
           </div>
         )}
 
+        </div>
       </div>
 
       <Toast show={downloadToast}>Kalendar (.ics) preuzet - otvori fajl da dodaš termine.</Toast>
