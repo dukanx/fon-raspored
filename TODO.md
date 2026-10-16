@@ -52,9 +52,9 @@ feedback prozoru).
   studenta u drugom semestru nego što ga FON drži (npr. Napredne .NET tehnologije: za SI
   letnji, a FON ga drži zimi za D4-D7 zajedno sa TEP-om). Sad `planStatus` tiho uzme drugi
   semestar i piše samo "izborni", pa zbunjuje.
-- [ ] **"Predmeti bez meta" se proverava pre osvežavanja meta** - update_nastava ispiše
-  upozorenje pre koraka `scrape_subjects_meta.py` u update-nastava.yml, pa summary prijavi
-  predmete kojima meta posle stigne. Proveriti posle tog koraka.
+- [x] **"Predmeti bez meta" posle osvežavanja meta** (2026-10-16) - provera je iz
+  update_nastava.py prešla u validate_data.py (informacija u izveštaju, ne upozorenje), koji
+  workflow pokreće posle scrape_subjects_meta.py.
 - [x] **GitHub Actions verzije** (2026-10-15) - checkout, setup-python i setup-node na v7,
   create-pull-request na v8 (sve na Node 24), Node za skripte 24. Python 3.11 ima build za
   Ubuntu 26.

@@ -17,7 +17,6 @@ Pokretanje:
 
 import argparse
 import hashlib
-import os
 import re
 import sys
 import tempfile
@@ -350,42 +349,6 @@ def compare_path_for(year, semester):
     return None
 
 
-def check_meta_coverage(results):
-    """Upozori na predmete iz rasporeda koji nemaju unos u subjects-meta.json.
-
-    Ne-fatalno: takvi predmeti u aplikaciji default padaju na "čekiran" i nemaju
-    ESPB/link. Kad se pojave, pokreni scripts/scrape_subjects_meta.py da ih dopuni.
-    (Status flip postojećeg predmeta ovo NE hvata - za to pun re-scrape.)
-    """
-    import json
-    meta_path = DATA_DIR / "subjects-meta.json"
-    meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-    subjects = {e["subject"] for res in results.values() for e in res["entries"]}
-    missing = sorted(s for s in subjects if s not in meta)
-    if missing:
-        print(f"\nPAŽNJA: {len(missing)} predmeta bez meta (ESPB/status/link):",
-              file=sys.stderr)
-        for s in missing:
-            print(f"  - {s}", file=sys.stderr)
-        print("  -> pokreni: python scripts/scrape_subjects_meta.py", file=sys.stderr)
-    else:
-        print("Meta pokrivenost: OK (svi predmeti imaju unos).", file=sys.stderr)
-
-    # U GitHub Actions: napiši vidljiv blok na Summary stranicu run-a (ne samo
-    # u log koraka koji se mora ručno raširiti).
-    summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary:
-        with open(summary, "a", encoding="utf-8") as f:
-            if missing:
-                f.write(f"### ⚠️ {len(missing)} predmeta bez meta\n\n")
-                f.write("Nemaju ESPB/status/link - pokreni "
-                        "`python scripts/scrape_subjects_meta.py`:\n\n")
-                for s in missing:
-                    f.write(f"- {s}\n")
-            else:
-                f.write("### ✅ Meta pokrivenost OK\n\nSvi predmeti imaju unos.\n")
-
-
 def main():
     ap = argparse.ArgumentParser(description="Ažurira raspored nastave (god.json) sa FON sajta.")
     ap.add_argument("--semester", choices=["letnji", "zimski"], default=None,
@@ -468,8 +431,6 @@ def main():
         known["files"].update(files_snapshot({y: files[y] for y in results}, _DIGESTS))
         KNOWN_PATH.write_text(json.dumps(known, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"Upisano: {KNOWN_PATH}", file=sys.stderr)
-
-    check_meta_coverage(results)
 
 
 if __name__ == "__main__":

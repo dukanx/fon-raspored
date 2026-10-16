@@ -31,7 +31,20 @@ def _edit(tmp_path, y, fn):
 def test_pravi_podaci_bez_gresaka(tmp_path):
     errors, _, info = vd.validate(_copy_real(tmp_path))
     assert errors == []
-    assert len(info) == 4
+    assert sum(1 for x in info if "termina" in x) == 4
+
+
+def test_predmet_bez_podataka_je_informacija(tmp_path):
+    _copy_real(tmp_path)
+    p = tmp_path / "subjects-meta.json"
+    meta = json.loads(p.read_text(encoding="utf-8"))
+    predmet = json.loads((tmp_path / "1god.json").read_text(encoding="utf-8"))["entries"][0]["subject"]
+    meta.pop(predmet, None)
+    p.write_text(json.dumps(meta, ensure_ascii=False), encoding="utf-8")
+    errors, warnings, info = vd.validate(tmp_path)
+    assert errors == []
+    assert not any(predmet in w for w in warnings)
+    assert any("bez podataka" in x and predmet in x for x in info)
 
 
 def test_preklapanje_opsega_je_upozorenje(tmp_path):

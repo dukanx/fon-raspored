@@ -195,6 +195,15 @@ def validate(data_dir=DATA_DIR, years=(1, 2, 3, 4)):
         n_subj = len({e['subject'] for e in entries})
         info.append(f"{y}. god: {len(groups)} grupa, {len(entries)} termina, {n_subj} predmeta")
 
+    # Predmeti bez podataka (ESPB, status, link) u aplikaciji nemaju te detalje i
+    # počinju čekirani. Proverava se ovde, a ne u update_nastava.py, jer workflow
+    # podatke o predmetima skida posle čitanja rasporeda, a pre ove provere.
+    if meta:
+        svi = {e.get("subject", "") for d in datas.values() for e in d.get("entries", [])}
+        bez = sorted(s for s in svi if s and s not in meta)
+        if bez:
+            info.append(f"{len(bez)} predmeta bez podataka o predmetu (ESPB, link): {', '.join(bez)}")
+
     return errors, warnings, info
 
 
