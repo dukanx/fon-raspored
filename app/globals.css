@@ -3,7 +3,9 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
+  /* Nijansa pozadine sa lukovima, ne čisto belo: Safari ovom bojom boji traku
+     sa satom i prostor oko svoje donje trake, pa bi belo štrčalo. */
+  --background: #f8fafb;
   --foreground: #171717;
   --fon-blue: #024c7d;
   --fon-blue-hover: #013d6a;
@@ -46,6 +48,10 @@
   --wallpaper-accent-3: radial-gradient(at 65% 88%, rgba(210, 100, 167, 0.10) 0px, transparent 50%);
 }
 
+html {
+  background: var(--background);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -65,15 +71,18 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* Prvi sloj: pri vrhu se pozadina meko pretopi u ravnu osnovnu boju, istu
+     kojom Safari boji traku sa satom, pa između njih nema vidljivog šava. */
   background-image:
+    linear-gradient(to bottom, var(--background), transparent 120px),
     var(--wallpaper-overlay),
     var(--wallpaper-accent-1),
     var(--wallpaper-accent-2),
     var(--wallpaper-accent-3),
     url("/FONWallpaper.png");
-  background-position: center, 15% 20%, 85% 8%, 65% 88%, center;
+  background-position: top, center, 15% 20%, 85% 8%, 65% 88%, center;
   background-repeat: no-repeat;
-  background-size: auto, auto, auto, auto, cover;
+  background-size: 100% 120px, auto, auto, auto, auto, cover;
 }
 
 .dark body {
