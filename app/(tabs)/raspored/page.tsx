@@ -28,6 +28,7 @@ import { stagger } from '@/lib/stagger'
 import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 import { otisak, odlukaOIzmeni, opisPromene, type Promena } from '@/lib/izmene'
+import { osveziDodate, type UskladjeniDodati } from '@/lib/dodatiTermini'
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
@@ -243,8 +244,9 @@ export default function RasporedPage() {
     Promise.all([
       fetch(`/data/${meta.year}god.json`).then(r => { if (!r.ok) throw new Error('http'); return r.json() }),
       bootDecision(),
+      osveziDodate(meta.group),
     ])
-      .then(([data, { pending }]: [SemesterData, BootDecision]) => {
+      .then(([data, { pending }, dodati]: [SemesterData, BootDecision, UskladjeniDodati]) => {
         if (pending) {
           router.replace('/')
           return
@@ -319,12 +321,16 @@ export default function RasporedPage() {
         const viden = byGroup.videnRaspored(meta.group)
         const sada = { semester: data.semester, otisak: otisak(all) }
         const odluka = odlukaOIzmeni(viden.get(), sada, s => !hasSaved || checked[s] === true)
-        if (odluka.tip === 'baner') {
-          noviOtisak.current = sada
-          setPromeneRasporeda(odluka.promene)
-        } else if (odluka.tip === 'zapamti') {
-          viden.set(sada)
-        }
+        // Predmet i P/V za koje je dodat termin iz druge grupe ne idu po
+        // svojoj grupi (v. "gaženje" niže), pa izmena u svojoj grupi ne važi.
+        const promeneGrupe = odluka.tip === 'baner'
+          ? odluka.promene.filter(p => !dodati.dodati.some(t => t.subject === p.predmet && t.type_short === p.tip))
+          : []
+        if (promeneGrupe.length > 0) noviOtisak.current = sada
+        else if (odluka.tip !== 'nista') viden.set(sada)
+        // Dodati termini su već ažurirani (osveziDodate); baner kaže šta je pomereno.
+        const sve = [...dodati.promene, ...promeneGrupe]
+        if (sve.length > 0) setPromeneRasporeda(sve)
 
         // Predmet kog nema u sačuvanom izboru stigao je kasnije (FON dopunio
         // raspored, npr. izbornim). Ne prikazuje se dok ga student ne izabere,
@@ -335,7 +341,7 @@ export default function RasporedPage() {
           if (added.length > 0) setNewSubjects(added)
         }
 
-        const extra = byGroup.extra(meta.group).get()
+        const extra = dodati.dodati
 
         // MAGIJA: Filtriramo iz base:
         // 1. Termine koje preneseni predmeti gaze po vremenu (isti dan i vreme)

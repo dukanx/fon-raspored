@@ -16,6 +16,10 @@ export interface ScheduleEntry {
   room: string
 }
 
+// Termin dodat u Izmeni (iz druge grupe ili godine). `godina` je godina studija
+// iz koje je; nemaju je zapisi od pre oktobra 2026 (v. lib/dodatiTermini).
+export type DodatTermin = ScheduleEntry & { godina?: number }
+
 export interface GroupInfo {
   program: string
   range: string   // "Svi" | "A- - Lekić" | ...

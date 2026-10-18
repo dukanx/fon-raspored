@@ -10,7 +10,7 @@
 //   - saved.*    -> localStorage (preživljava zatvaranje taba)
 //   - byGroup.*  -> localStorage, ključ sufiksovan grupom
 //   - note()     -> localStorage, ključ sufiksovan predmetom
-import type { ScheduleEntry, RokEntry, CustomRokEntry } from './types'
+import type { ScheduleEntry, RokEntry, CustomRokEntry, DodatTermin } from './types'
 
 type Kind = 'local' | 'session'
 
@@ -150,7 +150,7 @@ export const app = {
 // Stanje vezano za konkretnu grupu (izbor predmeta, izmene, skriveni termini…).
 export const byGroup = {
   subjects: (g: string) => json<Record<string, boolean>>('local', `fon_subjects_${g}`, {}),
-  extra: (g: string) => json<ScheduleEntry[]>('local', `fon_extra_${g}`, []),
+  extra: (g: string) => json<DodatTermin[]>('local', `fon_extra_${g}`, []),
   // Otisak rasporeda grupe kad ga je student poslednji put potvrdio (v. lib/izmene).
   videnRaspored: (g: string) =>
     json<{ semester: string; otisak: string[] } | null>('local', `fon_viden_raspored_${g}`, null),

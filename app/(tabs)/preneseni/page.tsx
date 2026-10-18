@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SemesterData, ScheduleEntry } from '@/lib/types'
+import type { SemesterData, ScheduleEntry, DodatTermin } from '@/lib/types'
 import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
 import { session, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
@@ -139,7 +139,7 @@ export default function PreneseniPage() {
   const [odabranoPredavanje, setOdabranoPredavanje] = useState<ScheduleEntry | null>(null)
   const [odabraneVezbe, setOdabraneVezbe] = useState<ScheduleEntry | null>(null)
   const [dodato, setDodato] = useState(false)
-  const [extraTermini, setExtraTermini] = useState<ScheduleEntry[]>([])
+  const [extraTermini, setExtraTermini] = useState<DodatTermin[]>([])
   const [hiddenTermini, setHiddenTermini] = useState<ScheduleEntry[]>([])
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
@@ -799,8 +799,9 @@ export default function PreneseniPage() {
                     e.type_short === termin.type_short &&
                     e.room === termin.room
                   )
+                  // Uz termin se pamti godina, da bi pratio FON-ove izmene (lib/dodatiTermini).
                   if (!exists) {
-                    extra.push(termin)
+                    extra.push({ ...termin, godina: godina ?? undefined })
                   }
                 }
 
