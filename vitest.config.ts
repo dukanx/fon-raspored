@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
 
-// Unit testovi za čistu logiku u lib/ (bez DOM-a). Testovi su kolocirani kao
-// lib/*.test.ts. `@/` alias prati tsconfig paths.
+// Unit testovi za čistu logiku u lib/ i scripts/ (bez DOM-a), kolocirani kao
+// *.test.ts pored fajla. `@/` alias prati tsconfig paths.
 export default defineConfig({
   resolve: {
     alias: {
@@ -11,6 +11,6 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['lib/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'scripts/**/*.test.ts'],
   },
 })

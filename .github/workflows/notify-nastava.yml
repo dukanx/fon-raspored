@@ -3,8 +3,8 @@ name: Obavesti o novom rasporedu nastave
 # Kad se na main objavi god.json (update-nastava.yml), pošalji push:
 #   - nov semestar (`semester` string se promenio) -> "Objavljen je raspored", svima
 #   - isti semestar, a izmenjeni termini, sale ili predmeti -> "Raspored nastave
-#     je izmenjen", samo grupama kojima se raspored promenio (scripts/
-#     izmenjene-grupe.ts). Pretplate bez zapamćene grupe je dobijaju svakako.
+#     je izmenjen", samo studentima kojima se promenio predmet koji prate ili
+#     dodat termin (scripts/izmenjene-grupe.ts, scripts/ciljanje.mjs).
 on:
   push:
     branches: [main]
@@ -63,14 +63,13 @@ jobs:
             OLD=$(git show "$BEFORE:public/data/1god.json" | jq -r .semester)
             mkdir -p "$RUNNER_TEMP/staro"
             for y in 1 2 3 4; do git show "$BEFORE:public/data/${y}god.json" > "$RUNNER_TEMP/staro/${y}god.json"; done
-            GRUPE=$(npx vite-node scripts/izmenjene-grupe.ts "$RUNNER_TEMP/staro")
+            GRUPE=$(npx vite-node scripts/izmenjene-grupe.ts "$RUNNER_TEMP/staro" "$RUNNER_TEMP/izmene.json")
           fi
           VERSION=$(entries now)
           echo "Staro: '$OLD' | novo: '$NEW' | verzija: $VERSION"
           echo "Izmenjene grupe: ${GRUPE:-nema}"
           echo "semester=$NEW" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "grupe=$GRUPE" >> "$GITHUB_OUTPUT"
           # Ručno pokretanje bez `before` šalje kao za nov semestar (dedup u
           # send_push.mjs ipak sprečava duplikat).
           if { [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "${{ inputs.before }}" ]; } || [ "$OLD" != "$NEW" ]; then
@@ -114,10 +113,9 @@ jobs:
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           SEM: ${{ steps.sem.outputs.semester }}
           VERSION: ${{ steps.sem.outputs.version }}
-          GRUPE: ${{ steps.sem.outputs.grupe }}
         run: |
           if [ "${{ steps.sem.outputs.mode }}" = "izmena" ]; then
-            node scripts/send_push.mjs nastava-izmena "$SEM" "$VERSION" "$GRUPE"
+            node scripts/send_push.mjs nastava-izmena "$SEM" "$VERSION" "$RUNNER_TEMP/izmene.json"
           else
             node scripts/send_push.mjs nastava "$SEM"
           fi

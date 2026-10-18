@@ -136,19 +136,29 @@ that discovers a dead subscription, so pruning happens there.
 ```mermaid
 flowchart LR
   A["Client grants permission"] --> B["pushManager.subscribe()"]
-  B --> C["POST /api/push<br/>subscription + year + group"]
+  B --> C["POST /api/push<br/>subscription + year + group<br/>+ checked subjects + added slots"]
   C --> D[("Redis hash push:subs<br/>endpoint → subscription")]
   E["send_push.mjs delivers"] -->|"404 / 410 Gone"| F["hdel endpoint"]
   F --> D
 ```
 
-The subscription carries the student's year and group, and the client sends it
-again whenever the group changes (`osveziGrupuPretplate` in `lib/push.ts`). When
-the class schedule changes mid-semester, `scripts/izmenjene-grupe.ts` compares
-each group's schedule before and after (`izmenjeneGrupe` in `lib/izmene.ts`, the
-same fingerprint the in-app "schedule changed" banner uses), and `send_push.mjs`
-notifies only those groups. Subscriptions without a group (created before this
-existed) get the generic message.
+The subscription carries the student's year, group, checked subjects and the
+slots they added from other groups (Izmena), and the client sends it again
+whenever any of that changes (`osveziPodatkePretplate` in `lib/push.ts`, run on
+every tab change). When the class schedule changes mid-semester,
+`scripts/izmenjene-grupe.ts` lists, per group, which subject and lecture/exercise
+pairs changed and which subjects are new (`izmeneGrupa` in `lib/izmene.ts`, the
+same fingerprint the in-app "schedule changed" banner uses). `send_push.mjs`
+then decides per subscriber (`scripts/ciljanje.mjs`): only a change in a checked
+subject, in an added slot, or a new subject in the group sends a notification,
+and the text names what changed ("Izmenjen termin: Matematika 1 (V)").
+Subscriptions without subjects fall back to the whole group, and those without
+a group get the generic message.
+
+Added slots are stored as full copies, so on every Raspored load
+`lib/dodatiTermini.ts` checks them against fresh data of their year: a moved
+slot is updated and shown in the "schedule changed" banner, a removed one is
+dropped with a note there.
 
 ### 3.3 Stateless schedule sharing
 

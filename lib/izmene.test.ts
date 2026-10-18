@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { otisak, promene, opisPromene, izmenjeneGrupe, odlukaOIzmeni } from './izmene'
+import { otisak, promene, opisPromene, izmeneGrupa, odlukaOIzmeni } from './izmene'
 import type { DayOfWeek, ScheduleEntry, SemesterData } from './types'
 
 const T = (subject: string, type_short: 'P' | 'V', day: DayOfWeek, start: string, room: string): ScheduleEntry => ({
@@ -58,7 +58,7 @@ describe('promene', () => {
   })
 })
 
-describe('izmenjeneGrupe', () => {
+describe('izmeneGrupa', () => {
   const sa = (entries: ScheduleEntry[]): SemesterData => ({ semester: 'Zimski 2026/27', year: 3, groups: {}, entries })
   const grupe = (e: ScheduleEntry, ...groups: string[]) => ({ ...e, groups })
   const mat = T('Matematika 1', 'P', 'Ponedeljak', '08:15', 'Amfiteatar 3')
@@ -66,21 +66,25 @@ describe('izmenjeneGrupe', () => {
   const stari = sa([grupe(mat, 'A1', 'A2'), grupe(eko, 'A3')])
 
   it('bez promena nema grupa', () => {
-    expect(izmenjeneGrupe(stari, stari)).toEqual([])
+    expect(izmeneGrupa(stari, stari)).toEqual({})
   })
 
-  it('promenjena sala pogađa samo grupe tog termina', () => {
+  it('promenjena sala pogađa samo grupe tog termina, sa predmetom i P/V', () => {
     const novi = sa([grupe({ ...mat, room: 'Amfiteatar 1' }, 'A1', 'A2'), grupe(eko, 'A3')])
-    expect(izmenjeneGrupe(stari, novi)).toEqual(['A1', 'A2'])
+    const izmena = { promene: ['Matematika 1|P'], novi: [] }
+    expect(izmeneGrupa(stari, novi)).toEqual({ A1: izmena, A2: izmena })
   })
 
-  it('termin prebačen drugoj grupi menja obe', () => {
+  it('termin prebačen drugoj grupi: jednoj je uklonjen, drugoj je predmet nov', () => {
     const novi = sa([grupe(mat, 'A1'), grupe(eko, 'A3'), grupe(mat, 'A3')])
-    expect(izmenjeneGrupe(stari, novi)).toEqual(['A2', 'A3'])
+    expect(izmeneGrupa(stari, novi)).toEqual({
+      A2: { promene: ['Matematika 1|P'], novi: [] },
+      A3: { promene: [], novi: ['Matematika 1'] },
+    })
   })
 
   it('isti termini drugim redom nisu promena', () => {
-    expect(izmenjeneGrupe(stari, sa([...stari.entries].reverse()))).toEqual([])
+    expect(izmeneGrupa(stari, sa([...stari.entries].reverse()))).toEqual({})
   })
 })
 

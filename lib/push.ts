@@ -2,8 +2,8 @@
 //
 // Koriste ga i NotificationBell (na /rokovi) i NotificationIntro (prvi-put modal),
 // da se logika oko dozvola, VAPID-a i service workera ne duplira na dva mesta.
-import { subscribeUser, unsubscribeUser, type PushGrupa } from '@/lib/backend'
-import { app, saved, session } from '@/lib/storage'
+import { subscribeUser, unsubscribeUser, type PushPodaci } from '@/lib/backend'
+import { app, byGroup, saved, session } from '@/lib/storage'
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -66,13 +66,25 @@ export async function getPushSubscription(): Promise<PushSubscription | null> {
   }
 }
 
-// Studentova godina i grupa: sačuvana, a ako je nema, iz sesije.
-function mojaGrupa(): PushGrupa | null {
+// Studentova godina i grupa (sačuvana, a ako je nema, iz sesije), čekirani
+// predmeti i dodati termini. Dodat termin bez godine (zapis od pre oktobra
+// 2026) se ne šalje dok ga Raspored ne dopuni (lib/dodatiTermini).
+function mojiPodaci(): PushPodaci | null {
   const godina = saved.year.get() ?? session.year.get()
   const grupa = saved.group.get() ?? session.group.get()
-  return godina && grupa ? { godina, grupa } : null
+  if (!godina || !grupa) return null
+  const cekirani = byGroup.subjects(grupa).get()
+  const dodati = byGroup.extra(grupa).get().flatMap(t =>
+    t.godina ? [{ godina: t.godina, grupe: t.groups, predmet: t.subject, tip: t.type_short }] : []
+  )
+  return {
+    godina,
+    grupa,
+    ...(Object.keys(cekirani).length > 0 && { predmeti: Object.keys(cekirani).filter(s => cekirani[s]).sort() }),
+    dodati,
+  }
 }
-const oznakaGrupe = (g: PushGrupa | null) => (g ? `${g.godina}:${g.grupa}` : '')
+const oznaka = (p: PushPodaci | null) => (p ? JSON.stringify(p) : '')
 
 export type PushResult = { ok: true } | { ok: false; error: string }
 
@@ -93,10 +105,10 @@ export async function enablePush(): Promise<PushResult> {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapidKey),
     })
-    const grupa = mojaGrupa()
-    const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), grupa)
+    const podaci = mojiPodaci()
+    const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), podaci)
     if (!res.success) return { ok: false, error: res.error || 'Greška' }
-    app.pushGrupa.set(oznakaGrupe(grupa))
+    app.pushPodaci.set(oznaka(podaci))
     return { ok: true }
   } catch (e) {
     console.error(e)
@@ -115,7 +127,7 @@ export async function disablePush(): Promise<PushResult> {
       await unsubscribeUser(sub.endpoint)
       await sub.unsubscribe()
     }
-    app.pushGrupa.remove()
+    app.pushPodaci.remove()
     return { ok: true }
   } catch (e) {
     console.error(e)
@@ -123,15 +135,15 @@ export async function disablePush(): Promise<PushResult> {
   }
 }
 
-// Backend zna grupu pretplatnika, pa notifikacija o izmeni rasporeda stiže samo
-// grupama kojima se raspored promenio. Šalje se samo kad se grupa promeni (i
-// jednom za pretplate od pre nego što se grupa pamtila).
-export async function osveziGrupuPretplate(): Promise<void> {
+// Backend zna grupu, predmete i dodate termine pretplatnika, pa notifikacija o
+// izmeni rasporeda stiže samo kad se promeni nešto njegovo. Šalje se samo kad
+// se ti podaci promene (i jednom za pretplate od pre nego što su se pamtili).
+export async function osveziPodatkePretplate(): Promise<void> {
   if (isLocalNotificationPreview() || notificationPermission() !== 'granted') return
-  const grupa = mojaGrupa()
-  if (!grupa || app.pushGrupa.get() === oznakaGrupe(grupa)) return
+  const podaci = mojiPodaci()
+  if (!podaci || app.pushPodaci.get() === oznaka(podaci)) return
   const sub = await getPushSubscription()
   if (!sub) return
-  const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), grupa)
-  if (res.success) app.pushGrupa.set(oznakaGrupe(grupa))
+  const res = await subscribeUser(JSON.parse(JSON.stringify(sub)), podaci)
+  if (res.success) app.pushPodaci.set(oznaka(podaci))
 }

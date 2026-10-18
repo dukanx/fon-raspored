@@ -4,8 +4,8 @@
 // Raspored pamti otisak rasporeda GRUPE (ne samo čekiranih predmeta, da čekiranje
 // ne bi izgledalo kao izmena), pa kad FON promeni sale ili termine, baner na
 // Rasporedu pokaže tačne promene za predmete koje student prati. Bez ovoga je
-// izmena tiha za sve bez notifikacija. Notifikacija ide samo grupama kojima se
-// raspored promenio (`izmenjeneGrupe`, v. notify-nastava.yml).
+// izmena tiha za sve bez notifikacija. Notifikacija ide samo studentima kojima
+// se promenio predmet koji prate (`izmeneGrupa`, v. notify-nastava.yml).
 
 import type { ScheduleEntry, SemesterData } from './types'
 import { DAY_SHORT, getScheduleForGroup } from './schedule'
@@ -15,13 +15,30 @@ export function otisak(entries: ScheduleEntry[]): string[] {
   return [...new Set(entries.map(e => [e.subject, e.type_short, e.day, e.start, e.room].join('|')))].sort()
 }
 
-// Grupe kojima se raspored promenio između dve objave, za ciljane notifikacije.
-// Grupa koja je dodata ili nestala računa se kao promenjena.
-export function izmenjeneGrupe(stari: SemesterData, novi: SemesterData): string[] {
-  const grupe = new Set([...stari.entries, ...novi.entries].flatMap(e => e.groups))
-  const isti = (g: string) =>
-    otisak(getScheduleForGroup(stari, g)).join('\n') === otisak(getScheduleForGroup(novi, g)).join('\n')
-  return [...grupe].filter(g => !isti(g)).sort()
+// Šta se promenilo grupi između dve objave, za ciljane notifikacije:
+// `promene` su "predmet|P" ili "predmet|V" čiji su termini pomereni ili
+// uklonjeni (ili im je promenjena sala), `novi` su predmeti kojih ranije nije bilo.
+export interface IzmenaGrupe {
+  promene: string[]
+  novi: string[]
+}
+
+// Samo grupe kojima se nešto promenilo. Grupa koja je dodata ili nestala računa
+// se kao promenjena (svi predmeti su joj novi, odnosno uklonjeni).
+export function izmeneGrupa(stari: SemesterData, novi: SemesterData): Record<string, IzmenaGrupe> {
+  const grupe = [...new Set([...stari.entries, ...novi.entries].flatMap(e => e.groups))].sort()
+  const out: Record<string, IzmenaGrupe> = {}
+  for (const g of grupe) {
+    const pre = getScheduleForGroup(stari, g)
+    const posle = getScheduleForGroup(novi, g)
+    const ranije = new Set(pre.map(e => e.subject))
+    const izmena = {
+      promene: promene(otisak(pre), otisak(posle), () => true).map(p => `${p.predmet}|${p.tip}`),
+      novi: [...new Set(posle.map(e => e.subject))].filter(s => !ranije.has(s)).sort(),
+    }
+    if (izmena.promene.length || izmena.novi.length) out[g] = izmena
+  }
+  return out
 }
 
 export interface Promena {

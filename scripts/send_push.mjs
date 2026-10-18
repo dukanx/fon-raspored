@@ -6,9 +6,10 @@
 //   node scripts/send_push.mjs reminders   -> podsetnici dan pred početak/kraj prijave (čita rokovi.json)
 //   node scripts/send_push.mjs nastava "Zimski 2026/27"
 //                                          -> "objavljen je raspored nastave" (jednom po semestru)
-//   node scripts/send_push.mjs nastava-izmena "Zimski 2026/27" "<oznaka verzije>" "3:C13 3:C14"
-//                                          -> "raspored nastave je izmenjen" samo tim grupama
-//                                             (jednom po verziji)
+//   node scripts/send_push.mjs nastava-izmena "Zimski 2026/27" "<oznaka verzije>" <izmene.json>
+//                                          -> "raspored nastave je izmenjen" samo onima kojima se
+//                                             promenio predmet koji prate (jednom po verziji;
+//                                             izmene.json pravi scripts/izmenjene-grupe.ts)
 //
 // Env: NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:),
 //      UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
@@ -18,6 +19,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import webpush from 'web-push'
 import { Redis } from '@upstash/redis'
+import { porukaOIzmeni } from './ciljanje.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SUBS_KEY = 'push:subs'
@@ -141,27 +143,22 @@ function nastavaPayloads(semester) {
 
 // Izmenjen raspored istog semestra (sale, termini, novi predmeti). `version`
 // razlikuje izmene, pa svaka stigne jednom.
+// Tekst se piše za svakog pretplatnika posebno (zaIzmene).
 function nastavaIzmenaPayloads(semester, version) {
   if (!semester || !version) return []
   return [{
     title: 'Raspored nastave je izmenjen',
-    body: 'Proveri svoje termine i sale, a ako su dodati novi predmeti, čekiraj one koje slušaš.',
     url: '/raspored',
     tag: `nastava-izmena-${semester}-${version}`,
   }]
 }
 
-// Izmena ide samo grupama iz `grupe` ("3:C13 3:C14"). Pretplata bez grupe (od
-// pre nego što se pamtila, ili student bez izabrane grupe) dobija opštu poruku.
-function zaIzmenjeneGrupe(grupe) {
-  const pogodjene = new Set(grupe.split(/\s+/).filter(Boolean))
+// Izmena ide samo onima kojima se promenilo nešto njihovo (v. ciljanje.mjs).
+function zaIzmene(fajl) {
+  const izmene = JSON.parse(readFileSync(fajl, 'utf-8'))
   return (payload, sub) => {
-    if (!sub.grupa) return payload
-    if (!pogodjene.has(`${sub.godina}:${sub.grupa}`)) return null
-    return {
-      ...payload,
-      body: `Promenjen je raspored grupe ${sub.grupa}. Proveri termine i sale, a ako su dodati novi predmeti, čekiraj one koje slušaš.`,
-    }
+    const body = porukaOIzmeni(izmene, sub)
+    return body ? { ...payload, body } : null
   }
 }
 
@@ -211,7 +208,7 @@ async function sendAll(payloads, za = (payload) => payload) {
     await redis.hdel(SUBS_KEY, ...dead)
     console.log(`Uklonjeno ${dead.length} mrtvih pretplata.`)
   }
-  console.log(`Poslato ${sent} notifikacija${preskoceno ? `, preskočeno ${preskoceno} (druge grupe)` : ''}.`)
+  console.log(`Poslato ${sent} notifikacija${preskoceno ? `, preskočeno ${preskoceno} (nije im se ništa promenilo)` : ''}.`)
 }
 
 // Dedup: workflow se pokreće više puta dnevno (zbog nepouzdanog GitHub cron-a),
@@ -251,9 +248,9 @@ else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads
 else if (mode === 'nastava') payloads = await dedupeNastava(nastavaPayloads(process.argv[3]))
 else if (mode === 'nastava-izmena') {
   payloads = await dedupeNastava(nastavaIzmenaPayloads(process.argv[3], process.argv[4]))
-  za = zaIzmenjeneGrupe(process.argv[5] ?? '')
+  za = zaIzmene(process.argv[5])
 } else {
-  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>"|nastava-izmena "<semestar>" "<verzija>" "<grupe>">')
+  console.error('Upotreba: node scripts/send_push.mjs <new|reminders|nastava "<semestar>"|nastava-izmena "<semestar>" "<verzija>" <izmene.json>>')
   process.exit(1)
 }
 

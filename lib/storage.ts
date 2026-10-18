@@ -118,9 +118,9 @@ export const app = {
   prevSubjectsIntroSeen: flag('local', 'fon_prev_subjects_intro_seen'),
   // Obaveštenje "novo: FON kalendar u Rokovima" za postojeće korisnike, jednom.
   kalendarIntroSeen: flag('local', 'fon_kalendar_intro_seen'),
-  // Grupa ("3:C13") koju je backend poslednji put zapamtio uz push pretplatu,
-  // da se šalje samo kad se promeni (v. lib/push.ts).
-  pushGrupa: str('local', 'fon_push_grupa'),
+  // Podaci (grupa, predmeti, dodati termini) koje je backend poslednji put
+  // zapamtio uz push pretplatu, da se šalju samo kad se promene (v. lib/push.ts).
+  pushPodaci: str('local', 'fon_push_podaci'),
   // Izabrani prikazi, da ostanu isti pri sledećem ulasku.
   rokoviFilter: json<'sve' | 'ispiti' | 'kolokvijumi'>('local', 'fon_rokovi_filter', 'sve'),
   rokoviPrikaz: json<'list' | 'calendar'>('local', 'fon_rokovi_prikaz', 'calendar'),

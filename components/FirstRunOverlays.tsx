@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import NotificationIntro from './NotificationIntro'
-import { osveziGrupuPretplate } from '@/lib/push'
+import { osveziPodatkePretplate } from '@/lib/push'
 
 // TODO(tutorial): Tutorial.tsx (story-carousel walkthrough) je izgrađen ali
 // namerno ISKLJUČEN - slike unutar slajda (flex-1 + object-contain) su
@@ -22,14 +23,19 @@ type Stage = 'loading' | 'notif'
 
 export default function FirstRunOverlays() {
   const [stage, setStage] = useState<Stage>('loading')
+  const pathname = usePathname()
 
   useEffect(() => {
     // queueMicrotask: izbegava setState sinhrono u efektu (react-hooks pravilo).
     queueMicrotask(() => setStage('notif'))
-    // Montira se na svakom tabu, pa je ovo jedno mesto za sve: backend dobije
-    // grupu postojeće pretplate (i novu kad student promeni grupu).
-    osveziGrupuPretplate()
   }, [])
+
+  // Montira se na svakom tabu, pa je ovo jedno mesto za sve: backend dobije
+  // grupu, predmete i dodate termine pretplate. Ponovo na svaki prelaz taba,
+  // jer se predmeti i termini menjaju u Izmeni; šalje se samo kad se promene.
+  useEffect(() => {
+    osveziPodatkePretplate()
+  }, [pathname])
 
   if (stage === 'loading') return null
   return <NotificationIntro />

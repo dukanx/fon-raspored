@@ -44,9 +44,12 @@ feedback prozoru).
   grupu, a "Raspored nastave je izmenjen" ide samo grupama kojima se raspored promenio, i za
   izmene sala i termina (ranije samo za nove predmete, i to svima). Pretplate od ranije
   dobiju grupu kad student otvori aplikaciju; do tada dobijaju sve.
-  - [ ] Možda kasnije: samo studentima čiji su ČEKIRANI predmeti promenjeni (sad je po
-    grupi, pa izmena izbornog koji student ne sluša i dalje stigne). Traži slanje izbora
-    predmeta uz pretplatu pri svakoj promeni.
+  - [x] Samo kad se promeni ČEKIRAN predmet ili termin dodat iz druge grupe (2026-10-18).
+    Pretplata nosi i čekirane predmete i dodate termine (šalje se pri svakoj promeni),
+    a poruka kaže šta je izmenjeno. Pretplate bez predmeta i dalje idu po grupi.
+  - [x] Dodati termini su bili kopija: posle FON-ove izmene ostajali su stari dan, vreme
+    i sala. Sad se pri otvaranju Rasporeda porede sa svežim podacima svoje godine
+    (lib/dodatiTermini.ts), a pomeren ili uklonjen termin piše u baneru o izmeni.
 - [x] **Obrisano privremeno za izmenu od 5. 10.** (2026-10-16, ranije nego 19. 10.) -
   poređenje sa rasporedom pre izmene je novom korisniku koji brzo preskoči tur pokazivalo
   "izmenu" koju nikad nije video (stari korisnik se prepoznavao samo po pređenom turu).
