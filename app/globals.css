@@ -352,6 +352,11 @@ a[href]:active {
   display: none;
 }
 
+/* Splash animacija je već prikazana u ovom otvaranju (skripta u layout.tsx). */
+.fon-bez-uvoda [data-uvod] {
+  display: none;
+}
+
 /* Datum/vreme polja (modal "Dodaj događaj") na iOS-u.
    WebKit ih renderuje kao native kontrolu sa sopstvenom intrinzičnom širinom i
    unutrašnjim elementom (`::-webkit-date-and-time-value`) koji ima svoj

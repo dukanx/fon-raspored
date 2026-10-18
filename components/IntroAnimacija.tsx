@@ -1,9 +1,10 @@
 'use client'
 
 // Animacija logoa: FON-ovi krugovi se sklope u kalendar. Telefon: kratka
-// (potez pera, 1,8 s) preko cele aplikacije pri ulasku, dodir preskače.
-// Računar: v3, sa natpisom, umesto logoa i naslova na početnoj.
+// (potez pera, 1,8 s) preko cele aplikacije, jednom po otvaranju aplikacije;
+// dodir preskače. Računar: v3, sa natpisom, umesto logoa i naslova na početnoj.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { session } from '@/lib/storage'
 
 const VIDEO = '/logo-animacija.mp4' // telefon, splash
 // Video je položen (16:9), pa na uspravnom telefonu zauzima samo traku po
@@ -12,6 +13,9 @@ const VIDEO = '/logo-animacija.mp4' // telefon, splash
 // pa se ivice ne vide, a dva uvećanja deluju kao jedan pokret.
 const ZUM_OD = 1.0
 const ZUM_TRAJE = 0.45
+// iPhone u Low Power režimu ne pušta video sam od sebe, pa se ne bi ni
+// završio: ako za ovoliko od otvaranja strane ne krene, splash se sklanja.
+const KRENI_MS = 800
 
 export default function IntroAnimacija() {
   const [faza, setFaza] = useState<'pusta' | 'nestaje' | 'gotovo'>('pusta')
@@ -29,6 +33,17 @@ export default function IntroAnimacija() {
   useEffect(() => {
     const v = video.current
     if (!v) return
+    // Već viđen u ovom otvaranju: sakriven je od prvog iscrtavanja (skripta u
+    // layout.tsx), ovde se samo zaustavlja video i otkazuje njegovo skidanje.
+    if (session.uvodViden.get()) {
+      v.pause()
+      v.removeAttribute('src')
+      v.load()
+      return
+    }
+    session.uvodViden.set()
+    // Broji se od otvaranja strane, ne od ovog efekta (on čeka JavaScript).
+    const tajmer = setTimeout(() => { if (v.paused) zavrsi() }, Math.max(0, KRENI_MS - performance.now()))
     let rafId = 0
     const prati = () => {
       if (v.currentTime >= ZUM_OD) {
@@ -39,13 +54,17 @@ export default function IntroAnimacija() {
       rafId = requestAnimationFrame(prati)
     }
     rafId = requestAnimationFrame(prati)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
+    return () => {
+      clearTimeout(tajmer)
+      cancelAnimationFrame(rafId)
+    }
+  }, [zavrsi])
 
   if (faza === 'gotovo') return null
 
   return (
     <div
+      data-uvod
       onClick={() => zavrsi()}
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#fdfdfd] transition-opacity duration-300 lg:hidden"
       style={{ opacity: faza === 'nestaje' ? 0 : 1 }}

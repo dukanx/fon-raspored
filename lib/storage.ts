@@ -85,6 +85,8 @@ export const session = {
   lastName: str('session', 'fon_lastName'),
   program: str('session', 'fon_program'),
   semester: str('session', 'fon_semester'),
+  // Splash animacija je već prikazana u ovom otvaranju aplikacije.
+  uvodViden: flag('session', 'fon_uvod_viden'),
 }
 
 // Trajni „zapamćeni" podaci - vraćaju korisnika u raspored bez ponovnog onboardinga.

@@ -174,6 +174,14 @@ export default function RootLayout({
             __html: `try{if(location.pathname==='/'&&new URLSearchParams(location.search).get('edit')!=='1'&&(sessionStorage.getItem('fon_group')||(localStorage.getItem('fon_saved_group')&&localStorage.getItem('fon_saved_year'))))document.documentElement.classList.add('fon-booting')}catch(e){}`,
           }}
         />
+        {/* Splash animacija ide jednom po otvaranju aplikacije. Kad je već
+            prikazana, sakriva se pre prvog iscrtavanja, inače bi bljesnula
+            dok IntroAnimacija ne utvrdi isto (ključ: session.uvodViden). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem('fon_uvod_viden')==='1')document.documentElement.classList.add('fon-bez-uvoda')}catch(e){}`,
+          }}
+        />
         {/* Zamena `<` unicode escape-om: JSON.stringify ne beži HTML, pa bi
             zatvarajući script tag u nekom stringu prekinuo ovaj blok.
             Preporuka iz next/dist/docs/01-app/02-guides/json-ld.md. */}
