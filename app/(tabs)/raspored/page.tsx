@@ -616,7 +616,7 @@ export default function RasporedPage() {
   function goPickSubjects() {
     acknowledgeFlip()
     setShowFlipPopup(false)
-    router.push('/izborni')
+    router.push('/izborni?od=raspored')
   }
   // "Kasnije": novi predmeti se pamte kao nečekirani, da popup ne dolazi
   // ponovo. Student ih i dalje može čekirati na izboru predmeta.
@@ -1310,7 +1310,7 @@ export default function RasporedPage() {
         </ul>
         <div className="flex flex-col gap-2 sm:flex-row-reverse">
           <button
-            onClick={() => { setNewSubjects([]); router.push('/izborni') }}
+            onClick={() => { setNewSubjects([]); router.push('/izborni?od=raspored') }}
             className="btn-lift flex-1 rounded-lg py-2.5 text-sm font-medium
                        bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d]
                        dark:hover:bg-[#4db3a0]"

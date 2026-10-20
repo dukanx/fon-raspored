@@ -663,6 +663,9 @@ export default function OnboardingPage() {
   const primary =
     'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
   const primaryDisabled = 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'
+  // Došao je da promeni podatke (Izmena -> Grupa, ili strelica sa izbora
+  // predmeta), a grupu već ima: "Otkaži" ga vraća odakle je došao, bez promene.
+  const mozeOtkaz = isHydrated && !!saved.group.get() && new URLSearchParams(window.location.search).get('edit') === '1'
 
   return (
     // Na telefonu kartica i pregled zajedno pune tačno prvi ekran (100dvh bez
@@ -671,11 +674,20 @@ export default function OnboardingPage() {
     <main data-onboarding className="relative flex min-h-[calc(100dvh-var(--safe-y))] flex-col px-4 pt-5 pb-5 lg:px-14 lg:pt-0 lg:pb-6">
       <div className="flex min-h-[calc(100dvh-var(--safe-y)-20px)] flex-col gap-6 lg:mx-auto lg:grid lg:min-h-0 lg:w-full lg:max-w-[1360px] lg:flex-1 lg:grid-cols-[440px_minmax(0,1fr)] lg:items-center lg:gap-16 lg:pt-12">
         <div className={`flex shrink-0 flex-col gap-3 ${leaving ? 'leave-left' : ''}`}>
-          <div className={`rounded-[28px] px-6 pt-8 pb-7 ring-1 ring-[#024c7d]/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] lg:px-10 lg:pt-11 lg:pb-10 dark:ring-white/15 dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
+          <div className={`relative rounded-[28px] px-6 pt-8 pb-7 ring-1 ring-[#024c7d]/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] lg:px-10 lg:pt-11 lg:pb-10 dark:ring-white/15 dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
             {/* <h1> nosi sama varijanta naslova - vidljiv u BlurHeading-u, sr-only
                 u TypedHeading-u (v. komentare tamo). Ovde ga namerno nema da strana
                 ne bi imala dva h1. */}
+            {mozeOtkaz && (
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="absolute top-4 right-5 text-sm font-medium text-[#024c7d] lg:top-5 lg:right-7 dark:text-[#60c3ad]"
+              >
+                Otkaži
+              </button>
+            )}
             {HEADING_STYLE === 'type' ? <TypedHeading /> : <BlurHeading />}
 
             {/* U periodu čekanja FON-ovog rasporeda još nema, pa bi ova

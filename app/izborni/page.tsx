@@ -7,7 +7,7 @@ import { getScheduleForGroup, fetchYearBothSemesters } from '@/lib/schedule'
 import { reconcileSemester, acknowledgeFlip } from '@/lib/semester'
 import { type SubjectMeta, programToTrack, defaultChecked } from '@/lib/subjects'
 import { planStatus, semesterKey, hasUnpublishedElectives, type StudyPlan } from '@/lib/plan'
-import { session, saved as savedStore, app, byGroup } from '@/lib/storage'
+import { session, app, byGroup } from '@/lib/storage'
 import { AnimatePresence, motion } from 'motion/react'
 import OfflineNotice from '@/components/OfflineNotice'
 import Collapsible from '@/components/Collapsible'
@@ -118,6 +118,11 @@ function SelectedChips({ items }: { items: { key: string; label: string; onRemov
   )
 }
 
+const NAZAD: Record<string, [string, string]> = {
+  izmena: ['/preneseni', 'Nazad na Izmenu'],
+  raspored: ['/raspored', 'Nazad na Raspored'],
+}
+
 export default function IzbornoPage() {
   const router = useRouter()
   const isHydrated = useSyncExternalStore(
@@ -126,6 +131,10 @@ export default function IzbornoPage() {
     () => false
   )
   const group = isHydrated ? (session.group.get() ?? '') : ''
+  // Strelica vraća odakle se došlo (?od=izmena|raspored), a iz početnog
+  // izbora na podatke (godina, smer, prezime), da se grupa može promeniti.
+  const od = isHydrated ? new URLSearchParams(window.location.search).get('od') : null
+  const [nazad, nazadOpis] = NAZAD[od ?? ''] ?? ['/?edit=1', 'Nazad na podatke']
   const year = isHydrated ? (session.year.get() ?? '') : ''
   const program = isHydrated ? (session.program.get() ?? '') : ''
   const [subjects, setSubjects] = useState<string[]>([])
@@ -241,6 +250,7 @@ export default function IzbornoPage() {
     byGroup.otherSem(group).set(otherSelected)
   }, [otherSelected, isHydrated, group])
 
+
   // Lenjivo učitaj predmete drugog semestra kad se sekcija prvi put otvori
   function loadOtherSemester() {
     if (otherLoaded || !year || !semester) return
@@ -343,6 +353,22 @@ export default function IzbornoPage() {
       <div className={`enter-right w-full max-w-md rounded-[1.75rem] p-8 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS}`}>
 
         <div className="mb-6">
+          {/* Isto kao drugi korak početne: strelica nazad i oznaka gde si. */}
+          <div className="mb-4 flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => router.push(nazad)}
+              aria-label={nazadOpis}
+              className={`btn-lift flex size-9 items-center justify-center rounded-full text-gray-600 dark:text-gray-300 ${GLASS}`}
+            >
+              <IconBack className="size-4 opacity-80" />
+            </button>
+            {group && (
+              <span className="rounded-full border border-[#024c7d]/15 bg-[#024c7d]/8 px-3 py-1 text-sm font-semibold text-[#024c7d] dark:border-white/15 dark:bg-white/10 dark:text-[#60c3ad]">
+                Grupa {group}
+              </span>
+            )}
+          </div>
           <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {smartMode
@@ -503,16 +529,9 @@ export default function IzbornoPage() {
           </span>
           <div className="flex w-full sm:w-auto items-stretch gap-2">
             <button
-              onClick={() => { savedStore.group.remove(); session.group.remove(); router.push('/') }}
-              className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 ${GLASS} hover:bg-white/80 dark:hover:bg-gray-800/70 transition-colors`}
-            >
-              <IconBack className="h-4 w-4 opacity-80" />
-              Podaci
-            </button>
-            <button
               onClick={handleConfirm}
               disabled={!hasAnySelection}
-              className={`btn-lift flex-[2] sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium
+              className={`btn-lift flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium
                 ${hasAnySelection
                   ? 'bg-[#024c7d] text-white hover:bg-[#013d6a] dark:bg-[#60c3ad] dark:text-[#024c7d] dark:hover:bg-[#4db3a0]'
                   : 'bg-white/60 text-gray-400 cursor-not-allowed dark:bg-gray-800/68 dark:text-gray-500'}`}

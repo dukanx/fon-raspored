@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DodatTermin } from '@/lib/types'
 import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
-import { session, byGroup } from '@/lib/storage'
+import { session, saved, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import { TabPrekidac } from '@/components/Navigacija'
@@ -52,6 +52,9 @@ const TEME = [
 ] as const satisfies readonly (readonly [Tema, string, (p: IconProps) => React.JSX.Element])[]
 const IconBook = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z" /><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" /></svg>
+)
+const IconGrupa = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
 )
 const IconCalendarPlus = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M8 2.5v3M16 2.5v3M3 9.5h18M12 13v5M9.5 15.5h5" /></svg>
@@ -121,6 +124,10 @@ export default function PreneseniPage() {
   const router = useRouter()
   const tema = useTema()
   const [godina, setGodina] = useState<number | null>(null)
+  const isHydrated = useSyncExternalStore(() => () => { }, () => true, () => false)
+  const mojaGrupa = isHydrated ? session.group.get() : null
+  const mojaGodina = isHydrated ? session.year.get() : null
+  const mojSmer = isHydrated ? (session.program.get() ?? saved.program.get()) : null
   // Smer poslednje promene godine (-1 ka manjoj, 1 ka većoj, 0 bez klizanja):
   // lista predmeta ulazi sa te strane, kao meseci u kalendaru Rokova.
   const [godinaDir, setGodinaDir] = useState(0)
@@ -407,23 +414,31 @@ export default function PreneseniPage() {
 
         <div className={`space-y-5 rounded-[1.75rem] p-6 ring-1 ring-[#024c7d]/15 dark:ring-white/15 shadow-[0_18px_60px_rgba(2,76,125,0.10)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] ${GLASS} ${loadError ? 'hidden' : ''}`}>
 
-          {/* Moji predmeti (izborni) */}
-          <div style={stagger(0, 50)} className="anim-up rounded-2xl border border-[#024c7d]/10 bg-white/45 p-3 dark:border-white/15 dark:bg-gray-900/35">
-            <button
-              type="button"
-              onClick={() => router.push('/izborni')}
-              className="no-hover-lift flex w-full items-center justify-between gap-3 text-left font-normal"
-            >
-              <div className="flex items-center gap-3">
-                <IconBook className={RED_IKONA} />
-                <p className="text-sm font-normal text-gray-700 dark:text-gray-200">
-                  Moji predmeti
-                </p>
-              </div>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
-                <IconForward className="h-4 w-4" />
-              </span>
-            </button>
+          {/* Grupa i Moji predmeti, kao vrh iOS podešavanja. Grupa vodi na
+              podatke sa početne (godina, smer, prezime), već popunjene. */}
+          <div style={stagger(0, 50)} className={`anim-up ${GRUPA_OKVIR}`}>
+            {[
+              { ikona: IconGrupa, naslov: mojaGrupa ? `Grupa ${mojaGrupa}` : 'Grupa', opis: [mojaGodina && `${mojaGodina}. godina`, mojSmer].filter(Boolean).join(' · '), href: '/?edit=1' },
+              { ikona: IconBook, naslov: 'Moji predmeti', opis: '', href: '/izborni?od=izmena' },
+            ].map(({ ikona: Ikona, naslov, opis, href }) => (
+              <button
+                key={href}
+                type="button"
+                onClick={() => router.push(href)}
+                className="no-hover-lift flex w-full items-center justify-between gap-3 p-3 text-left font-normal"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <Ikona className={RED_IKONA} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-normal text-gray-700 dark:text-gray-200">{naslov}</p>
+                    {opis && <p className="truncate text-xs text-gray-500 dark:text-gray-400">{opis}</p>}
+                  </div>
+                </div>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
+                  <IconForward className="h-4 w-4" />
+                </span>
+              </button>
+            ))}
           </div>
 
           {/* Dodati termini */}
