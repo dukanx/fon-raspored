@@ -547,7 +547,7 @@ export default function RasporedPage() {
     if (selectedSubject) noteStore(selectedSubject).set(value)
   }
 
-  // Ima li išta van "Tvoji predmeti" da se ponudi za deljenje (preneseni
+  // Ima li išta van "Moji predmeti" da se ponudi za deljenje (preneseni
   // termini, predmeti iz prethodnih godina, predmeti drugog semestra).
   function hasShareExtras(): boolean {
     if (!meta.group) return false

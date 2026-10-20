@@ -240,17 +240,6 @@ export default function IzbornoPage() {
     }
   }, [group, isHydrated, router, year, program])
 
-  useEffect(() => {
-    if (!isHydrated || !group) return
-    byGroup.prevSubjects(group).set(prevSelected)
-  }, [prevSelected, isHydrated, group])
-
-  useEffect(() => {
-    if (!isHydrated || !group) return
-    byGroup.otherSem(group).set(otherSelected)
-  }, [otherSelected, isHydrated, group])
-
-
   // Lenjivo učitaj predmete drugog semestra kad se sekcija prvi put otvori
   function loadOtherSemester() {
     if (otherLoaded || !year || !semester) return
@@ -277,10 +266,13 @@ export default function IzbornoPage() {
     setChecked(prev => ({ ...prev, [subject]: !prev[subject] }))
   }
 
+  // Sve se čuva tek ovde: strelica nazad je "odustani", pa izbor ostaje kakav je bio.
   function handleConfirm() {
     // Potvrda izbora = korisnik je odradio "Nov semestar" korak.
     acknowledgeFlip()
     byGroup.subjects(group).set(checked)
+    byGroup.prevSubjects(group).set(prevSelected)
+    byGroup.otherSem(group).set(otherSelected)
     // Akumuliraj izbor po semestru - mešani Sep/Okt rokovi uniraju oba semestra.
     if (semester) {
       const hist = app.subjectsHistory.get()
@@ -369,7 +361,7 @@ export default function IzbornoPage() {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Tvoji predmeti</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Moji predmeti</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {smartMode
               ? 'Obavezni su već čekirani - čekiraj izborne koje slušaš'
