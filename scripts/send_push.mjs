@@ -2,7 +2,8 @@
 // Pokreće se iz GitHub Actions-a (Node). Pretplate čita iz Upstash Redisa,
 // šalje preko VAPID-a, i čisti mrtve pretplate (HTTP 404/410).
 //
-//   node scripts/send_push.mjs new         -> "dodat je novi raspored ..." (čita pending_notify.json)
+//   node scripts/send_push.mjs new         -> "Raspored kolokvijuma" / "Raspored ispita", jedna po tipu
+//                                             (čita pending_notify.json, v. poruke.mjs)
 //   node scripts/send_push.mjs reminders   -> podsetnici dan pred početak/kraj prijave (čita rokovi.json)
 //   node scripts/send_push.mjs nastava "Zimski 2026/27"
 //                                          -> "objavljen je raspored nastave" (jednom po semestru)
@@ -20,6 +21,7 @@ import { dirname, join } from 'node:path'
 import webpush from 'web-push'
 import { Redis } from '@upstash/redis'
 import { porukaOIzmeni } from './ciljanje.mjs'
+import { porukeONovimRokovima } from './poruke.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SUBS_KEY = 'push:subs'
@@ -68,15 +70,8 @@ function newRokPayloads() {
   } catch {
     return []
   }
-  return roks.map((r) => {
-    const kind = r.tip === 'ispit' ? 'ispita' : 'kolokvijuma'
-    return {
-      title: `Novi raspored ${kind}`,
-      body: r.rok ? r.rok : `Novi raspored ${kind}.`,
-      url: '/rokovi',
-      tag: `rok-${r.rok || kind}`,
-    }
-  })
+  const rokovi = existsSync(ROKOVI_FILE) ? JSON.parse(readFileSync(ROKOVI_FILE, 'utf-8')) : []
+  return porukeONovimRokovima(roks, rokovi)
 }
 
 function reminderPayloads() {
