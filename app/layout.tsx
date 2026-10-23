@@ -161,6 +161,17 @@ export default function RootLayout({
             __html: `try{var t=localStorage.getItem('fon_theme')||'${PODRAZUMEVANA_TEMA}';if(t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}`,
           }}
         />
+        {/* Sesija (sessionStorage) je prazna u svakom novom prozoru, a strane je
+            čitaju direktno. Notifikacija ili sačuvan link otvara /rokovi ili
+            /raspored bez prolaska kroz početnu, koja inače prepisuje sačuvanu
+            grupu u sesiju, pa su Rokovi pisali "Prvo izaberi grupu". Ovde se to
+            radi pre svega, za svaku stranu. Ključevi su session.* i saved.* iz
+            lib/storage.ts (isto prepisivanje radi i app/page.tsx). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=sessionStorage,l=localStorage;if(!s.getItem('fon_group')&&l.getItem('fon_saved_group')&&l.getItem('fon_saved_year'))['group','year','program','lastName','semester'].forEach(function(k){var v=l.getItem('fon_saved_'+k);if(v)s.setItem('fon_'+k,v)})}catch(e){}`,
+          }}
+        />
         {/* Ista tehnika, drugi problem: `/` je prerenderovana kao onboarding, pa
             se korisniku koji već ima identitet onboarding iscrta i tek onda
             zameni Rasporedom/Rokovima (preusmerenje čeka hidraciju). Ovde
