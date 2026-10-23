@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import date, timedelta
@@ -11,6 +12,9 @@ PAGES = {
     'kolokvijum': 'https://oas.fon.bg.ac.rs/raspored-kolokvijuma/',
     'ispit':      'https://oas.fon.bg.ac.rs/raspored-ispita/',
 }
+
+# Dokumenti koje FON može da objavi, a scraper ne čita (PDF i .docx čita).
+NECITLJIV_RE = re.compile(r'\.(doc|xls|xlsx|odt|ods|rtf)$', re.IGNORECASE)
 
 SCRIPTS_DIR = Path(__file__).parent
 KNOWN_FILE  = SCRIPTS_DIR / 'known_pdfs.json'
@@ -82,10 +86,18 @@ def main():
 
         for a in soup.find_all('a', href=True):
             href = a['href']
-            if not href.lower().endswith('.pdf'):
+            # Word (.docx) je isto: kolokvijume za zimski 2026/27 FON je objavio
+            # samo tako, a scraper ih je danima preskakao jer je gledao samo PDF.
+            # Dokument u formatu koji ne čitamo ide u issue, da ne bi opet prošlo tiho.
+            if NECITLJIV_RE.search(href):
+                if href not in known:
+                    print(f'  NEPODRŽAN FORMAT: {href}')
+                    greske.append({'pdf': href.split('/')[-1], 'url': href, 'razlog': 'format koji scraper ne ume da pročita'})
                 continue
-            # Broji se SVAKI PDF link, ne samo nov. Ako ovih odjednom nema, a
-            # ranije ih je bilo, promenio se sajt - v. proveru posle petlje.
+            if not href.lower().endswith(('.pdf', '.docx')):
+                continue
+            # Broji se SVAKI link na raspored, ne samo nov. Ako ovih odjednom nema,
+            # a ranije ih je bilo, promenio se sajt - v. proveru posle petlje.
             pdf_linkova += 1
             if href in known:
                 continue

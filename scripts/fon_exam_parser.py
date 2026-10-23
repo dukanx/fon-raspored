@@ -195,38 +195,51 @@ def _table_columns(row):
     return found if _REQUIRED_COLS.issubset(found) else None
 
 
-def _parse_tables(pdf_path, with_type):
-    """Termini iz ćelija tabele; [] ako PDF nema tabelu sa prepoznatim zaglavljem."""
+def _entries_from_rows(rows, with_type):
+    """Termini iz redova tabele (lista teksta ćelija), isto za PDF i Word."""
     entries = []
     cols = None  # zaglavlje važi i za nastavak tabele na sledećim stranama
+    for row in rows:
+        header = _table_columns(row)
+        if header:
+            cols = header
+            continue
+        if not cols or len(row) <= max(cols.values()):
+            continue
+        subject = _cell(row[cols["predmet"]])
+        date_iso = to_iso(_cell(row[cols["datum"]]))
+        if not (subject and date_iso):
+            continue
+        entry = {"subject": subject}
+        if with_type:
+            entry["type"] = _cell(row[cols["pu"]]) if "pu" in cols else ""
+        entry.update({
+            "date": date_iso,
+            "start": _cell(row[cols["od"]]),
+            "end": _cell(row[cols["do"]]),
+            "rooms": parse_rooms(_cell(row[cols["sale"]]).split()),
+            "note": _cell(row[cols["napomena"]]) if "napomena" in cols else "",
+        })
+        entries.append(entry)
+    return entries
+
+
+def _pdf_rows(pdf_path):
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
             cista = bez_precrtanog(page)
             for table in cista.find_tables(TABLE_SETTINGS):
                 for t_row in table.rows:
-                    row = [_tekst_celije(cista, bbox) for bbox in t_row.cells]
-                    header = _table_columns(row)
-                    if header:
-                        cols = header
-                        continue
-                    if not cols or len(row) <= max(cols.values()):
-                        continue
-                    subject = _cell(row[cols["predmet"]])
-                    date_iso = to_iso(_cell(row[cols["datum"]]))
-                    if not (subject and date_iso):
-                        continue
-                    entry = {"subject": subject}
-                    if with_type:
-                        entry["type"] = _cell(row[cols["pu"]]) if "pu" in cols else ""
-                    entry.update({
-                        "date": date_iso,
-                        "start": _cell(row[cols["od"]]),
-                        "end": _cell(row[cols["do"]]),
-                        "rooms": parse_rooms(_cell(row[cols["sale"]]).split()),
-                        "note": _cell(row[cols["napomena"]]) if "napomena" in cols else "",
-                    })
-                    entries.append(entry)
-    return entries
+                    yield [_tekst_celije(cista, bbox) for bbox in t_row.cells]
+
+
+def _parse_tables(pdf_path, with_type):
+    """Termini iz ćelija tabele; [] ako fajl nema tabelu sa prepoznatim zaglavljem.
+    Word (.docx) ima samo tabelu, pa za njega nema rezervnog čitanja po koordinatama."""
+    if pdf_path.lower().endswith(".docx"):
+        import fon_docx
+        return _entries_from_rows(fon_docx.table_rows(pdf_path), with_type)
+    return _entries_from_rows(_pdf_rows(pdf_path), with_type)
 
 
 def _is_header_row(texts):
@@ -248,6 +261,8 @@ def _parse(pdf_path, fallback, with_type):
         kolona i na to što vrednosti počinju levo od svojih zaglavlja;
       • od/do/sale se čitaju preko sredina između susednih zaglavlja.
     """
+    if pdf_path.lower().endswith(".docx"):
+        return []
     entries = []
 
     with pdfplumber.open(pdf_path) as pdf:

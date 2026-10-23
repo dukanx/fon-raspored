@@ -127,6 +127,11 @@ feedback prozoru).
     ga nije pročitao (greška ili nula termina), ranije je samo ostajao u logu zelenog run-a
     i pokušavao se svaki dan; septembarski 2025/26 je tako danima tiho padao. Sad check_fon.py
     piše razlog u `greske_citanja.json`, a check-fon.yml otvara issue po PDF-u.
+  - [x] **Word (.docx) i nepoznati formati** (2026-10-23). Kolokvijume za zimski 2026/27
+    FON je 19. 10. objavio samo kao .docx, a scraper je gledao samo PDF linkove, pa ih je
+    četiri dana tiho preskakao (strana ispita je i dalje imala PDF-ove, pa ni provera
+    "nula linkova" nije pukla). Sad čita i .docx (fon_docx.table_rows/text), a link na
+    .doc, .xls(x), .odt i sl. otvara isti issue kao nepročitan PDF.
   - [ ] **„Mrtvi čovek"** - javi ako duže od N dana nema uspešnog prolaza. Namerno
     odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
     **commit i redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.

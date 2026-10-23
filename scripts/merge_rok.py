@@ -44,11 +44,15 @@ def _subject_key(s: str) -> str:
     return re.sub(r"[^0-9a-zšđžčć]", "", s.lower())
 
 
-def build_subject_map() -> dict:
-    """Mapa {ključ -> kanonski naziv} iz rasporeda nastave (1-4god.json).
+def build_subject_map(rokovi: list | None = None) -> dict:
+    """Mapa {ključ -> kanonski naziv} iz rasporeda nastave (1-4god.json), pa
+    iz već upisanih rokova.
 
     Nastava ima tačne nazive (sa razmacima), pa ih koristimo kao rečnik za
-    ispravku slepljenih/varijantnih naziva iz ispitnih/kolokvijumskih PDF-ova."""
+    ispravku slepljenih/varijantnih naziva iz ispitnih/kolokvijumskih PDF-ova.
+    Predmet kog nema u nastavi (npr. izborni sa drugog fakulteta) često ima
+    ispravan naziv u drugom roku: FON je u drugom zimskom kolokvijumu 2026/27
+    slepio nazive, a u prvom nije."""
     mapping: dict[str, str] = {}
     for f in sorted(DATA_DIR.glob("[1-4]god.json")):
         try:
@@ -62,6 +66,11 @@ def build_subject_map() -> dict:
             key = _subject_key(subj)
             if key:
                 mapping.setdefault(key, subj)
+    for r in rokovi or []:
+        for e in r.get("entries", []):
+            subj = e.get("subject", "")
+            if " " in subj:
+                mapping.setdefault(_subject_key(subj), subj)
     return mapping
 
 
@@ -146,15 +155,15 @@ def main():
 
     # Ispravi nazive predmeta na kanonske iz nastave (rešava slepljene nazive
     # i usklađuje ih sa filterom u aplikaciji koji poredi po tačnom nazivu).
-    subject_map = build_subject_map()
+    with open(rokovi_path, encoding="utf-8") as f:
+        data: list = json.load(f)
+    subject_map = build_subject_map(data)
     if subject_map:
         n_fixed = canonicalize_subjects(entries, subject_map)
-        print(f"  kanonizovano naziva (po nastavi): {n_fixed}", file=sys.stderr)
+        print(f"  kanonizovano naziva (po nastavi i rokovima): {n_fixed}", file=sys.stderr)
 
     # ── 3. Merge u rokovi.json ─────────────────────────────────────────────────
     print(f"[3/3] Upisivanje u {rokovi_path.name} ...", file=sys.stderr)
-    with open(rokovi_path, encoding="utf-8") as f:
-        data: list = json.load(f)
 
     idx = find_matching_rok(data, tip, rok_name)
 

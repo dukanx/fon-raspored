@@ -1,9 +1,10 @@
 """
-Rezervno čitanje rasporeda nastave iz Word (.docx) fajlova.
+Čitanje FON-ovih Word (.docx) fajlova: raspored nastave, kolokvijumi i ispiti.
 
-FON raspored obično objavljuje kao PDF (fon_parser). Za zimski 2026/27 je
-objavio samo Word, pa update_nastava ovo koristi kad za godinu nema PDF-a.
-Samo standardna biblioteka: .docx je zip sa word/document.xml.
+FON raspored obično objavljuje kao PDF (fon_parser, fon_exam_parser). Za zimski
+2026/27 je i raspored nastave i kolokvijume objavio samo kao Word, pa ga
+update_nastava i check_fon tada čitaju ovde. Samo standardna biblioteka: .docx
+je zip sa word/document.xml.
 
 Raspored: jedan pasus je jedan termin, a polja (predmet, P/V, grupe, vreme,
 sala) su razdvojena tabovima. Pretvaraju se u iste linije koje daje PDF, pa
@@ -57,6 +58,20 @@ def _paragraph_text(p):
     return "".join(parts)
 
 
+def text(path):
+    """Ceo tekst, pasus po red (zaglavlje roka sa datumima prijave, v. parse_rok)."""
+    return "\n".join(_paragraph_text(p) for p in _root(path).iter(_W + "p"))
+
+
+def table_rows(path):
+    """Redovi svih tabela kao liste teksta ćelija; pasusi u ćeliji su spojeni razmakom."""
+    for row in _root(path).iter(_W + "tr"):
+        yield [
+            " ".join(_paragraph_text(p).strip() for p in c.iter(_W + "p")).strip()
+            for c in row.findall(_W + "tc")
+        ]
+
+
 def extract_lines(path):
     """Linije rasporeda u obliku koji očekuje fon_parser.parse_schedule_lines."""
     lines = []
@@ -81,11 +96,7 @@ def _marker(name):
 def parse_groups(path):
     """{ "A1": {"program": "ISiT", "range": "A- - Veljković"} }, isto kao PDF."""
     groups = {}
-    for row in _root(path).iter(_W + "tr"):
-        cells = [
-            " ".join(_paragraph_text(p).strip() for p in c.iter(_W + "p")).strip()
-            for c in row.findall(_W + "tc")
-        ]
+    for cells in table_rows(path):
         if len(cells) < 3:
             continue
         gid = re.sub(r"\s+", "", to_latin(cells[0]))

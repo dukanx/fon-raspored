@@ -69,6 +69,10 @@ def fmt_date(day: str, month: str, year: str) -> str:
 
 
 def extract_text(pdf_path: str) -> str:
+    # Word: FON je kolokvijume za zimski 2026/27 objavio samo kao .docx.
+    if pdf_path.lower().endswith(".docx"):
+        import fon_docx
+        return fon_docx.text(pdf_path)
     doc = fitz.open(pdf_path)
     pages = [page.get_text() for page in doc]
     doc.close()
