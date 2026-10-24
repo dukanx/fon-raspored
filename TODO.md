@@ -132,6 +132,19 @@ feedback prozoru).
     četiri dana tiho preskakao (strana ispita je i dalje imala PDF-ove, pa ni provera
     "nula linkova" nije pukla). Sad čita i .docx (fon_docx.table_rows/text), a link na
     .doc, .xls(x), .odt i sl. otvara isti issue kao nepročitan PDF.
+  - [x] **Provera svih oblika** (2026-10-24), na svih 10 rasporeda sa FON-ovih strana:
+    - zaglavlje se čita na latinici (pa radi i ćirilica i latinica): "Januarski ispitni
+      rok", "u JUNSKOM isitnom roku", dodatni rokovi ("novembarsko-decembarski",
+      "martovsko-aprilski"), prijava "od 05.06. 2026.(petak) do ...", "od 08-10. decembra
+      2025", "od petka 17.4.2026. do ...". Januar, februar, nov-dec i mart-april ranije
+      uopšte nisu prolazili.
+    - redovi tabele: udvojena slova u PDF-u, sala ili naziv prelomljen u sledeći red,
+      vreme "20:0"; red koji i dalje ne može da se pročita (FON preklopi staru i novu
+      vrednost) ne ispada tiho nego otvara issue, a ostali termini se upisuju.
+    - fajl zamenjen pod istom adresom se čita ponovo (`known_versions.json`, Last-Modified).
+    - rok se spaja sa postojećim samo po tačnom nazivu (ranije po prvoj reči, pa bi
+      "Prvi letnji" pregazio "Prvi zimski").
+    - provera na dva sata od 7 do 21h (ranije 10-12h), podsetnici za prijavu od 9h.
   - [ ] **„Mrtvi čovek"** - javi ako duže od N dana nema uspešnog prolaza. Namerno
     odloženo: rešenje sa heartbeat fajlom u repou traži commit na svaki prolaz, dakle
     **commit i redeploy svaki dan** samo da bi se upisao datum. Ne isplati se.

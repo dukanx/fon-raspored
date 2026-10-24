@@ -51,6 +51,13 @@ function todayBelgrade() {
   return fmt.format(new Date()) // npr. "2026-05-23"
 }
 
+// Sat u beogradskoj zoni (0-23).
+function hourBelgrade() {
+  return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Belgrade', hour: '2-digit', hourCycle: 'h23' }).format(new Date()))
+}
+// Scraper ide od 7h na dva sata; podsetnik za prijavu ne bi trebalo da stigne u cik zore.
+const PODSETNICI_OD_SATA = 9
+
 // "05.04.2026." -> "2026-04-05"
 function srToIso(s) {
   if (!s) return null
@@ -239,7 +246,13 @@ const mode = process.argv[2]
 let payloads = []
 let za
 if (mode === 'new') payloads = newRokPayloads()
-else if (mode === 'reminders') payloads = await dedupeReminders(reminderPayloads())
+else if (mode === 'reminders') {
+  if (hourBelgrade() < PODSETNICI_OD_SATA) {
+    console.log(`Podsetnici idu od ${PODSETNICI_OD_SATA}h po Beogradu, sada je ranije.`)
+    process.exit(0)
+  }
+  payloads = await dedupeReminders(reminderPayloads())
+}
 else if (mode === 'nastava') payloads = await dedupeNastava(nastavaPayloads(process.argv[3]))
 else if (mode === 'nastava-izmena') {
   payloads = await dedupeNastava(nastavaIzmenaPayloads(process.argv[3], process.argv[4]))

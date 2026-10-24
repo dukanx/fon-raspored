@@ -2,11 +2,11 @@ name: Check FON for new PDFs
 
 on:
   schedule:
-    # Tri pokušaja jer GitHub cron ume da kasni/preskoči zakazane run-ove,
-    # pogotovo na pun sat. Minut 7 i ne-pun-sat smanjuju propuštanja.
-    # 08:07 UTC = 10:07 po Beogradu (letnje vreme); pa 11:07 i 12:07 kao rezerva.
-    # Dedup u send_push.mjs sprečava duple notifikacije.
-    - cron: '7 8,9,10 * * *'
+    # Na dva sata, od 7 do 21h po Beogradu (5-19 UTC; zimi sat ranije): FON
+    # objavljuje i posle podne, a sa tri provere pre podne takav rok je čekao
+    # sutrašnji dan. Minut 7, jer GitHub cron na pun sat ume da kasni ili
+    # preskoči run. Podsetnici za prijavu (reminders) imaju dedup jednom dnevno.
+    - cron: '7 5-19/2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -76,11 +76,13 @@ jobs:
         run: |
           git config user.name "FON Bot"
           git config user.email "bot@fonraspored.rs"
-          git add public/data/rokovi.json scripts/known_pdfs.json public/data/kalendar.json
-          if git diff --staged --quiet -- public/data/rokovi.json scripts/known_pdfs.json; then
+          git add public/data/rokovi.json scripts/known_pdfs.json scripts/known_versions.json public/data/kalendar.json
+          if [ -n "$COMMIT_MSG" ]; then
+            MSG="$COMMIT_MSG"
+          elif git diff --staged --quiet -- public/data/rokovi.json scripts/known_pdfs.json scripts/known_versions.json; then
             MSG="auto: ažuriran kalendar aktivnosti"
           else
-            MSG="${COMMIT_MSG:-auto: update rokova}"
+            MSG="auto: update rokova"
           fi
           git diff --staged --quiet || (git commit -m "$MSG" && git push)
 
