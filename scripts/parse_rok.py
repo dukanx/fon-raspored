@@ -20,52 +20,102 @@ import fitz  # pymupdf
 
 
 # ── Regex paterni ──────────────────────────────────────────────────────────────
+# Tekst se pre traženja prevodi u latinicu i spaja u jedan red (v. _ravno): FON
+# zaglavlje piše i ćirilicom i latinicom, a red ume da prelomi usred rečenice.
 
-RE_DATE_RANGE = re.compile(
-    r"(\d{1,2})\.\s*и\s*(\d{1,2})\.\s*(\d{2})\.(\d{4})\.?\s*године",
-    re.IGNORECASE,
-)
-RE_DATE_SINGLE = re.compile(
-    r"(\d{1,2})\.(\d{2})\.(\d{4})\.?\s*године",
-    re.IGNORECASE,
-)
-# Ispitni rok: prijava je opseg "у периоду од DD.MM. YYYY ... до DD.MM.YYYY"
-# (datumi nemaju reč "године", a između može biti "(petak)" i sl.)
-RE_DATE_OD_DO = re.compile(
-    r"од\s+(\d{1,2})\.(\d{1,2})\.\s*(\d{4})\.?.*?до\s+(\d{1,2})\.(\d{1,2})\.(\d{4})",
-    re.IGNORECASE,
-)
-RE_SEMESTER = re.compile(
-    r"У\s+(ЛЕТЊЕМ|ЗИМСКОМ|LETЊEM|ZIMSKOM)\s+СЕМЕСТРУ\s+(\d{4}/\d{2,4})",
-    re.IGNORECASE,
-)
-RE_KOL_WEEK = re.compile(
-    r"(ПРВО[JЈ]|ДРУГО[JЈ])\s+КОЛОКВИЈУМСКО[JЈ]\s+НЕДЕЉИ",
-    re.IGNORECASE,
-)
-# "испитном", ali i FON-ova greška u kucanju "иситном" (septembarski 2025/26).
-RE_ISP_ROK = re.compile(
-    r"У\s+(\w+)\s+И\w{1,3}ТНОМ\s+РОКУ",
-    re.IGNORECASE,
-)
-RE_YEAR = re.compile(r"(\d{4}/\d{2,4})")
-
-WEEK_MAP = {"ПРВО": 1, "ДРУГО": 2}
-
-ROK_MAP = {
-    "ЈАНУАРСКОМ": "Januarski", "ФЕБРУАРСКОМ": "Februarski",
-    "ЈУНСКОМ": "Junski",      "ЈУЛСКОМ": "Julski",
-    "СЕПТЕМБАРСКОМ": "Septembarski", "ОКТОБАРСКОМ": "Oktobarski",
-    "JANUARSKOM": "Januarski", "FEBRUARSKOM": "Februarski",
-    "JUNSKOM": "Junski",       "JULSKOM": "Julski",
-    "SEPTEMBARSKI": "Septembarski", "OKTOBARSKI": "Oktobarski",
+MESECI = ["januar", "februar", "mart", "april", "maj", "jun", "jul", "avgust",
+          "septembar", "oktobar", "novembar", "decembar"]
+# Genitiv u datumu ("08-10. decembra 2025") -> broj meseca.
+_MESEC_GEN_BROJ = {
+    "januara": 1, "februara": 2, "marta": 3, "aprila": 4, "maja": 5, "juna": 6,
+    "jula": 7, "avgusta": 8, "septembra": 9, "oktobra": 10, "novembra": 11, "decembra": 12,
 }
+_MESEC_GEN = "(" + "|".join(_MESEC_GEN_BROJ) + ")"
 
+_DATUM = r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})"
+# "od 05.06. 2026.(petak) do 08.06.2026.", "od 07.02.2026.do 11.02.2026." i
+# "od petka 17.4.2026. do ponedeljka 20.4.2026."
+RE_PRIJAVA_OD_DO = re.compile(r"\bod\s+(?:\w+\s+)?" + _DATUM + r".*?\bdo\s*(?:\w+\s+)?" + _DATUM, re.IGNORECASE)
+# "5. i 8. 06.2026."
+RE_PRIJAVA_I = re.compile(r"(\d{1,2})\.\s*i\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})", re.IGNORECASE)
+# "od 08-10. decembra 2025"
+RE_PRIJAVA_MESEC = re.compile(r"(\d{1,2})\s*-\s*(\d{1,2})\.?\s*" + _MESEC_GEN + r"\s+(\d{4})", re.IGNORECASE)
+RE_DATUM = re.compile(_DATUM)
+# "u četvrtak, 11 decembra 2025."
+RE_DATUM_MESEC = re.compile(r"(\d{1,2})\.?\s+" + _MESEC_GEN + r"\s+(\d{4})", re.IGNORECASE)
+
+RE_KOL_WEEK = re.compile(r"(prvoj|drugoj)\s+kolokvijumskoj\s+nedelji", re.IGNORECASE)
+RE_SEMESTER = re.compile(r"u\s+(zimskom|letnjem)\s+semestru\s+(?:školske\s+)?(\d{4})/(\d{2,4})", re.IGNORECASE)
+# Dodatni rokovi: "novembarsko-decembarski", "Martovsko-aprilski".
+RE_ISP_DODATNI = re.compile(r"(\w+sko-\w+ski)\b[^.]{0,60}?ispitni\s+rok", re.IGNORECASE)
+# "u JUNSKOM ispitnom roku", i FON-ove greške "isitnom", "septembarskomispitnom".
+RE_ISP_U_ROKU = re.compile(r"u\s+(\w+?)skom\s*i\w{1,3}tnom\s+roku", re.IGNORECASE)
+# "Januarski ispitni rok 2025/2026"
+RE_ISP_ROK = re.compile(r"(\w+?)ski\s+ispitni\s+rok", re.IGNORECASE)
+RE_YEAR = re.compile(r"(\d{4})/(\d{2,4})")
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
-def fmt_date(day: str, month: str, year: str) -> str:
+def fmt_date(day, month, year) -> str:
     return f"{int(day):02d}.{int(month):02d}.{year}."
+
+
+def _ravno(text: str) -> str:
+    """Latinica, jedan red, bez višestrukih razmaka."""
+    import fon_docx
+    return " ".join(fon_docx.to_latin(text).split())
+
+
+def _skolska(pocetak: str, kraj: str) -> str:
+    """"2025/2026" i "2025/26" -> "2025/26"."""
+    return f"{pocetak}/{kraj[-2:]}"
+
+
+def _naziv_roka(text: str) -> str | None:
+    """"Januarski", "Septembarski", "Novembarsko-decembarski"... ili None."""
+    m = RE_ISP_DODATNI.search(text)
+    if m:
+        return m.group(1).capitalize()
+    for regex in (RE_ISP_U_ROKU, RE_ISP_ROK):
+        for m in regex.finditer(text):
+            koren = m.group(1).lower()
+            if koren in MESECI:
+                return koren.capitalize() + "ski"
+    return None
+
+
+def _prijava(text: str) -> list[str]:
+    """Datumi prijave (prvi i poslednji dan, ili jedan) iz prve rečenice o
+    e-studentu ili roku za prijavu u kojoj ih ima. E-student se pominje i bez
+    datuma ("putem e-studenta, maksimalno 3 ispita"), pa se ide redom."""
+    for m in re.finditer(r"e-\s*student|rok za prijavu", text, re.IGNORECASE):
+        deo = text[m.end():m.end() + 250]
+        if (d := RE_PRIJAVA_OD_DO.search(deo)):
+            return [fmt_date(*d.groups()[:3]), fmt_date(*d.groups()[3:])]
+        if (d := RE_PRIJAVA_I.search(deo)):
+            d1, d2, mes, god = d.groups()
+            return [fmt_date(d1, mes, god), fmt_date(d2, mes, god)]
+        if (d := RE_PRIJAVA_MESEC.search(deo)):
+            d1, d2, mes, god = d.groups()
+            broj = _MESEC_GEN_BROJ[mes.lower()]
+            return [fmt_date(d1, broj, god), fmt_date(d2, broj, god)]
+        if (d := RE_DATUM.search(deo)):
+            return [fmt_date(*d.groups())]
+    return []
+
+
+def _reklamacija(text: str) -> str | None:
+    m = re.search(r"reklamacij", text, re.IGNORECASE)
+    if not m:
+        return None
+    deo = text[m.end():m.end() + 150]
+    kandidati = []
+    if (d := RE_DATUM.search(deo)):
+        kandidati.append((d.start(), fmt_date(*d.groups())))
+    if (d := RE_DATUM_MESEC.search(deo)):
+        dan, mes, god = d.groups()
+        kandidati.append((d.start(), fmt_date(dan, _MESEC_GEN_BROJ[mes.lower()], god)))
+    return min(kandidati)[1] if kandidati else None
 
 
 def extract_text(pdf_path: str) -> str:
@@ -88,65 +138,28 @@ def download_pdf(url: str) -> str:
 # ── Detekcija tipa i parsiranje ────────────────────────────────────────────────
 
 def detect_and_parse(text: str) -> dict:
-    is_kol = bool(RE_KOL_WEEK.search(text))
-    is_isp = bool(RE_ISP_ROK.search(text))
-
+    t = _ravno(text)
     result = {
-        "tip": None,
+        "tip": "nepoznat",
         "rok": None,
         "school_year": None,
-        "prijava_datumi": [],
-        "reklamacija_datum": None,
+        "prijava_datumi": _prijava(t),
+        "reklamacija_datum": _reklamacija(t),
     }
+    if (y := RE_YEAR.search(t)):
+        result["school_year"] = _skolska(*y.groups())
 
-    if is_kol:
+    if (nedelja := RE_KOL_WEEK.search(t)):
         result["tip"] = "kolokvijum"
-
-        m = RE_SEMESTER.search(text)
-        if m:
-            tip = "Letnji" if "ЛЕТ" in m.group(1).upper() else "Zimski"
-            result["school_year"] = m.group(2)
-            m2 = RE_KOL_WEEK.search(text)
-            if m2:
-                key = m2.group(1).upper()[:4]
-                week = WEEK_MAP.get(key, "?")
-                sem_label = "letnji" if tip == "Letnji" else "zimski"
-                result["rok"] = f"{'Prvi' if week == 1 else 'Drugi'} {sem_label} kolokvijum {m.group(2)}"
-
-    elif is_isp:
+        if (sem := RE_SEMESTER.search(t)):
+            godina = _skolska(sem.group(2), sem.group(3))
+            result["school_year"] = godina
+            redni = "Prvi" if nedelja.group(1).lower() == "prvoj" else "Drugi"
+            sem_label = "zimski" if sem.group(1).lower() == "zimskom" else "letnji"
+            result["rok"] = f"{redni} {sem_label} kolokvijum {godina}"
+    elif (naziv := _naziv_roka(t)):
         result["tip"] = "ispit"
-
-        m = RE_ISP_ROK.search(text)
-        if m:
-            key = m.group(1).upper()
-            result["rok"] = ROK_MAP.get(key, m.group(1).capitalize() + "ski")
-
-        m = RE_YEAR.search(text)
-        if m:
-            result["school_year"] = m.group(1)
-
-    else:
-        result["tip"] = "nepoznat"
-
-    for line in text.splitlines():
-        if "е-студент" in line or "e-student" in line.lower():
-            m = RE_DATE_RANGE.search(line)
-            if m:
-                d1, d2, month, year = m.groups()
-                result["prijava_datumi"] = [fmt_date(d1, month, year), fmt_date(d2, month, year)]
-            elif (m := RE_DATE_OD_DO.search(line)):
-                d1, m1, y1, d2, m2, y2 = m.groups()
-                result["prijava_datumi"] = [fmt_date(d1, m1, y1), fmt_date(d2, m2, y2)]
-            else:
-                m = RE_DATE_SINGLE.search(line)
-                if m:
-                    result["prijava_datumi"] = [fmt_date(*m.groups())]
-
-        if "рекламац" in line.lower():
-            m = RE_DATE_SINGLE.search(line)
-            if m:
-                result["reklamacija_datum"] = fmt_date(*m.groups())
-
+        result["rok"] = naziv
     return result
 
 

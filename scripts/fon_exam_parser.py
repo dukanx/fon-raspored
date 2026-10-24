@@ -63,13 +63,14 @@ PU_RE = re.compile(r"^[PUПУ][./]?$")
 
 # Logičke kolone -> mogući nazivi u zaglavlju. FON menja nazive kroz
 # akreditacije/rokove ("Napomena" vs "Napom.", "Sale" vs "Sala"), pa hvatamo varijante.
+# Latinicom, kako FON piše sada, i ćirilicom, ako tako napiše tabelu.
 _COL_SYNONYMS = {
-    "predmet":  {"Predmet"},
-    "datum":    {"Datum"},
-    "od":       {"Od"},
-    "do":       {"Do"},
-    "sale":     {"Sale", "Sala"},
-    "napomena": {"Napomena", "Napom.", "Napom", "Napomene"},
+    "predmet":  {"Predmet", "Предмет"},
+    "datum":    {"Datum", "Датум"},
+    "od":       {"Od", "Од"},
+    "do":       {"Do", "До"},
+    "sale":     {"Sale", "Sala", "Сале", "Сала"},
+    "napomena": {"Napomena", "Napom.", "Napom", "Napomene", "Напомена", "Напом."},
 }
 # Bez ovih kolona red nije validno zaglavlje (Napomena i P/U su opcioni)
 _REQUIRED_COLS = {"predmet", "datum", "od", "do", "sale"}
@@ -187,16 +188,42 @@ def _table_columns(row):
     found = {}
     for i, c in enumerate(row):
         t = _cell(c)
+        # "Sale Čitaonica": u PDF-u se u ćeliju zaglavlja ume zalepiti sala iz reda ispod.
+        prva = t.split(" ")[0]
         for col, names in _COL_SYNONYMS.items():
-            if col not in found and t in names:
+            if col not in found and (t in names or prva in names):
                 found[col] = i
         if "pu" not in found and PU_HEADER_RE.match(t):
             found["pu"] = i
     return found if _REQUIRED_COLS.issubset(found) else None
 
 
-def _entries_from_rows(rows, with_type):
-    """Termini iz redova tabele (lista teksta ćelija), isto za PDF i Word."""
+def _bez_udvajanja(text, najmanje=4):
+    """FON-ov PDF ume da ispiše isti tekst dvaput, slovo preko slova
+    ("MMeennaaddžžmmeenntt", "2244//0022//22002266"). Reč u kojoj je svako slovo
+    udvojeno vraća se na jednu; ostale reči ostaju kakve jesu. Kraće reči se ne
+    diraju: sala "11" je prava sala, a ne udvojeno "1" (P/U kolona je izuzetak,
+    tamo je "PP" uvek udvojeno "P")."""
+    return " ".join(
+        w[0::2] if len(w) >= najmanje and len(w) % 2 == 0 and w[0::2] == w[1::2] else w
+        for w in text.split()
+    )
+
+
+def _vreme(text):
+    """"8:00" -> "08:00", "20:0" (greška u kucanju) -> "20:00"; ostalo kakvo jeste."""
+    m = re.fullmatch(r"(\d{1,2})[:.](\d{1,2})", text)
+    return f"{int(m.group(1)):02d}:{m.group(2).ljust(2, '0')}" if m else text
+
+
+VREME_RE = re.compile(r"\d{2}:\d{2}")
+
+
+def _entries_from_rows(rows, with_type, neprocitani=None):
+    """Termini iz redova tabele (lista teksta ćelija), isto za PDF i Word.
+
+    Red sa predmetom koji ne može da se pročita (datum ili vreme) ne ispada
+    tiho: ide u `neprocitani`, pa check_fon za taj fajl otvara issue."""
     entries = []
     cols = None  # zaglavlje važi i za nastavak tabele na sledećim stranama
     for row in rows:
@@ -206,19 +233,34 @@ def _entries_from_rows(rows, with_type):
             continue
         if not cols or len(row) <= max(cols.values()):
             continue
-        subject = _cell(row[cols["predmet"]])
-        date_iso = to_iso(_cell(row[cols["datum"]]))
-        if not (subject and date_iso):
+        cell = lambda col: _bez_udvajanja(_cell(row[cols[col]]), 2 if col == "pu" else 4) if col in cols else ""
+        subject = cell("predmet")
+        ostalo = [cell(c) for c in ("datum", "od", "do", "sale", "napomena")]
+        # Red koji ima samo sale je nastavak prelomljenog spiska sala iz reda iznad,
+        # a red koji ima samo naziv je kraj naziva prelomljenog preko kraja strane.
+        if entries and not subject and not cell("datum") and cell("sale"):
+            entries[-1]["rooms"] += parse_rooms(cell("sale").split())
+            continue
+        if entries and subject and not any(ostalo):
+            entries[-1]["subject"] += " " + subject
+            continue
+        if not subject:
+            continue
+        date_iso = to_iso(cell("datum"))
+        start, end = _vreme(cell("od")), _vreme(cell("do"))
+        if not (date_iso and VREME_RE.fullmatch(start) and VREME_RE.fullmatch(end)):
+            if neprocitani is not None:
+                neprocitani.append(" | ".join(_cell(c) for c in row))
             continue
         entry = {"subject": subject}
         if with_type:
-            entry["type"] = _cell(row[cols["pu"]]) if "pu" in cols else ""
+            entry["type"] = cell("pu")
         entry.update({
             "date": date_iso,
-            "start": _cell(row[cols["od"]]),
-            "end": _cell(row[cols["do"]]),
-            "rooms": parse_rooms(_cell(row[cols["sale"]]).split()),
-            "note": _cell(row[cols["napomena"]]) if "napomena" in cols else "",
+            "start": start,
+            "end": end,
+            "rooms": parse_rooms(cell("sale").split()),
+            "note": cell("napomena"),
         })
         entries.append(entry)
     return entries
@@ -233,13 +275,13 @@ def _pdf_rows(pdf_path):
                     yield [_tekst_celije(cista, bbox) for bbox in t_row.cells]
 
 
-def _parse_tables(pdf_path, with_type):
+def _parse_tables(pdf_path, with_type, neprocitani=None):
     """Termini iz ćelija tabele; [] ako fajl nema tabelu sa prepoznatim zaglavljem.
     Word (.docx) ima samo tabelu, pa za njega nema rezervnog čitanja po koordinatama."""
     if pdf_path.lower().endswith(".docx"):
         import fon_docx
-        return _entries_from_rows(fon_docx.table_rows(pdf_path), with_type)
-    return _entries_from_rows(_pdf_rows(pdf_path), with_type)
+        return _entries_from_rows(fon_docx.table_rows(pdf_path), with_type, neprocitani)
+    return _entries_from_rows(_pdf_rows(pdf_path), with_type, neprocitani)
 
 
 def _is_header_row(texts):
@@ -376,20 +418,20 @@ def _parse(pdf_path, fallback, with_type):
     return entries
 
 
-def parse_ispit(pdf_path):
+def parse_ispit(pdf_path, neprocitani=None):
     """
-    Parsira PDF sa ispitnim rokom.
+    Parsira PDF (ili .docx) sa ispitnim rokom.
     Kolone: Predmet | [P/U] | Datum | Od | Do | Sale | [Napomena]
     """
-    return _parse_tables(pdf_path, with_type=True) or _parse(pdf_path, _ISPIT_FALLBACK, with_type=True)
+    return _parse_tables(pdf_path, True, neprocitani) or _parse(pdf_path, _ISPIT_FALLBACK, with_type=True)
 
 
-def parse_kolokvijum(pdf_path):
+def parse_kolokvijum(pdf_path, neprocitani=None):
     """
-    Parsira PDF sa kolokvijumom.
+    Parsira PDF (ili .docx) sa kolokvijumom.
     Kolone: Predmet | Datum | Od | Do | Sale | [Napom.]
     """
-    return _parse_tables(pdf_path, with_type=False) or _parse(pdf_path, _KOL_FALLBACK, with_type=False)
+    return _parse_tables(pdf_path, False, neprocitani) or _parse(pdf_path, _KOL_FALLBACK, with_type=False)
 
 
 def main():

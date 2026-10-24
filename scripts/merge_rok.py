@@ -54,7 +54,9 @@ def build_subject_map(rokovi: list | None = None) -> dict:
     ispravan naziv u drugom roku: FON je u drugom zimskom kolokvijumu 2026/27
     slepio nazive, a u prvom nije."""
     mapping: dict[str, str] = {}
-    for f in sorted(DATA_DIR.glob("[1-4]god.json")):
+    # Uz tekući raspored i arhiva oba semestra: ispitni rokovi imaju i predmete
+    # semestra koji sada ne traje.
+    for f in sorted(DATA_DIR.glob("[1-4]god*.json")):
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
         except Exception:
@@ -88,25 +90,17 @@ def canonicalize_subjects(entries: list, subject_map: dict) -> int:
 
 def find_matching_rok(data: list, tip: str, parsed_rok: str) -> int | None:
     """
-    Vraća index roka u listi koji odgovara tipu i imenu.
-    Proba exact match, pa substring match u oba smera.
+    Vraća index roka u listi istog tipa i istog naziva (bez godine i
+    interpunkcije), ili None.
+
+    Samo tačno poklapanje: ranije se poredilo i po prvoj reči, pa bi "Prvi letnji
+    kolokvijum" pregazio "Prvi zimski kolokvijum" da su oba u rokovi.json.
+    Nazive sada uvek pravi parse_rok, pa su isti za isti rok.
     """
     norm_parsed = normalize(parsed_rok)
-
     for i, r in enumerate(data):
-        if r["tip"] != tip:
-            continue
-        norm_existing = normalize(r["rok"])
-        # Exact (po normalizaciji)
-        if norm_existing == norm_parsed:
+        if r["tip"] == tip and normalize(r["rok"]) == norm_parsed:
             return i
-        # Substring u oba smera (npr. "januarski" ⊂ "januarski ispitni rok")
-        key = norm_parsed.split()[0] if norm_parsed else ""
-        if key and key in norm_existing:
-            return i
-        if norm_parsed in norm_existing or norm_existing in norm_parsed:
-            return i
-
     return None
 
 
@@ -147,11 +141,15 @@ def main():
 
     # ── 2. Parsiranje termina (predmet/datum/sala) ─────────────────────────────
     print(f"[2/3] Parsiranje termina ({tip}) ...", file=sys.stderr)
+    neprocitani: list[str] = []
     if tip == "ispit":
-        entries = fep.parse_ispit(str(pdf_path))
+        entries = fep.parse_ispit(str(pdf_path), neprocitani)
     else:
-        entries = fep.parse_kolokvijum(str(pdf_path))
+        entries = fep.parse_kolokvijum(str(pdf_path), neprocitani)
     print(f"  pronađeno {len(entries)} unosa.", file=sys.stderr)
+    # Na stdout, da ih check_fon pročita i otvori issue (ostali termini se upisuju).
+    for red in neprocitani:
+        print(f"NEPROČITAN RED: {red}")
 
     # Ispravi nazive predmeta na kanonske iz nastave (rešava slepljene nazive
     # i usklađuje ih sa filterom u aplikaciji koji poredi po tačnom nazivu).
