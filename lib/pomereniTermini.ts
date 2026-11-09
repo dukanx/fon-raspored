@@ -16,6 +16,8 @@ export interface PomerenTermin {
   room: string
 }
 
+export type NovoMesto = Pick<PomerenTermin, 'day' | 'start' | 'end' | 'room'>
+
 // Termin kakav se prikazuje posle pomeranja.
 export const novTermin = (p: PomerenTermin): ScheduleEntry =>
   ({ ...p.od, day: p.day, start: p.start, end: p.end, room: p.room })
@@ -49,7 +51,7 @@ export function nepomereni<T extends ScheduleEntry>(dodati: T[], pomereni: Pomer
 export function pomeri(
   pomereni: PomerenTermin[],
   e: ScheduleEntry,
-  novo: Pick<PomerenTermin, 'day' | 'start' | 'end' | 'room'>,
+  novo: NovoMesto,
 ): PomerenTermin[] {
   const kljuc = entryKey(e)
   const postojeci = pomereni.find(p => entryKey(novTermin(p)) === kljuc)
