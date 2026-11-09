@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DodatTermin } from '@/lib/types'
-import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
+import { getScheduleForGroup, fetchYearBothSemesters, entryKey, DAY_SHORT } from '@/lib/schedule'
+import { primeniPomerene, nepomereni, novTermin, type PomerenTermin } from '@/lib/pomereniTermini'
 import { session, saved, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import { TabPrekidac } from '@/components/Navigacija'
-import { IconHidden } from '@/components/Ikone'
+import { IconHidden, IconEdit } from '@/components/Ikone'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
 import MiniWeek from '@/components/MiniWeek'
@@ -148,6 +149,7 @@ export default function PreneseniPage() {
   const [dodato, setDodato] = useState(false)
   const [extraTermini, setExtraTermini] = useState<DodatTermin[]>([])
   const [hiddenTermini, setHiddenTermini] = useState<ScheduleEntry[]>([])
+  const [pomereni, setPomereni] = useState<PomerenTermin[]>([])
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
@@ -177,13 +179,14 @@ export default function PreneseniPage() {
       ? all.filter(e => savedSubjects[e.subject] !== false)
       : all
 
+    const naSvomBloku = nepomereni(nextExtra, byGroup.pomereni(group).get())
     baseFiltered = baseFiltered.filter(b => {
-      const gaziGaVreme = nextExtra.some(ex => ex.day === b.day && ex.start === b.start)
+      const gaziGaVreme = naSvomBloku.some(ex => ex.day === b.day && ex.start === b.start)
       const gaziGaPredmet = nextExtra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
       return !gaziGaVreme && !gaziGaPredmet
     })
 
-    setTrenutniRaspored([...baseFiltered, ...nextExtra])
+    setTrenutniRaspored(primeniPomerene([...baseFiltered, ...nextExtra], byGroup.pomereni(group).get()))
   }
 
   useEffect(() => {
@@ -204,20 +207,22 @@ export default function PreneseniPage() {
         const extraEntries = byGroup.extra(group).get()
         if (extraEntries.length > 0) {
           // Automatsko gaženje: sakrij redovne predmete po VREMENU i po PREDMETU
+          const naSvomBloku = nepomereni(extraEntries, byGroup.pomereni(group).get())
           baseFiltered = baseFiltered.filter(b => {
-            const gaziGaVreme = extraEntries.some(ex => ex.day === b.day && ex.start === b.start)
+            const gaziGaVreme = naSvomBloku.some(ex => ex.day === b.day && ex.start === b.start)
             const gaziGaPredmet = extraEntries.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
             return !gaziGaVreme && !gaziGaPredmet
           })
 
           baseFiltered = [...baseFiltered, ...extraEntries]
         }
-        setTrenutniRaspored(baseFiltered)
+        setTrenutniRaspored(primeniPomerene(baseFiltered, byGroup.pomereni(group).get()))
       })
       .catch(() => setLoadError(true))
 
     setExtraTermini(byGroup.extra(group).get())
     setHiddenTermini(byGroup.hidden(group).get())
+    setPomereni(byGroup.pomereni(group).get())
     setPrevSubjects(byGroup.prevSubjects(group).get())
   }, [router])
 
@@ -227,6 +232,16 @@ export default function PreneseniPage() {
     setHiddenTermini(novi)
     if (novi.length === 0) byGroup.hidden(group).remove()
     else byGroup.hidden(group).set(novi)
+  }
+
+  function vratiPomeren(index: number) {
+    const group = session.group.get() ?? ''
+    const p = pomereni[index]
+    const novi = pomereni.filter((_, i) => i !== index)
+    setPomereni(novi)
+    if (novi.length === 0) byGroup.pomereni(group).remove()
+    else byGroup.pomereni(group).set(novi)
+    setTrenutniRaspored(r => r.map(e => (entryKey(e) === entryKey(novTermin(p)) ? p.od : e)))
   }
 
   function obrisiTermin(index: number) {
@@ -503,6 +518,37 @@ export default function PreneseniPage() {
                         </div>
                         <button
                           onClick={() => vratiTermin(i)}
+                          className="shrink-0 text-xs font-medium text-[#024c7d] transition-colors hover:text-[#013d6a] dark:text-[#60c3ad]"
+                        >
+                          Vrati
+                        </button>
+                      </div>
+                    </AnimatedRow>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </Expand>
+
+          {/* Pomereni termini (na Rasporedu, "Pomeri termin") */}
+          <Expand open={pomereni.length > 0}>
+            <div style={stagger(2, 50)} className="anim-up">
+              <p className={GRUPA_NASLOV}><IconEdit className={GRUPA_IKONA} />Pomereni termini · {pomereni.length}</p>
+              <div className={GRUPA_OKVIR}>
+                <AnimatePresence initial={false}>
+                  {pomereni.map((p, i) => (
+                    <AnimatedRow key={entryKey(p.od)}>
+                      <div className={GRUPA_RED}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {p.od.subject}
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                            {p.od.type_short} · {DAY_SHORT[p.od.day]} {p.od.start} → {DAY_SHORT[p.day]} {p.start} · {sala(p.room)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => vratiPomeren(i)}
                           className="shrink-0 text-xs font-medium text-[#024c7d] transition-colors hover:text-[#013d6a] dark:text-[#60c3ad]"
                         >
                           Vrati

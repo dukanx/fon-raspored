@@ -11,6 +11,7 @@
 //   - byGroup.*  -> localStorage, ključ sufiksovan grupom
 //   - note()     -> localStorage, ključ sufiksovan predmetom
 import type { ScheduleEntry, RokEntry, CustomRokEntry, DodatTermin } from './types'
+import type { PomerenTermin } from './pomereniTermini'
 
 type Kind = 'local' | 'session'
 
@@ -155,6 +156,8 @@ export const byGroup = {
   videnRaspored: (g: string) =>
     json<{ semester: string; otisak: string[] } | null>('local', `fon_viden_raspored_${g}`, null),
   hidden: (g: string) => json<ScheduleEntry[]>('local', `fon_hidden_${g}`, []),
+  // Termini koje je student sam pomerio (v. lib/pomereniTermini).
+  pomereni: (g: string) => json<PomerenTermin[]>('local', `fon_pomereni_${g}`, []),
   otherSem: (g: string) => json<string[]>('local', `fon_other_sem_${g}`, []),
   prevSubjects: (g: string) =>
     json<{ year: number; subject: string }[]>('local', `fon_prev_subjects_${g}`, []),
