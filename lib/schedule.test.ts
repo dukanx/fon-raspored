@@ -6,7 +6,20 @@ import {
   getProgramsForYear,
   getElectivesForGroup,
   uniqueSubjectsForGroup,
+  kratkaSala,
 } from './schedule'
+
+describe('kratkaSala', () => {
+  it('skraćuje amfiteatre, i kad je termin u više sala', () => {
+    expect(kratkaSala('Amfiteatar 1')).toBe('Amf 1')
+    expect(kratkaSala('Amfiteatar 1, Amfiteatar 2')).toBe('Amf 1, Amf 2')
+  })
+
+  it('ostale sale ne dira', () => {
+    expect(kratkaSala('62')).toBe('62')
+    expect(kratkaSala('Čitaonica')).toBe('Čitaonica')
+  })
+})
 
 // Sintetički semestar: dva IST opsega + jedna MiO grupa "Svi".
 // Opsezi prate FON format "Od - Do" sa ivicama "A-" i "Š-".

@@ -29,6 +29,9 @@ export function subjectInitials(subject: string): string {
   return src.map(w => w[0]).join('').toUpperCase().slice(0, 3)
 }
 
+// Sala za uzak prikaz: u "Amfiteatar 1" je broj ono što se odseče.
+export const kratkaSala = (room: string): string => room.replace(/Amfiteatar/g, 'Amf')
+
 const SR_MAP: Record<string, string> = {
   'a':'01', 'b':'02', 'v':'03', 'g':'04', 'd':'05',
   'đ':'06', 'dj':'06',

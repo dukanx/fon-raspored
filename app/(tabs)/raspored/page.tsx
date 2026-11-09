@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup, DAYS, DAY_SHORT, SLOTS, entryKey, subjectInitials } from '@/lib/schedule'
+import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup, DAYS, DAY_SHORT, SLOTS, entryKey, subjectInitials, kratkaSala } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, forgetYearAndGroup } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
@@ -902,7 +902,7 @@ export default function RasporedPage() {
           ctx.fillStyle = c.text
           ctx.globalAlpha = 0.7
           ctx.font = '10px system-ui, sans-serif'
-          ctx.fillText(`${e.type_short} · ${e.room}`, bx + 5, by + bh - 5)
+          ctx.fillText(`${e.type_short} · ${kratkaSala(e.room)}`, bx + 5, by + bh - 5)
           ctx.globalAlpha = 1
         })
       })
@@ -1203,7 +1203,7 @@ export default function RasporedPage() {
                               </p>
                               <p style={{ color: isDark ? c.darkText : c.text }} className="text-[9px] mt-0.5 opacity-70 truncate sm:text-xs sm:mt-1">
                                 {pomereniKeys.has(entryKey(e)) && <IconEdit aria-label="Pomeren" className="mr-0.5 inline h-2.5 w-2.5 align-[-1px] sm:h-3 sm:w-3" />}
-                                {e.type_short} · {e.room}
+                                {e.type_short} · {kratkaSala(e.room)}
                               </p>
                             </div>
                           )
@@ -1330,7 +1330,7 @@ export default function RasporedPage() {
                     <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}</span>
                     <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{e.type_short}</span>
                     <span className="flex-1 truncate text-xs text-gray-500 dark:text-gray-400">
-                      {e.room}{pomereniKeys.has(entryKey(e)) && ' · pomeren'}
+                      {kratkaSala(e.room)}{pomereniKeys.has(entryKey(e)) && ' · pomeren'}
                     </span>
                     <button
                       onClick={() => setPomeranje(e)}
