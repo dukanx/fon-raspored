@@ -3,24 +3,20 @@
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SemesterData, ScheduleEntry, DodatTermin } from '@/lib/types'
-import { getScheduleForGroup, fetchYearBothSemesters, entryKey } from '@/lib/schedule'
+import { getScheduleForGroup, fetchYearBothSemesters, entryKey, mergeSameSlot, DAYS, DAY_SHORT, SLOT_LABEL } from '@/lib/schedule'
+import { primeniPomerene, nepomereni, novTermin, pomeri, type NovoMesto, type PomerenTermin } from '@/lib/pomereniTermini'
 import { session, saved, byGroup } from '@/lib/storage'
 import { postaviTemu, useTema, type Tema } from '@/lib/theme'
 import FeedbackButton from '@/components/FeedbackButton'
 import { TabPrekidac } from '@/components/Navigacija'
-import { IconHidden } from '@/components/Ikone'
+import { IconHidden, IconClock, IconPomeri } from '@/components/Ikone'
 import OfflineNotice from '@/components/OfflineNotice'
 import Expand from '@/components/Expand'
 import MiniWeek from '@/components/MiniWeek'
+import PomeriTermin from '@/components/PomeriTermin'
 import { najboljiPar, razlogPoSablonu, type Par } from '@/lib/predlog'
 import { AnimatePresence, motion } from 'motion/react'
 import { stagger } from '@/lib/stagger'
-
-const SLOT_LABEL: Record<string, string> = {
-  '08:15': '08:15-10:00', '10:15': '10:15-12:00',
-  '12:15': '12:15-14:00', '14:15': '14:15-16:00',
-  '16:15': '16:15-18:00', '18:15': '18:15-20:00',
-}
 
 const GLASS = 'liquid-glass'
 
@@ -148,6 +144,9 @@ export default function PreneseniPage() {
   const [dodato, setDodato] = useState(false)
   const [extraTermini, setExtraTermini] = useState<DodatTermin[]>([])
   const [hiddenTermini, setHiddenTermini] = useState<ScheduleEntry[]>([])
+  const [pomereni, setPomereni] = useState<PomerenTermin[]>([])
+  const [terminiOpen, setTerminiOpen] = useState(false)
+  const [pomeranje, setPomeranje] = useState<ScheduleEntry | null>(null)
   const [prevSubjects, setPrevSubjects] = useState<{ year: number; subject: string }[]>([])
   const [predmetSearch, setPredmetSearch] = useState('')
   const [manualOpen, setManualOpen] = useState(false)
@@ -177,13 +176,14 @@ export default function PreneseniPage() {
       ? all.filter(e => savedSubjects[e.subject] !== false)
       : all
 
+    const naSvomBloku = nepomereni(nextExtra, byGroup.pomereni(group).get())
     baseFiltered = baseFiltered.filter(b => {
-      const gaziGaVreme = nextExtra.some(ex => ex.day === b.day && ex.start === b.start)
+      const gaziGaVreme = naSvomBloku.some(ex => ex.day === b.day && ex.start === b.start)
       const gaziGaPredmet = nextExtra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
       return !gaziGaVreme && !gaziGaPredmet
     })
 
-    setTrenutniRaspored([...baseFiltered, ...nextExtra])
+    setTrenutniRaspored(primeniPomerene([...baseFiltered, ...nextExtra], byGroup.pomereni(group).get()))
   }
 
   useEffect(() => {
@@ -204,22 +204,30 @@ export default function PreneseniPage() {
         const extraEntries = byGroup.extra(group).get()
         if (extraEntries.length > 0) {
           // Automatsko gaženje: sakrij redovne predmete po VREMENU i po PREDMETU
+          const naSvomBloku = nepomereni(extraEntries, byGroup.pomereni(group).get())
           baseFiltered = baseFiltered.filter(b => {
-            const gaziGaVreme = extraEntries.some(ex => ex.day === b.day && ex.start === b.start)
+            const gaziGaVreme = naSvomBloku.some(ex => ex.day === b.day && ex.start === b.start)
             const gaziGaPredmet = extraEntries.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
             return !gaziGaVreme && !gaziGaPredmet
           })
 
           baseFiltered = [...baseFiltered, ...extraEntries]
         }
-        setTrenutniRaspored(baseFiltered)
+        setTrenutniRaspored(primeniPomerene(baseFiltered, byGroup.pomereni(group).get()))
       })
       .catch(() => setLoadError(true))
 
     setExtraTermini(byGroup.extra(group).get())
     setHiddenTermini(byGroup.hidden(group).get())
+    setPomereni(byGroup.pomereni(group).get())
     setPrevSubjects(byGroup.prevSubjects(group).get())
   }, [router])
+
+  function sakrijTermin(e: ScheduleEntry) {
+    const novi = [...hiddenTermini, e]
+    setHiddenTermini(novi)
+    byGroup.hidden(session.group.get() ?? '').set(novi)
+  }
 
   function vratiTermin(index: number) {
     const group = session.group.get() ?? ''
@@ -227,6 +235,24 @@ export default function PreneseniPage() {
     setHiddenTermini(novi)
     if (novi.length === 0) byGroup.hidden(group).remove()
     else byGroup.hidden(group).set(novi)
+  }
+
+  function vratiPomeren(index: number) {
+    const group = session.group.get() ?? ''
+    const p = pomereni[index]
+    const novi = pomereni.filter((_, i) => i !== index)
+    setPomereni(novi)
+    if (novi.length === 0) byGroup.pomereni(group).remove()
+    else byGroup.pomereni(group).set(novi)
+    setTrenutniRaspored(r => r.map(e => (entryKey(e) === entryKey(novTermin(p)) ? p.od : e)))
+  }
+
+  function sacuvajPomeranje(e: ScheduleEntry, novo: NovoMesto) {
+    const next = pomeri(pomereni, e, novo)
+    setPomereni(next)
+    byGroup.pomereni(session.group.get() ?? '').set(next)
+    setPomeranje(null)
+    void refreshTrenutniRaspored(extraTermini)
   }
 
   function obrisiTermin(index: number) {
@@ -372,6 +398,9 @@ export default function PreneseniPage() {
   // kao na Rasporedu). Ide AI-ju, oznakama "Menja:" i pregledu nedelje.
   const skriveni = new Set(hiddenTermini.map(entryKey))
   const vidljiviRaspored = trenutniRaspored.filter(e => !skriveni.has(entryKey(e)))
+  const mojiTermini = mergeSameSlot(vidljiviRaspored)
+    .sort((a, b) => DAYS.indexOf(a.day) - DAYS.indexOf(b.day) || a.start.localeCompare(b.start))
+  const pomereniKeys = new Set(pomereni.map(p => entryKey(novTermin(p))))
 
 
   return (
@@ -439,6 +468,56 @@ export default function PreneseniPage() {
                 </span>
               </button>
             ))}
+
+            {/* Moji termini: pomeranje (isti popup kao na Rasporedu) i skrivanje. */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setTerminiOpen(open => !open)}
+                className="no-hover-lift flex w-full items-center justify-between gap-3 p-3 text-left font-normal"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <IconClock className={RED_IKONA} />
+                  <p className="text-sm font-normal text-gray-700 dark:text-gray-200">Moji termini</p>
+                </div>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#024c7d]/10 text-[#024c7d] dark:bg-[#60c3ad]/10 dark:text-[#60c3ad]">
+                  <IconChevronDown className={`h-4 w-4 transition-transform duration-300 ${terminiOpen ? 'rotate-180' : ''}`} />
+                </span>
+              </button>
+
+              <Expand open={terminiOpen && mojiTermini.length > 0}>
+                <div className="mx-3 max-h-64 divide-y divide-[#024c7d]/10 overflow-y-auto border-t border-[#024c7d]/10 dark:divide-white/10 dark:border-white/10">
+                  <AnimatePresence initial={false}>
+                    {mojiTermini.map(e => (
+                      <AnimatedRow key={entryKey(e)}>
+                        <div className="flex items-center gap-1 py-1.5">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{e.subject}</p>
+                            <p className="truncate text-xs text-gray-400 dark:text-gray-500">
+                              {DAY_SHORT[e.day]} {e.start} · {e.type_short} · {sala(e.room)}{pomereniKeys.has(entryKey(e)) && ' · pomeren'}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setPomeranje(e)}
+                            aria-label={`Pomeri termin: ${e.subject}, ${e.type_short}`}
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                          >
+                            <IconPomeri className="h-[18px] w-[18px]" />
+                          </button>
+                          <button
+                            onClick={() => sakrijTermin(e)}
+                            aria-label={`Sakrij termin: ${e.subject}, ${e.type_short}`}
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                          >
+                            <IconHidden className="h-[18px] w-[18px]" />
+                          </button>
+                        </div>
+                      </AnimatedRow>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </Expand>
+            </div>
           </div>
 
           {/* Dodati termini */}
@@ -503,6 +582,37 @@ export default function PreneseniPage() {
                         </div>
                         <button
                           onClick={() => vratiTermin(i)}
+                          className="shrink-0 text-xs font-medium text-[#024c7d] transition-colors hover:text-[#013d6a] dark:text-[#60c3ad]"
+                        >
+                          Vrati
+                        </button>
+                      </div>
+                    </AnimatedRow>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </Expand>
+
+          {/* Pomereni termini */}
+          <Expand open={pomereni.length > 0}>
+            <div style={stagger(2, 50)} className="anim-up">
+              <p className={GRUPA_NASLOV}><IconPomeri className={GRUPA_IKONA} />Pomereni termini · {pomereni.length}</p>
+              <div className={GRUPA_OKVIR}>
+                <AnimatePresence initial={false}>
+                  {pomereni.map((p, i) => (
+                    <AnimatedRow key={entryKey(p.od)}>
+                      <div className={GRUPA_RED}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                            {p.od.subject}
+                          </p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
+                            {p.od.type_short} · {DAY_SHORT[p.od.day]} {p.od.start} → {DAY_SHORT[p.day]} {p.start} · {sala(p.room)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => vratiPomeren(i)}
                           className="shrink-0 text-xs font-medium text-[#024c7d] transition-colors hover:text-[#013d6a] dark:text-[#60c3ad]"
                         >
                           Vrati
@@ -841,6 +951,14 @@ export default function PreneseniPage() {
 
         </div>
       </div>
+
+      <PomeriTermin
+        termin={pomeranje}
+        pomereni={pomereni}
+        raspored={mojiTermini}
+        onSave={sacuvajPomeranje}
+        onClose={() => setPomeranje(null)}
+      />
     </main>
   )
 }

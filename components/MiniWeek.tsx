@@ -1,7 +1,7 @@
 'use client'
 
 import type { ScheduleEntry } from '@/lib/types'
-import { DAYS, DAY_SHORT, SLOTS, subjectInitials } from '@/lib/schedule'
+import { DAYS, DAY_SHORT, SLOTS, subjectInitials, entryKey } from '@/lib/schedule'
 
 // Mala nedelja za Izmenu: trenutni raspored (sivo), izabrani termini (u boji
 // aplikacije) i preklapanja (crveno). Da se odmah vidi gde novi termin staje,
@@ -48,16 +48,18 @@ function Row({ start, current, picks }: { start: string; current: ScheduleEntry[
       {DAYS.map(day => {
         const here = picks.filter(e => e.day === day && e.start === start)
         // Isti termin koji je već dodat ranije nije preklapanje sa samim sobom.
-        const existing = current.find(e =>
+        // U istom bloku može biti više termina (npr. pomeren termin), pa se
+        // prikazuju svi; ista vežba u dve sale je jedan termin (v. entryKey).
+        const existing = [...new Map(current.filter(e =>
           e.day === day && e.start === start &&
           !here.some(p => e.subject === p.subject && e.type_short === p.type_short)
-        )
+        ).map(e => [entryKey(e), e])).values()]
         if (here.length > 0) {
           // Crveno kad novi termin gazi postojeći, ili kad su predavanje i vežbe
           // izabrani u istom terminu.
-          const conflict = !!existing || here.length > 1
+          const conflict = existing.length > 0 || here.length > 1
           const title = here.map(e => `${e.subject} [${e.type_short}]`).join(' + ')
-            + (existing ? ` - menja ${existing.subject}` : '')
+            + (existing.length > 0 ? ` - menja ${existing.map(e => e.subject).join(', ')}` : '')
           return (
             <div
               key={day}
@@ -73,14 +75,14 @@ function Row({ start, current, picks }: { start: string; current: ScheduleEntry[
             </div>
           )
         }
-        if (existing) {
+        if (existing.length > 0) {
           return (
             <div
               key={day}
-              title={`${existing.subject} [${existing.type_short}]`}
+              title={existing.map(e => `${e.subject} [${e.type_short}]`).join(' + ')}
               className="flex h-8 items-center justify-center rounded-md bg-gray-200/80 text-[9px] font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400"
             >
-              {subjectInitials(existing.subject)}
+              <span className="truncate px-0.5">{existing.map(e => subjectInitials(e.subject)).join(' · ')}</span>
             </div>
           )
         }

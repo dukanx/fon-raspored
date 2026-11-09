@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSwipeable } from 'react-swipeable'
 import { AnimatePresence, motion } from 'motion/react'
 import type { SemesterData, ScheduleEntry, DayOfWeek, RokData, RokEntry } from '@/lib/types'
-import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup, DAYS, DAY_SHORT, SLOTS, entryKey } from '@/lib/schedule'
+import { getScheduleForGroup, uniqueSubjectsForGroup, resolveGroup, DAYS, DAY_SHORT, SLOTS, entryKey, kratkaSala, SLOT_LABEL, mergeSameSlot } from '@/lib/schedule'
 import { reconcileSemester, isFlipPending, acknowledgeFlip, isNewAcademicYear, forgetYearAndGroup } from '@/lib/semester'
 import { encodeShare } from '@/lib/share'
 import type { SubjectMeta } from '@/lib/subjects'
@@ -19,9 +19,10 @@ import OfflineNotice from '@/components/OfflineNotice'
 import { isStandalone, pushSupported } from '@/lib/push'
 import { canvasToFile, shareOrDownloadFile, preuzmiKalendar } from '@/lib/shareOrDownload'
 import Modal from '@/components/Modal'
+import PomeriTermin from '@/components/PomeriTermin'
 import Expand from '@/components/Expand'
 import Toast from '@/components/Toast'
-import { IconHidden, IconEdit, IconIzvoz } from '@/components/Ikone'
+import { IconHidden, IconEdit, IconIzvoz, IconClose, IconClock, IconPomeri } from '@/components/Ikone'
 import { TabPrekidac } from '@/components/Navigacija'
 import { dugmeTrake, ikonaTrake, IzvozDugme, useIzvozPoruka, PORUKA_SLIKA, PORUKA_KALENDAR } from '@/components/Traka'
 import { stagger } from '@/lib/stagger'
@@ -29,20 +30,13 @@ import { bootDecision, type BootDecision } from '@/lib/waiting'
 import { DAY_KIND_STYLE } from '@/lib/kalendar'
 import { otisak, odlukaOIzmeni, opisPromene, type Promena } from '@/lib/izmene'
 import { osveziDodate, type UskladjeniDodati } from '@/lib/dodatiTermini'
+import { vazeciPomereni, primeniPomerene, nepomereni, pomeri, novTermin, type NovoMesto, type PomerenTermin } from '@/lib/pomereniTermini'
 
 const DAY_OFFSET: Record<DayOfWeek, number> = {
   Ponedeljak: 0, Utorak: 1, Sreda: 2, Četvrtak: 3, Petak: 4
 }
 
 
-const SLOT_LABEL: Record<string, string> = {
-  '08:15': '08:15-10:00',
-  '10:15': '10:15-12:00',
-  '12:15': '12:15-14:00',
-  '14:15': '14:15-16:00',
-  '16:15': '16:15-18:00',
-  '18:15': '18:15-20:00',
-}
 
 const COLORS = [
   { bg: '#d6f0ec', text: '#1a5e52', bar: '#60c3ad', darkBg: '#0f3530', darkText: '#8ed8ca' },
@@ -87,9 +81,6 @@ const IconBell = (p: IconProps) => (
 const IconInfo = (p: IconProps) => (
   <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 11h1v5h1" /></svg>
 )
-const IconClock = (p: IconProps) => (
-  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></svg>
-)
 const IconBulb = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M9 18h6" /><path d="M10 21h4" /><path d="M12 3a6 6 0 0 0-3.5 10.9c.3.3.5.7.5 1.1h6c0-.4.2-.8.5-1.1A6 6 0 0 0 12 3Z" /></svg>
 )
@@ -99,9 +90,6 @@ const IconOffline = (p: IconProps) => (
 const IconExternal = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
 )
-const IconClose = (p: IconProps) => (
-  <svg {...baseIcon(p)}><path d="M18 6 6 18M6 6l12 12" /></svg>
-)
 const IconWeek = (p: IconProps) => (
   <svg {...baseIcon(p)}><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M9 9v11M15 9v11" /></svg>
 )
@@ -109,29 +97,7 @@ const IconList = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
 )
 
-// Isti predmet/dan/vreme/tip u više sala = jedan logički termin (npr. vežbe
-// podeljene na dve sale). Spajamo u jedan blok sa svim salama, da se ne prikazuju
-// kao dve odvojene kocke i da skrivanje radi na tom jednom terminu.
-function mergeSameSlot(list: ScheduleEntry[]): ScheduleEntry[] {
-  const byKey = new Map<string, ScheduleEntry>()
-  for (const e of list) {
-    const k = entryKey(e)
-    const existing = byKey.get(k)
-    if (!existing) {
-      byKey.set(k, { ...e })
-      continue
-    }
-    const rooms = [...new Set([...existing.room.split(', '), ...e.room.split(', ')])]
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b, 'sr', { numeric: true }))
-    existing.room = rooms.join(', ')
-    existing.groups = [...new Set([...existing.groups, ...e.groups])]
-  }
-  return [...byKey.values()]
-}
-
-
-function SwipeableListItem({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
+function SwipeableListItem({ onHide, onPomeri, children }: { onHide: () => void; onPomeri: () => void; children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const handlers = useSwipeable({
     onSwipedLeft: () => setOpen(true),
@@ -142,9 +108,18 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
   return (
     <div className="relative overflow-hidden rounded-2xl sm:overflow-visible">
       <div
-        className="absolute inset-y-0 right-0 flex w-16 items-center justify-center sm:hidden transition-opacity duration-200"
+        className="absolute inset-y-0 right-0 flex w-28 items-center justify-center gap-2 sm:hidden transition-opacity duration-200"
         style={{ opacity: open ? 1 : 0 }}
       >
+        <button
+          onClick={() => { onPomeri(); setOpen(false) }}
+          className="flex h-9 w-9 items-center justify-center rounded-full
+                     text-[#024c7d] bg-[#024c7d]/10 dark:bg-[#60c3ad]/15 dark:text-[#60c3ad]
+                     hover:bg-[#024c7d]/15 dark:hover:bg-[#60c3ad]/25 transition-colors"
+          aria-label="Pomeri termin"
+        >
+          <IconPomeri className="h-4 w-4" />
+        </button>
         <button
           onClick={() => { onHide(); setOpen(false) }}
           className="flex h-9 w-9 items-center justify-center rounded-full
@@ -158,7 +133,7 @@ function SwipeableListItem({ onHide, children }: { onHide: () => void; children:
       <div
         {...handlers}
         className="transition-transform duration-200 sm:transform-none"
-        style={{ transform: open ? 'translateX(-64px)' : 'translateX(0)' }}
+        style={{ transform: open ? 'translateX(-112px)' : 'translateX(0)' }}
       >
         {children}
       </div>
@@ -182,6 +157,9 @@ export default function RasporedPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<ScheduleEntry[]>([])
   const [hiddenEntries, setHiddenEntries] = useState<ScheduleEntry[]>([])
+  const [pomereni, setPomereni] = useState<PomerenTermin[]>([])
+  // Termin za koji je otvoren popup "Pomeri termin".
+  const [pomeranje, setPomeranje] = useState<ScheduleEntry | null>(null)
   // Poslednji sakriven termin, za "Vrati" u poruci (par sekundi).
   const [sakriven, setSakriven] = useState<ScheduleEntry | null>(null)
   const sakrivenTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -343,11 +321,19 @@ export default function RasporedPage() {
 
         const extra = dodati.dodati
 
+        // Pomeranja čiji je termin FON u međuvremenu pomerio se brišu.
+        const sacuvani = byGroup.pomereni(meta.group).get()
+        const vazeci = vazeciPomereni(sacuvani, [...all, ...extra])
+        if (vazeci.length !== sacuvani.length) byGroup.pomereni(meta.group).set(vazeci)
+        setPomereni(vazeci)
+
+        const naSvomBloku = nepomereni(extra, vazeci)
+
         // MAGIJA: Filtriramo iz base:
         // 1. Termine koje preneseni predmeti gaze po vremenu (isti dan i vreme)
         // 2. Originalne termine istog predmeta i tipa (P/V) ako smo mu dodali novi termin
         base = base.filter(b => {
-          const gaziGaVreme = extra.some(ex => ex.day === b.day && ex.start === b.start)
+          const gaziGaVreme = naSvomBloku.some(ex => ex.day === b.day && ex.start === b.start)
           const gaziGaPredmet = extra.some(ex => ex.subject === b.subject && ex.type_short === b.type_short)
           return !gaziGaVreme && !gaziGaPredmet
         })
@@ -494,7 +480,7 @@ export default function RasporedPage() {
       title: 'Dobro je znati',
       features: [
         { icon: IconInfo, title: 'Tap na termin', desc: 'Vidiš ESPB, katedru i rokove tog predmeta.' },
-        { icon: IconHidden, title: 'Sakrij termin', desc: 'Termine koje ne pohađaš skloni; vraćaš ih u Izmeni.' },
+        { icon: IconHidden, title: 'Sakrij ili pomeri termin', desc: 'Tap na termin: skloni ga ili mu upiši novo vreme i salu.' },
         { icon: IconOffline, title: 'Bez interneta', desc: 'Instalirana aplikacija radi i kad nemaš vezu.' },
       ],
     },
@@ -629,7 +615,11 @@ export default function RasporedPage() {
   const colorMap = useSubjectColors(entries)
 
   const hiddenKeys = useMemo(() => new Set(hiddenEntries.map(entryKey)), [hiddenEntries])
-  const visibleEntries = useMemo(() => entries.filter(e => !hiddenKeys.has(entryKey(e))), [entries, hiddenKeys])
+  const visibleEntries = useMemo(
+    () => primeniPomerene(entries, pomereni).filter(e => !hiddenKeys.has(entryKey(e))),
+    [entries, pomereni, hiddenKeys],
+  )
+  const pomereniKeys = useMemo(() => new Set(pomereni.map(p => entryKey(novTermin(p)))), [pomereni])
 
   // Panel predmeta: vidljivi termini tog predmeta (sedmična slika) + nadolazeći
   // rokovi. Vučemo iz visibleEntries da skrivanje iz panela odmah ukloni red.
@@ -655,6 +645,13 @@ export default function RasporedPage() {
     setSakriven(e)
     clearTimeout(sakrivenTimer.current)
     sakrivenTimer.current = setTimeout(() => setSakriven(null), 4000)
+  }
+
+  function sacuvajPomeranje(e: ScheduleEntry, novo: NovoMesto) {
+    const next = pomeri(pomereni, e, novo)
+    setPomereni(next)
+    byGroup.pomereni(meta.group).set(next)
+    setPomeranje(null)
   }
 
   function vratiSakriven() {
@@ -754,17 +751,22 @@ export default function RasporedPage() {
           ctx.font = '500 10px system-ui, sans-serif'
           ctx.textAlign = 'left'
 
-          // Wrap tekst
+          // Wrap tekst, samo do reda sa tipom i salom. Kad su dva časa u bloku
+          // mesta ima za jedan red naziva, pa se ostatak skrati.
           const words = e.subject.split(' ')
+          const poslednjiRed = by + bh - 17
           let line = ''
           let lineY = by + 13
           for (const word of words) {
             const test = line + word + ' '
             if (ctx.measureText(test).width > bw - 8 && line) {
+              if (lineY + 12 > poslednjiRed) {
+                line = `${line.trim()}…`
+                break
+              }
               ctx.fillText(line.trim(), bx + 5, lineY)
               line = word + ' '
               lineY += 12
-              if (lineY > by + bh - 8) break
             } else {
               line = test
             }
@@ -775,7 +777,7 @@ export default function RasporedPage() {
           ctx.fillStyle = c.text
           ctx.globalAlpha = 0.7
           ctx.font = '10px system-ui, sans-serif'
-          ctx.fillText(`${e.type_short} · ${e.room}`, bx + 5, by + bh - 5)
+          ctx.fillText(`${e.type_short} · ${kratkaSala(e.room)}`, bx + 5, by + bh - 5)
           ctx.globalAlpha = 1
         })
       })
@@ -1075,7 +1077,8 @@ export default function RasporedPage() {
                                 {e.subject}
                               </p>
                               <p style={{ color: isDark ? c.darkText : c.text }} className="text-[9px] mt-0.5 opacity-70 truncate sm:text-xs sm:mt-1">
-                                {e.type_short} · {e.room}
+                                {pomereniKeys.has(entryKey(e)) && <IconPomeri aria-label="Pomeren" className="mr-0.5 inline h-2.5 w-2.5 align-[-1px] sm:h-3 sm:w-3" />}
+                                {e.type_short} · {kratkaSala(e.room)}
                               </p>
                             </div>
                           )
@@ -1107,7 +1110,7 @@ export default function RasporedPage() {
                     {dayEntries.map((e, i) => {
                       const c = COLORS[colorMap[e.subject]]
                       return (
-                        <SwipeableListItem key={i} onHide={() => hideEntry(e)}>
+                        <SwipeableListItem key={i} onHide={() => hideEntry(e)} onPomeri={() => setPomeranje(e)}>
                           <div className="flex items-center gap-2 py-2.5 border-b border-gray-100 dark:border-gray-800 sm:gap-3">
                             <span className="text-xs font-medium text-gray-500 dark:text-gray-300 tabular-nums w-[72px] shrink-0 sm:w-24">
                               {SLOT_LABEL[e.start]}
@@ -1118,14 +1121,22 @@ export default function RasporedPage() {
                                 {e.subject}
                               </span>
                               <span className="text-xs text-gray-400 dark:text-gray-500">
-                                {e.room}
+                                {e.room}{pomereniKeys.has(entryKey(e)) && ' · pomeren'}
                               </span>
                             </div>
                             <span style={{ background: isDark ? c.darkBg : c.bg, color: isDark ? c.darkText : c.text }} className="text-xs font-medium px-2 py-0.5 rounded-md shrink-0">
                               {e.type_short}
                             </span>
                             <button
+                              onClick={() => setPomeranje(e)}
+                              aria-label="Pomeri termin"
+                              className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-[#024c7d]/10 dark:hover:bg-[#60c3ad]/15 hover:text-[#024c7d] dark:hover:text-[#60c3ad] transition-colors shrink-0"
+                            >
+                              <IconPomeri className="h-3.5 w-3.5" />
+                            </button>
+                            <button
                               onClick={() => hideEntry(e)}
+                              aria-label="Sakrij termin"
                               className="hidden sm:flex w-6 h-6 items-center justify-center rounded-md text-gray-300 dark:text-gray-600 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-400 transition-colors shrink-0 text-xs"
                             >
                               ✕
@@ -1193,7 +1204,16 @@ export default function RasporedPage() {
                     <span className="w-8 shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">{DAY_SHORT[e.day]}</span>
                     <span className="w-24 shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{SLOT_LABEL[e.start] ?? `${e.start}-${e.end}`}</span>
                     <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">{e.type_short}</span>
-                    <span className="flex-1 truncate text-xs text-gray-500 dark:text-gray-400">{e.room}</span>
+                    <span className="flex-1 truncate text-xs text-gray-500 dark:text-gray-400">
+                      {kratkaSala(e.room)}{pomereniKeys.has(entryKey(e)) && ' · pomeren'}
+                    </span>
+                    <button
+                      onClick={() => setPomeranje(e)}
+                      aria-label="Pomeri termin"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                    >
+                      <IconPomeri className="h-[18px] w-[18px]" />
+                    </button>
                     <button
                       onClick={() => hideEntry(e)}
                       aria-label="Sakrij termin"
@@ -1392,6 +1412,14 @@ export default function RasporedPage() {
           </button>
         </div>
       </Modal>
+
+      <PomeriTermin
+        termin={pomeranje}
+        pomereni={pomereni}
+        raspored={visibleEntries}
+        onSave={sacuvajPomeranje}
+        onClose={() => setPomeranje(null)}
+      />
 
       <Toast show={!!izvozPoruka}>{izvozPoruka}</Toast>
 

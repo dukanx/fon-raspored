@@ -12,11 +12,40 @@ export const DAY_U: Record<DayOfWeek, string> = {
 }
 // Početci termina na FON-u (blokovi od 2 sata).
 export const SLOTS = ['08:15', '10:15', '12:15', '14:15', '16:15', '18:15']
+export const SLOT_LABEL: Record<string, string> = {
+  '08:15': '08:15-10:00',
+  '10:15': '10:15-12:00',
+  '12:15': '12:15-14:00',
+  '14:15': '14:15-16:00',
+  '16:15': '16:15-18:00',
+  '18:15': '18:15-20:00',
+}
 
 // Logički termin: isti predmet, dan, vreme i tip (sala ne ulazi - ista vežba u
 // više sala je jedan termin). Po ovom ključu se termini i skrivaju.
 export function entryKey(e: ScheduleEntry): string {
   return `${e.day}|${e.start}|${e.subject}|${e.type_short}`
+}
+
+// Isti predmet/dan/vreme/tip u više sala = jedan logički termin (npr. vežbe
+// podeljene na dve sale). Spajamo u jedan blok sa svim salama, da se ne prikazuju
+// kao dve odvojene kocke i da skrivanje radi na tom jednom terminu.
+export function mergeSameSlot(list: ScheduleEntry[]): ScheduleEntry[] {
+  const byKey = new Map<string, ScheduleEntry>()
+  for (const e of list) {
+    const k = entryKey(e)
+    const existing = byKey.get(k)
+    if (!existing) {
+      byKey.set(k, { ...e })
+      continue
+    }
+    const rooms = [...new Set([...existing.room.split(', '), ...e.room.split(', ')])]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, 'sr', { numeric: true }))
+    existing.room = rooms.join(', ')
+    existing.groups = [...new Set([...existing.groups, ...e.groups])]
+  }
+  return [...byKey.values()]
 }
 
 // Inicijali predmeta: "Upravljanje projektima" -> "UP", "Matematika 2" -> "M2".
@@ -28,6 +57,9 @@ export function subjectInitials(subject: string): string {
   const src = meaningful.length ? meaningful : words
   return src.map(w => w[0]).join('').toUpperCase().slice(0, 3)
 }
+
+// Sala za uzak prikaz: u "Amfiteatar 1" je broj ono što se odseče.
+export const kratkaSala = (room: string): string => room.replace(/Amfiteatar/g, 'Amf')
 
 const SR_MAP: Record<string, string> = {
   'a':'01', 'b':'02', 'v':'03', 'g':'04', 'd':'05',

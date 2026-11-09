@@ -51,3 +51,16 @@ export const IconEdit = (p: IconProps) => (
 export const IconExam = (p: IconProps) => (
   <svg {...baseIcon(p)}><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5" /></svg>
 )
+
+export const IconClose = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M18 6 6 18M6 6l12 12" /></svg>
+)
+
+export const IconClock = (p: IconProps) => (
+  <svg {...baseIcon(p)}><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></svg>
+)
+
+// Dve strelice: pomeren termin (Pomeri termin, Pomereni termini). Olovka je Izmena.
+export const IconPomeri = (p: IconProps) => (
+  <svg {...baseIcon(p)}><path d="M8 3 4 7l4 4" /><path d="M4 7h16" /><path d="m16 21 4-4-4-4" /><path d="M20 17H4" /></svg>
+)
