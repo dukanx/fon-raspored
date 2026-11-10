@@ -143,9 +143,6 @@ export default function FeedbackButton({ className = '' }: { className?: string 
         ) : (
           <>
             <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Predlog ili problem?</h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Piši slobodno - greška, ideja, bilo šta.
-            </p>
 
             <textarea
               value={message}

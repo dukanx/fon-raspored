@@ -113,9 +113,6 @@ export default function NotificationIntro() {
           <h2 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
             Uključi notifikacije
           </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Da ne propustiš rok ili prijavu ispita.
-          </p>
         </div>
 
         <div className="mt-5 space-y-2.5">

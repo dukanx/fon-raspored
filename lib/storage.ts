@@ -119,6 +119,8 @@ export const app = {
   prevSubjectsIntroSeen: flag('local', 'fon_prev_subjects_intro_seen'),
   // Obaveštenje "novo: FON kalendar u Rokovima" za postojeće korisnike, jednom.
   kalendarIntroSeen: flag('local', 'fon_kalendar_intro_seen'),
+  // Slajd "Novo u Izmeni: Moji termini" za postojeće korisnike, jednom.
+  mojiTerminiIntroSeen: flag('local', 'fon_moji_termini_intro_seen'),
   // Podaci (grupa, predmeti, dodati termini) koje je backend poslednji put
   // zapamtio uz push pretplatu, da se šalju samo kad se promene (v. lib/push.ts).
   pushPodaci: str('local', 'fon_push_podaci'),

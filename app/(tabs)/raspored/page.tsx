@@ -377,7 +377,7 @@ export default function RasporedPage() {
     const tourSeen = app.appTourSeen.get()
     const transferredSeen = app.prevSubjectsIntroSeen.get()
     const hasTransferred = byGroup.prevSubjects(meta.group).get().length > 0
-    const shouldShow = !tourSeen || (hasTransferred && !transferredSeen)
+    const shouldShow = !tourSeen || (hasTransferred && !transferredSeen) || !app.mojiTerminiIntroSeen.get()
     if (!shouldShow) return
 
     let t: ReturnType<typeof setTimeout>
@@ -407,7 +407,7 @@ export default function RasporedPage() {
   // Ako ide, ovaj se preskače do sledećeg otvaranja, da ne stižu jedan za drugim.
   useEffect(() => {
     if (!loaded || app.kalendarIntroSeen.get()) return
-    const tourPending = !app.appTourSeen.get() ||
+    const tourPending = !app.appTourSeen.get() || !app.mojiTerminiIntroSeen.get() ||
       (hasTransferredSubjects() && !app.prevSubjectsIntroSeen.get())
     const notifPending = !app.notifIntroSeen.get() && isStandalone() && pushSupported()
     if (tourPending || notifPending || showFlipPopup || groupMoved || newSubjects.length > 0) return
@@ -420,11 +420,14 @@ export default function RasporedPage() {
   }, [loaded])
 
   const tourHasTransferredSlide = hasTransferredSubjects()
+  // Postojeći korisnik koji je tur video pre nego što su dodati Moji termini.
+  const mojiTerminiNovo = app.appTourSeen.get() && !app.mojiTerminiIntroSeen.get()
 
   function closeTour() {
     app.appTourSeen.set()
-    // Nov korisnik kalendar upozna u Rokovima, pa mu "novo" ne treba.
+    // Nov korisnik kalendar i Moji termini upozna u turu, pa mu "novo" ne treba.
     app.kalendarIntroSeen.set()
+    app.mojiTerminiIntroSeen.set()
     if (tourHasTransferredSlide) app.prevSubjectsIntroSeen.set()
     setShowTour(false)
   }
@@ -435,12 +438,20 @@ export default function RasporedPage() {
     title: 'Podesi termine',
     desc: 'Predmetima iz prethodnih godina termin biraš sam.',
     features: [
-      { icon: IconEdit, title: 'Olovka pored tabova', desc: 'Tu dodaješ termin za svaki takav predmet.' },
+      { icon: IconEdit, title: 'Izmena', desc: 'Izaberi termin za svaki predmet.' },
     ],
     primaryLabel: 'Idi na Izmenu',
     onPrimary: () => { closeTour(); router.push('/preneseni') },
     secondaryLabel: 'Kasnije',
     important: true,
+  }
+
+  const mojiTermini = { icon: IconClock, title: 'Moji termini', desc: 'Ručna promena vremena i sale termina nastave.' }
+  const mojiTerminiSlide: TourSlide = {
+    key: 'moji-termini',
+    icon: IconEdit,
+    title: 'Novo u Izmeni',
+    features: [mojiTermini],
   }
 
   // Kratko: jedan red po stvari, samo ono što se ne vidi na prvi pogled.
@@ -449,10 +460,10 @@ export default function RasporedPage() {
       key: 'izmena',
       icon: IconEdit,
       title: 'Izmena',
-      desc: 'Olovka pored tabova, za sve što menjaš.',
       features: [
         { icon: IconList, title: 'Moji predmeti', desc: 'Promeni koje izborne predmete slušaš.' },
-        { icon: IconCalendar, title: 'Dodaj ili promeni termin', desc: 'Za predmet iz prošle godine ili drugu grupu, uz predlog bez preklapanja.' },
+        mojiTermini,
+        { icon: IconCalendar, title: 'Dodaj ili promeni termin', desc: 'Predmet iz prošle godine ili termin druge grupe.' },
       ],
     },
     {
@@ -460,7 +471,7 @@ export default function RasporedPage() {
       icon: IconShare,
       title: 'Podeli i izvezi',
       features: [
-        { icon: IconShare, title: 'Podeli', desc: 'Pošalji link, a drugi dobija tvoj raspored.' },
+        { icon: IconShare, title: 'Podeli', desc: 'Pošalji svoj raspored linkom.' },
         { icon: IconIzvoz, title: 'Izvezi', desc: 'Sačuvaj kao sliku ili dodaj u kalendar telefona.' },
       ],
     },
@@ -470,14 +481,14 @@ export default function RasporedPage() {
       title: 'Notifikacije',
       desc: 'Uključuješ ih zvoncem na Rokovima.',
       features: [
-        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Javimo čim FON objavi ispite ili kolokvijume.' },
+        { icon: IconCalendar, title: 'Novi rokovi', desc: 'Čim FON objavi ispite ili kolokvijume.' },
         { icon: IconClock, title: 'Prijava ispita', desc: 'Podsetnik prvog i poslednjeg dana prijave.' },
       ],
     },
     {
       key: 'korisno',
       icon: IconBulb,
-      title: 'Dobro je znati',
+      title: 'Saveti',
       features: [
         { icon: IconInfo, title: 'Tap na termin', desc: 'Vidiš ESPB, katedru i rokove tog predmeta.' },
         { icon: IconHidden, title: 'Sakrij ili pomeri termin', desc: 'Tap na termin: skloni ga ili mu upiši novo vreme i salu.' },
@@ -486,12 +497,15 @@ export default function RasporedPage() {
     },
   ]
 
-  // Tur već viđen -> ako se prenesen predmet naknadno pojavio, taj jedan
-  // slajd samostalno; inače (prvi put) ceo tur, sa tim slajdom NA KRAJU (ne na
-  // početku) - inače bi "Idi na Izmenu" (umesto "Dalje") odmah prekinuo tur
-  // pre nego što korisnik stigne do ostalih slajdova.
+  // Tur već viđen -> samo ono što je novo za njega: Moji termini i, ako se
+  // prenesen predmet naknadno pojavio, taj slajd. Inače (prvi put) ceo tur, sa
+  // slajdom prenesenih NA KRAJU (ne na početku) - inače bi "Idi na Izmenu"
+  // (umesto "Dalje") odmah prekinuo tur pre nego što korisnik stigne do ostalih.
   const tourSlides: TourSlide[] = app.appTourSeen.get()
-    ? [transferredSlide]
+    ? [
+        ...(mojiTerminiNovo ? [mojiTerminiSlide] : []),
+        ...(tourHasTransferredSlide && !app.prevSubjectsIntroSeen.get() ? [transferredSlide] : []),
+      ]
     : tourHasTransferredSlide
       ? [...generalSlides, transferredSlide]
       : generalSlides
